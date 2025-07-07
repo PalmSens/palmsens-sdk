@@ -573,11 +573,11 @@ The following properties specify the measurements pretreatment settings:
 
 | **Property**          | **Description**                                                                                                                            | **Type**       |
 |:----------------------|:-------------------------------------------------------------------------------------------------------------------------------------------|:---------------|
-| ConditioningPotential | Conditioning potential in volt                                                                                                             | `System.Float` |
-| ConditioningTime      | Conditioning duration in seconds                                                                                                           | `System.Float` |
-| DepositionPotential   | Deposition potential in volt                                                                                                               | `System.Float` |
-| DepositionTime        | Deposition duration in seconds                                                                                                             | `System.Float` |
-| EquilibrationTime     | Equilibration duration in seconds. BeginPotential is applied during equilibration and the device switches to the appropriate current range | `System.Float` |
+| `ConditioningPotential` | Conditioning potential in volt                                                                                                             | `System.Float` |
+| `ConditioningTime`      | Conditioning duration in seconds                                                                                                           | `System.Float` |
+| `DepositionPotential`   | Deposition potential in volt                                                                                                               | `System.Float` |
+| `DepositionTime`        | Deposition duration in seconds                                                                                                             | `System.Float` |
+| `EquilibrationTime`     | Equilibration duration in seconds. BeginPotential is applied during equilibration and the device switches to the appropriate current range | `System.Float` |
 
 ### Linear Sweep Voltammetry (LSV) \[0\]
 
@@ -585,10 +585,10 @@ Class: `Palmsens.Techniques.LinearSweep`
 
 | **Property**   | **Description**                                                                                                                                    | **Type**       |
 |:---------------|:---------------------------------------------------------------------------------------------------------------------------------------------------|:---------------|
-| BeginPotential | Potential where scan starts.                                                                                                                       | `System.Float` |
-| EndPotential   | Potential where measurement stops.                                                                                                                 | `System.Float` |
-| StepPotential  | Step potential                                                                                                                                     | `System.Float` |
-| Scanrate       | The applied scan rate. The applicable range depends on the value of E step since the data acquisition rate is limited by the connected instrument. | `System.Float` |
+| `BeginPotential` | Potential where scan starts.                                                                                                                       | `System.Float` |
+| `EndPotential`   | Potential where measurement stops.                                                                                                                 | `System.Float` |
+| `StepPotential`  | Step potential                                                                                                                                     | `System.Float` |
+| `Scanrate`       | The applied scan rate. The applicable range depends on the value of E step since the data acquisition rate is limited by the connected instrument. | `System.Float` |
 
 ### Differential Pulse Voltammetry (DPV) \[1\]
 
@@ -596,12 +596,12 @@ Class: `Palmsens.Techniques.DifferentialPulse`
 
 | **Property**   | **Description**                                                                                                                                    | **Type**       |
 |:---------------|:---------------------------------------------------------------------------------------------------------------------------------------------------|:---------------|
-| BeginPotential | Potential where scan starts.                                                                                                                       | `System.Float` |
-| EndPotential   | Potential where measurement stops.                                                                                                                 | `System.Float` |
-| StepPotential  | Step potential                                                                                                                                     | `System.Float` |
-| Scanrate       | The applied scan rate. The applicable range depends on the value of E step since the data acquisition rate is limited by the connected instrument. | `System.Float` |
-| PulsePotential | Pulse potential                                                                                                                                    | `System.Float` |
-| PulseTime      | The pulse time                                                                                                                                     | `System.Float` |
+| `BeginPotential` | Potential where scan starts.                                                                                                                       | `System.Float` |
+| `EndPotential`   | Potential where measurement stops.                                                                                                                 | `System.Float` |
+| `StepPotential`  | Step potential                                                                                                                                     | `System.Float` |
+| `Scanrate`       | The applied scan rate. The applicable range depends on the value of E step since the data acquisition rate is limited by the connected instrument. | `System.Float` |
+| `PulsePotential` | Pulse potential                                                                                                                                    | `System.Float` |
+| `PulseTime`      | The pulse time                                                                                                                                     | `System.Float` |
 
 ### Square Wave Voltammetry (SWV) \[2\]
 
@@ -609,11 +609,11 @@ Class: `Palmsens.Techniques.SquareWave`
 
 | **Property**   | **Description**                                               | **Type**       |
 |:---------------|:--------------------------------------------------------------|:---------------|
-| BeginPotential | Potential where scan starts.                                  | `System.Float` |
-| EndPotential   | Potential where measurement stops.                            | `System.Float` |
-| StepPotential  | Step potential                                                | `System.Float` |
-| PulseAmplitude | Amplitude of square wave pulse. Values are half peak-to-peak. | `System.Float` |
-| Frequency      | The frequency of the square wave                              | `System.Float` |
+| `BeginPotential` | Potential where scan starts.                                  | `System.Float` |
+| `EndPotential`   | Potential where measurement stops.                            | `System.Float` |
+| `StepPotential`  | Step potential                                                | `System.Float` |
+| `PulseAmplitude` | Amplitude of square wave pulse. Values are half peak-to-peak. | `System.Float` |
+| `Frequency`      | The frequency of the square wave                              | `System.Float` |
 
 ### Normal Pulse Voltammetry (NPV) \[3\]
 
@@ -621,11 +621,11 @@ Class: `Palmsens.Techniques.NormalPulse`
 
 | **Property**   | **Description**                                                                                                                                    | **Type**       |
 |:---------------|:---------------------------------------------------------------------------------------------------------------------------------------------------|:---------------|
-| BeginPotential | Potential where scan starts.                                                                                                                       | `System.Float` |
-| EndPotential   | Potential where measurement stops.                                                                                                                 | `System.Float` |
-| StepPotential  | Step potential                                                                                                                                     | `System.Float` |
-| Scanrate       | The applied scan rate. The applicable range depends on the value of E step since the data acquisition rate is limited by the connected instrument. | `System.Float` |
-| PulseTime      | The pulse time                                                                                                                                     | `System.Float` |
+| `BeginPotential` | Potential where scan starts.                                                                                                                       | `System.Float` |
+| `EndPotential`   | Potential where measurement stops.                                                                                                                 | `System.Float` |
+| `StepPotential`  | Step potential                                                                                                                                     | `System.Float` |
+| `Scanrate`       | The applied scan rate. The applicable range depends on the value of E step since the data acquisition rate is limited by the connected instrument. | `System.Float` |
+| `PulseTime`      | The pulse time                                                                                                                                     | `System.Float` |
 
 ### AC Voltammetry (ACV) \[4\]
 
@@ -633,11 +633,11 @@ Class: `Palmsens.Techniques.ACVoltammetry`
 
 | **Property**      | **Description**                        | **Type**       |
 |:------------------|:---------------------------------------|:---------------|
-| BeginPotential    | Potential where scan starts.           | `System.Float` |
-| EndPotential      | Potential where measurement stops.     | `System.Float` |
-| StepPotential     | Step potential                         | `System.Float` |
-| SineWaveAmplitude | Amplitude of sine wave. Values are RMS | `System.Float` |
-| Frequency         | The frequency of the AC signal         | `System.Float` |
+| `BeginPotential`    | Potential where scan starts.           | `System.Float` |
+| `EndPotential`      | Potential where measurement stops.     | `System.Float` |
+| `StepPotential`     | Step potential                         | `System.Float` |
+| `SineWaveAmplitude` | Amplitude of sine wave. Values are RMS | `System.Float` |
+| `Frequency`         | The frequency of the AC signal         | `System.Float` |
 
 ### Cyclic Voltammetry (CV)\|contextid=306 \[5\]
 
@@ -645,12 +645,12 @@ Class: `Palmsens.Techniques.CyclicVoltammetry`
 
 | **Property**   | **Description**                                                                                                                                    | **Type**       |
 |:---------------|:---------------------------------------------------------------------------------------------------------------------------------------------------|:---------------|
-| BeginPotential | Potential where scan starts and stops.                                                                                                             | `System.Float` |
-| Vtx1Potential  | First potential where direction reverses.                                                                                                          | `System.Float` |
-| Vtx2Potential  | Second potential where direction reverses.                                                                                                         | `System.Float` |
-| StepPotential  | Step potential                                                                                                                                     | `System.Float` |
-| Scanrate       | The applied scan rate. The applicable range depends on the value of E step since the data acquisition rate is limited by the connected instrument. | `System.Float` |
-| nScans         | The number of repetitions for this scan                                                                                                            | `System.Float` |
+| `BeginPotential` | Potential where scan starts and stops.                                                                                                             | `System.Float` |
+| `Vtx1Potential`  | First potential where direction reverses.                                                                                                          | `System.Float` |
+| `Vtx2Potential`  | Second potential where direction reverses.                                                                                                         | `System.Float` |
+| `StepPotential`  | Step potential                                                                                                                                     | `System.Float` |
+| `Scanrate`       | The applied scan rate. The applicable range depends on the value of E step since the data acquisition rate is limited by the connected instrument. | `System.Float` |
+| `nScans`         | The number of repetitions for this scan                                                                                                            | `System.Float` |
 
 #### Fast Cyclic Voltammetry Scans
 
@@ -685,16 +685,14 @@ Class: `PalmSens.Techniques.AmperometricDetection`
 
 Class: `PalmSens.Techniques.PulsedAmpDetection`
 
-| **Property**       | **Description**                                                                             | **Type**                                          |
-|:-------------------|:--------------------------------------------------------------------------------------------|:--------------------------------------------------|
-| `Potential`        | The dc or base potential.                                                                   | `System.Float`                                    |
-| `PulsePotentialAD` | Potential in pulse. Note that this value is not relative to dc/base potential, given above. | `System.Float`                                    |
-| `PulseTime`        | The pulse time.                                                                             | `System.Float`                                    |
-| `tMode`            | *DC*: I(dc) measurement is performed at potential E                                         | `PalmSens.Techniques.PulsedAmpDetection.enumMode` |
-|                    | *pulse*: I(pulse) measurement is performed at potential E pulse                             |                                                   |
-|                    | *differential*: I(dif) measurement is I(pulse) - I(dc)                                      |                                                   |
-| `IntervalTime`     | Time between two current samples.                                                           | `System.Float`                                    |
-| `RunTime`          | Total run time of scan.                                                                     | `System.Float`                                    |
+| **Property**       | **Description**                                                                                                                                                              | **Type**                                          |
+|:-------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------|
+| `Potential`        | The dc or base potential.                                                                                                                                                    | `System.Float`                                    |
+| `PulsePotentialAD` | Potential in pulse. Note that this value is not relative to dc/base potential, given above.                                                                                  | `System.Float`                                    |
+| `PulseTime`        | The pulse time.                                                                                                                                                              | `System.Float`                                    |
+| `tMode`            | *DC*: I(dc) measurement is performed at potential E, *pulse*: I(pulse) measurement is performed at potential E pulse, *differential*: I(dif) measurement is I(pulse) - I(dc) | `PalmSens.Techniques.PulsedAmpDetection.enumMode` |
+| `IntervalTime`     | Time between two current samples.                                                                                                                                            | `System.Float`                                    |
+| `RunTime`          | Total run time of scan.                                                                                                                                                      | `System.Float`                                    |
 
 ### Fast Amperometry (FAM) \[9\]
 
@@ -765,10 +763,8 @@ separately in next sections.
 | `MaxFrequency` | The highest frequency in the scan, also the frequency at which the measurement is started                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `System.Float`                         |
 | `MinFrequency` | The lowest frequency in the scan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | `System.Float`                         |
 | `nFrequencies` | The number of frequencies included in the scan                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `System.Int`                           |
-| `SamplingTime` | Each measurement point of the impedance spectrum is performed during the period specified by SamplingTime. This means that the number of measured sine waves is equal to SamplingTime \* frequency. If this value is less than 1 sine wave, the sampling is extended to 1 / frequency. So for a measurement at a frequency, at least one complete sine wave is measured.                                                                                                                                                                                                 | `System.Float`                         |
-|                | Reasonable values for the sampling are in the range of 0.1 to 1 s.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |                                        |
-| `MaxEqTime`    | The impedance measurement requires a stationary state. This means that before the actual measurement starts, the sine wave is applied during MaxEqTime only to reach the stationary state.                                                                                                                                                                                                                                                                                                                                                                               | `System.Float`                         |
-|                | The maximum number of equilibration sine waves is however 5. The minimum number of equilibration sines is set to 1, but for very low frequencies, this time is limited by MaxEqTime. The maximum time to wait for stationary state is determined by the value of this parameter. A reasonable value might be 5 seconds. In this case this parameter is only relevant when the lowest frequency is less than 1/5 s so 0.2 Hz.                                                                                                                                             |                                        |
+| `SamplingTime` | Each measurement point of the impedance spectrum is performed during the period specified by SamplingTime. This means that the number of measured sine waves is equal to SamplingTime \* frequency. If this value is less than 1 sine wave, the sampling is extended to 1 / frequency. So for a measurement at a frequency, at least one complete sine wave is measured. Reasonable values for the sampling are in the range of 0.1 to 1 s.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `System.Float`                         |
+| `MaxEqTime`    | The impedance measurement requires a stationary state. This means that before the actual measurement starts, the sine wave is applied during MaxEqTime only to reach the stationary state. The maximum number of equilibration sine waves is however 5. The minimum number of equilibration sines is set to 1, but for very low frequencies, this time is limited by MaxEqTime. The maximum time to wait for stationary state is determined by the value of this parameter. A reasonable value might be 5 seconds. In this case this parameter is only relevant when the lowest frequency is less than 1/5 s so 0.2 Hz.                                                                                                                                                  | `System.Float`                         |
 
 #### Time Scan
 

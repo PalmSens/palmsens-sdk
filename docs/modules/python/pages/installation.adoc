@@ -1,0 +1,37 @@
+= Installation (Windows)
+:experimental: true
+
+== Requirements
+
+* https://python.org[Python version 3.8 or newer]
+* Python dependencies listed `requirements.txt`
+** Either run the following command: `pip install -r requirements.txt` or refer to the steps in xref:installation.adoc[].
+* .NET Framework 4.7.2
+* Drivers included with _PSTrace5.x_, _MultiTrace4.x_, _PSTrace Xpress_ or the included driver installer
+
+[NOTE]
+====
+Python 3.13 contains https://github.com/python/cpython/issues/130522[a known issue] which will print errors to the output due to threads not being disposed
+correctly, these errors can safely be ignored.
+`Exception ignored in: <function _DeleteDummyThreadOnDel.__del__ at 0x000001B73AEEE5C0>`
+====
+
+== (Optional) Create a virtual environment in Visual Studio Code
+
+https://code.visualstudio.com/[VS Code] in combination with the Python, Python Debugger and Pylance extensions offer an easy command to create a virtual environment and load the python dependencies.
+
+. Press kbd:[Ctrl+Shift+P] to open the command pallete and select the `Python: Create Environment command to create a new virtual environment.`
++
+image:vscode_create_venv.png[Create virtual environment in VSCode]
+
+. Select the `Venv` option
++
+image:vscode_select_venv.png[Select virtual environment in VSCode]
+
+. Select an installed python interpreter
++
+image:vscode_select_python.png[Select Python interpreter in VSCode]
+
+. Select the `requirements.txt` to install the python dependencies for the pspython SDK module and examples.
++
+image:vscode_select_dependencies.png[Select dependencies in VSCode]

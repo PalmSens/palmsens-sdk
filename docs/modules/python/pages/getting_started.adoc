@@ -1,0 +1,159 @@
+= Working with files
+
+As of version 5 of the PalmSens SDK and PSTrace measurements and their corresponding methods are stored in `*.pssession` files. 
+Methods can be stored separately in `*.psmethod` files.
+
+The PalmSens SDK is backward compatible with following filetypes:
+
+|===
+| File | vs potential (scan method) | Measurement vs time
+
+|Method 
+|`.psmethod` 
+|`.psmethod`
+
+|Method (before 2012) 
+|`.pms` 
+|`.pmt`
+
+|Data (single curve) 
+|`.pss` 
+|`.pst`
+
+|Analysis curves 
+|`.psd` 
+|
+
+|Multiplexer curves 
+| 
+|`.mux`
+|===
+
+The `pspyfiles.py` script in the `pspython` module contains the functions needed to load and save methods and session files.
+The `pspydata.py` script contain the python classes that store the loaded data.
+The pspymethods scripts contains helper functions for creating and working with methods.
+
+== Loading a method file (`.psmethod`)
+
+The `pspyfiles.py` script function `load_method_file()` can be
+used to load method files.
+This function returns a `PalmSens.Method` .NET object which can be used to run a measurement.
+
+[source,python]
+----
+method = pspyfiles.load_method_file(
+    os.path.join(scriptDir, 'PSDummyCell_LSV.psmethod')
+)
+----
+
+== Setting up a method
+
+The `pspymethods.py` script contains helper functions to create .NET method objects for the following techniques:
+
+* Linear sweep voltammetry
+* Cyclic voltammetry
+* Square-wave voltammetry
+* Differential pulse voltammetry
+* Chronoamperometry
+* Multi-step amperometry
+* Open circuit potentiometry
+* Chronopotentiometry
+* Electrochemical impedance spectroscopy
+* Galvanostatic impedance spectroscopy
+
+This example creates a method for a square-wave voltammetry measurement versus the open circuit potential:
+
+[source,python]
+----
+method = pspymethods.square_wave_voltammetry(
+    conditioning_potential = 2.0,  # V
+    conditioning_time = 2,  # seconds
+    versus_ocp_mode = 3,  # versus begin and end potential
+    versus_ocp_max_ocp_time = 1,  # seconds
+    begin_potential = -0.5,  # V
+    end_potential = 0.5,  # V
+    step_potential = 0.01,  # V
+    amplitude = 0.08,  # V
+    frequency = 10,  # Hz
+)
+----
+xref:api.adoc[] contains a reference to the method parameters for each technique. Parameters of a .NET method object can be modified by adjusting these properties.
+
+For example, the frequency of a square-wave voltammetry is modified by adjusting the Frequency property on the .NET object.
+
+[source,python]
+----
+method.Frequency = 50
+----
+
+To create an instance of a method without using one of the helper functions in `pspymethods.py` you need to import the .NET class, create an instance and adjust the parameters. xref:api.adoc[] lists the classes for the techniques.
+
+This example creates an instance of an alternating current voltammetry
+method.
+
+[source,python]
+----
+import pspython
+
+# import the alternating current voltammetry method object
+from PalmSens.Techniques import ACVoltammetry
+
+# create a new method object
+method = ACVoltammetry()
+method.BeginPotential = -.5 \# volts
+method.EndPotential = 0.5 \# volts
+method.StepPotential = 0.01 \# volts
+method.SineWaveAmplitude = 0.05 \# volts RMS
+method.Frequency = 50 \# Hz
+----
+
+[TIP]
+==== 
+The VSCode Debug Console or another Python REPL environment will auto complete on the properties and functions of .NET objects like the `PalmSens.Method` objects returned by the helper methods.
+
+image:vscode_autocomplete.png[Debug console in VSCode]
+====
+
+== Saving a method
+
+The `pspyfiles.py` script function save_method_file can be used to save method files.
+
+[source,python]
+----
+pspyfiles.save_method_file(
+    os.path.join(scriptDir, 'PSDummyCell_LSV_copy.psmethod'), 
+    method
+)
+----
+
+== Loading and saving data
+
+image:pssession.png[Data in pssession files]
+
+Data from measurements can be loaded from and stored to `.pssession` files. 
+This contains a session with one or more measurements containing its respective method and curves.
+
+The `pspyfiles.py` script function `load_session_file()` can be used to load session files.
+It returns a list of measurements, with the exception of (galvanostatic) electrochemical impedance spectroscopy measurements measurements contain one or more curves.
+The measurement and curve classes are defined in the pspydata script.
+
+The load_session_file function contains overloads for loading equivalent circuit fit results and peaks and an overload to keep the underlying .NET objects. 
+Keeping the underlying .NET objects is not necessary but useful when you need to access extra information or functionality not provided in the python measurement and curve classes.
+
+The following example loads a collection of measurements from a session file and saves the first measurement to a different file, important to note is that saving to a session file requires the underlying .NET objects to be loaded, _i.e._ setting `return_dotnet_object=true`.
+
+[source,python]
+----
+measurements = pspyfiles.load_session_file(
+    os.path.join(scriptDir, 'Demo CV DPV EIS IS-C electrode.pssession'), 
+    load_peak_data=True,
+    load_eis_fits=True, 
+    return_dotnet_object=True
+)
+
+pspyfiles.save_session_file(
+    os.path.join(scriptDir, 'Demo CV DPV EIS IS-C electrode_copy.pssession'),
+    [measurements[0]]
+)
+----
+

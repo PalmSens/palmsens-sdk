@@ -1,0 +1,140 @@
+= Connecting and Measuring
+
+The following chapter details how to connect to a device, read data from the device, manually controlling the potential, run measurements on the device and finally how to properly close a connection to a device.
+
+The `pspyinstruments.py` script in the `pspython` module contains all the relevant functions for discovering and controlling instruments. 
+The `InstrumentManager` and `InstrumentManagerAsync` class are wrappers around our .NET libraries which make it possible to connect to and control PalmSens instruments from Python.
+
+== Connecting to a device
+
+The following example shows how to get a list of all available devices, and how to connect to one of the discovered devices that.
+
+[source,python]
+----
+available_instruments = pspyinstruments.discover_instruments()
+
+manager = pspyinstruments.InstrumentManager()
+
+manager.connect(available_instruments[0])
+----
+
+Currently the `pspython` module supports discovering instruments connected via FTDI, serial (usbcdc/com), and Bluetooth (classic/low energy). By default scanning with Bluetooth is disabled.
+
+== Manually controlling the device
+
+Depending on your device’s capabilities it can be used to set a potential/current and to switch current ranges. 
+The potential can be set manually in potentiostatic mode and the current can be set in galvanostatic mode. 
+The following example show how to manually set a potential, for more examples refer to the `ManualControlExample` and `ManualControlExampleAsync` scripts included with the SDK.
+
+[source,python]
+----
+manager.set_potential(1)
+----
+
+== Measuring
+
+Starting a measurement is done by sending method parameters to a PalmSens/Nexus/EmStat/Sensit device. 
+The `InstrumentManager` measure function returns a `Measurement` and also supports keeping a reference to the underlying .NET object.
+For more information please refer to xref:core_dll.adoc[].
+
+The following example runs a chronoamperometry measurement on an instrument.
+
+[source,python]
+----
+method = pspymethods.chronoamperometry(interval_time=0.01, e=1.0,
+run_time=10.0)
+
+measurement = manager.measure(method)
+----
+
+It is possible to process measurement results in real-time by specifying a callback on the `InstrumentManager`/`InstrumentManagerAsync` either by providing it as an override when it is created using the `new_data_callback` argument:
+
+[source,python]
+----
+def new_data_callback(new_data):
+    for point in new_data:
+        print(point)
+
+manager = pspyinstruments.InstrumentManager(
+    new_data_callback=new_data_callback
+)
+----
+
+or by setting it on the `InstrumentManager`’s new_data_callback field.
+
+[source,python]
+----
+manager.new_data_callback = stream_to_csv_callback(csv_writer)
+----
+
+The callback is passed a collection of points that have been added since the last time it was called. 
+Points contain a dictionary with the following information:
+
+=== Non-impedimetric techniques
+
+Techniques such as linear sweep voltammetry or chronopotentiometry return a dictionary containing the following values:
+
+* `index`: the index of the point
+* `x`, `x_unit` and `x_type`: depending on the technique this
+will be:
+** Time in seconds for amperometry and potentiometry techniques that do
+not specify a begin and an end potential
+** Potential in volts for voltammetry techniques such as linear sweep,
+cyclic and square-wave voltammetry
+** Current in micro amperes for linear sweep potentiometry
+* `y`, `y_unit` and `y_type`: depending on the techniques this
+will be:
+** Current in micro amperes for all potentiometric techniques such as
+linear sweep and cyclic voltammetry and chronoamperometry and multistep
+amperometry
+** Potential in volts for all galvanostatic techniques such as
+chronopotentiometry and linear sweep potentiometry
+
+=== Impedimetric techniques
+
+The exception are (galvanostatic/) electrochemical impedance spectroscopy. These techniques return the following:
+
+* `frequency`: the applied frequency of the sample in hertz
+* `z_re`: the real impedance in ohms
+* `z_im`: the imaginary impedance in ohms
+
+[CAUTION]
+.Mains Frequency
+====
+To eliminate noise induced by other electrical appliances it is highly recommended to set your regional mains frequency (50/60 Hz) in the static property `PalmSens.Method.PowerFreq`.
+====
+
+== MethodSCRIPT™
+
+The MethodSCRIPT™ scripting language is designed to integrate our OEM potentiostat (modules) effortlessly in your hardware setup or product.
+
+MethodSCRIPT™ allows developers to program a human-readable script directly into the potentiostat module by means of a serial (TTL) connection. 
+The simple script language allows for running all supported electrochemical techniques and makes it easy to combine different measurements and other tasks.
+
+More script features include:
+
+* Use of variables
+* (Nested) loops
+* Logging results to an SD card
+* Digital I/O for example for waiting for an external trigger
+* Reading auxiliary values like pH or temperature
+* Going to sleep or hibernate mode
+
+See the https://www.palmsens.com/methodscript[MethodSCRIPT™ documentation] for more information.
+
+=== Sandbox Measurements
+
+PSTrace includes an option to make use MethodSCRIPT™ Sandbox to write and run scripts. 
+This is a great place to test MethodSCRIPT™ measurements to see what the result would be.
+That script can then be used in the MethodScriptSandbox technique in the SDK as demonstrated below.
+
+image:method_script_editor.png[Graphical editor for MethodSCRIPT™]
+
+=== Disconnecting from the device
+
+The InstrumentManager disconnect function disconnects from the device freeing it up for other things to connect to it.
+
+[source,python]
+----
+manager.disconnect()
+----

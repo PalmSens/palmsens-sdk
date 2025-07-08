@@ -1,0 +1,90 @@
+= Python
+
+Based on PalmSens SDK v5.12 +
+Last revision: April 24, 2025
+
+== Contents of the PalmSens SDK
+
+The PalmSens SDK contains the following libraries and projects:
+
+. *PalmSens.Core.dll & PalmSens.Core.Windows.BLE.dll*
++
+These libraries contain the namespaces with all the necessary files for
+using PalmSens/EmStat/Nexus/Sensit devices in your software.
+
+** `PalmSens`: All necessary classes and functions for performing
+measurements and doing analysis with PalmSens, EmStat, Sensit or Nexus.
+** `PalmSens.Comm`: For Serial, USB, TCP, Bluetooth (Classic/Low Energy)
+communication with instruments.
+** `PalmSens.DataFiles`: For saving and loading method and data files.
+** `PalmSens.Devices`: For handling communications and device
+capabilities.
+** `PalmSens.Techniques`: Contains all measurement techniques.
+** `PalmSens.Units`: Contains a collection of units used by these
+libraries.nsrt
+
+. *pspython*
++
+A python wrapper for the .NET libraries above.
+
+** `pspyinstruments.py`: Contains the functions to scan for available
+instruments and the InstrumentManager class used to control the
+PalmSens, EmStat, Sensit or Nexus instruments.
+** `pspydata.py`: Defines the measurements and curves classes
+** `pspyfiles.py`: For saving/loading session and method files
+** `pspymethods.py`: Work in progress, helper functions to create methods
+
+== Compatible devices and firmware
+
+[cols=",",options="header",]
+|===
+|Device |Minimum required firmware version
+|EmStat |3.7
+|EmStat2 |7.7
+|EmStat3 |7.7
+|EmStat3{plus} |7.7
+|EmStat4 |1.3
+|EmStat Go |7.7
+|EmStat Pico |1.5
+|Sensit Smart |1.5
+|Sensit BT |1.5
+|Sensit Wearable |1.5
+|MultiEmStat3 |7.7
+|MultiEmStat4 |1.3
+|PalmSens3 |2.8
+|PalmSens4 |1.7
+|MultiPalmSens4 |1.7
+|===
+
+== Example programs
+
+The following examples are included.
+
+`LoadSaveDataExample.py`::
+Shows how to load/save methods and measurements and how to inspect the data.
+`ManualControlExample.py`::
+Shows how to discover devices, establish a connection and control an instrument manually.
+`ManualControlExampleAsync.py`::
+Shows how to discover devices, establish a connection and control an instrument manually using the asynchronous instrument manager.
+`MeasurementExampleCA.py`::
+Shows how to configure and run a chronoamperometry measurement.
+`MeasurementExampleCAAsync.py`::
+Shows how to configure and run a chronoamperometry measurement using the asynchronous instrument manager.
+`MeasurementExampleCV.py`::
+Shows how to configure and run a cyclic voltammetry measurement.
+`MeasurementExampleEIS.py`::
+Shows how to configure and run a EIS measurement.
+`MeasurementExampleMethodSCRIPTSandbox.py`::
+Shows how to configure and run a MethodSCRIPT Sandbox measurement.
+`MeasurementExampleStreamToCSV.py`::
+Shows how to configure and run a chronoamperometry measurement and write the results to a CSV file in real-time.
+`MeasurementExampleSWVversusOCP.py`::
+Shows how to configure and run a square wave voltammetry measurement versus OCP.
+`MultiplexerExample.py`::
+Shows how to configure and control a multiplexer and run consecutive and alternating multiplexer measurments.
+`MultiChannelMeasurementExample.py`::
+Shows how to connect to a collection of instruments and run a chronoamperometry measurement on all channels simultaneously.
+`MultiChannelMeasurementCustomLoopExample.py`::
+Shows how to run and configure a sequence of measurements on a collection of channels simultaneously.
+`MultiChannelHWSyncExample.py.py`::
+Shows how to connect to a collection of instruments and run a chronopotentiometry measurement on all channels simultaneously using hardware synchronization.

@@ -1,0 +1,6 @@
+name: palmsens-sdk
+version: ~
+title: PalmSens SDK
+nav:
+- modules/ROOT/nav.adoc
+- modules/python/nav.adoc

@@ -24,7 +24,37 @@ class Curve:
         self.y_array = y_array
         self.peaks = kwargs.get('peaks', [])
         self.dotnet_curve = kwargs.get('dotnet_curve', [])
-        
+
+    def smooth(self, smooth_level: int):
+        """Smooth the .y_array using a Savitsky-Golay filter with the specified smooth level.
+
+        Parameters
+        ----------
+        smooth_level : int
+            The smooth level to be used. -1 = none, 0 = no smooth (spike rejection only), 1 = 5 points, 2 = 9 points, 3 = 15 points, 4 = 25 points
+        """
+        success = self.dotnet_curve.Smooth(smoothLevel=smooth_level)
+        assert success
+
+        self.x_array = _get_values_from_NETArray(self.dotnet_curve.XAxisDataArray)
+        self.y_array = _get_values_from_NETArray(self.dotnet_curve.YAxisDataArray)
+
+    def savitsky_golay(self, window_size: int):
+        """Smooth the .y_array using a Savitsky-Golay filter with the specified window size.
+
+        (i.e. window size 2 will filter points based on the values of the next/previous 2 points)
+
+        Parameters
+        ----------
+        window_size : int
+            Size of the window
+        """
+        success = self.dotnet_curve.Smooth(windowSize=window_size)
+        assert success
+
+        self.x_array = _get_values_from_NETArray(self.dotnet_curve.XAxisDataArray)
+        self.y_array = _get_values_from_NETArray(self.dotnet_curve.YAxisDataArray)
+
 
 class Peak:
     def __init__(self, curve_title, peak_height, peak_x):
@@ -50,7 +80,7 @@ def convert_to_measurement(m, **kwargs) -> Measurement:
     # Get collection of arrays in the dataset (with the exception of the potential and current arrays
     # arrays contain a single value stored in the Value field.
     # Please note that measurements can contain multiple arrays of the same type,
-    # i.e. for CVs or Mux measurements)  
+    # i.e. for CVs or Mux measurements)
 
     load_peak_data = kwargs.get('load_peak_data', False)
     load_eis_fits = kwargs.get('load_eis_fits', False)
@@ -70,7 +100,7 @@ def convert_to_measurement(m, **kwargs) -> Measurement:
     eis_fits = []
 
     for n, array in enumerate(arrays):
-        
+
         try:
             array_type = ArrayType(array.ArrayType)
         except:
@@ -114,7 +144,7 @@ def convert_to_measurement(m, **kwargs) -> Measurement:
             for eisdata in eisdatas:
                 if eisdata is not None:
                     eis_fits.append(EISFitResult(eisdata.CDC, eisdata.CDCValues))
-                    
+
     measurement = Measurement(m.Title, m.TimeStamp.ToString(),
                        current_arrays, potential_arrays, time_arrays, freq_arrays, zre_arrays, zim_arrays, aux_input_arrays,
                        peaks, eis_fits, convert_to_curves(m, return_dotnet_object=return_dotnet_object))

@@ -54,7 +54,7 @@ measurement)
 |`System.Float`
 
 |`SmoothLevel` 
-|The smoothlevel to be used. `-1` = none 0 = no smooth (spike rejection only) `1` = 5 points `2` = 9 points `3` = 15 points `4` = 25 points 
+|The smoothlevel to be used. `-1` = none, 0 = no smooth (spike rejection only), `1` = 5 points, `2` = 9 points, `3` = 15 points, `4` = 25 points 
 |`System.Int`
 
 |`Ranging` 

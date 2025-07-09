@@ -45,8 +45,8 @@ changelog = "https://github.com/palmsens/palmsens_sdk/releases"
 
 [project.optional-dependencies]
 develop = [
+    "coverage",
     "pre-commit",
-    "pycoverage",
     "pytest",
 ]
 

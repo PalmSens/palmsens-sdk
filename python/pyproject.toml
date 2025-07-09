@@ -21,7 +21,6 @@ classifiers = [
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -31,7 +30,6 @@ classifiers = [
 ]
 dependencies = [
     'numpy',
-    'pandas',
     'pycparser',
     'python-dateutil',
     'pythonnet',
@@ -47,6 +45,8 @@ changelog = "https://github.com/palmsens/palmsens_sdk/releases"
 
 [project.optional-dependencies]
 develop = [
+    "pre-commit",
+    "pycoverage",
     "pytest",
 ]
 
@@ -55,3 +55,36 @@ publishing = [
     "wheel",
     "build",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 96
+target-version = "py39"
+
+[tool.ruff.lint]
+# Enable Pyflakes `E` and `F` codes by default.
+select = [
+	"F",  # Pyflakes
+	"E",  # pycodestyle (error)
+	"W",  # pycodestyle (warning)
+    "I",  # isort
+]
+ignore = [
+    "E501",  # line-too-long
+]
+
+[tool.ruff.lint.isort]
+known-first-party=["pspython"]
+known-third-party = []
+required-imports = []
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "single"
+
+[tool.mypy]
+files = ["src", "tests"]
+allow_redefinition = true
+ignore_missing_imports = true

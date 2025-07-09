@@ -1,2 +1,9 @@
 node_modules/
 build/
+
+# SDK specific
+test.csv
+test1.csv
+*_copy.pssession
+*_copy.psmethod
+example.pssession

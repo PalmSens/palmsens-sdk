@@ -1,13 +1,32 @@
-from PalmSens import CurrentRange, CurrentRanges, PotentialRange, PotentialRanges
-from PalmSens import Method, ExtraValueMask, MuxMethod
-from PalmSens.Devices import PalmSens4Capabilities
-from PalmSens.Techniques import LinearSweep, CyclicVoltammetry, SquareWave, DifferentialPulse, AmperometricDetection, MultistepAmperometry, ELevel, OpenCircuitPotentiometry, Potentiometry, ImpedimetricMethod, ImpedimetricGstatMethod, MethodScriptSandbox
-from PalmSens.Techniques.Impedance import enumScanType, enumFrequencyType
+from PalmSens import (  # type: ignore
+    CurrentRange,
+    CurrentRanges,
+    ExtraValueMask,
+    Method,
+    MuxMethod,
+    PotentialRange,
+    PotentialRanges,
+)
+from PalmSens.Devices import PalmSens4Capabilities  # type: ignore
+from PalmSens.Techniques import (  # type: ignore
+    AmperometricDetection,
+    CyclicVoltammetry,
+    DifferentialPulse,
+    ELevel,
+    ImpedimetricGstatMethod,
+    ImpedimetricMethod,
+    LinearSweep,
+    MethodScriptSandbox,
+    MultistepAmperometry,
+    OpenCircuitPotentiometry,
+    Potentiometry,
+    SquareWave,
+)
+from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType  # type: ignore
 
 
 def linear_sweep_voltammetry(**kwargs):
-    r"""
-    Create a linear sweep voltammetry method object.
+    """Create a linear sweep voltammetry method object.
 
     :Keyword Arguments:
     * current_range_max : PalmSens.CurrentRange --
@@ -70,7 +89,7 @@ def linear_sweep_voltammetry(**kwargs):
         Use limit current min (default: False)
     * limit_current_min : float --
         Limit current min in µA (default: 0.0)
-    * use_ir_compensation : bool -- 
+    * use_ir_compensation : bool --
         Use iR compensation (default: False)
     * ir_compensation : float --
         iR compensation in Ω (default: 0.0)
@@ -84,7 +103,7 @@ def linear_sweep_voltammetry(**kwargs):
         Trigger at measurement lines (default: [False, False, False, False]) [d0 high, d1 high, d2 high, d3 high]
     * dc_mains_filter : int --
         DC mains filter (default: 50) [set to 50 Hz or 60 Hz (50 Hz is default)]
-    * default_curve_post_processing_filter : int -- 
+    * default_curve_post_processing_filter : int --
         Default curve post processing filter (default: 0) [-1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25]
     * set_mux_mode : int --
         Set multiplexer mode (default: -1) [-1 = disable, 0 = sequentially, 1 = alternatingly]
@@ -98,19 +117,27 @@ def linear_sweep_voltammetry(**kwargs):
         Use hardware synchronization with other channels/instruments (default: False)
     """
     linear_sweep_voltammetry = LinearSweep()
-    
+
     # (auto)ranging
     current_range_max = kwargs.get('current_range_max', get_current_range(8))
     current_range_min = kwargs.get('current_range_min', get_current_range(4))
     current_range_start = kwargs.get('current_range_start', get_current_range(6))
-    set_autoranging_current(linear_sweep_voltammetry, current_range_max, current_range_min, current_range_start)
+    set_autoranging_current(
+        linear_sweep_voltammetry, current_range_max, current_range_min, current_range_start
+    )
 
     # pretreatment
     deposition_potential = kwargs.get('deposition_potential', 0.0)
     deposition_time = kwargs.get('deposition_time', 0.0)
     conditioning_potential = kwargs.get('conditioning_potential', 0.0)
     conditioning_time = kwargs.get('conditioning_time', 0.0)
-    set_pretreatment(linear_sweep_voltammetry, deposition_potential, deposition_time, conditioning_potential, conditioning_time)
+    set_pretreatment(
+        linear_sweep_voltammetry,
+        deposition_potential,
+        deposition_time,
+        conditioning_potential,
+        conditioning_time,
+    )
 
     # linear sweep voltammetry settings
     equilibration_time = kwargs.get('equilibration_time', 0.0)  # Time (s)
@@ -126,10 +153,19 @@ def linear_sweep_voltammetry(**kwargs):
 
     # advanced settings
     # versus OCP settings
-    versus_ocp_mode = kwargs.get('versus_ocp_mode', 0)  # 0 = disable versus OCP, 1 = begin potential, 2 = end potential, 3 = begin & end potential
+    versus_ocp_mode = kwargs.get(
+        'versus_ocp_mode', 0
+    )  # 0 = disable versus OCP, 1 = begin potential, 2 = end potential, 3 = begin & end potential
     versus_ocp_max_ocp_time = kwargs.get('versus_ocp_max_ocp_time', 20)  # Time (s)
-    versus_ocp_stability_criterion = kwargs.get('versus_ocp_stability_criterion', 0)  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
-    set_versus_ocp(linear_sweep_voltammetry, versus_ocp_mode, versus_ocp_max_ocp_time, versus_ocp_stability_criterion)
+    versus_ocp_stability_criterion = kwargs.get(
+        'versus_ocp_stability_criterion', 0
+    )  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
+    set_versus_ocp(
+        linear_sweep_voltammetry,
+        versus_ocp_mode,
+        versus_ocp_max_ocp_time,
+        versus_ocp_stability_criterion,
+    )
 
     # bipot settings
     enable_bipot_current = kwargs.get('enable_bipot_current', False)
@@ -138,25 +174,48 @@ def linear_sweep_voltammetry(**kwargs):
     bipot_current_range_max = kwargs.get('bipot_current_range_max', get_current_range(8))
     bipot_current_range_min = kwargs.get('bipot_current_range_min', get_current_range(4))
     bipot_current_range_start = kwargs.get('bipot_current_range_start', get_current_range(6))
-    set_bipot_settings(linear_sweep_voltammetry, bipot_mode, bipot_potential, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start)
+    set_bipot_settings(
+        linear_sweep_voltammetry,
+        bipot_mode,
+        bipot_potential,
+        bipot_current_range_max,
+        bipot_current_range_min,
+        bipot_current_range_start,
+    )
 
     # record extra value settings
     record_auxiliary_input = kwargs.get('record_auxiliary_input', False)
     record_cell_potential = kwargs.get('record_cell_potential', False)
     record_we_potential = kwargs.get('record_we_potential', False)
-    set_extra_value_mask(linear_sweep_voltammetry, enable_bipot_current=enable_bipot_current, record_auxiliary_input=record_auxiliary_input, record_cell_potential=record_cell_potential, record_we_potential=record_we_potential)
+    set_extra_value_mask(
+        linear_sweep_voltammetry,
+        enable_bipot_current=enable_bipot_current,
+        record_auxiliary_input=record_auxiliary_input,
+        record_cell_potential=record_cell_potential,
+        record_we_potential=record_we_potential,
+    )
 
     # post measurement settings
     cell_on_after_measurement = kwargs.get('cell_on_after_measurement', False)
-    cell_on_after_measurement_potential = kwargs.get('cell_on_after_measurement_potential', 0.0)  # in V
-    set_post_measurement_settings(linear_sweep_voltammetry, cell_on_after_measurement, cell_on_after_measurement_potential)
+    cell_on_after_measurement_potential = kwargs.get(
+        'cell_on_after_measurement_potential', 0.0
+    )  # in V
+    set_post_measurement_settings(
+        linear_sweep_voltammetry, cell_on_after_measurement, cell_on_after_measurement_potential
+    )
 
     # limit settings
     use_limit_current_max = kwargs.get('use_limit_current_max', False)
     limit_current_max = kwargs.get('limit_current_max', 0.0)  # in µA
     use_limit_current_min = kwargs.get('use_limit_current_min', False)
     limit_current_min = kwargs.get('limit_current_min', 0.0)  # in µA
-    set_limit_settings(linear_sweep_voltammetry, use_limit_current_max, limit_current_max, use_limit_current_min, limit_current_min)
+    set_limit_settings(
+        linear_sweep_voltammetry,
+        use_limit_current_max,
+        limit_current_max,
+        use_limit_current_min,
+        limit_current_min,
+    )
 
     # iR compensation settings
     use_ir_compensation = kwargs.get('use_ir_compensation', False)
@@ -165,22 +224,44 @@ def linear_sweep_voltammetry(**kwargs):
 
     # set trigger settings
     trigger_at_equilibration = kwargs.get('trigger_at_equilibration', False)
-    trigger_at_equilibration_lines = kwargs.get('trigger_at_equilibration_lines', [False, False, False, False])  # d0 high, d1 high, d2 high, d3 high
+    trigger_at_equilibration_lines = kwargs.get(
+        'trigger_at_equilibration_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
     trigger_at_measurement = kwargs.get('trigger_at_measurement', False)
-    trigger_at_measurement_lines = kwargs.get('trigger_at_measurement_lines', [False, False, False, False])  # d0 high, d1 high, d2 high, d3 high
-    set_trigger_at_equilibration_settings(linear_sweep_voltammetry, trigger_at_equilibration, trigger_at_equilibration_lines)
-    set_trigger_at_measurement_settings(linear_sweep_voltammetry, trigger_at_measurement, trigger_at_measurement_lines)
+    trigger_at_measurement_lines = kwargs.get(
+        'trigger_at_measurement_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
+    set_trigger_at_equilibration_settings(
+        linear_sweep_voltammetry, trigger_at_equilibration, trigger_at_equilibration_lines
+    )
+    set_trigger_at_measurement_settings(
+        linear_sweep_voltammetry, trigger_at_measurement, trigger_at_measurement_lines
+    )
 
     # set filter settings
-    dc_mains_filter = kwargs.get('dc_mains_filter', 50)  # set to 50 Hz or 60 Hz (50 Hz is default)
-    default_curve_post_processing_filter = kwargs.get('default_curve_post_processing_filter', 0)  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
-    set_filter_settings(linear_sweep_voltammetry, dc_mains_filter, default_curve_post_processing_filter)
+    dc_mains_filter = kwargs.get(
+        'dc_mains_filter', 50
+    )  # set to 50 Hz or 60 Hz (50 Hz is default)
+    default_curve_post_processing_filter = kwargs.get(
+        'default_curve_post_processing_filter', 0
+    )  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
+    set_filter_settings(
+        linear_sweep_voltammetry, dc_mains_filter, default_curve_post_processing_filter
+    )
 
     # multiplexer settings
-    set_mux_mode = kwargs.get('set_mux_mode', -1)  # -1 = disable, 0 = sequentially, 1 = alternatingly
-    set_mux_channels = kwargs.get('set_mux_channels', [False, False, False, False, False, False, False, False])  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
-    set_mux8r2_settings = kwargs.get('set_mux8r2_settings', None)  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
-    set_multiplexer_settings(linear_sweep_voltammetry, set_mux_mode, set_mux_channels, set_mux8r2_settings)
+    set_mux_mode = kwargs.get(
+        'set_mux_mode', -1
+    )  # -1 = disable, 0 = sequentially, 1 = alternatingly
+    set_mux_channels = kwargs.get(
+        'set_mux_channels', [False, False, False, False, False, False, False, False]
+    )  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
+    set_mux8r2_settings = kwargs.get(
+        'set_mux8r2_settings', None
+    )  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
+    set_multiplexer_settings(
+        linear_sweep_voltammetry, set_mux_mode, set_mux_channels, set_mux8r2_settings
+    )
 
     # internal storage
     save_on_internal_storage = kwargs.get('save_on_internal_storage', False)
@@ -194,8 +275,7 @@ def linear_sweep_voltammetry(**kwargs):
 
 
 def cyclic_voltammetry(**kwargs):
-    r"""
-    Create a cyclic voltammetry method object.
+    """Create a cyclic voltammetry method object.
 
     :Keyword Arguments:
     * current_range_max : PalmSens.CurrentRange --
@@ -221,7 +301,7 @@ def cyclic_voltammetry(**kwargs):
     * vertex2_potential : float --
         Vertex 2 potential in V (default: -0.5)
     * step_potential : float --
-        Step potential in V (default: 0.1)  
+        Step potential in V (default: 0.1)
     * scanrate : float --
         Scan rate in V/s (default: 1.0)
     * n_cycles : int --
@@ -274,7 +354,7 @@ def cyclic_voltammetry(**kwargs):
         Trigger at measurement lines (default: [False, False, False, False]) [d0 high, d1 high, d2 high, d3 high]
     * dc_mains_filter : int --
         DC mains filter (default: 50) [set to 50 Hz or 60 Hz (50 Hz is default)]
-    * default_curve_post_processing_filter : int -- 
+    * default_curve_post_processing_filter : int --
         Default curve post processing filter (default: 0) [-1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25]
     * set_mux_mode : int --
         Set multiplexer mode (default: -1) [-1 = disable, 0 = sequentially, 1 = alternatingly]
@@ -293,14 +373,22 @@ def cyclic_voltammetry(**kwargs):
     current_range_max = kwargs.get('current_range_max', get_current_range(8))
     current_range_min = kwargs.get('current_range_min', get_current_range(4))
     current_range_start = kwargs.get('current_range_start', get_current_range(6))
-    set_autoranging_current(cyclic_voltammetry, current_range_max, current_range_min, current_range_start)
+    set_autoranging_current(
+        cyclic_voltammetry, current_range_max, current_range_min, current_range_start
+    )
 
     # pretreatment
     deposition_potential = kwargs.get('deposition_potential', 0.0)
     deposition_time = kwargs.get('deposition_time', 0.0)
     conditioning_potential = kwargs.get('conditioning_potential', 0.0)
     conditioning_time = kwargs.get('conditioning_time', 0.0)
-    set_pretreatment(cyclic_voltammetry, deposition_potential, deposition_time, conditioning_potential, conditioning_time)
+    set_pretreatment(
+        cyclic_voltammetry,
+        deposition_potential,
+        deposition_time,
+        conditioning_potential,
+        conditioning_time,
+    )
 
     # cyclic voltammetry settings
     equilibration_time = kwargs.get('equilibration_time', 0.0)  # Time (s)
@@ -320,10 +408,19 @@ def cyclic_voltammetry(**kwargs):
 
     # advanced settings
     # versus OCP settings
-    versus_ocp_mode = kwargs.get('versus_ocp_mode', 0)  # 0 = disable versus OCP, 1 = vertex 1 potential, 2 = vertex 2 potential, 3 = vertex 1 & 2 potential, 4 = begin potential, 5 = begin & vertex 1 potential, 6 = begin & vertex 2 potential, 7 = begin & vertex 1 & 2 potential
+    versus_ocp_mode = kwargs.get(
+        'versus_ocp_mode', 0
+    )  # 0 = disable versus OCP, 1 = vertex 1 potential, 2 = vertex 2 potential, 3 = vertex 1 & 2 potential, 4 = begin potential, 5 = begin & vertex 1 potential, 6 = begin & vertex 2 potential, 7 = begin & vertex 1 & 2 potential
     versus_ocp_max_ocp_time = kwargs.get('versus_ocp_max_ocp_time', 20)  # Time (s)
-    versus_ocp_stability_criterion = kwargs.get('versus_ocp_stability_criterion', 0)  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
-    set_versus_ocp(cyclic_voltammetry, versus_ocp_mode, versus_ocp_max_ocp_time, versus_ocp_stability_criterion)
+    versus_ocp_stability_criterion = kwargs.get(
+        'versus_ocp_stability_criterion', 0
+    )  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
+    set_versus_ocp(
+        cyclic_voltammetry,
+        versus_ocp_mode,
+        versus_ocp_max_ocp_time,
+        versus_ocp_stability_criterion,
+    )
 
     # bipot settings
     enable_bipot_current = kwargs.get('enable_bipot_current', False)
@@ -332,25 +429,48 @@ def cyclic_voltammetry(**kwargs):
     bipot_current_range_max = kwargs.get('bipot_current_range_max', get_current_range(8))
     bipot_current_range_min = kwargs.get('bipot_current_range_min', get_current_range(4))
     bipot_current_range_start = kwargs.get('bipot_current_range_start', get_current_range(6))
-    set_bipot_settings(cyclic_voltammetry, bipot_mode, bipot_potential, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start)
+    set_bipot_settings(
+        cyclic_voltammetry,
+        bipot_mode,
+        bipot_potential,
+        bipot_current_range_max,
+        bipot_current_range_min,
+        bipot_current_range_start,
+    )
 
     # record extra value settings
     record_auxiliary_input = kwargs.get('record_auxiliary_input', False)
     record_cell_potential = kwargs.get('record_cell_potential', False)
     record_we_potential = kwargs.get('record_we_potential', False)
-    set_extra_value_mask(cyclic_voltammetry, enable_bipot_current=enable_bipot_current, record_auxiliary_input=record_auxiliary_input, record_cell_potential=record_cell_potential, record_we_potential=record_we_potential)
+    set_extra_value_mask(
+        cyclic_voltammetry,
+        enable_bipot_current=enable_bipot_current,
+        record_auxiliary_input=record_auxiliary_input,
+        record_cell_potential=record_cell_potential,
+        record_we_potential=record_we_potential,
+    )
 
     # post measurement settings
     cell_on_after_measurement = kwargs.get('cell_on_after_measurement', False)
-    cell_on_after_measurement_potential = kwargs.get('cell_on_after_measurement_potential', 0.0)  # in V
-    set_post_measurement_settings(cyclic_voltammetry, cell_on_after_measurement, cell_on_after_measurement_potential)
+    cell_on_after_measurement_potential = kwargs.get(
+        'cell_on_after_measurement_potential', 0.0
+    )  # in V
+    set_post_measurement_settings(
+        cyclic_voltammetry, cell_on_after_measurement, cell_on_after_measurement_potential
+    )
 
     # limit settings
     use_limit_current_max = kwargs.get('use_limit_current_max', False)
     limit_current_max = kwargs.get('limit_current_max', 0.0)  # in µA
     use_limit_current_min = kwargs.get('use_limit_current_min', False)
     limit_current_min = kwargs.get('limit_current_min', 0.0)  # in µA
-    set_limit_settings(cyclic_voltammetry, use_limit_current_max, limit_current_max, use_limit_current_min, limit_current_min)
+    set_limit_settings(
+        cyclic_voltammetry,
+        use_limit_current_max,
+        limit_current_max,
+        use_limit_current_min,
+        limit_current_min,
+    )
 
     # iR compensation settings
     use_ir_compensation = kwargs.get('use_ir_compensation', False)
@@ -359,22 +479,44 @@ def cyclic_voltammetry(**kwargs):
 
     # set trigger settings
     trigger_at_equilibration = kwargs.get('trigger_at_equilibration', False)
-    trigger_at_equilibration_lines = kwargs.get('trigger_at_equilibration_lines', [False, False, False, False])  # d0 high, d1 high, d2 high, d3 high
+    trigger_at_equilibration_lines = kwargs.get(
+        'trigger_at_equilibration_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
     trigger_at_measurement = kwargs.get('trigger_at_measurement', False)
-    trigger_at_measurement_lines = kwargs.get('trigger_at_measurement_lines', [False, False, False, False])  # d0 high, d1 high, d2 high, d3 high
-    set_trigger_at_equilibration_settings(cyclic_voltammetry, trigger_at_equilibration, trigger_at_equilibration_lines)
-    set_trigger_at_measurement_settings(cyclic_voltammetry, trigger_at_measurement, trigger_at_measurement_lines)
+    trigger_at_measurement_lines = kwargs.get(
+        'trigger_at_measurement_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
+    set_trigger_at_equilibration_settings(
+        cyclic_voltammetry, trigger_at_equilibration, trigger_at_equilibration_lines
+    )
+    set_trigger_at_measurement_settings(
+        cyclic_voltammetry, trigger_at_measurement, trigger_at_measurement_lines
+    )
 
     # set filter settings
-    dc_mains_filter = kwargs.get('dc_mains_filter', 50)  # set to 50 Hz or 60 Hz (50 Hz is default)
-    default_curve_post_processing_filter = kwargs.get('default_curve_post_processing_filter', 0)  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
-    set_filter_settings(cyclic_voltammetry, dc_mains_filter, default_curve_post_processing_filter)
+    dc_mains_filter = kwargs.get(
+        'dc_mains_filter', 50
+    )  # set to 50 Hz or 60 Hz (50 Hz is default)
+    default_curve_post_processing_filter = kwargs.get(
+        'default_curve_post_processing_filter', 0
+    )  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
+    set_filter_settings(
+        cyclic_voltammetry, dc_mains_filter, default_curve_post_processing_filter
+    )
 
     # multiplexer settings
-    set_mux_mode = kwargs.get('set_mux_mode', -1)  # -1 = disable, 0 = sequentially, 1 = alternatingly
-    set_mux_channels = kwargs.get('set_mux_channels', [False, False, False, False, False, False, False, False])  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
-    set_mux8r2_settings = kwargs.get('set_mux8r2_settings', None)  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
-    set_multiplexer_settings(cyclic_voltammetry, set_mux_mode, set_mux_channels, set_mux8r2_settings)
+    set_mux_mode = kwargs.get(
+        'set_mux_mode', -1
+    )  # -1 = disable, 0 = sequentially, 1 = alternatingly
+    set_mux_channels = kwargs.get(
+        'set_mux_channels', [False, False, False, False, False, False, False, False]
+    )  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
+    set_mux8r2_settings = kwargs.get(
+        'set_mux8r2_settings', None
+    )  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
+    set_multiplexer_settings(
+        cyclic_voltammetry, set_mux_mode, set_mux_channels, set_mux8r2_settings
+    )
 
     # internal storage
     save_on_internal_storage = kwargs.get('save_on_internal_storage', False)
@@ -388,8 +530,7 @@ def cyclic_voltammetry(**kwargs):
 
 
 def square_wave_voltammetry(**kwargs):
-    r"""
-    Create a square wave voltammetry method object.
+    """Create a square wave voltammetry method object.
 
     :Keyword Arguments:
     * current_range_max : PalmSens.CurrentRange --
@@ -456,7 +597,7 @@ def square_wave_voltammetry(**kwargs):
         Use limit current min (default: False)
     * limit_current_min : float --
         Limit current min in µA (default: 0.0)
-    * use_ir_compensation : bool -- 
+    * use_ir_compensation : bool --
         Use iR compensation (default: False)
     * ir_compensation : float --
         iR compensation in Ω (default: 0.0)
@@ -470,7 +611,7 @@ def square_wave_voltammetry(**kwargs):
         Trigger at measurement lines (default: [False, False, False, False]) [d0 high, d1 high, d2 high, d3 high]
     * dc_mains_filter : int --
         DC mains filter (default: 50) [set to 50 Hz or 60 Hz (50 Hz is default)]
-    * default_curve_post_processing_filter : int -- 
+    * default_curve_post_processing_filter : int --
         Default curve post processing filter (default: 0) [-1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25]
     * set_mux_mode : int --
         Set multiplexer mode (default: -1) [-1 = disable, 0 = sequentially]
@@ -487,14 +628,22 @@ def square_wave_voltammetry(**kwargs):
     current_range_max = kwargs.get('current_range_max', get_current_range(8))
     current_range_min = kwargs.get('current_range_min', get_current_range(4))
     current_range_start = kwargs.get('current_range_start', get_current_range(6))
-    set_autoranging_current(square_wave_voltammetry, current_range_max, current_range_min, current_range_start)
+    set_autoranging_current(
+        square_wave_voltammetry, current_range_max, current_range_min, current_range_start
+    )
 
     # pretreatment
     deposition_potential = kwargs.get('deposition_potential', 0.0)
     deposition_time = kwargs.get('deposition_time', 0.0)
     conditioning_potential = kwargs.get('conditioning_potential', 0.0)
     conditioning_time = kwargs.get('conditioning_time', 0.0)
-    set_pretreatment(square_wave_voltammetry, deposition_potential, deposition_time, conditioning_potential, conditioning_time)
+    set_pretreatment(
+        square_wave_voltammetry,
+        deposition_potential,
+        deposition_time,
+        conditioning_potential,
+        conditioning_time,
+    )
 
     # square wave voltammetry settings
     equilibration_time = kwargs.get('equilibration_time', 0.0)  # Time (s)
@@ -503,7 +652,9 @@ def square_wave_voltammetry(**kwargs):
     step_potential = kwargs.get('step_potential', 0.1)  # potential (V)
     frequency = kwargs.get('frequency', 10.0)  # frequency (Hz)
     amplitude = kwargs.get('amplitude', 0.05)  # amplitude (V) [half peak to peak]
-    record_forward_and_reverse_currents = kwargs.get('record_forward_and_reverse_currents', False)  # record forward and reverse currents (default: False)
+    record_forward_and_reverse_currents = kwargs.get(
+        'record_forward_and_reverse_currents', False
+    )  # record forward and reverse currents (default: False)
     square_wave_voltammetry.EquilibrationTime = equilibration_time
     square_wave_voltammetry.BeginPotential = begin_potential
     square_wave_voltammetry.EndPotential = end_potential
@@ -513,10 +664,19 @@ def square_wave_voltammetry(**kwargs):
 
     # advanced settings
     # versus OCP settings
-    versus_ocp_mode = kwargs.get('versus_ocp_mode', 0)  # 0 = disable versus OCP, 1 = begin potential, 2 = end potential, 3 = begin & end potential
+    versus_ocp_mode = kwargs.get(
+        'versus_ocp_mode', 0
+    )  # 0 = disable versus OCP, 1 = begin potential, 2 = end potential, 3 = begin & end potential
     versus_ocp_max_ocp_time = kwargs.get('versus_ocp_max_ocp_time', 20)  # Time (s)
-    versus_ocp_stability_criterion = kwargs.get('versus_ocp_stability_criterion', 0)  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
-    set_versus_ocp(square_wave_voltammetry, versus_ocp_mode, versus_ocp_max_ocp_time, versus_ocp_stability_criterion)
+    versus_ocp_stability_criterion = kwargs.get(
+        'versus_ocp_stability_criterion', 0
+    )  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
+    set_versus_ocp(
+        square_wave_voltammetry,
+        versus_ocp_mode,
+        versus_ocp_max_ocp_time,
+        versus_ocp_stability_criterion,
+    )
 
     # bipot settings
     enable_bipot_current = kwargs.get('enable_bipot_current', False)
@@ -525,18 +685,36 @@ def square_wave_voltammetry(**kwargs):
     bipot_current_range_max = kwargs.get('bipot_current_range_max', get_current_range(8))
     bipot_current_range_min = kwargs.get('bipot_current_range_min', get_current_range(4))
     bipot_current_range_start = kwargs.get('bipot_current_range_start', get_current_range(6))
-    set_bipot_settings(square_wave_voltammetry, bipot_mode, bipot_potential, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start)
+    set_bipot_settings(
+        square_wave_voltammetry,
+        bipot_mode,
+        bipot_potential,
+        bipot_current_range_max,
+        bipot_current_range_min,
+        bipot_current_range_start,
+    )
 
     # record extra value settings
     record_auxiliary_input = kwargs.get('record_auxiliary_input', False)
     record_cell_potential = kwargs.get('record_cell_potential', False)
     record_we_potential = kwargs.get('record_we_potential', False)
-    set_extra_value_mask(square_wave_voltammetry, enable_bipot_current=enable_bipot_current, record_auxiliary_input=record_auxiliary_input, record_cell_potential=record_cell_potential, record_we_potential=record_we_potential, record_forward_and_reverse_currents=record_forward_and_reverse_currents)
+    set_extra_value_mask(
+        square_wave_voltammetry,
+        enable_bipot_current=enable_bipot_current,
+        record_auxiliary_input=record_auxiliary_input,
+        record_cell_potential=record_cell_potential,
+        record_we_potential=record_we_potential,
+        record_forward_and_reverse_currents=record_forward_and_reverse_currents,
+    )
 
     # post measurement settings
     cell_on_after_measurement = kwargs.get('cell_on_after_measurement', False)
-    cell_on_after_measurement_potential = kwargs.get('cell_on_after_measurement_potential', 0.0)  # in V
-    set_post_measurement_settings(square_wave_voltammetry, cell_on_after_measurement, cell_on_after_measurement_potential)
+    cell_on_after_measurement_potential = kwargs.get(
+        'cell_on_after_measurement_potential', 0.0
+    )  # in V
+    set_post_measurement_settings(
+        square_wave_voltammetry, cell_on_after_measurement, cell_on_after_measurement_potential
+    )
 
     # iR compensation settings
     use_ir_compensation = kwargs.get('use_ir_compensation', False)
@@ -545,22 +723,44 @@ def square_wave_voltammetry(**kwargs):
 
     # set trigger settings
     trigger_at_equilibration = kwargs.get('trigger_at_equilibration', False)
-    trigger_at_equilibration_lines = kwargs.get('trigger_at_equilibration_lines', [False, False, False, False])  # d0 high, d1 high, d2 high, d3 high
+    trigger_at_equilibration_lines = kwargs.get(
+        'trigger_at_equilibration_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
     trigger_at_measurement = kwargs.get('trigger_at_measurement', False)
-    trigger_at_measurement_lines = kwargs.get('trigger_at_measurement_lines', [False, False, False, False])  # d0 high, d1 high, d2 high, d3 high
-    set_trigger_at_equilibration_settings(square_wave_voltammetry, trigger_at_equilibration, trigger_at_equilibration_lines)
-    set_trigger_at_measurement_settings(square_wave_voltammetry, trigger_at_measurement, trigger_at_measurement_lines)
+    trigger_at_measurement_lines = kwargs.get(
+        'trigger_at_measurement_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
+    set_trigger_at_equilibration_settings(
+        square_wave_voltammetry, trigger_at_equilibration, trigger_at_equilibration_lines
+    )
+    set_trigger_at_measurement_settings(
+        square_wave_voltammetry, trigger_at_measurement, trigger_at_measurement_lines
+    )
 
     # set filter settings
-    dc_mains_filter = kwargs.get('dc_mains_filter', 50)  # set to 50 Hz or 60 Hz (50 Hz is default)
-    default_curve_post_processing_filter = kwargs.get('default_curve_post_processing_filter', 0)  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
-    set_filter_settings(square_wave_voltammetry, dc_mains_filter, default_curve_post_processing_filter)
+    dc_mains_filter = kwargs.get(
+        'dc_mains_filter', 50
+    )  # set to 50 Hz or 60 Hz (50 Hz is default)
+    default_curve_post_processing_filter = kwargs.get(
+        'default_curve_post_processing_filter', 0
+    )  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
+    set_filter_settings(
+        square_wave_voltammetry, dc_mains_filter, default_curve_post_processing_filter
+    )
 
     # multiplexer settings
-    set_mux_mode = kwargs.get('set_mux_mode', -1)  # -1 = disable, 0 = sequentially, 1 = alternatingly
-    set_mux_channels = kwargs.get('set_mux_channels', [False, False, False, False, False, False, False, False])  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
-    set_mux8r2_settings = kwargs.get('set_mux8r2_settings', None)  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
-    set_multiplexer_settings(square_wave_voltammetry, set_mux_mode, set_mux_channels, set_mux8r2_settings)
+    set_mux_mode = kwargs.get(
+        'set_mux_mode', -1
+    )  # -1 = disable, 0 = sequentially, 1 = alternatingly
+    set_mux_channels = kwargs.get(
+        'set_mux_channels', [False, False, False, False, False, False, False, False]
+    )  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
+    set_mux8r2_settings = kwargs.get(
+        'set_mux8r2_settings', None
+    )  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
+    set_multiplexer_settings(
+        square_wave_voltammetry, set_mux_mode, set_mux_channels, set_mux8r2_settings
+    )
 
     # internal storage
     save_on_internal_storage = kwargs.get('save_on_internal_storage', False)
@@ -574,8 +774,7 @@ def square_wave_voltammetry(**kwargs):
 
 
 def differential_pulse_voltammetry(**kwargs):
-    r"""
-    Create a differential pulse voltammetry method object.
+    """Create a differential pulse voltammetry method object.
 
     :Keyword Arguments:
     * current_range_max : PalmSens.CurrentRange --
@@ -642,7 +841,7 @@ def differential_pulse_voltammetry(**kwargs):
         Use limit current min (default: False)
     * limit_current_min : float --
         Limit current min in µA (default: 0.0)
-    * use_ir_compensation : bool -- 
+    * use_ir_compensation : bool --
         Use iR compensation (default: False)
     * ir_compensation : float --
         iR compensation in Ω (default: 0.0)
@@ -656,7 +855,7 @@ def differential_pulse_voltammetry(**kwargs):
         Trigger at measurement lines (default: [False, False, False, False]) [d0 high, d1 high, d2 high, d3 high]
     * dc_mains_filter : int --
         DC mains filter (default: 50) [set to 50 Hz or 60 Hz (50 Hz is default)]
-    * default_curve_post_processing_filter : int -- 
+    * default_curve_post_processing_filter : int --
         Default curve post processing filter (default: 0) [-1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25]
     * set_mux_mode : int --
         Set multiplexer mode (default: -1) [-1 = disable, 0 = sequentially]
@@ -675,14 +874,25 @@ def differential_pulse_voltammetry(**kwargs):
     current_range_max = kwargs.get('current_range_max', get_current_range(8))
     current_range_min = kwargs.get('current_range_min', get_current_range(4))
     current_range_start = kwargs.get('current_range_start', get_current_range(6))
-    set_autoranging_current(differential_pulse_voltammetry, current_range_max, current_range_min, current_range_start)
+    set_autoranging_current(
+        differential_pulse_voltammetry,
+        current_range_max,
+        current_range_min,
+        current_range_start,
+    )
 
     # pretreatment
     deposition_potential = kwargs.get('deposition_potential', 0.0)
     deposition_time = kwargs.get('deposition_time', 0.0)
     conditioning_potential = kwargs.get('conditioning_potential', 0.0)
     conditioning_time = kwargs.get('conditioning_time', 0.0)
-    set_pretreatment(differential_pulse_voltammetry, deposition_potential, deposition_time, conditioning_potential, conditioning_time)
+    set_pretreatment(
+        differential_pulse_voltammetry,
+        deposition_potential,
+        deposition_time,
+        conditioning_potential,
+        conditioning_time,
+    )
 
     # differential pulse voltammetry settings
     equilibration_time = kwargs.get('equilibration_time', 0.0)  # Time (s)
@@ -702,10 +912,19 @@ def differential_pulse_voltammetry(**kwargs):
 
     # advanced settings
     # versus OCP settings
-    versus_ocp_mode = kwargs.get('versus_ocp_mode', 0)  # 0 = disable versus OCP, 1 = begin potential, 2 = end potential, 3 = begin & end potential
+    versus_ocp_mode = kwargs.get(
+        'versus_ocp_mode', 0
+    )  # 0 = disable versus OCP, 1 = begin potential, 2 = end potential, 3 = begin & end potential
     versus_ocp_max_ocp_time = kwargs.get('versus_ocp_max_ocp_time', 20)  # Time (s)
-    versus_ocp_stability_criterion = kwargs.get('versus_ocp_stability_criterion', 0)  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
-    set_versus_ocp(differential_pulse_voltammetry, versus_ocp_mode, versus_ocp_max_ocp_time, versus_ocp_stability_criterion)
+    versus_ocp_stability_criterion = kwargs.get(
+        'versus_ocp_stability_criterion', 0
+    )  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
+    set_versus_ocp(
+        differential_pulse_voltammetry,
+        versus_ocp_mode,
+        versus_ocp_max_ocp_time,
+        versus_ocp_stability_criterion,
+    )
 
     # bipot settings
     enable_bipot_current = kwargs.get('enable_bipot_current', False)
@@ -714,42 +933,85 @@ def differential_pulse_voltammetry(**kwargs):
     bipot_current_range_max = kwargs.get('bipot_current_range_max', get_current_range(8))
     bipot_current_range_min = kwargs.get('bipot_current_range_min', get_current_range(4))
     bipot_current_range_start = kwargs.get('bipot_current_range_start', get_current_range(6))
-    set_bipot_settings(differential_pulse_voltammetry, bipot_mode, bipot_potential, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start)
+    set_bipot_settings(
+        differential_pulse_voltammetry,
+        bipot_mode,
+        bipot_potential,
+        bipot_current_range_max,
+        bipot_current_range_min,
+        bipot_current_range_start,
+    )
 
     # record extra value settings
     record_auxiliary_input = kwargs.get('record_auxiliary_input', False)
     record_cell_potential = kwargs.get('record_cell_potential', False)
     record_we_potential = kwargs.get('record_we_potential', False)
-    set_extra_value_mask(differential_pulse_voltammetry, enable_bipot_current=enable_bipot_current, record_auxiliary_input=record_auxiliary_input, record_cell_potential=record_cell_potential, record_we_potential=record_we_potential)
+    set_extra_value_mask(
+        differential_pulse_voltammetry,
+        enable_bipot_current=enable_bipot_current,
+        record_auxiliary_input=record_auxiliary_input,
+        record_cell_potential=record_cell_potential,
+        record_we_potential=record_we_potential,
+    )
 
     # post measurement settings
     cell_on_after_measurement = kwargs.get('cell_on_after_measurement', False)
-    cell_on_after_measurement_potential = kwargs.get('cell_on_after_measurement_potential', 0.0)  # in V
-    set_post_measurement_settings(differential_pulse_voltammetry, cell_on_after_measurement, cell_on_after_measurement_potential)
+    cell_on_after_measurement_potential = kwargs.get(
+        'cell_on_after_measurement_potential', 0.0
+    )  # in V
+    set_post_measurement_settings(
+        differential_pulse_voltammetry,
+        cell_on_after_measurement,
+        cell_on_after_measurement_potential,
+    )
 
     # iR compensation settings
     use_ir_compensation = kwargs.get('use_ir_compensation', False)
     ir_compensation = kwargs.get('ir_compensation', 0.0)  # IR compensation in Ω
-    set_ir_drop_compensation(differential_pulse_voltammetry, use_ir_compensation, ir_compensation)
+    set_ir_drop_compensation(
+        differential_pulse_voltammetry, use_ir_compensation, ir_compensation
+    )
 
     # set trigger settings
     trigger_at_equilibration = kwargs.get('trigger_at_equilibration', False)
-    trigger_at_equilibration_lines = kwargs.get('trigger_at_equilibration_lines', [False, False, False, False])  # d0 high, d1 high, d2 high, d3 high
+    trigger_at_equilibration_lines = kwargs.get(
+        'trigger_at_equilibration_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
     trigger_at_measurement = kwargs.get('trigger_at_measurement', False)
-    trigger_at_measurement_lines = kwargs.get('trigger_at_measurement_lines', [False, False, False, False])  # d0 high, d1 high, d2 high, d3 high
-    set_trigger_at_equilibration_settings(differential_pulse_voltammetry, trigger_at_equilibration, trigger_at_equilibration_lines)
-    set_trigger_at_measurement_settings(differential_pulse_voltammetry, trigger_at_measurement, trigger_at_measurement_lines)
+    trigger_at_measurement_lines = kwargs.get(
+        'trigger_at_measurement_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
+    set_trigger_at_equilibration_settings(
+        differential_pulse_voltammetry, trigger_at_equilibration, trigger_at_equilibration_lines
+    )
+    set_trigger_at_measurement_settings(
+        differential_pulse_voltammetry, trigger_at_measurement, trigger_at_measurement_lines
+    )
 
     # set filter settings
-    dc_mains_filter = kwargs.get('dc_mains_filter', 50)  # set to 50 Hz or 60 Hz (50 Hz is default)
-    default_curve_post_processing_filter = kwargs.get('default_curve_post_processing_filter', 0)  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
-    set_filter_settings(differential_pulse_voltammetry, dc_mains_filter, default_curve_post_processing_filter)
+    dc_mains_filter = kwargs.get(
+        'dc_mains_filter', 50
+    )  # set to 50 Hz or 60 Hz (50 Hz is default)
+    default_curve_post_processing_filter = kwargs.get(
+        'default_curve_post_processing_filter', 0
+    )  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
+    set_filter_settings(
+        differential_pulse_voltammetry, dc_mains_filter, default_curve_post_processing_filter
+    )
 
     # multiplexer settings
-    set_mux_mode = kwargs.get('set_mux_mode', -1)  # -1 = disable, 0 = sequentially, 1 = alternatingly
-    set_mux_channels = kwargs.get('set_mux_channels', [False, False, False, False, False, False, False, False])  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
-    set_mux8r2_settings = kwargs.get('set_mux8r2_settings', None)  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
-    set_multiplexer_settings(differential_pulse_voltammetry, set_mux_mode, set_mux_channels, set_mux8r2_settings)
+    set_mux_mode = kwargs.get(
+        'set_mux_mode', -1
+    )  # -1 = disable, 0 = sequentially, 1 = alternatingly
+    set_mux_channels = kwargs.get(
+        'set_mux_channels', [False, False, False, False, False, False, False, False]
+    )  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
+    set_mux8r2_settings = kwargs.get(
+        'set_mux8r2_settings', None
+    )  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
+    set_multiplexer_settings(
+        differential_pulse_voltammetry, set_mux_mode, set_mux_channels, set_mux8r2_settings
+    )
 
     # internal storage
     save_on_internal_storage = kwargs.get('save_on_internal_storage', False)
@@ -763,8 +1025,7 @@ def differential_pulse_voltammetry(**kwargs):
 
 
 def chronoamperometry(**kwargs):
-    r"""
-    Create a chronoamperometry method object.
+    """Create a chronoamperometry method object.
 
     :Keyword Arguments:
     * current_range_max : PalmSens.CurrentRange --
@@ -847,7 +1108,7 @@ def chronoamperometry(**kwargs):
         Trigger at measurement lines (default: [False, False, False, False]) [d0 high, d1 high, d2 high, d3 high]
     * dc_mains_filter : int --
         DC mains filter (default: 50) [set to 50 Hz or 60 Hz (50 Hz is default)]
-    * default_curve_post_processing_filter : int -- 
+    * default_curve_post_processing_filter : int --
         Default curve post processing filter (default: 0) [-1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25]
     * set_mux_mode : int --
         Set multiplexer mode (default: -1) [-1 = disable, 0 = sequentially, 1 = alternatingly]
@@ -865,15 +1126,25 @@ def chronoamperometry(**kwargs):
     # (auto)ranging
     current_range_max = kwargs.get('current_range_max_range_max', get_current_range(8))
     currrent_range_min = kwargs.get('current_range_max_range_min', get_current_range(4))
-    current_range_max_range_start = kwargs.get('current_range_max_range_start', get_current_range(6))
-    set_autoranging_current(chronoamperometry, current_range_max, currrent_range_min, current_range_max_range_start)
+    current_range_max_range_start = kwargs.get(
+        'current_range_max_range_start', get_current_range(6)
+    )
+    set_autoranging_current(
+        chronoamperometry, current_range_max, currrent_range_min, current_range_max_range_start
+    )
 
     # pretreatment
     deposition_potential = kwargs.get('deposition_potential', 0.0)
     deposition_time = kwargs.get('deposition_time', 0.0)
     conditioning_potential = kwargs.get('conditioning_potential', 0.0)
     conditioning_time = kwargs.get('conditioning_time', 0.0)
-    set_pretreatment(chronoamperometry, deposition_potential, deposition_time, conditioning_potential, conditioning_time)
+    set_pretreatment(
+        chronoamperometry,
+        deposition_potential,
+        deposition_time,
+        conditioning_potential,
+        conditioning_time,
+    )
 
     # chronoamperometry settings
     equilibration_time = kwargs.get('equilibration_time', 0.0)
@@ -887,10 +1158,19 @@ def chronoamperometry(**kwargs):
 
     # advanced settings
     # versus OCP settings
-    versus_ocp_mode = kwargs.get('versus_ocp_mode', 0)  # 0 = disable versus OCP, 1 = versus potential
+    versus_ocp_mode = kwargs.get(
+        'versus_ocp_mode', 0
+    )  # 0 = disable versus OCP, 1 = versus potential
     versus_ocp_max_ocp_time = kwargs.get('versus_ocp_max_ocp_time', 20)  # Time (s)
-    versus_ocp_stability_criterion = kwargs.get('versus_ocp_stability_criterion', 0)  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
-    set_versus_ocp(chronoamperometry, versus_ocp_mode, versus_ocp_max_ocp_time, versus_ocp_stability_criterion)
+    versus_ocp_stability_criterion = kwargs.get(
+        'versus_ocp_stability_criterion', 0
+    )  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
+    set_versus_ocp(
+        chronoamperometry,
+        versus_ocp_mode,
+        versus_ocp_max_ocp_time,
+        versus_ocp_stability_criterion,
+    )
 
     # bipot settings
     enable_bipot_current = kwargs.get('enable_bipot_current', False)
@@ -899,31 +1179,60 @@ def chronoamperometry(**kwargs):
     bipot_current_range_max = kwargs.get('bipot_current_range_max', get_current_range(8))
     bipot_current_range_min = kwargs.get('bipot_current_range_min', get_current_range(4))
     bipot_current_range_start = kwargs.get('bipot_current_range_start', get_current_range(6))
-    set_bipot_settings(chronoamperometry, bipot_mode, bipot_potential, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start)
+    set_bipot_settings(
+        chronoamperometry,
+        bipot_mode,
+        bipot_potential,
+        bipot_current_range_max,
+        bipot_current_range_min,
+        bipot_current_range_start,
+    )
 
     # record extra value settings
     record_auxiliary_input = kwargs.get('record_auxiliary_input', False)
     record_cell_potential = kwargs.get('record_cell_potential', False)
     record_we_potential = kwargs.get('record_we_potential', False)
-    set_extra_value_mask(chronoamperometry, enable_bipot_current=enable_bipot_current, record_auxiliary_input=record_auxiliary_input, record_cell_potential=record_cell_potential, record_we_potential=record_we_potential)
+    set_extra_value_mask(
+        chronoamperometry,
+        enable_bipot_current=enable_bipot_current,
+        record_auxiliary_input=record_auxiliary_input,
+        record_cell_potential=record_cell_potential,
+        record_we_potential=record_we_potential,
+    )
 
     # post measurement settings
     cell_on_after_measurement = kwargs.get('cell_on_after_measurement', False)
-    cell_on_after_measurement_potential = kwargs.get('cell_on_after_measurement_potential', 0.0)  # in V
-    set_post_measurement_settings(chronoamperometry, cell_on_after_measurement, cell_on_after_measurement_potential)
+    cell_on_after_measurement_potential = kwargs.get(
+        'cell_on_after_measurement_potential', 0.0
+    )  # in V
+    set_post_measurement_settings(
+        chronoamperometry, cell_on_after_measurement, cell_on_after_measurement_potential
+    )
 
     # limit settings
     use_limit_current_max = kwargs.get('use_limit_current_max', False)
     limit_current_max = kwargs.get('limit_current_max', 0.0)  # in µA
     use_limit_current_min = kwargs.get('use_limit_current_min', False)
     limit_current_min = kwargs.get('limit_current_min', 0.0)  # in µA
-    set_limit_settings(chronoamperometry, use_limit_current_max, limit_current_max, use_limit_current_min, limit_current_min)
+    set_limit_settings(
+        chronoamperometry,
+        use_limit_current_max,
+        limit_current_max,
+        use_limit_current_min,
+        limit_current_min,
+    )
 
     use_limit_charge_max = kwargs.get('use_limit_charge_max', False)
     limit_charge_max = kwargs.get('limit_charge_max', 0.0)  # in µC
     use_limit_charge_min = kwargs.get('use_limit_charge_min', False)
     limit_charge_min = kwargs.get('limit_charge_min', 0.0)  # in µC
-    set_charge_limit_settings(chronoamperometry, use_limit_charge_max, limit_charge_max, use_limit_charge_min, limit_charge_min)
+    set_charge_limit_settings(
+        chronoamperometry,
+        use_limit_charge_max,
+        limit_charge_max,
+        use_limit_charge_min,
+        limit_charge_min,
+    )
 
     # iR compensation settings
     use_ir_compensation = kwargs.get('use_ir_compensation', False)
@@ -932,22 +1241,44 @@ def chronoamperometry(**kwargs):
 
     # trigger settings
     trigger_at_equilibration = kwargs.get('trigger_at_equilibration', False)
-    trigger_at_equilibration_lines = kwargs.get('trigger_at_equilibration_lines', [False, False, False, False]) # d0 high, d1 high, d2 high, d3 high    
+    trigger_at_equilibration_lines = kwargs.get(
+        'trigger_at_equilibration_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
     trigger_at_measurement = kwargs.get('trigger_at_measurement', False)
-    trigger_at_measurement_lines = kwargs.get('trigger_at_measurement_lines', [False, False, False, False]) # d0 high, d1 high, d2 high, d3 high
-    set_trigger_at_equilibration_settings(chronoamperometry, trigger_at_equilibration, trigger_at_equilibration_lines)
-    set_trigger_at_measurement_settings(chronoamperometry, trigger_at_measurement, trigger_at_measurement_lines)
+    trigger_at_measurement_lines = kwargs.get(
+        'trigger_at_measurement_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
+    set_trigger_at_equilibration_settings(
+        chronoamperometry, trigger_at_equilibration, trigger_at_equilibration_lines
+    )
+    set_trigger_at_measurement_settings(
+        chronoamperometry, trigger_at_measurement, trigger_at_measurement_lines
+    )
 
     # set filter settings
-    dc_mains_filter = kwargs.get('dc_mains_filter', 50)  # set to 50 Hz or 60 Hz (50 Hz is default)
-    default_curve_post_processing_filter = kwargs.get('default_curve_post_processing_filter', 0)  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
-    set_filter_settings(chronoamperometry, dc_mains_filter, default_curve_post_processing_filter)
-    
+    dc_mains_filter = kwargs.get(
+        'dc_mains_filter', 50
+    )  # set to 50 Hz or 60 Hz (50 Hz is default)
+    default_curve_post_processing_filter = kwargs.get(
+        'default_curve_post_processing_filter', 0
+    )  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
+    set_filter_settings(
+        chronoamperometry, dc_mains_filter, default_curve_post_processing_filter
+    )
+
     # set multiplexer settings
-    set_mux_mode = kwargs.get('set_mux_mode', -1)  # -1 = disable, 0 = sequentially, 1 = alternatingly
-    set_mux_channels = kwargs.get('set_mux_channels', [False, False, False, False, False, False, False, False])  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
-    set_mux8r2_settings = kwargs.get('set_mux8r2_settings', None)  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
-    set_multiplexer_settings(chronoamperometry, set_mux_mode, set_mux_channels, set_mux8r2_settings)
+    set_mux_mode = kwargs.get(
+        'set_mux_mode', -1
+    )  # -1 = disable, 0 = sequentially, 1 = alternatingly
+    set_mux_channels = kwargs.get(
+        'set_mux_channels', [False, False, False, False, False, False, False, False]
+    )  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
+    set_mux8r2_settings = kwargs.get(
+        'set_mux8r2_settings', None
+    )  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
+    set_multiplexer_settings(
+        chronoamperometry, set_mux_mode, set_mux_channels, set_mux8r2_settings
+    )
 
     # internal storage
     save_on_internal_storage = kwargs.get('save_on_internal_storage', False)
@@ -961,8 +1292,7 @@ def chronoamperometry(**kwargs):
 
 
 def multi_step_amperometry(**kwargs):
-    r"""
-    Create a multi-step amperometry method object.
+    """Create a multi-step amperometry method object.
 
     :Keyword Arguments:
     * current_range_max : PalmSens.CurrentRange --
@@ -1039,29 +1369,44 @@ def multi_step_amperometry(**kwargs):
     # (auto)ranging
     current_range_max = kwargs.get('current_range_max_range_max', get_current_range(8))
     currrent_range_min = kwargs.get('current_range_max_range_min', get_current_range(4))
-    current_range_max_range_start = kwargs.get('current_range_max_range_start', get_current_range(6))
-    set_autoranging_current(multi_step_amperometry, current_range_max, currrent_range_min, current_range_max_range_start)
+    current_range_max_range_start = kwargs.get(
+        'current_range_max_range_start', get_current_range(6)
+    )
+    set_autoranging_current(
+        multi_step_amperometry,
+        current_range_max,
+        currrent_range_min,
+        current_range_max_range_start,
+    )
 
     # pretreatment
     deposition_potential = kwargs.get('deposition_potential', 0.0)
     deposition_time = kwargs.get('deposition_time', 0.0)
     conditioning_potential = kwargs.get('conditioning_potential', 0.0)
     conditioning_time = kwargs.get('conditioning_time', 0.0)
-    set_pretreatment(multi_step_amperometry, deposition_potential, deposition_time, conditioning_potential, conditioning_time)
+    set_pretreatment(
+        multi_step_amperometry,
+        deposition_potential,
+        deposition_time,
+        conditioning_potential,
+        conditioning_time,
+    )
 
     # multi-step amperometry settings
     equilibration_time = kwargs.get('equilibration_time', 0.0)  # Time (s)
     interval_time = kwargs.get('interval_time', 0.1)  # Time (s)
     n_cycles = kwargs.get('n_cycles', 1)  # Number of cycles
-    levels = kwargs.get('levels', [multi_step_amperometry_level()])  # Levels [use multi_step_amperometry_level() to create levels]
+    levels = kwargs.get(
+        'levels', [multi_step_amperometry_level()]
+    )  # Levels [use multi_step_amperometry_level() to create levels]
     multi_step_amperometry.EquilibrationTime = equilibration_time
     multi_step_amperometry.IntervalTime = interval_time
     multi_step_amperometry.nCycles = n_cycles
     multi_step_amperometry.Levels.Clear()
 
     if len(levels) == 0:
-        raise ValueError("At least one level must be specified.")
-    
+        raise ValueError('At least one level must be specified.')
+
     use_partial_record = False
     use_level_limits = False
 
@@ -1070,7 +1415,7 @@ def multi_step_amperometry(**kwargs):
             use_partial_record = True
         if level.UseMaxLimit or level.UseMinLimit:
             use_level_limits = True
-        
+
         multi_step_amperometry.Levels.Add(level)
 
     multi_step_amperometry.UseSelectiveRecord = use_partial_record
@@ -1084,41 +1429,78 @@ def multi_step_amperometry(**kwargs):
     bipot_current_range_max = kwargs.get('bipot_current_range_max', get_current_range(8))
     bipot_current_range_min = kwargs.get('bipot_current_range_min', get_current_range(4))
     bipot_current_range_start = kwargs.get('bipot_current_range_start', get_current_range(6))
-    set_bipot_settings(multi_step_amperometry, bipot_mode, bipot_potential, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start)
+    set_bipot_settings(
+        multi_step_amperometry,
+        bipot_mode,
+        bipot_potential,
+        bipot_current_range_max,
+        bipot_current_range_min,
+        bipot_current_range_start,
+    )
 
     # record extra value settings
     record_auxiliary_input = kwargs.get('record_auxiliary_input', False)
     record_cell_potential = kwargs.get('record_cell_potential', False)
     record_we_potential = kwargs.get('record_we_potential', False)
-    set_extra_value_mask(multi_step_amperometry, enable_bipot_current=enable_bipot_current, record_auxiliary_input=record_auxiliary_input, record_cell_potential=record_cell_potential, record_we_potential=record_we_potential)
+    set_extra_value_mask(
+        multi_step_amperometry,
+        enable_bipot_current=enable_bipot_current,
+        record_auxiliary_input=record_auxiliary_input,
+        record_cell_potential=record_cell_potential,
+        record_we_potential=record_we_potential,
+    )
 
     # post measurement settings
     cell_on_after_measurement = kwargs.get('cell_on_after_measurement', False)
-    cell_on_after_measurement_potential = kwargs.get('cell_on_after_measurement_potential', 0.0)  # in V
-    set_post_measurement_settings(multi_step_amperometry, cell_on_after_measurement, cell_on_after_measurement_potential)
+    cell_on_after_measurement_potential = kwargs.get(
+        'cell_on_after_measurement_potential', 0.0
+    )  # in V
+    set_post_measurement_settings(
+        multi_step_amperometry, cell_on_after_measurement, cell_on_after_measurement_potential
+    )
 
     # gloabl limit settings
     use_limit_current_max = kwargs.get('use_limit_current_max', False)
     limit_current_max = kwargs.get('limit_current_max', 0.0)  # in µA
     use_limit_current_min = kwargs.get('use_limit_current_min', False)
     limit_current_min = kwargs.get('limit_current_min', 0.0)  # in µA
-    set_limit_settings(multi_step_amperometry, use_limit_current_max, limit_current_max, use_limit_current_min, limit_current_min)
+    set_limit_settings(
+        multi_step_amperometry,
+        use_limit_current_max,
+        limit_current_max,
+        use_limit_current_min,
+        limit_current_min,
+    )
 
     # iR compensation settings
     use_ir_compensation = kwargs.get('use_ir_compensation', False)
     ir_compensation = kwargs.get('ir_compensation', 0.0)  # IR compensation in Ω
-    set_ir_drop_compensation(multi_step_amperometry, use_ir_compensation, ir_compensation)    
-    
+    set_ir_drop_compensation(multi_step_amperometry, use_ir_compensation, ir_compensation)
+
     # set filter settings
-    dc_mains_filter = kwargs.get('dc_mains_filter', 50)  # set to 50 Hz or 60 Hz (50 Hz is default)
-    default_curve_post_processing_filter = kwargs.get('default_curve_post_processing_filter', 0)  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
-    set_filter_settings(multi_step_amperometry, dc_mains_filter, default_curve_post_processing_filter)
+    dc_mains_filter = kwargs.get(
+        'dc_mains_filter', 50
+    )  # set to 50 Hz or 60 Hz (50 Hz is default)
+    default_curve_post_processing_filter = kwargs.get(
+        'default_curve_post_processing_filter', 0
+    )  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
+    set_filter_settings(
+        multi_step_amperometry, dc_mains_filter, default_curve_post_processing_filter
+    )
 
     # multiplexer settings
-    set_mux_mode = kwargs.get('set_mux_mode', -1)  # -1 = disable, 0 = sequentially, 1 = alternatingly
-    set_mux_channels = kwargs.get('set_mux_channels', [False, False, False, False, False, False, False, False])  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
-    set_mux8r2_settings = kwargs.get('set_mux8r2_settings', None)  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
-    set_multiplexer_settings(multi_step_amperometry, set_mux_mode, set_mux_channels, set_mux8r2_settings)
+    set_mux_mode = kwargs.get(
+        'set_mux_mode', -1
+    )  # -1 = disable, 0 = sequentially, 1 = alternatingly
+    set_mux_channels = kwargs.get(
+        'set_mux_channels', [False, False, False, False, False, False, False, False]
+    )  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
+    set_mux8r2_settings = kwargs.get(
+        'set_mux8r2_settings', None
+    )  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
+    set_multiplexer_settings(
+        multi_step_amperometry, set_mux_mode, set_mux_channels, set_mux8r2_settings
+    )
 
     # internal storage
     save_on_internal_storage = kwargs.get('save_on_internal_storage', False)
@@ -1132,8 +1514,7 @@ def multi_step_amperometry(**kwargs):
 
 
 def multi_step_amperometry_level(**kwargs):
-    r"""
-    Create a multi-step amperometry level method object.
+    """Create a multi-step amperometry level method object.
 
     :Keyword Arguments:
     * level : float --
@@ -1175,9 +1556,11 @@ def multi_step_amperometry_level(**kwargs):
     multi_step_amperometry_level.UseMinLimit = use_limit_current_min
     multi_step_amperometry_level.MinLimit = limit_current_min
 
-    #trigger settings
+    # trigger settings
     trigger_at_level = kwargs.get('trigger_at_level', False)  # use trigger or not
-    trigger_at_level_lines = kwargs.get('trigger_at_level_lines', [False, False, False, False])  # d0 high, d1 high, d2 high, d3 high
+    trigger_at_level_lines = kwargs.get(
+        'trigger_at_level_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
     multi_step_amperometry_level.UseTriggerOnStart = trigger_at_level
     multi_step_amperometry_level.TriggerValueOnStart = trigger_at_level_lines
 
@@ -1185,8 +1568,7 @@ def multi_step_amperometry_level(**kwargs):
 
 
 def open_circuit_potentiometry(**kwargs):
-    r"""
-    Create an open circuit potentiometry method object.
+    """Create an open circuit potentiometry method object.
 
     :Keyword Arguments:
     * current_range_max : PalmSens.CurrentRange --
@@ -1252,25 +1634,38 @@ def open_circuit_potentiometry(**kwargs):
     """
     open_circuit_potentiometry = OpenCircuitPotentiometry()
 
-    # (auto)ranging 
+    # (auto)ranging
     # current in pretreatment
     current_range_max = kwargs.get('current_range_max', get_current_range(8))
     current_range_min = kwargs.get('current_range_min', get_current_range(4))
     current_range_start = kwargs.get('current_range_start', get_current_range(6))
-    set_autoranging_current(open_circuit_potentiometry, current_range_max, current_range_min, current_range_start)
+    set_autoranging_current(
+        open_circuit_potentiometry, current_range_max, current_range_min, current_range_start
+    )
 
     # potential
     potential_range_max = kwargs.get('potential_range_max', get_potential_range(7))
-    potential_range_min = kwargs.get('potential_range_min', get_potential_range(1)) 
+    potential_range_min = kwargs.get('potential_range_min', get_potential_range(1))
     potential_range_start = kwargs.get('potential_range_start', get_potential_range(7))
-    set_autoranging_potential(open_circuit_potentiometry, potential_range_max, potential_range_min, potential_range_start)
+    set_autoranging_potential(
+        open_circuit_potentiometry,
+        potential_range_max,
+        potential_range_min,
+        potential_range_start,
+    )
 
     # pretreatment
     deposition_potential = kwargs.get('deposition_potential', 0.0)
     deposition_time = kwargs.get('deposition_time', 0.0)
     conditioning_potential = kwargs.get('conditioning_potential', 0.0)
     conditioning_time = kwargs.get('conditioning_time', 0.0)
-    set_pretreatment(open_circuit_potentiometry, deposition_potential, deposition_time, conditioning_potential, conditioning_time)
+    set_pretreatment(
+        open_circuit_potentiometry,
+        deposition_potential,
+        deposition_time,
+        conditioning_potential,
+        conditioning_time,
+    )
 
     # open circuit potentiometry settings
     interval_time = kwargs.get('interval_time', 0.1)  # Time (s)
@@ -1283,35 +1678,70 @@ def open_circuit_potentiometry(**kwargs):
     record_auxiliary_input = kwargs.get('record_auxiliary_input', False)
     record_we_current = kwargs.get('record_we_current', False)
     record_we_current_range = kwargs.get('record_we_current_range', get_current_range(4))
-    set_extra_value_mask(open_circuit_potentiometry, record_auxiliary_input=record_auxiliary_input, record_we_current=record_we_current, record_we_current_range=record_we_current_range)
+    set_extra_value_mask(
+        open_circuit_potentiometry,
+        record_auxiliary_input=record_auxiliary_input,
+        record_we_current=record_we_current,
+        record_we_current_range=record_we_current_range,
+    )
 
     # post measurement settings
     cell_on_after_measurement = kwargs.get('cell_on_after_measurement', False)
-    cell_on_after_measurement_potential = kwargs.get('cell_on_after_measurement_potential', 0.0)  # in V
-    set_post_measurement_settings(open_circuit_potentiometry, cell_on_after_measurement, cell_on_after_measurement_potential)
+    cell_on_after_measurement_potential = kwargs.get(
+        'cell_on_after_measurement_potential', 0.0
+    )  # in V
+    set_post_measurement_settings(
+        open_circuit_potentiometry,
+        cell_on_after_measurement,
+        cell_on_after_measurement_potential,
+    )
 
     # limit settings
     use_limit_potential_max = kwargs.get('use_limit_potential_max', False)
     limit_potential_max = kwargs.get('limit_potential_max', 0.0)  # in V
     use_limit_potential_min = kwargs.get('use_limit_potential_min', False)
     limit_potential_min = kwargs.get('limit_potential_min', 0.0)  # in V
-    set_limit_settings(open_circuit_potentiometry, use_limit_potential_max, limit_potential_max, use_limit_potential_min, limit_potential_min)
+    set_limit_settings(
+        open_circuit_potentiometry,
+        use_limit_potential_max,
+        limit_potential_max,
+        use_limit_potential_min,
+        limit_potential_min,
+    )
 
     # trigger settings
     trigger_at_measurement = kwargs.get('trigger_at_measurement', False)
-    trigger_at_measurement_lines = kwargs.get('trigger_at_measurement_lines', [False, False, False, False]) # d0 high, d1 high, d2 high, d3 high
-    set_trigger_at_measurement_settings(open_circuit_potentiometry, trigger_at_measurement, trigger_at_measurement_lines)
+    trigger_at_measurement_lines = kwargs.get(
+        'trigger_at_measurement_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
+    set_trigger_at_measurement_settings(
+        open_circuit_potentiometry, trigger_at_measurement, trigger_at_measurement_lines
+    )
 
     # set filter settings
-    dc_mains_filter = kwargs.get('dc_mains_filter', 50)  # set to 50 Hz or 60 Hz (50 Hz is default)
-    default_curve_post_processing_filter = kwargs.get('default_curve_post_processing_filter', 0)  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
-    set_filter_settings(open_circuit_potentiometry, dc_mains_filter, default_curve_post_processing_filter)
+    dc_mains_filter = kwargs.get(
+        'dc_mains_filter', 50
+    )  # set to 50 Hz or 60 Hz (50 Hz is default)
+    default_curve_post_processing_filter = kwargs.get(
+        'default_curve_post_processing_filter', 0
+    )  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
+    set_filter_settings(
+        open_circuit_potentiometry, dc_mains_filter, default_curve_post_processing_filter
+    )
 
     # multiplexer settings
-    set_mux_mode = kwargs.get('set_mux_mode', -1)  # -1 = disable, 0 = sequentially, 1 = alternatingly
-    set_mux_channels = kwargs.get('set_mux_channels', [False, False, False, False, False, False, False, False])  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
-    set_mux8r2_settings = kwargs.get('set_mux8r2_settings', None)  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
-    set_multiplexer_settings(open_circuit_potentiometry, set_mux_mode, set_mux_channels, set_mux8r2_settings)
+    set_mux_mode = kwargs.get(
+        'set_mux_mode', -1
+    )  # -1 = disable, 0 = sequentially, 1 = alternatingly
+    set_mux_channels = kwargs.get(
+        'set_mux_channels', [False, False, False, False, False, False, False, False]
+    )  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
+    set_mux8r2_settings = kwargs.get(
+        'set_mux8r2_settings', None
+    )  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
+    set_multiplexer_settings(
+        open_circuit_potentiometry, set_mux_mode, set_mux_channels, set_mux8r2_settings
+    )
 
     # internal storage
     save_on_internal_storage = kwargs.get('save_on_internal_storage', False)
@@ -1325,8 +1755,7 @@ def open_circuit_potentiometry(**kwargs):
 
 
 def chronopotentiometry(**kwargs):
-    r"""
-    Create a chronopotentiometry method object.
+    """Create a chronopotentiometry method object.
 
     :Keyword Arguments:
     * current_range_max : PalmSens.CurrentRange --
@@ -1396,29 +1825,41 @@ def chronopotentiometry(**kwargs):
     """
     chronopotentiometry = Potentiometry()
 
-    # (auto)ranging 
+    # (auto)ranging
     # current in pretreatment
     current_range_max = kwargs.get('current_range_max', get_current_range(8))
     current_range_min = kwargs.get('current_range_min', get_current_range(4))
     current_range_start = kwargs.get('current_range_start', get_current_range(6))
-    set_autoranging_current(chronopotentiometry, current_range_max, current_range_min, current_range_start)
+    set_autoranging_current(
+        chronopotentiometry, current_range_max, current_range_min, current_range_start
+    )
 
     # potential
     potential_range_max = kwargs.get('potential_range_max', get_potential_range(7))
-    potential_range_min = kwargs.get('potential_range_min', get_potential_range(1)) 
+    potential_range_min = kwargs.get('potential_range_min', get_potential_range(1))
     potential_range_start = kwargs.get('potential_range_start', get_potential_range(7))
-    set_autoranging_potential(chronopotentiometry, potential_range_max, potential_range_min, potential_range_start)
+    set_autoranging_potential(
+        chronopotentiometry, potential_range_max, potential_range_min, potential_range_start
+    )
 
     # pretreatment
     deposition_potential = kwargs.get('deposition_potential', 0.0)
     deposition_time = kwargs.get('deposition_time', 0.0)
     conditioning_potential = kwargs.get('conditioning_potential', 0.0)
     conditioning_time = kwargs.get('conditioning_time', 0.0)
-    set_pretreatment(chronopotentiometry, deposition_potential, deposition_time, conditioning_potential, conditioning_time)
+    set_pretreatment(
+        chronopotentiometry,
+        deposition_potential,
+        deposition_time,
+        conditioning_potential,
+        conditioning_time,
+    )
 
     # chronopotentiometry settings
     current = kwargs.get('current', 0.0)  # in applied current range
-    applied_current_range = kwargs.get('applied_current_range', get_current_range(6))  # in applied current range
+    applied_current_range = kwargs.get(
+        'applied_current_range', get_current_range(6)
+    )  # in applied current range
     interval_time = kwargs.get('interval_time', 0.1)  # Time (s)
     run_time = kwargs.get('run_time', 1.0)  # Time (s)
     chronopotentiometry.Current = current
@@ -1431,35 +1872,69 @@ def chronopotentiometry(**kwargs):
     record_auxiliary_input = kwargs.get('record_auxiliary_input', False)
     record_cell_potential = kwargs.get('record_cell_potential', False)
     record_we_current = kwargs.get('record_we_current', False)
-    set_extra_value_mask(chronopotentiometry, record_auxiliary_input=record_auxiliary_input, record_cell_potential=record_cell_potential, record_we_current=record_we_current, record_we_current_range=applied_current_range)
+    set_extra_value_mask(
+        chronopotentiometry,
+        record_auxiliary_input=record_auxiliary_input,
+        record_cell_potential=record_cell_potential,
+        record_we_current=record_we_current,
+        record_we_current_range=applied_current_range,
+    )
 
     # post measurement settings
     cell_on_after_measurement = kwargs.get('cell_on_after_measurement', False)
-    cell_on_after_measurement_potential = kwargs.get('cell_on_after_measurement_potential', 0.0)  # in V
-    set_post_measurement_settings(chronopotentiometry, cell_on_after_measurement, cell_on_after_measurement_potential)
+    cell_on_after_measurement_potential = kwargs.get(
+        'cell_on_after_measurement_potential', 0.0
+    )  # in V
+    set_post_measurement_settings(
+        chronopotentiometry, cell_on_after_measurement, cell_on_after_measurement_potential
+    )
 
     # limit settings
     use_limit_potential_max = kwargs.get('use_limit_potential_max', False)
     limit_potential_max = kwargs.get('limit_potential_max', 0.0)  # in V
     use_limit_potential_min = kwargs.get('use_limit_potential_min', False)
     limit_potential_min = kwargs.get('limit_potential_min', 0.0)  # in V
-    set_limit_settings(chronopotentiometry, use_limit_potential_max, limit_potential_max, use_limit_potential_min, limit_potential_min)
+    set_limit_settings(
+        chronopotentiometry,
+        use_limit_potential_max,
+        limit_potential_max,
+        use_limit_potential_min,
+        limit_potential_min,
+    )
 
     # trigger settings
     trigger_at_measurement = kwargs.get('trigger_at_measurement', False)
-    trigger_at_measurement_lines = kwargs.get('trigger_at_measurement_lines', [False, False, False, False]) # d0 high, d1 high, d2 high, d3 high
-    set_trigger_at_measurement_settings(chronopotentiometry, trigger_at_measurement, trigger_at_measurement_lines)
+    trigger_at_measurement_lines = kwargs.get(
+        'trigger_at_measurement_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
+    set_trigger_at_measurement_settings(
+        chronopotentiometry, trigger_at_measurement, trigger_at_measurement_lines
+    )
 
     # set filter settings
-    dc_mains_filter = kwargs.get('dc_mains_filter', 50)  # set to 50 Hz or 60 Hz (50 Hz is default)
-    default_curve_post_processing_filter = kwargs.get('default_curve_post_processing_filter', 0)  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
-    set_filter_settings(chronopotentiometry, dc_mains_filter, default_curve_post_processing_filter)
+    dc_mains_filter = kwargs.get(
+        'dc_mains_filter', 50
+    )  # set to 50 Hz or 60 Hz (50 Hz is default)
+    default_curve_post_processing_filter = kwargs.get(
+        'default_curve_post_processing_filter', 0
+    )  # -1 = no filter, 0 = spike rejection, 1 = spike rejection + Savitsky-golay window 5, 2 = spike rejection + Savitsky-golay window 9, 3 = spike rejection + Savitsky-golay window 15, 4 = spike rejection + Savitsky-golay window 25
+    set_filter_settings(
+        chronopotentiometry, dc_mains_filter, default_curve_post_processing_filter
+    )
 
     # multiplexer settings
-    set_mux_mode = kwargs.get('set_mux_mode', -1)  # -1 = disable, 0 = sequentially, 1 = alternatingly
-    set_mux_channels = kwargs.get('set_mux_channels', [False, False, False, False, False, False, False, False])  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
-    set_mux8r2_settings = kwargs.get('set_mux8r2_settings', None)  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
-    set_multiplexer_settings(chronopotentiometry, set_mux_mode, set_mux_channels, set_mux8r2_settings)
+    set_mux_mode = kwargs.get(
+        'set_mux_mode', -1
+    )  # -1 = disable, 0 = sequentially, 1 = alternatingly
+    set_mux_channels = kwargs.get(
+        'set_mux_channels', [False, False, False, False, False, False, False, False]
+    )  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). In consequtive mode all selections are valid, in alternating mode the first channel must be selected and all other channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
+    set_mux8r2_settings = kwargs.get(
+        'set_mux8r2_settings', None
+    )  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
+    set_multiplexer_settings(
+        chronopotentiometry, set_mux_mode, set_mux_channels, set_mux8r2_settings
+    )
 
     # internal storage
     save_on_internal_storage = kwargs.get('save_on_internal_storage', False)
@@ -1473,8 +1948,7 @@ def chronopotentiometry(**kwargs):
 
 
 def electrochemical_impedance_spectroscopy(**kwargs):
-    r"""
-    Create an electrochemical impedance spectroscopy method object.
+    """Create an electrochemical impedance spectroscopy method object.
 
     :Keyword Arguments:
     * current_range_max : PalmSens.CurrentRange --
@@ -1539,15 +2013,31 @@ def electrochemical_impedance_spectroscopy(**kwargs):
     current_range_min = kwargs.get('current_range_min', get_current_range(4))
     potential_range_max = kwargs.get('potential_range_max', get_potential_range(7))
     potential_range_min = kwargs.get('potential_range_min', get_potential_range(1))
-    set_autoranging_current(electrochemical_impedance_spectroscopy, current_range_max, current_range_min, current_range_max)
-    set_autoranging_potential(electrochemical_impedance_spectroscopy, potential_range_max, potential_range_min, potential_range_max)
+    set_autoranging_current(
+        electrochemical_impedance_spectroscopy,
+        current_range_max,
+        current_range_min,
+        current_range_max,
+    )
+    set_autoranging_potential(
+        electrochemical_impedance_spectroscopy,
+        potential_range_max,
+        potential_range_min,
+        potential_range_max,
+    )
 
     # pretreatment
     deposition_potential = kwargs.get('deposition_potential', 0.0)
     deposition_time = kwargs.get('deposition_time', 0.0)
     conditioning_potential = kwargs.get('conditioning_potential', 0.0)
     conditioning_time = kwargs.get('conditioning_time', 0.0)
-    set_pretreatment(electrochemical_impedance_spectroscopy, deposition_potential, deposition_time, conditioning_potential, conditioning_time)
+    set_pretreatment(
+        electrochemical_impedance_spectroscopy,
+        deposition_potential,
+        deposition_time,
+        conditioning_potential,
+        conditioning_time,
+    )
 
     # electrochemical impedance spectroscopy settings
     equilibration_time = kwargs.get('equilibration_time', 0.0)  # Time (s)
@@ -1557,7 +2047,7 @@ def electrochemical_impedance_spectroscopy(**kwargs):
     max_frequency = kwargs.get('max_frequency', 1e5)  # in Hz
     min_frequency = kwargs.get('min_frequency', 1e3)  # in Hz
     electrochemical_impedance_spectroscopy.ScanType = enumScanType.Fixed
-    electrochemical_impedance_spectroscopy.FreqType = enumFrequencyType.Scan 
+    electrochemical_impedance_spectroscopy.FreqType = enumFrequencyType.Scan
     electrochemical_impedance_spectroscopy.EquilibrationTime = equilibration_time
     electrochemical_impedance_spectroscopy.Potential = dc_potential
     electrochemical_impedance_spectroscopy.Eac = ac_potential
@@ -1567,29 +2057,65 @@ def electrochemical_impedance_spectroscopy(**kwargs):
 
     # advanced settings
     # versus OCP settings
-    versus_ocp_mode = kwargs.get('versus_ocp_mode', 0)  # 0 = disable versus OCP, 1 = versus potential
+    versus_ocp_mode = kwargs.get(
+        'versus_ocp_mode', 0
+    )  # 0 = disable versus OCP, 1 = versus potential
     versus_ocp_max_ocp_time = kwargs.get('versus_ocp_max_ocp_time', 20)  # Time (s)
-    versus_ocp_stability_criterion = kwargs.get('versus_ocp_stability_criterion', 0)  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
-    set_versus_ocp(electrochemical_impedance_spectroscopy, versus_ocp_mode, versus_ocp_max_ocp_time, versus_ocp_stability_criterion)
+    versus_ocp_stability_criterion = kwargs.get(
+        'versus_ocp_stability_criterion', 0
+    )  # 0 = no stability criterion, > 0 is stability threshold potential/time (mV/s)
+    set_versus_ocp(
+        electrochemical_impedance_spectroscopy,
+        versus_ocp_mode,
+        versus_ocp_max_ocp_time,
+        versus_ocp_stability_criterion,
+    )
 
     # post measurement settings
     cell_on_after_measurement = kwargs.get('cell_on_after_measurement', False)
-    cell_on_after_measurement_potential = kwargs.get('cell_on_after_measurement_potential', 0.0)  # in V
-    set_post_measurement_settings(electrochemical_impedance_spectroscopy, cell_on_after_measurement, cell_on_after_measurement_potential)
+    cell_on_after_measurement_potential = kwargs.get(
+        'cell_on_after_measurement_potential', 0.0
+    )  # in V
+    set_post_measurement_settings(
+        electrochemical_impedance_spectroscopy,
+        cell_on_after_measurement,
+        cell_on_after_measurement_potential,
+    )
 
     # trigger settings
     trigger_at_equilibration = kwargs.get('trigger_at_equilibration', False)
-    trigger_at_equilibration_lines = kwargs.get('trigger_at_equilibration_lines', [False, False, False, False]) # d0 high, d1 high, d2 high, d3 high    
+    trigger_at_equilibration_lines = kwargs.get(
+        'trigger_at_equilibration_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
     trigger_at_measurement = kwargs.get('trigger_at_measurement', False)
-    trigger_at_measurement_lines = kwargs.get('trigger_at_measurement_lines', [False, False, False, False]) # d0 high, d1 high, d2 high, d3 high
-    set_trigger_at_equilibration_settings(electrochemical_impedance_spectroscopy, trigger_at_equilibration, trigger_at_equilibration_lines)
-    set_trigger_at_measurement_settings(electrochemical_impedance_spectroscopy, trigger_at_measurement, trigger_at_measurement_lines)
-    
+    trigger_at_measurement_lines = kwargs.get(
+        'trigger_at_measurement_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
+    set_trigger_at_equilibration_settings(
+        electrochemical_impedance_spectroscopy,
+        trigger_at_equilibration,
+        trigger_at_equilibration_lines,
+    )
+    set_trigger_at_measurement_settings(
+        electrochemical_impedance_spectroscopy,
+        trigger_at_measurement,
+        trigger_at_measurement_lines,
+    )
+
     # set multiplexer settings
     set_mux_mode = kwargs.get('set_mux_mode', -1)  # -1 = disable, 0 = sequentially
-    set_mux_channels = kwargs.get('set_mux_channels', [False, False, False, False, False, False, False, False])  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). 
-    set_mux8r2_settings = kwargs.get('set_mux8r2_settings', None)  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
-    set_multiplexer_settings(electrochemical_impedance_spectroscopy, set_mux_mode, set_mux_channels, set_mux8r2_settings)
+    set_mux_channels = kwargs.get(
+        'set_mux_channels', [False, False, False, False, False, False, False, False]
+    )  # a list of bools for each channel (channel 1, channel 2, ..., channel 128).
+    set_mux8r2_settings = kwargs.get(
+        'set_mux8r2_settings', None
+    )  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
+    set_multiplexer_settings(
+        electrochemical_impedance_spectroscopy,
+        set_mux_mode,
+        set_mux_channels,
+        set_mux8r2_settings,
+    )
 
     # internal storage
     save_on_internal_storage = kwargs.get('save_on_internal_storage', False)
@@ -1599,8 +2125,7 @@ def electrochemical_impedance_spectroscopy(**kwargs):
 
 
 def galvanostatic_impedance_spectroscopy(**kwargs):
-    r"""
-    Create a galvanostatic impedance spectroscopy method object.
+    """Create a galvanostatic impedance spectroscopy method object.
 
     :Keyword Arguments:
     * current_range_max : PalmSens.CurrentRange --
@@ -1661,18 +2186,36 @@ def galvanostatic_impedance_spectroscopy(**kwargs):
     current_range_min = kwargs.get('current_range_min', get_current_range(4))
     potential_range_max = kwargs.get('potential_range_max', get_potential_range(7))
     potential_range_min = kwargs.get('potential_range_min', get_potential_range(1))
-    set_autoranging_current(galvanostatic_impedance_spectroscopy, current_range_max, current_range_min, current_range_max)
-    set_autoranging_potential(galvanostatic_impedance_spectroscopy, potential_range_max, potential_range_min, potential_range_max)
+    set_autoranging_current(
+        galvanostatic_impedance_spectroscopy,
+        current_range_max,
+        current_range_min,
+        current_range_max,
+    )
+    set_autoranging_potential(
+        galvanostatic_impedance_spectroscopy,
+        potential_range_max,
+        potential_range_min,
+        potential_range_max,
+    )
 
     # pretreatment
     deposition_potential = kwargs.get('deposition_potential', 0.0)
     deposition_time = kwargs.get('deposition_time', 0.0)
     conditioning_potential = kwargs.get('conditioning_potential', 0.0)
     conditioning_time = kwargs.get('conditioning_time', 0.0)
-    set_pretreatment(galvanostatic_impedance_spectroscopy, deposition_potential, deposition_time, conditioning_potential, conditioning_time)
+    set_pretreatment(
+        galvanostatic_impedance_spectroscopy,
+        deposition_potential,
+        deposition_time,
+        conditioning_potential,
+        conditioning_time,
+    )
 
     # galvanostatic impedance spectroscopy settings
-    applied_current_range = kwargs.get('applied_current_range', get_current_range(6))  # in applied current range
+    applied_current_range = kwargs.get(
+        'applied_current_range', get_current_range(6)
+    )  # in applied current range
     equilibration_time = kwargs.get('equilibration_time', 0.0)  # Time (s)
     ac_current = kwargs.get('ac_current', 0.01)  # in applied current range RMS
     dc_current = kwargs.get('dc_current', 0.0)  # in applied current range
@@ -1680,7 +2223,7 @@ def galvanostatic_impedance_spectroscopy(**kwargs):
     max_frequency = kwargs.get('max_frequency', 1e5)  # in Hz
     min_frequency = kwargs.get('min_frequency', 1e3)  # in Hz
     galvanostatic_impedance_spectroscopy.ScanType = enumScanType.Fixed
-    galvanostatic_impedance_spectroscopy.FreqType = enumFrequencyType.Scan 
+    galvanostatic_impedance_spectroscopy.FreqType = enumFrequencyType.Scan
     galvanostatic_impedance_spectroscopy.AppliedCurrentRange = applied_current_range
     galvanostatic_impedance_spectroscopy.EquilibrationTime = equilibration_time
     galvanostatic_impedance_spectroscopy.Iac = ac_current
@@ -1692,22 +2235,49 @@ def galvanostatic_impedance_spectroscopy(**kwargs):
     # advanced settings
     # post measurement settings
     cell_on_after_measurement = kwargs.get('cell_on_after_measurement', False)
-    cell_on_after_measurement_potential = kwargs.get('cell_on_after_measurement_potential', 0.0)  # in V
-    set_post_measurement_settings(galvanostatic_impedance_spectroscopy, cell_on_after_measurement, cell_on_after_measurement_potential)
+    cell_on_after_measurement_potential = kwargs.get(
+        'cell_on_after_measurement_potential', 0.0
+    )  # in V
+    set_post_measurement_settings(
+        galvanostatic_impedance_spectroscopy,
+        cell_on_after_measurement,
+        cell_on_after_measurement_potential,
+    )
 
     # trigger settings
     trigger_at_equilibration = kwargs.get('trigger_at_equilibration', False)
-    trigger_at_equilibration_lines = kwargs.get('trigger_at_equilibration_lines', [False, False, False, False]) # d0 high, d1 high, d2 high, d3 high    
+    trigger_at_equilibration_lines = kwargs.get(
+        'trigger_at_equilibration_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
     trigger_at_measurement = kwargs.get('trigger_at_measurement', False)
-    trigger_at_measurement_lines = kwargs.get('trigger_at_measurement_lines', [False, False, False, False]) # d0 high, d1 high, d2 high, d3 high
-    set_trigger_at_equilibration_settings(galvanostatic_impedance_spectroscopy, trigger_at_equilibration, trigger_at_equilibration_lines)
-    set_trigger_at_measurement_settings(galvanostatic_impedance_spectroscopy, trigger_at_measurement, trigger_at_measurement_lines)
-    
+    trigger_at_measurement_lines = kwargs.get(
+        'trigger_at_measurement_lines', [False, False, False, False]
+    )  # d0 high, d1 high, d2 high, d3 high
+    set_trigger_at_equilibration_settings(
+        galvanostatic_impedance_spectroscopy,
+        trigger_at_equilibration,
+        trigger_at_equilibration_lines,
+    )
+    set_trigger_at_measurement_settings(
+        galvanostatic_impedance_spectroscopy,
+        trigger_at_measurement,
+        trigger_at_measurement_lines,
+    )
+
     # set multiplexer settings
     set_mux_mode = kwargs.get('set_mux_mode', -1)  # -1 = disable, 0 = sequentially
-    set_mux_channels = kwargs.get('set_mux_channels', [False, False, False, False, False, False, False, False])  # a list of bools for each channel (channel 1, channel 2, ..., channel 128). 
-    set_mux8r2_settings = kwargs.get('set_mux8r2_settings', None)  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
-    set_multiplexer_settings(galvanostatic_impedance_spectroscopy, set_mux_mode, set_mux_channels, set_mux8r2_settings)
+    set_mux_channels = kwargs.get(
+        'set_mux_channels', [False, False, False, False, False, False, False, False]
+    )  # a list of bools for each channel (channel 1, channel 2, ..., channel 128).
+    set_mux8r2_settings = kwargs.get(
+        'set_mux8r2_settings', None
+    )  # Initialize the settings for the MUX8R2 multiplexer, PalmSens.Method.MuxSettings, use get_mux8r2_settings() to create the settings
+    set_multiplexer_settings(
+        galvanostatic_impedance_spectroscopy,
+        set_mux_mode,
+        set_mux_channels,
+        set_mux8r2_settings,
+    )
 
     # internal storage
     save_on_internal_storage = kwargs.get('save_on_internal_storage', False)
@@ -1717,8 +2287,7 @@ def galvanostatic_impedance_spectroscopy(**kwargs):
 
 
 def method_script_sandbox(method_script):
-    r"""
-    Create a method script sandbox object.
+    """Create a method script sandbox object.
 
     :Keyword Arguments:
     * method_script : str --
@@ -1729,8 +2298,8 @@ def method_script_sandbox(method_script):
 
 
 def get_current_range(id):
-    r"""
-    Get the current range for a given id.
+    """Get the current range for a given id.
+
     The id corresponds to the following ranges:
     * 100 pA = 0,
     * 1 nA = 1,
@@ -1759,12 +2328,12 @@ def get_current_range(id):
     * 200 uA = 25,
     * 1 A = 30
     """
-    return CurrentRange(CurrentRanges(id)) 
+    return CurrentRange(CurrentRanges(id))
 
 
 def get_potential_range(id):
-    r"""
-    Get the potential range for a given id.
+    """Get the potential range for a given id.
+
     The id corresponds to the following ranges:
     * 1 mV = 0,
     * 10 mV = 1,
@@ -1792,73 +2361,80 @@ def get_potential_range(id):
     elif id == 7:
         return PotentialRange(PotentialRanges.pr1V)
     else:
-        raise ValueError("Invalid id for potential range. Valid ids are: 0, 1, 2, 3, 4, 5, 6, 7")
+        raise ValueError(
+            'Invalid id for potential range. Valid ids are: 0, 1, 2, 3, 4, 5, 6, 7'
+        )
 
 
 def set_autoranging_current(method, i_range_max, i_range_min, i_range_start):
-    r"""
-    Set the autoranging current for a given method.
-    """
+    """Set the autoranging current for a given method."""
     method.Ranging.MaximumCurrentRange = i_range_max
     method.Ranging.MinimumCurrentRange = i_range_min
     method.Ranging.StartCurrentRange = i_range_start
 
 
-def set_autoranging_bipot_current(method, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start):
-    r"""
-    Set the autoranging bipot current for a given method.
-    """
+def set_autoranging_bipot_current(
+    method, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start
+):
+    """Set the autoranging bipot current for a given method."""
     method.BipotRanging.MaximumCurrentRange = bipot_current_range_max
     method.BipotRanging.MinimumCurrentRange = bipot_current_range_min
     method.BipotRanging.StartCurrentRange = bipot_current_range_start
 
 
-def set_autoranging_potential(method, potential_range_max, potential_range_min, potential_range_start):
-    r"""
-    Set the autoranging potential for a given method.
-    """
+def set_autoranging_potential(
+    method, potential_range_max, potential_range_min, potential_range_start
+):
+    """Set the autoranging potential for a given method."""
     method.RangingPotential.MaximumPotentialRange = potential_range_max
     method.RangingPotential.MinimumPotentialRange = potential_range_min
-    method.RangingPotential.StartPotentialRange = potential_range_start    
+    method.RangingPotential.StartPotentialRange = potential_range_start
 
 
-def set_pretreatment(method, deposition_potential, deposition_time, conditioning_potential, conditioning_time):
-    r"""
-    Set the pretreatment settings for a given method.
-    """
+def set_pretreatment(
+    method, deposition_potential, deposition_time, conditioning_potential, conditioning_time
+):
+    """Set the pretreatment settings for a given method."""
     method.DepositionPotential = deposition_potential
     method.DepositionTime = deposition_time
     method.ConditioningPotential = conditioning_potential
     method.ConditioningTime = conditioning_time
 
 
-def set_versus_ocp(method, versus_ocp_mode, versus_ocp_max_ocp_time, versus_ocp_stability_criterion):
-    r"""
-    Set the versus OCP settings for a given method.
-    """
+def set_versus_ocp(
+    method, versus_ocp_mode, versus_ocp_max_ocp_time, versus_ocp_stability_criterion
+):
+    """Set the versus OCP settings for a given method."""
     method.OCPmode = versus_ocp_mode
     method.OCPMaxOCPTime = versus_ocp_max_ocp_time
     method.OCPStabilityCriterion = versus_ocp_stability_criterion
 
 
-def set_bipot_settings(method, bipot_mode, bipot_potential, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start):
-    r"""
-    Set the bipot settings for a given method.
-    """
+def set_bipot_settings(
+    method,
+    bipot_mode,
+    bipot_potential,
+    bipot_current_range_max,
+    bipot_current_range_min,
+    bipot_current_range_start,
+):
+    """Set the bipot settings for a given method."""
     method.BiPotModePS = Method.EnumPalmSensBipotMode(bipot_mode)
     method.BiPotPotential = bipot_potential
-    set_autoranging_bipot_current(method, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start)
+    set_autoranging_bipot_current(
+        method, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start
+    )
 
 
 def set_extra_value_mask(method, **kwargs):
-    r"""
-    Set the extra value mask for a given method.
-    """
+    """Set the extra value mask for a given method."""
     enable_bipot_current = kwargs.get('enable_bipot_current', False)
     record_auxiliary_input = kwargs.get('record_auxiliary_input', False)
     record_cell_potential = kwargs.get('record_cell_potential', False)
-    record_we_potential = kwargs.get('record_we_potential', False)  
-    record_forward_and_reverse_currents = kwargs.get('record_forward_and_reverse_currents', False)
+    record_we_potential = kwargs.get('record_we_potential', False)
+    record_forward_and_reverse_currents = kwargs.get(
+        'record_forward_and_reverse_currents', False
+    )
     record_we_current = kwargs.get('record_we_current', False)
     record_we_current_range = kwargs.get('record_we_current_range', get_current_range(4))
 
@@ -1881,28 +2457,26 @@ def set_extra_value_mask(method, **kwargs):
     method.ExtraValueMsk = ExtraValueMask(extra_values)
 
 
-def set_post_measurement_settings(method, cell_on_after_measurement, cell_on_after_measurement_potential):
-    r"""
-    Set the post measurement settings for a given method.
-    """
+def set_post_measurement_settings(
+    method, cell_on_after_measurement, cell_on_after_measurement_potential
+):
+    """Set the post measurement settings for a given method."""
     method.CellOnAfterMeasurement = cell_on_after_measurement
     method.StandbyPotential = cell_on_after_measurement_potential
 
 
 def set_limit_settings(method, use_limit_max, limit_max, use_limit_min, limit_min):
-    r"""
-    Set the limit settings for a given method.
-    """
+    """Set the limit settings for a given method."""
     method.UseLimitMaxValue = use_limit_max
     method.LimitMaxValue = limit_max
     method.UseLimitMinValue = use_limit_min
     method.LimitMinValue = limit_min
 
 
-def set_charge_limit_settings(method, use_limit_charge_max, limit_charge_max, use_limit_charge_min, limit_charge_min):
-    r"""
-    Set the charge limit settings for a given method.
-    """
+def set_charge_limit_settings(
+    method, use_limit_charge_max, limit_charge_max, use_limit_charge_min, limit_charge_min
+):
+    """Set the charge limit settings for a given method."""
     method.UseChargeLimitMax = use_limit_charge_max
     method.ChargeLimitMax = limit_charge_max
     method.UseChargeLimitMin = use_limit_charge_min
@@ -1910,17 +2484,15 @@ def set_charge_limit_settings(method, use_limit_charge_max, limit_charge_max, us
 
 
 def set_ir_drop_compensation(method, use__ir_compensation, ir_compensation):
-    r"""
-    Set the iR drop compensation settings for a given method.
-    """
+    """Set the iR drop compensation settings for a given method."""
     method.UseIRDropComp = use__ir_compensation
     method.IRDropCompRes = ir_compensation
 
 
-def set_trigger_at_equilibration_settings(method, trigger_at_equilibration, trigger_at_equilibration_lines):
-    r"""
-    Set the trigger at equilibration settings for a given method.
-    """
+def set_trigger_at_equilibration_settings(
+    method, trigger_at_equilibration, trigger_at_equilibration_lines
+):
+    """Set the trigger at equilibration settings for a given method."""
     method.UseTriggerOnEquil = trigger_at_equilibration
     lines = 0
     for i, set_high in enumerate(trigger_at_equilibration_lines):
@@ -1929,10 +2501,10 @@ def set_trigger_at_equilibration_settings(method, trigger_at_equilibration, trig
     method.TriggerValueOnEquil = lines
 
 
-def set_trigger_at_measurement_settings(method, trigger_at_measurement, trigger_at_measurement_lines):
-    r"""
-    Set the trigger at measurement settings for a given method.
-    """
+def set_trigger_at_measurement_settings(
+    method, trigger_at_measurement, trigger_at_measurement_lines
+):
+    """Set the trigger at measurement settings for a given method."""
     method.UseTriggerOnStart = trigger_at_measurement
     lines = 0
     for i, set_high in enumerate(trigger_at_measurement_lines):
@@ -1942,9 +2514,7 @@ def set_trigger_at_measurement_settings(method, trigger_at_measurement, trigger_
 
 
 def set_multiplexer_settings(method, set_mux_mode, set_mux_channels, set_mux8r2_settings):
-    r"""
-    Set the multiplexer settings for a given method.
-    """
+    """Set the multiplexer settings for a given method."""
     method.MuxMethod = MuxMethod(set_mux_mode)
     # disable all mux channels
     for i in range(0, len(method.UseMuxChannel)):
@@ -1961,8 +2531,7 @@ def set_multiplexer_settings(method, set_mux_mode, set_mux_channels, set_mux8r2_
 
 
 def get_mux8r2_settings(**kwargs):
-    r"""
-    Create a mux8r2 multiplexer settings settings object.
+    """Create a mux8r2 multiplexer settings settings object.
 
     :Keyword Arguments:
         * connect_sense_to_working_electrode
@@ -1975,43 +2544,44 @@ def get_mux8r2_settings(**kwargs):
             -- Set the unselected channel working electrode to disconnected/floating (0), ground (1), or standby potential (2). Default is 0.
     """
     connect_sense_to_working_electrode = kwargs.get('connect_sense_to_working_electrode', False)
-    combine_reference_and_counter_electrodes = kwargs.get('combine_reference_and_counter_electrodes', False)
-    use_channel_1_reference_and_counter_electrodes = kwargs.get('use_channel_1_reference_and_counter_electrodes', False)
-    set_unselected_channel_working_electrode = kwargs.get('set_unselected_channel_working_electrode', 0) # 0 = Disconnected / floating, 1 = Ground, 2 = Standby potential
+    combine_reference_and_counter_electrodes = kwargs.get(
+        'combine_reference_and_counter_electrodes', False
+    )
+    use_channel_1_reference_and_counter_electrodes = kwargs.get(
+        'use_channel_1_reference_and_counter_electrodes', False
+    )
+    set_unselected_channel_working_electrode = kwargs.get(
+        'set_unselected_channel_working_electrode', 0
+    )  # 0 = Disconnected / floating, 1 = Ground, 2 = Standby potential
 
     mux_settings = Method.MuxSettings(False)
     mux_settings.ConnSEWE = connect_sense_to_working_electrode
     mux_settings.ConnectCERE = combine_reference_and_counter_electrodes
     mux_settings.CommonCERE = use_channel_1_reference_and_counter_electrodes
-    mux_settings.UnselWE = Method.MuxSettings.UnselWESetting(set_unselected_channel_working_electrode)
+    mux_settings.UnselWE = Method.MuxSettings.UnselWESetting(
+        set_unselected_channel_working_electrode
+    )
 
     return mux_settings
 
 
 def set_filter_settings(method, dc_mains_filter, default_curve_post_processing_filter):
-    r"""
-    Set the filter settings for a given method.
-    """
+    """Set the filter settings for a given method."""
     method.DCMainsFilter = dc_mains_filter
     method.DefaultCurvePostProcessingFilter = default_curve_post_processing_filter
 
 
 def get_method_estimated_duration(method, **kwargs):
-    r"""
-    Get the estimated duration of a given method.
+    """Get the estimated duration of a given method.
 
     :Keyword Arguments:
-
     """
-    instrument_manager = kwargs.get('instrument_manager', None) # Specifies the instrument manager to get the connected instruments capabilities from, if not specified it will use the PalmSens4 capabilities to determine the estimated duration.
+    instrument_manager = kwargs.get(
+        'instrument_manager', None
+    )  # Specifies the instrument manager to get the connected instruments capabilities from, if not specified it will use the PalmSens4 capabilities to determine the estimated duration.
 
     if instrument_manager is None or instrument_manager.__comm is None:
         instrument_capabilities = PalmSens4Capabilities()
     else:
         instrument_capabilities = instrument_manager.__comm.Capabilities
     return method.GetMinimumEstimatedMeasurementDuration(instrument_capabilities)
-
-# just a test
-if __name__ == '__main__':
-    method = chronoamperometry(interval_time=.01, e=.2, run_time=5.0)
-    test = 'test'

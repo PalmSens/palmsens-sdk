@@ -1,7 +1,23 @@
 from enum import Enum
 
+
 class Measurement:
-    def __init__(self, title: str, timestamp, current_arrays, potential_arrays, time_arrays, freq_arrays, zre_arrays, zim_arrays, aux_input_arrays, peaks, eis_fit, curves = [], dotnet_measurement = None):
+    def __init__(
+        self,
+        title: str,
+        timestamp,
+        current_arrays,
+        potential_arrays,
+        time_arrays,
+        freq_arrays,
+        zre_arrays,
+        zim_arrays,
+        aux_input_arrays,
+        peaks,
+        eis_fit,
+        curves=[],
+        dotnet_measurement=None,
+    ):
         self.title = title
         self.timestamp = timestamp
         self.current_arrays = current_arrays
@@ -26,12 +42,14 @@ class Curve:
         self.dotnet_curve = kwargs.get('dotnet_curve', [])
 
     def smooth(self, smooth_level: int):
-        """Smooth the .y_array using a Savitsky-Golay filter with the specified smooth level.
+        """Smooth the .y_array using a Savitsky-Golay filter with the specified smooth
+        level.
 
         Parameters
         ----------
         smooth_level : int
-            The smooth level to be used. -1 = none, 0 = no smooth (spike rejection only), 1 = 5 points, 2 = 9 points, 3 = 15 points, 4 = 25 points
+            The smooth level to be used. -1 = none, 0 = no smooth (spike rejection only),
+            1 = 5 points, 2 = 9 points, 3 = 15 points, 4 = 25 points
         """
         success = self.dotnet_curve.Smooth(smoothLevel=smooth_level)
         assert success
@@ -40,7 +58,8 @@ class Curve:
         self.y_array = _get_values_from_NETArray(self.dotnet_curve.YAxisDataArray)
 
     def savitsky_golay(self, window_size: int):
-        """Smooth the .y_array using a Savitsky-Golay filter with the specified window size.
+        """Smooth the .y_array using a Savitsky-Golay filter with the specified window
+        size.
 
         (i.e. window size 2 will filter points based on the values of the next/previous 2 points)
 
@@ -100,13 +119,12 @@ def convert_to_measurement(m, **kwargs) -> Measurement:
     eis_fits = []
 
     for n, array in enumerate(arrays):
-
         try:
             array_type = ArrayType(array.ArrayType)
-        except:
+        except Exception:
             array_type = ArrayType.Unspecified  # arraytype not implemented in ArrayType enum
 
-        if (array_type == ArrayType.Current):
+        if array_type == ArrayType.Current:
             current_arrays.append(_get_values_from_NETArray(array))
 
             # # get the current range the current was measured in
@@ -114,24 +132,23 @@ def convert_to_measurement(m, **kwargs) -> Measurement:
             # # get the status of the meausured data point
             # currentstatus = __getstatusfromcurrentorpotentialarray(array)
 
-        elif (array_type == ArrayType.Potential):
+        elif array_type == ArrayType.Potential:
             potential_arrays.append(_get_values_from_NETArray(array))
             # # Get the status of the meausured data point
             # potentialStatus = __getstatusfromcurrentorpotentialarray(array)
-        elif (array_type == ArrayType.Time):
+        elif array_type == ArrayType.Time:
             time_arrays.append(_get_values_from_NETArray(array))
             # # Get the status of the meausured data point
             # potentialStatus = __getstatusfromcurrentorpotentialarray(array)
-        elif (array_type == ArrayType.Frequency):
-            freq_arrays.append((_get_values_from_NETArray(array)))
-        elif (array_type == ArrayType.ZRe):
-            zre_arrays.append((_get_values_from_NETArray(array)))
-        elif (array_type == ArrayType.ZIm):
-            zim_arrays.append((_get_values_from_NETArray(array)))
+        elif array_type == ArrayType.Frequency:
+            freq_arrays.append(_get_values_from_NETArray(array))
+        elif array_type == ArrayType.ZRe:
+            zre_arrays.append(_get_values_from_NETArray(array))
+        elif array_type == ArrayType.ZIm:
+            zim_arrays.append(_get_values_from_NETArray(array))
 
-        elif (array_type == ArrayType.AuxInput):
-            aux_input_arrays.append((_get_values_from_NETArray(array)))
-
+        elif array_type == ArrayType.AuxInput:
+            aux_input_arrays.append(_get_values_from_NETArray(array))
 
     if load_peak_data:
         for curve in curves:
@@ -145,9 +162,20 @@ def convert_to_measurement(m, **kwargs) -> Measurement:
                 if eisdata is not None:
                     eis_fits.append(EISFitResult(eisdata.CDC, eisdata.CDCValues))
 
-    measurement = Measurement(m.Title, m.TimeStamp.ToString(),
-                       current_arrays, potential_arrays, time_arrays, freq_arrays, zre_arrays, zim_arrays, aux_input_arrays,
-                       peaks, eis_fits, convert_to_curves(m, return_dotnet_object=return_dotnet_object))
+    measurement = Measurement(
+        m.Title,
+        m.TimeStamp.ToString(),
+        current_arrays,
+        potential_arrays,
+        time_arrays,
+        freq_arrays,
+        zre_arrays,
+        zim_arrays,
+        aux_input_arrays,
+        peaks,
+        eis_fits,
+        convert_to_curves(m, return_dotnet_object=return_dotnet_object),
+    )
 
     if return_dotnet_object:
         measurement.dotnet_measurement = m
@@ -168,9 +196,20 @@ def convert_to_curves(m, **kwargs):
                 peaks.append(Peak(str(c.Title), peak.PeakValue, peak.PeakX))
 
         if return_dotnet_object:
-            curve = Curve(c.Title, _get_values_from_NETArray(c.XAxisDataArray), _get_values_from_NETArray(c.YAxisDataArray), peaks=peaks, dotnet_curve=c)
+            curve = Curve(
+                c.Title,
+                _get_values_from_NETArray(c.XAxisDataArray),
+                _get_values_from_NETArray(c.YAxisDataArray),
+                peaks=peaks,
+                dotnet_curve=c,
+            )
         else:
-            curve = Curve(c.Title, _get_values_from_NETArray(c.XAxisDataArray), _get_values_from_NETArray(c.YAxisDataArray), peaks=peaks)
+            curve = Curve(
+                c.Title,
+                _get_values_from_NETArray(c.XAxisDataArray),
+                _get_values_from_NETArray(c.YAxisDataArray),
+                peaks=peaks,
+            )
         curves.append(curve)
     return curves
 
@@ -226,7 +265,7 @@ class Status(Enum):
 def _get_values_from_NETArray(array, **kwargs):
     start = kwargs.get('start', 0)
     count = kwargs.get('count', array.Count)
-    values = list()
+    values = []
     for i in range(start, start + count):
         value = array.get_Item(i)
         values.append(float(value.Value))
@@ -236,8 +275,8 @@ def _get_values_from_NETArray(array, **kwargs):
 def __get_currentranges_from_currentarray(arraycurrents, **kwargs):
     start = kwargs.get('start', 0)
     count = kwargs.get('count', arraycurrents.Count)
-    values = list()
-    if (ArrayType(arraycurrents.ArrayType) == ArrayType.Current):
+    values = []
+    if ArrayType(arraycurrents.ArrayType) == ArrayType.Current:
         for i in range(start, count):
             value = arraycurrents.get_Item(i)
             values.append(str(value.CurrentRange.ToString()))
@@ -247,11 +286,8 @@ def __get_currentranges_from_currentarray(arraycurrents, **kwargs):
 def __get_status_from_current_or_potentialarray(array, **kwargs):
     start = kwargs.get('start', 0)
     count = kwargs.get('count', array.Count)
-    values = list()
+    values = []
     for i in range(start, count):
         value = array.get_Item(i)
         values.append(str(Status(value.ReadingStatus)))
     return values
-
-if __name__ == "__main__":
-    pass

@@ -1,9 +1,11 @@
 from pspython import pspyinstruments, pspymethods
 
+
 def new_data_callback(new_data):
     for point in new_data:
         for type, value in point.items():
-            print(type + ' = ' + str(value))
+            print(f'{type} = {value}')
+
 
 manager = pspyinstruments.InstrumentManager(new_data_callback=new_data_callback)
 
@@ -20,7 +22,7 @@ print('connection established')
 serial = manager.get_instrument_serial()
 print(serial)
 
-script = '''e
+script = """e
 var c
 var p
 var e
@@ -69,7 +71,7 @@ endloop
 on_finished:
   cell_off
 
-'''
+"""
 
 method = pspymethods.method_script_sandbox(script)
 

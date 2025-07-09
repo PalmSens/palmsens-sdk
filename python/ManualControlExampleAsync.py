@@ -1,11 +1,13 @@
-from pspython import pspyinstruments, pspymethods
 import asyncio
+
+from pspython import pspyinstruments, pspymethods
+
 
 async def main():
     manager = pspyinstruments.InstrumentManagerAsync()
 
     available_instruments = await pspyinstruments.discover_instruments_async()
-    print('connecting to ' + available_instruments[0].name)
+    print(f'connecting to {available_instruments[0].name}')
     success = await manager.connect(available_instruments[0])
 
     if success != 1:
@@ -24,7 +26,7 @@ async def main():
     print('set cell to to 1mA currrent range')
 
     current = await manager.read_current()
-    print('current = ' + str(current) + ' µA')
+    print(f'current = {current} µA')
 
     await manager.set_cell(False)
     print('cell disabled')
@@ -35,5 +37,6 @@ async def main():
         print('disconnected')
     else:
         print('error while disconnecting')
+
 
 asyncio.run(main())

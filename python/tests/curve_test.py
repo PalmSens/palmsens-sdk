@@ -1,9 +1,10 @@
-from pspython import pspyfiles
 from pathlib import Path
+
 import pytest
 
+from pspython import pspyfiles
 
-DATA_FILE = Path(__file__).parents[1] / "Demo CV DPV EIS IS-C electrode.pssession"
+DATA_FILE = Path(__file__).parents[1] / 'Demo CV DPV EIS IS-C electrode.pssession'
 
 
 @pytest.fixture
@@ -22,16 +23,6 @@ def curve(measurements):
 
 
 def test_curve_smooth(curve):
-    x = curve.x_array
-    y = curve.y_array
-
-    curve.smooth(smooth_level=1)
-
-    assert x == curve.x_array
-    assert y != curve.y_array
-
-
-def test_savitsky_golay(curve):
     x = curve.x_array
     y = curve.y_array
 

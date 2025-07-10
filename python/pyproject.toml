@@ -6,15 +6,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "palmsens-python"
 version = "0.0.1"
-description = "Python SDK for Palmsens"
+description = "Python SDK for PalmSens instruments"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [
-	{name = "Palmsens", email = "info@palmsens.com"},
+	{name = "Palmsens BV", email = "info@palmsens.com"},
 ]
 keywords = [
 ]
-license = {text = "???"}
+license = {text = "LicenseRef-BSD-3-Clause-PalmSens"}
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
@@ -56,8 +56,15 @@ publishing = [
     "build",
 ]
 
+[tool.coverage.run]
+branch = true
+source = ["pspython"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "requires_instrument: Mark tests that require a connected instrument."
+]
 
 [tool.ruff]
 line-length = 96

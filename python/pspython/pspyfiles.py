@@ -6,8 +6,8 @@ from PalmSens.Data import SessionManager  # type: ignore
 # Import the static LoadSaveHelperFunctions
 from PalmSens.Windows import LoadSaveHelperFunctions  # type: ignore
 
-import pspython.pspydata as pspydata
-import pspython.pspymethods as pspymethods
+from . import pspymethods
+from .data.convert import convert_to_measurement
 
 
 def load_session_file(path, **kwargs):
@@ -21,7 +21,7 @@ def load_session_file(path, **kwargs):
 
         for m in session:
             measurements.append(
-                pspydata.convert_to_measurement(
+                convert_to_measurement(
                     m,
                     load_peak_data=load_peak_data,
                     load_eis_fits=load_eis_fits,

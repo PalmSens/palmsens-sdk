@@ -21,8 +21,9 @@ from PalmSens.Windows.Devices import (  # type: ignore
 from System import Action, EventHandler  # type: ignore
 from System.Threading.Tasks import Task  # type: ignore
 
-import pspython.pspydata as pspydata
-import pspython.pspymethods as pspymethods
+from .data._shared import ArrayType, _get_values_from_NETArray
+from .data.convert import convert_to_measurement
+from .pspymethods import get_mux8r2_settings
 
 
 def create_future(clr_task):
@@ -293,16 +294,16 @@ class InstrumentManager:
             for i in range(start, start + count):
                 point = {}
                 point['index'] = i + 1
-                point['x'] = pspydata._get_values_from_NETArray(
-                    curve.XAxisDataArray, start=i, count=1
-                )[0]
+                point['x'] = _get_values_from_NETArray(curve.XAxisDataArray, start=i, count=1)[
+                    0
+                ]
                 point['x_unit'] = curve.XUnit.ToString()
-                point['x_type'] = pspydata.ArrayType(curve.XAxisDataArray.ArrayType).name
-                point['y'] = pspydata._get_values_from_NETArray(
-                    curve.YAxisDataArray, start=i, count=1
-                )[0]
+                point['x_type'] = ArrayType(curve.XAxisDataArray.ArrayType).name
+                point['y'] = _get_values_from_NETArray(curve.YAxisDataArray, start=i, count=1)[
+                    0
+                ]
                 point['y_unit'] = curve.YUnit.ToString()
-                point['y_type'] = pspydata.ArrayType(curve.YAxisDataArray.ArrayType).name
+                point['y_type'] = ArrayType(curve.YAxisDataArray.ArrayType).name
                 data.append(point)
             self.new_data_callback(data)
 
@@ -313,19 +314,15 @@ class InstrumentManager:
                 point = {}
                 point['index'] = i + 1
                 for array in arrays:
-                    array_type = pspydata.ArrayType(array.ArrayType)
-                    if array_type == pspydata.ArrayType.Frequency:
-                        point['frequency'] = pspydata._get_values_from_NETArray(
-                            array, start=i, count=1
-                        )[0]
-                    elif array_type == pspydata.ArrayType.ZRe:
-                        point['zre'] = pspydata._get_values_from_NETArray(
-                            array, start=i, count=1
-                        )[0]
-                    elif array_type == pspydata.ArrayType.ZIm:
-                        point['zim'] = pspydata._get_values_from_NETArray(
-                            array, start=i, count=1
-                        )[0]
+                    array_type = ArrayType(array.ArrayType)
+                    if array_type == ArrayType.Frequency:
+                        point['frequency'] = _get_values_from_NETArray(array, start=i, count=1)[
+                            0
+                        ]
+                    elif array_type == ArrayType.ZRe:
+                        point['zre'] = _get_values_from_NETArray(array, start=i, count=1)[0]
+                    elif array_type == ArrayType.ZIm:
+                        point['zim'] = _get_values_from_NETArray(array, start=i, count=1)[0]
                 data.append(point)
             self.new_data_callback(data)
 
@@ -426,7 +423,7 @@ class InstrumentManager:
 
             measurement = self.__active_measurement
             self.__active_measurement = None
-            return pspydata.convert_to_measurement(
+            return convert_to_measurement(
                 measurement, return_dotnet_object=return_dotnet_object
             )
 
@@ -559,7 +556,7 @@ class InstrumentManager:
         if self.__comm.Capabilities.MuxModel != MuxModel.MUX8R2:
             return
 
-        mux_settings = pspymethods.get_mux8r2_settings(
+        mux_settings = get_mux8r2_settings(
             connect_sense_to_working_electrode=kwargs.get(
                 'connect_sense_to_working_electrode', False
             ),
@@ -795,16 +792,16 @@ class InstrumentManagerAsync:
             for i in range(start, start + count):
                 point = {}
                 point['index'] = i + 1
-                point['x'] = pspydata._get_values_from_NETArray(
-                    curve.XAxisDataArray, start=i, count=1
-                )[0]
+                point['x'] = _get_values_from_NETArray(curve.XAxisDataArray, start=i, count=1)[
+                    0
+                ]
                 point['x_unit'] = curve.XUnit.ToString()
-                point['x_type'] = pspydata.ArrayType(curve.XAxisDataArray.ArrayType).name
-                point['y'] = pspydata._get_values_from_NETArray(
-                    curve.YAxisDataArray, start=i, count=1
-                )[0]
+                point['x_type'] = ArrayType(curve.XAxisDataArray.ArrayType).name
+                point['y'] = _get_values_from_NETArray(curve.YAxisDataArray, start=i, count=1)[
+                    0
+                ]
                 point['y_unit'] = curve.YUnit.ToString()
-                point['y_type'] = pspydata.ArrayType(curve.YAxisDataArray.ArrayType).name
+                point['y_type'] = ArrayType(curve.YAxisDataArray.ArrayType).name
                 data.append(point)
             self.new_data_callback(data)
 
@@ -815,19 +812,15 @@ class InstrumentManagerAsync:
                 point = {}
                 point['index'] = i + 1
                 for array in arrays:
-                    array_type = pspydata.ArrayType(array.ArrayType)
-                    if array_type == pspydata.ArrayType.Frequency:
-                        point['frequency'] = pspydata._get_values_from_NETArray(
-                            array, start=i, count=1
-                        )[0]
-                    elif array_type == pspydata.ArrayType.ZRe:
-                        point['zre'] = pspydata._get_values_from_NETArray(
-                            array, start=i, count=1
-                        )[0]
-                    elif array_type == pspydata.ArrayType.ZIm:
-                        point['zim'] = pspydata._get_values_from_NETArray(
-                            array, start=i, count=1
-                        )[0]
+                    array_type = ArrayType(array.ArrayType)
+                    if array_type == ArrayType.Frequency:
+                        point['frequency'] = _get_values_from_NETArray(array, start=i, count=1)[
+                            0
+                        ]
+                    elif array_type == ArrayType.ZRe:
+                        point['zre'] = _get_values_from_NETArray(array, start=i, count=1)[0]
+                    elif array_type == ArrayType.ZIm:
+                        point['zim'] = _get_values_from_NETArray(array, start=i, count=1)[0]
                 data.append(point)
             self.new_data_callback(data)
 
@@ -897,70 +890,68 @@ class InstrumentManagerAsync:
         eis_data_data_added_handler = EISData.NewDataEventHandler(eis_data_data_added_callback)
         comm_error_handler = EventHandler(comm_error_callback)
 
-        try:
-            # subscribe to events indicating the start and end of the measurement
-            self.__comm.BeginMeasurementAsync += begin_measurement_handler
-            self.__comm.EndMeasurementAsync += end_measurement_handler
-            self.__comm.Disconnected += comm_error_handler
+        # try:
+        # subscribe to events indicating the start and end of the measurement
+        self.__comm.BeginMeasurementAsync += begin_measurement_handler
+        self.__comm.EndMeasurementAsync += end_measurement_handler
+        self.__comm.Disconnected += comm_error_handler
 
-            if self.new_data_callback is not None:
-                self.__comm.BeginReceiveEISData += begin_receive_eis_data_handler
-                self.__comm.BeginReceiveCurve += begin_receive_curve_handler
+        if self.new_data_callback is not None:
+            self.__comm.BeginReceiveEISData += begin_receive_eis_data_handler
+            self.__comm.BeginReceiveCurve += begin_receive_curve_handler
 
-            # obtain lock on library (required when communicating with instrument)
-            await create_future(self.__comm.ClientConnection.Semaphore.WaitAsync())
+        # obtain lock on library (required when communicating with instrument)
+        await create_future(self.__comm.ClientConnection.Semaphore.WaitAsync())
 
-            # send and execute the method on the instrument
-            _ = await create_future(self.__comm.MeasureAsync(method))
-            self.__measuring = True
+        # send and execute the method on the instrument
+        _ = await create_future(self.__comm.MeasureAsync(method))
+        self.__measuring = True
 
-            # release lock on library (required when communicating with instrument)
-            self.__comm.ClientConnection.Semaphore.Release()
+        # release lock on library (required when communicating with instrument)
+        self.__comm.ClientConnection.Semaphore.Release()
 
-            await begin_measurement_event.wait()
+        await begin_measurement_event.wait()
 
-            if hardware_sync_initiated_event is not None:
-                hardware_sync_initiated_event.set()
+        if hardware_sync_initiated_event is not None:
+            hardware_sync_initiated_event.set()
 
-            await end_measurement_event.wait()
+        await end_measurement_event.wait()
 
-            # unsubscribe to events indicating the start and end of the measurement
-            self.__comm.BeginMeasurementAsync -= begin_measurement_handler
-            self.__comm.EndMeasurementAsync -= end_measurement_handler
-            self.__comm.Disconnected -= comm_error_handler
+        # unsubscribe to events indicating the start and end of the measurement
+        self.__comm.BeginMeasurementAsync -= begin_measurement_handler
+        self.__comm.EndMeasurementAsync -= end_measurement_handler
+        self.__comm.Disconnected -= comm_error_handler
 
-            if self.new_data_callback is not None:
-                self.__comm.BeginReceiveEISData -= begin_receive_eis_data_handler
-                self.__comm.BeginReceiveCurve -= begin_receive_curve_handler
+        if self.new_data_callback is not None:
+            self.__comm.BeginReceiveEISData -= begin_receive_eis_data_handler
+            self.__comm.BeginReceiveCurve -= begin_receive_curve_handler
 
-            if self.__active_measurement_error is not None:
-                print(self.__active_measurement_error)
-                return None
-
-            measurement = self.__active_measurement
-            self.__active_measurement = None
-            return pspydata.convert_to_measurement(
-                measurement, return_dotnet_object=return_dotnet_object
-            )
-
-        except Exception:
-            traceback.print_exc()
-
-            if self.__comm.ClientConnection.Semaphore.CurrentCount == 0:
-                # release lock on library (required when communicating with instrument)
-                self.__comm.ClientConnection.Semaphore.Release()
-
-            self.__active_measurement = None
-            self.__comm.BeginMeasurementAsync -= begin_measurement_handler
-            self.__comm.EndMeasurementAsync -= end_measurement_handler
-            self.__comm.Disconnected -= comm_error_handler
-
-            if self.new_data_callback is not None:
-                self.__comm.BeginReceiveEISData -= begin_receive_eis_data_handler
-                self.__comm.BeginReceiveCurve -= begin_receive_curve_handler
-
-            self.__measuring = False
+        if self.__active_measurement_error is not None:
+            print(self.__active_measurement_error)
             return None
+
+        measurement = self.__active_measurement
+        self.__active_measurement = None
+        return convert_to_measurement(measurement, return_dotnet_object=return_dotnet_object)
+
+        # except Exception:
+        #     traceback.print_exc()
+
+        #     if self.__comm.ClientConnection.Semaphore.CurrentCount == 0:
+        #         # release lock on library (required when communicating with instrument)
+        #         self.__comm.ClientConnection.Semaphore.Release()
+
+        #     self.__active_measurement = None
+        #     self.__comm.BeginMeasurementAsync -= begin_measurement_handler
+        #     self.__comm.EndMeasurementAsync -= end_measurement_handler
+        #     self.__comm.Disconnected -= comm_error_handler
+
+        #     if self.new_data_callback is not None:
+        #         self.__comm.BeginReceiveEISData -= begin_receive_eis_data_handler
+        #         self.__comm.BeginReceiveCurve -= begin_receive_curve_handler
+
+        #     self.__measuring = False
+        #     return None
 
     def initiate_hardware_sync_follower_channel(self, method):
         if self.__comm is None:
@@ -1098,7 +1089,7 @@ class InstrumentManagerAsync:
         if self.__comm.Capabilities.MuxModel != MuxModel.MUX8R2:
             return
 
-        mux_settings = pspymethods.get_mux8r2_settings(
+        mux_settings = get_mux8r2_settings(
             connect_sense_to_working_electrode=kwargs.get(
                 'connect_sense_to_working_electrode', False
             ),

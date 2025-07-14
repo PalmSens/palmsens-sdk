@@ -32,7 +32,7 @@ method = pspymethods.square_wave_voltammetry(
 
 method.Frequency = 50
 
-measurement = manager.measure(method, return_dotnet_object=True)
+measurement = manager.measure(method)
 
 print(f'ocp: {measurement.curves[0].dotnet_curve.OCPValue}')
 

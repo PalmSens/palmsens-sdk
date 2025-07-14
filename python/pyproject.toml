@@ -30,11 +30,7 @@ classifiers = [
 ]
 dependencies = [
     'numpy',
-    'pycparser',
-    'python-dateutil',
     'pythonnet',
-    'pytz',
-    'six',
 ]
 
 [project.urls]

@@ -22,7 +22,7 @@ from System import Action, EventHandler  # type: ignore
 from System.Threading.Tasks import Task  # type: ignore
 
 from .data._shared import ArrayType, _get_values_from_NETArray
-from .data.convert import convert_to_measurement
+from .data.measurement import Measurement
 from .pspymethods import get_mux8r2_settings
 
 
@@ -263,9 +263,7 @@ class InstrumentManager:
 
         return True, None
 
-    def measure(self, method, **kwargs):
-        return_dotnet_object = kwargs.get('return_dotnet_object', False)
-
+    def measure(self, method):
         if self.__comm is None:
             print('Not connected to an instrument')
             return None
@@ -423,9 +421,7 @@ class InstrumentManager:
 
             measurement = self.__active_measurement
             self.__active_measurement = None
-            return convert_to_measurement(
-                measurement, return_dotnet_object=return_dotnet_object
-            )
+            return Measurement(dotnet_measurement=measurement)
 
         except Exception:
             traceback.print_exc()
@@ -760,10 +756,7 @@ class InstrumentManagerAsync:
 
         return True, None
 
-    async def measure(self, method, **kwargs):
-        return_dotnet_object = kwargs.get('return_dotnet_object', False)
-        hardware_sync_initiated_event = kwargs.get('hardware_sync_initiated_event', None)
-
+    async def measure(self, method, hardware_sync_initiated_event=None):
         if self.__comm is None:
             print('Not connected to an instrument')
             return None
@@ -932,7 +925,7 @@ class InstrumentManagerAsync:
 
         measurement = self.__active_measurement
         self.__active_measurement = None
-        return convert_to_measurement(measurement, return_dotnet_object=return_dotnet_object)
+        return Measurement(dotnet_measurement=measurement)
 
         # except Exception:
         #     traceback.print_exc()

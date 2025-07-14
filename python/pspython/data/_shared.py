@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 
 class ArrayType(Enum):
@@ -41,6 +42,10 @@ class ArrayType(Enum):
     MeasuredStepStartIndex = 35
     miDC = 36
 
+    @classmethod
+    def _missing_(cls, value):
+        return cls.Unspecified
+
 
 class Status(Enum):
     Unknown = -1
@@ -49,9 +54,10 @@ class Status(Enum):
     Underload = 2
 
 
-def _get_values_from_NETArray(array, **kwargs):
-    start = kwargs.get('start', 0)
-    count = kwargs.get('count', array.Count)
+def _get_values_from_NETArray(array, start: int = 0, count: Optional[int] = None):
+    if not count:
+        count = array.Count
+
     values = []
     for i in range(start, start + count):
         value = array.get_Item(i)
@@ -59,9 +65,11 @@ def _get_values_from_NETArray(array, **kwargs):
     return values
 
 
-def __get_currentranges_from_currentarray(arraycurrents, **kwargs):
-    start = kwargs.get('start', 0)
-    count = kwargs.get('count', arraycurrents.Count)
+def __get_currentranges_from_currentarray(
+    arraycurrents, start: int = 0, count: Optional[int] = None
+):
+    if not count:
+        count = arraycurrents.Count
     values = []
     if ArrayType(arraycurrents.ArrayType) == ArrayType.Current:
         for i in range(start, count):
@@ -70,9 +78,12 @@ def __get_currentranges_from_currentarray(arraycurrents, **kwargs):
     return values
 
 
-def __get_status_from_current_or_potentialarray(array, **kwargs):
-    start = kwargs.get('start', 0)
-    count = kwargs.get('count', array.Count)
+def __get_status_from_current_or_potentialarray(
+    array, start: int = 0, count: Optional[int] = None
+):
+    if not count:
+        count = array.Count
+
     values = []
     for i in range(start, count):
         value = array.get_Item(i)

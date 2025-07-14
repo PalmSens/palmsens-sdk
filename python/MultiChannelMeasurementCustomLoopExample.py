@@ -51,7 +51,7 @@ async def run_steps(manager, channel, steps):
 
     for step in steps:
         method = update_method(method, **step)
-        measurements.append(await manager.measure(method, return_dotnet_object=True))
+        measurements.append(await manager.measure(method))
 
     return measurements
 

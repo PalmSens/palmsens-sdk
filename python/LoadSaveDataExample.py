@@ -19,9 +19,6 @@ pspyfiles.save_method_file(os.path.join(scriptDir, 'PSDummyCell_LSV_copy.psmetho
 # load a session file
 measurements = pspyfiles.load_session_file(
     os.path.join(scriptDir, 'Demo CV DPV EIS IS-C electrode.pssession'),
-    load_peak_data=True,
-    load_eis_fits=True,
-    return_dotnet_object=True,
 )
 
 for measurement in measurements:

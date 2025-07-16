@@ -1,24 +1,24 @@
-import os
+from pathlib import Path
 
 import numpy as np
 import pandas
 
 from pspython import pspyfiles, pspymethods
 
-scriptDir = os.path.dirname(os.path.realpath(__file__))
+script_dir = Path(__file__).parent
 
 # load a method file
-method = pspyfiles.load_method_file(os.path.join(scriptDir, 'PSDummyCell_LSV.psmethod'))
+method = pspyfiles.load_method_file(script_dir / 'PSDummyCell_LSV.psmethod')
 print(
     f'loaded method, estimated duration: {pspymethods.get_method_estimated_duration(method)} seconds'
 )
 
 # save the method file
-pspyfiles.save_method_file(os.path.join(scriptDir, 'PSDummyCell_LSV_copy.psmethod'), method)
+pspyfiles.save_method_file(script_dir / 'PSDummyCell_LSV_copy.psmethod', method)
 
 # load a session file
 measurements = pspyfiles.load_session_file(
-    os.path.join(scriptDir, 'Demo CV DPV EIS IS-C electrode.pssession'),
+    script_dir / 'Demo CV DPV EIS IS-C electrode.pssession'
 )
 
 for measurement in measurements:
@@ -32,46 +32,50 @@ for measurement in measurements:
 
 # save the session file
 pspyfiles.save_session_file(
-    os.path.join(scriptDir, 'Demo CV DPV EIS IS-C electrode_copy.pssession'), [measurements[0]]
+    script_dir / 'Demo CV DPV EIS IS-C electrode_copy.pssession', [measurements[0]]
 )
 
 # convert measurments to pandas dataframes
 frames = []
 frame_names = []
 
-for m in measurements:
+for measurement in measurements:
+    dataset = measurement.dataset
+
     data = []
     columns = []
 
-    for i, a in enumerate(m.time_arrays):
+    for i, a in enumerate(dataset.time_arrays):
         columns.append(f'time {i + 1}')
         data.append(a)
 
-    for i, a in enumerate(m.freq_arrays):
+    for i, a in enumerate(dataset.freq_arrays):
         columns.append(f'frequency {i + 1}')
         data.append(a)
 
-    for i, a in enumerate(m.potential_arrays):
+    for i, a in enumerate(dataset.potential_arrays):
         columns.append(f'potential {i + 1}')
         data.append(a)
 
-    for i, a in enumerate(m.current_arrays):
+    for i, a in enumerate(dataset.current_arrays):
         columns.append(f'current {i + 1}')
         data.append(a)
 
-    for i, a in enumerate(m.zre_arrays):
+    for i, a in enumerate(dataset.zre_arrays):
         columns.append(f'zre {i + 1}')
         data.append(a)
 
-    for i, a in enumerate(m.zim_arrays):
+    for i, a in enumerate(dataset.zim_arrays):
         columns.append(f'zim {i + 1}')
         data.append(a)
 
     length = max(map(len, data))
-    arrays = np.array([xi + [None] * (length - len(xi)) for xi in data], dtype=float)
+    arrays = np.array(
+        [np.pad(xi, (0, length - len(xi)), constant_values=np.nan) for xi in data]
+    )
     df_m = pandas.DataFrame(arrays.transpose(), index=range(length), columns=columns)
     frames.append(df_m)
-    frame_names.append(m.title)
+    frame_names.append(measurement.title)
 
 df = pandas.concat(frames, keys=frame_names)
 print(df.head(10))

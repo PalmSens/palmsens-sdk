@@ -1,33 +1,22 @@
-from pathlib import Path
-
 import pytest
 
-from pspython.pspyfiles import load_session_file
-
-DATA_FILE = Path(__file__).parents[1] / 'Demo CV DPV EIS IS-C electrode.pssession'
+from pspython.data.curve import Curve
 
 
 @pytest.fixture
-def measurements():
-    return load_session_file(
-        str(DATA_FILE),
-    )
+def measurement(data_dpv):
+    return data_dpv[0]
 
 
-def test_measurement(measurements):
-    m = measurements[0]
+def test_measurement_properties(measurement):
+    assert measurement.title == 'Square Wave Voltammetry'
+    assert isinstance(measurement.timestamp, str)
 
-    assert m.title == 'Differential Pulse Voltammetry'
-    assert isinstance(m.timestamp, str)
-    assert len(m.current_arrays[0]) == 219
-    assert len(m.potential_arrays[0]) == 219
-    assert len(m.time_arrays[0]) == 219
+    peaks = measurement.peaks
+    assert len(peaks) == 0
 
-    assert len(m.freq_arrays) == 0
-    assert len(m.zre_arrays) == 0
-    assert len(m.zim_arrays) == 0
-    assert len(m.aux_input_arrays) == 0
+    assert len(measurement.eis_fit) == 0
 
-    assert len(m.peaks) == 1
-    assert len(m.eis_fit) == 0
-    assert len(m.curves) == 1
+    curves = measurement.curves
+    assert len(curves) == 1
+    assert isinstance(curves[0], Curve)

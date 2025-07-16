@@ -1,3 +1,5 @@
+from math import isnan
+
 import pytest
 
 
@@ -65,6 +67,7 @@ def test_curve_properties(curve_dpv):
 
     assert curve_dpv.mux_channel == -1
 
+    assert isnan(curve_dpv.ocp_value)
     assert not curve_dpv.reference_electrode_name
     assert not curve_dpv.reference_electrode_potential
     assert curve_dpv.x_unit == 'V'

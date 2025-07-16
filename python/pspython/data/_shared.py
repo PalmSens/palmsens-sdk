@@ -41,6 +41,7 @@ class ArrayType(Enum):
     Eac = 34
     MeasuredStepStartIndex = 35
     miDC = 36
+    SE2vsXPotential = 37
 
     @classmethod
     def _missing_(cls, value):

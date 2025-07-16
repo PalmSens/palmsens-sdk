@@ -1,5 +1,5 @@
 import asyncio
-import os
+from pathlib import Path
 
 from pspython import pspyfiles, pspyinstruments, pspymethods
 
@@ -88,7 +88,7 @@ async def main():
         channels = await asyncio.gather(*tasks)  # use gather to await results
 
         for measurements in channels:
-            pspyfiles.save_session_file(os.getcwd() + '\\example.pssession', measurements)
+            pspyfiles.save_session_file(Path.cwd() / 'example.pssession', measurements)
 
         for channel, manager in managers.items():
             success = manager.disconnect()

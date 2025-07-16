@@ -10,7 +10,7 @@ class Curve:
         self.dotnet_curve = dotnet_curve
 
     def __str__(self):
-        return f'{self.__class__.__name__}(n_points={self.n_points})'
+        return f'{self.__class__.__name__}(title={self.title}, n_points={self.n_points})'
 
     def smooth(self, smooth_level: int):
         """Smooth the .y_array using a Savitsky-Golay filter with the specified smooth
@@ -109,6 +109,11 @@ class Curve:
         return self.dotnet_curve.NPoints
 
     @property
+    def ocp_value(self) -> float:
+        """OCP value for curve."""
+        return self.dotnet_curve.OCPValue
+
+    @property
     def reference_electrode_name(self) -> Union[None, str]:
         """The name of the reference electrode. Return None if not set."""
         if ret := self.dotnet_curve.ReferenceElectrodeName:
@@ -169,7 +174,11 @@ class Curve:
     @property
     def peaks(self) -> list[Peak]:
         """Return peaks stored on object."""
-        return [Peak(dotnet_peak=peak) for peak in self.dotnet_curve.Peaks]
+        try:
+            peaks = [Peak(dotnet_peak=peak) for peak in self.dotnet_curve.Peaks]
+        except TypeError:
+            peaks = []
+        return peaks
 
     def clear_peaks(self):
         """Clear peaks stored on object."""

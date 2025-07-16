@@ -1,31 +1,31 @@
 = Working with files
 
-As of version 5 of the PalmSens SDK and PSTrace measurements and their corresponding methods are stored in `*.pssession` files. 
-Methods can be stored separately in `*.psmethod` files.
+As of version 5 of the PalmSens SDK and PSTrace measurements and their corresponding methods are stored in `.pssession` files.
+Methods can be stored separately in `.psmethod` files.
 
 The PalmSens SDK is backward compatible with following filetypes:
 
 |===
 | File | vs potential (scan method) | Measurement vs time
 
-|Method 
-|`.psmethod` 
+|Method
+|`.psmethod`
 |`.psmethod`
 
-|Method (before 2012) 
-|`.pms` 
+|Method (before 2012)
+|`.pms`
 |`.pmt`
 
-|Data (single curve) 
-|`.pss` 
+|Data (single curve)
+|`.pss`
 |`.pst`
 
-|Analysis curves 
-|`.psd` 
+|Analysis curves
+|`.psd`
 |
 
-|Multiplexer curves 
-| 
+|Multiplexer curves
+|
 |`.mux`
 |===
 
@@ -41,9 +41,7 @@ This function returns a `PalmSens.Method` .NET object which can be used to run a
 
 [source,python]
 ----
-method = pspyfiles.load_method_file(
-    os.path.join(scriptDir, 'PSDummyCell_LSV.psmethod')
-)
+method = pspyfiles.load_method_file('PSDummyCell_LSV.psmethod')
 ----
 
 == Setting up a method
@@ -108,7 +106,7 @@ method.Frequency = 50 \# Hz
 ----
 
 [TIP]
-==== 
+====
 The VSCode Debug Console or another Python REPL environment will auto complete on the properties and functions of .NET objects like the `PalmSens.Method` objects returned by the helper methods.
 
 image:vscode_autocomplete.png[Debug console in VSCode]
@@ -120,40 +118,31 @@ The `pspyfiles.py` script function save_method_file can be used to save method f
 
 [source,python]
 ----
-pspyfiles.save_method_file(
-    os.path.join(scriptDir, 'PSDummyCell_LSV_copy.psmethod'), 
-    method
-)
+pspyfiles.save_method_file('PSDummyCell_LSV_copy.psmethod', method)
 ----
 
 == Loading and saving data
 
 image:pssession.png[Data in pssession files]
 
-Data from measurements can be loaded from and stored to `.pssession` files. 
+Data from measurements can be loaded from and stored to `.pssession` files.
 This contains a session with one or more measurements containing its respective method and curves.
 
 The `pspyfiles.py` script function `load_session_file()` can be used to load session files.
 It returns a list of measurements, with the exception of (galvanostatic) electrochemical impedance spectroscopy measurements measurements contain one or more curves.
 The measurement and curve classes are defined in the pspydata script.
 
-The load_session_file function contains overloads for loading equivalent circuit fit results and peaks and an overload to keep the underlying .NET objects. 
+The load_session_file function contains overloads for loading equivalent circuit fit results and peaks and an overload to keep the underlying .NET objects.
 Keeping the underlying .NET objects is not necessary but useful when you need to access extra information or functionality not provided in the python measurement and curve classes.
 
-The following example loads a collection of measurements from a session file and saves the first measurement to a different file, important to note is that saving to a session file requires the underlying .NET objects to be loaded, _i.e._ setting `return_dotnet_object=true`.
+The following example loads a collection of measurements from a session file and saves the first measurement to a different file.
 
 [source,python]
 ----
-measurements = pspyfiles.load_session_file(
-    os.path.join(scriptDir, 'Demo CV DPV EIS IS-C electrode.pssession'), 
-    load_peak_data=True,
-    load_eis_fits=True, 
-    return_dotnet_object=True
-)
+measurements = pspyfiles.load_session_file('Demo CV DPV EIS IS-C electrode.pssession')
 
 pspyfiles.save_session_file(
-    os.path.join(scriptDir, 'Demo CV DPV EIS IS-C electrode_copy.pssession'),
+    'Demo CV DPV EIS IS-C electrode_copy.pssession',
     [measurements[0]]
 )
 ----
-

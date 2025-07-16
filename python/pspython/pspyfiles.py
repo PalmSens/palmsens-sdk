@@ -1,58 +1,85 @@
 import os
-import traceback
+from pathlib import Path
+from typing import Union
 
 from PalmSens.Data import SessionManager  # type: ignore
-
-# Import the static LoadSaveHelperFunctions
 from PalmSens.Windows import LoadSaveHelperFunctions  # type: ignore
 
-from . import pspymethods
 from .data.measurement import Measurement
 
 
 def load_session_file(
-    path: str,
+    path: Union[str, Path],
 ) -> list[Measurement]:
     """Load a session file (.pssession).
 
     Parameters
     ----------
-    path : str
+    path : Path | str
         Path to session file
 
     Returns
     -------
     measurements : list[Measurement]
-        Return list of measurement
+        Return list of measurements
     """
-    session = LoadSaveHelperFunctions.LoadSessionFile(path)
+    session = LoadSaveHelperFunctions.LoadSessionFile(str(path))
     return [Measurement(dotnet_measurement=m) for m in session]
 
 
-def save_session_file(path: str, measurements: list[Measurement]):
+def save_session_file(path: Union[str, Path], measurements: list[Measurement]):
+    """Load a session file (.pssession).
+
+    Parameters
+    ----------
+    path : Path | str
+        Path to save the session file
+    measurements : list[Measurement]
+        List of measurements to save
+    """
+    if any((measurement is None) for measurement in measurements):
+        raise ValueError('cannot save null measurement')
+
+    session = SessionManager()
+    session.MethodForEditor = measurements[0].dotnet_measurement.Method
+
     for measurement in measurements:
-        if measurement is None:
-            raise ValueError('cannot save null measurement')
-        if measurement.dotnet_measurement is None:
-            raise ValueError(
-                'cannot save measurements that do not have a reference to the dotnet measurement object'
-            )
+        session.AddMeasurement(measurement.dotnet_measurement)
 
-    try:
-        session = SessionManager()
-        session.MethodForEditor = measurements[0].dotnet_measurement.Method
-
-        for measurement in measurements:
-            session.AddMeasurement(measurement.dotnet_measurement)
-
-        LoadSaveHelperFunctions.SaveSessionFile(path, session)
-        return
-    except Exception:
-        traceback.print_exc()
-        return 0
+    LoadSaveHelperFunctions.SaveSessionFile(str(path), session)
 
 
-def read_notes(path: str, n_chars: int = 3000):
+def load_method_file(path: Union[str, Path]):
+    """Load a method file (.psmethod).
+
+    Parameters
+    ----------
+    path : Path | str
+        Path to method file
+
+    Returns
+    -------
+    method : Method
+        Return method instance
+    """
+    method = LoadSaveHelperFunctions.LoadMethod(str(path))
+    return method
+
+
+def save_method_file(path: Union[str, Path], method):
+    """Load a method file (.psmethod).
+
+    Parameters
+    ----------
+    path : Path | str
+        Path to save the method file
+    method : method
+        Method to save
+    """
+    LoadSaveHelperFunctions.SaveMethod(method, str(path))
+
+
+def read_notes(path: Union[str, Path], n_chars: int = 3000):
     with open(path, encoding='utf16') as myfile:
         contents = myfile.read()
     raw_txt = contents[1:n_chars].split('\\r\\n')
@@ -61,27 +88,3 @@ def read_notes(path: str, n_chars: int = 3000):
         notes_list[0].replace('%20', ' ').replace('NOTES=', '').replace('%crlf', os.linesep)
     )
     return notes_txt
-
-
-def load_method_file(path: str):
-    try:
-        method = LoadSaveHelperFunctions.LoadMethod(path)
-        return method
-    except Exception:
-        return 0
-
-
-def save_method_file(path: str, method):
-    try:
-        LoadSaveHelperFunctions.SaveMethod(method, path)
-        return 1
-    except Exception:
-        return 0
-
-
-def get_method_estimated_duration(path: str):
-    method = load_method_file(path)
-    if method == 0:
-        return 0
-    else:
-        return pspymethods.get_method_estimated_duration(method)

@@ -1,10 +1,10 @@
 from typing import Any
 
+from ..methods.method import Method
 from .curve import Curve
 from .dataset import DataSet
 from .eisdata import EISData
 from .fit_result import EISFitResult
-from .method import Method
 from .peak import Peak
 
 # print(f'ocp: {measurement.curves[0].dotnet_curve.OCPValue}')
@@ -50,7 +50,7 @@ class Measurement:
         return self.dotnet_measurement.ContainsEISData
 
     @property
-    def dataset(self) -> Any:
+    def dataset(self) -> DataSet:
         """Dataset containing multiple arrays of values.
 
         All values are related by means of their indices.
@@ -68,7 +68,8 @@ class Measurement:
         dotnet_curve = self.dotnet_measurement.get_Item(index)
         return Curve(dotnet_curve=dotnet_curve)
 
-    def method(self) -> Any:
+    @property
+    def method(self) -> Method:
         """Method related with this Measurement.
 
         The information from the Method is used when saving Curves."""

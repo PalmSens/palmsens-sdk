@@ -1,6 +1,8 @@
+import atexit
 from pathlib import Path
 
 import clr
+from pythonnet import unload
 
 script_dir = Path(__file__).parent
 
@@ -15,3 +17,5 @@ clr.AddReference('System')
 from PalmSens.Windows import CoreDependencies  # type: ignore  # noqa: E402
 
 CoreDependencies.Init()
+
+atexit.register(unload)

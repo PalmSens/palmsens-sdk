@@ -5,11 +5,12 @@ from pathlib import Path
 import pytest
 
 ROOT_DIR = Path(__file__).parents[1]
-EXAMPLES = list(ROOT_DIR.glob('*Example*.py'))
+EXAMPLES_DIR = ROOT_DIR / 'examples'
+EXAMPLES = list(EXAMPLES_DIR.glob('*Example*.py'))
 
 
 @pytest.mark.parametrize('path', EXAMPLES)
-@pytest.mark.requires_instrument
+@pytest.mark.examples
 def test_examples(path: Path):
     assert path.exists(), f'Missing {path}'
 

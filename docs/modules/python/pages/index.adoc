@@ -58,33 +58,33 @@ PalmSens, EmStat, Sensit or Nexus instruments.
 
 == Example programs
 
-The following examples are included.
+The following examples are included in the https://github.com/PalmSens/PalmSens_SDK/tree/main/python[examples directory].
 
-`LoadSaveDataExample.py`::
+`load_save_data.py`::
 Shows how to load/save methods and measurements and how to inspect the data.
-`ManualControlExample.py`::
+`manual_control.py`::
 Shows how to discover devices, establish a connection and control an instrument manually.
-`ManualControlExampleAsync.py`::
+`manual_control_async.py`::
 Shows how to discover devices, establish a connection and control an instrument manually using the asynchronous instrument manager.
-`MeasurementExampleCA.py`::
+`measurement_CA.py`::
 Shows how to configure and run a chronoamperometry measurement.
-`MeasurementExampleCAAsync.py`::
+`measurement_CA_async.py`::
 Shows how to configure and run a chronoamperometry measurement using the asynchronous instrument manager.
-`MeasurementExampleCV.py`::
+`measurement_CV.py`::
 Shows how to configure and run a cyclic voltammetry measurement.
-`MeasurementExampleEIS.py`::
+`measurement_EIS.py`::
 Shows how to configure and run a EIS measurement.
-`MeasurementExampleMethodSCRIPTSandbox.py`::
+`measurement_MethodSCRIPT_sandbox.py`::
 Shows how to configure and run a MethodSCRIPT Sandbox measurement.
-`MeasurementExampleStreamToCSV.py`::
+`measurement_stream_to_csv.py`::
 Shows how to configure and run a chronoamperometry measurement and write the results to a CSV file in real-time.
-`MeasurementExampleSWVversusOCP.py`::
+`measurement_SWV_vs_OCP.py`::
 Shows how to configure and run a square wave voltammetry measurement versus OCP.
-`MultiplexerExample.py`::
+`multiplexer.py`::
 Shows how to configure and control a multiplexer and run consecutive and alternating multiplexer measurments.
-`MultiChannelMeasurementExample.py`::
+`multichannel_measurement.py`::
 Shows how to connect to a collection of instruments and run a chronoamperometry measurement on all channels simultaneously.
-`MultiChannelMeasurementCustomLoopExample.py`::
+`multichannel_measurement_custom_loop.py`::
 Shows how to run and configure a sequence of measurements on a collection of channels simultaneously.
-`MultiChannelHWSyncExample.py.py`::
+`multichannel_HW_sync.py`::
 Shows how to connect to a collection of instruments and run a chronopotentiometry measurement on all channels simultaneously using hardware synchronization.

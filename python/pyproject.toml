@@ -59,7 +59,8 @@ source = ["pspython"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
-    "requires_instrument: Mark tests that require a connected instrument."
+    "examples: Mark tests that run the examples.",
+    "instrument: Mark tests that need an instrument connection."
 ]
 
 [tool.ruff]

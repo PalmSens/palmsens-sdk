@@ -3,12 +3,14 @@ import logging
 import pytest
 from PalmSens.Techniques import CyclicVoltammetry as PSCyclicVoltammetry
 from PalmSens.Techniques import LinearSweep as PSLinearSweep
+from PalmSens.Techniques import SquareWave as PSSquareWave
 
 from pspython import pspyinstruments
 from pspython.data.measurement import Measurement
 from pspython.methods._shared import get_current_range
 from pspython.methods.cyclic_voltammetry import CyclicVoltammetryParameters, cyclic_voltammetry
 from pspython.methods.linear_sweep import LinearSweepParameters, linear_sweep_voltammetry
+from pspython.methods.squarewave import SquareWaveParameters, square_wave_voltammetry
 
 logger = logging.getLogger(__name__)
 
@@ -103,3 +105,34 @@ def test_lsv(manager):
 
     assert dataset.array_names == {'charge', 'potential', 'current', 'time'}
     assert dataset.array_quantities == {'Charge', 'Current', 'Potential', 'Time'}
+
+
+def test_swv(manager):
+    kwargs = {
+        'current_range_max': get_current_range(30),
+        'current_range_min': get_current_range(4),
+        'current_range_start': get_current_range(8),
+        'equilibration_time': 0.0,
+        'begin_potential': -0.5,
+        'end_potential': 0.5,
+        'step_potential': 0.1,
+        'frequency': 10.0,
+        'amplitude': 0.05,
+        'record_forward_and_reverse_currents': True,
+    }
+
+    method_old = square_wave_voltammetry(**kwargs)
+    assert isinstance(method_old, PSSquareWave)
+
+    method = SquareWaveParameters(**kwargs)
+    measurement = manager.measure(method.to_dotnet_method())
+
+    assert measurement
+    assert isinstance(measurement, Measurement)
+    assert measurement.method.dotnet_method.nScans == 1
+
+    dataset = measurement.dataset
+    assert len(dataset) == 5
+
+    assert dataset.array_names == {'potential', 'current', 'time', 'Reverse', 'Forward'}
+    assert dataset.array_quantities == {'Current', 'Potential', 'Time'}

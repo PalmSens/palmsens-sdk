@@ -42,7 +42,7 @@ pytest
 To skip the tests that require a connected instrument use the `requires_instrument` [marker](https://docs.pytest.org/en/latest/example/markers.html):
 
 ```console
-pytest -m "not requires_instrument"
+pytest -m "not examples"
 ```
 
 To check coverage:

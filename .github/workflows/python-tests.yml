@@ -51,7 +51,7 @@ jobs:
 
       - name: Test with pytest
         run: |
-          coverage run -m pytest -m "not examples"
+          coverage run -m pytest -m "not examples and not instrument"
 
       - name: Report coverage
         run: |

@@ -1,4 +1,6 @@
-from PalmSens import (  # type: ignore
+from typing import Any, Optional, Sequence
+
+from PalmSens import (
     CurrentRange,
     CurrentRanges,
     ExtraValueMask,
@@ -7,10 +9,21 @@ from PalmSens import (  # type: ignore
     PotentialRange,
     PotentialRanges,
 )
-from PalmSens.Devices import PalmSens4Capabilities  # type: ignore
+from PalmSens.Devices import PalmSens4Capabilities
 
 
-def get_current_range(id):
+def convert_bool_list_to_base2(lst: Sequence[bool]) -> int:
+    """Convert e.g. [True, False, True, False] to 5."""
+
+    lines = 0
+    for i, set_high in enumerate(lst):
+        if set_high:
+            lines = lines | (1 << i)
+    assert lines == int(''.join('01'[set_high] for set_high in reversed(lst)), base=2)
+    return lines
+
+
+def get_current_range(id: int) -> CurrentRange:
     """Get the current range for a given id.
 
     The id corresponds to the following ranges:
@@ -44,7 +57,7 @@ def get_current_range(id):
     return CurrentRange(CurrentRanges(id))
 
 
-def get_potential_range(id):
+def get_potential_range(id: int) -> PotentialRange:
     """Get the potential range for a given id.
 
     The id corresponds to the following ranges:
@@ -57,33 +70,27 @@ def get_potential_range(id):
     * 500 mV = 6,
     * 1 V = 7
     """
-    if id == 0:
-        return PotentialRange(PotentialRanges.pr1mV)
-    elif id == 1:
-        return PotentialRange(PotentialRanges.pr10mV)
-    elif id == 2:
-        return PotentialRange(PotentialRanges.pr20mV)
-    elif id == 3:
-        return PotentialRange(PotentialRanges.pr50mV)
-    elif id == 4:
-        return PotentialRange(PotentialRanges.pr100mV)
-    elif id == 5:
-        return PotentialRange(PotentialRanges.pr200mV)
-    elif id == 6:
-        return PotentialRange(PotentialRanges.pr500mV)
-    elif id == 7:
-        return PotentialRange(PotentialRanges.pr1V)
-    else:
-        raise ValueError(
-            'Invalid id for potential range. Valid ids are: 0, 1, 2, 3, 4, 5, 6, 7'
-        )
+    if not 0 <= id <= 7:
+        raise ValueError('Invalid id for potential range. Valid ids are: 0-7')
+
+    ranges = [
+        PotentialRanges.pr1mV,
+        PotentialRanges.pr10mV,
+        PotentialRanges.pr20mV,
+        PotentialRanges.pr50mV,
+        PotentialRanges.pr100mV,
+        PotentialRanges.pr200mV,
+        PotentialRanges.pr500mV,
+        PotentialRanges.pr1V,
+    ][id]
+    return PotentialRange(ranges)
 
 
-def set_autoranging_current(method, i_range_max, i_range_min, i_range_start):
+def set_autoranging_current(method, current_range_max, current_range_min, current_range_start):
     """Set the autoranging current for a given method."""
-    method.Ranging.MaximumCurrentRange = i_range_max
-    method.Ranging.MinimumCurrentRange = i_range_min
-    method.Ranging.StartCurrentRange = i_range_start
+    method.Ranging.MaximumCurrentRange = current_range_max
+    method.Ranging.MinimumCurrentRange = current_range_min
+    method.Ranging.StartCurrentRange = current_range_start
 
 
 def set_autoranging_bipot_current(
@@ -135,21 +142,27 @@ def set_bipot_settings(
     method.BiPotModePS = Method.EnumPalmSensBipotMode(bipot_mode)
     method.BiPotPotential = bipot_potential
     set_autoranging_bipot_current(
-        method, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start
+        method,
+        bipot_current_range_max,
+        bipot_current_range_min,
+        bipot_current_range_start,
     )
 
 
-def set_extra_value_mask(method, **kwargs):
+def set_extra_value_mask(
+    method,
+    *,
+    enable_bipot_current: bool = False,
+    record_auxiliary_input: bool = False,
+    record_cell_potential: bool = False,
+    record_we_potential: bool = False,
+    record_forward_and_reverse_currents: bool = False,
+    record_we_current: bool = False,
+    record_we_current_range: Optional[Any] = None,
+):
     """Set the extra value mask for a given method."""
-    enable_bipot_current = kwargs.get('enable_bipot_current', False)
-    record_auxiliary_input = kwargs.get('record_auxiliary_input', False)
-    record_cell_potential = kwargs.get('record_cell_potential', False)
-    record_we_potential = kwargs.get('record_we_potential', False)
-    record_forward_and_reverse_currents = kwargs.get(
-        'record_forward_and_reverse_currents', False
-    )
-    record_we_current = kwargs.get('record_we_current', False)
-    record_we_current_range = kwargs.get('record_we_current_range', get_current_range(4))
+    if record_we_current_range is None:
+        record_we_current_range = get_current_range(4)
 
     extra_values = 0
 
@@ -196,9 +209,9 @@ def set_charge_limit_settings(
     method.ChargeLimitMin = limit_charge_min
 
 
-def set_ir_drop_compensation(method, use__ir_compensation, ir_compensation):
+def set_ir_drop_compensation(method, use_ir_compensation, ir_compensation):
     """Set the iR drop compensation settings for a given method."""
-    method.UseIRDropComp = use__ir_compensation
+    method.UseIRDropComp = use_ir_compensation
     method.IRDropCompRes = ir_compensation
 
 
@@ -226,7 +239,12 @@ def set_trigger_at_measurement_settings(
     method.TriggerValueOnStart = lines
 
 
-def set_multiplexer_settings(method, set_mux_mode, set_mux_channels, set_mux8r2_settings):
+def set_multiplexer_settings(
+    method,
+    set_mux_mode,
+    set_mux_channels,
+    set_mux8r2_settings,
+):
     """Set the multiplexer settings for a given method."""
     method.MuxMethod = MuxMethod(set_mux_mode)
     # disable all mux channels
@@ -243,7 +261,13 @@ def set_multiplexer_settings(method, set_mux_mode, set_mux_channels, set_mux8r2_
         method.MuxSett.UnselWE = set_mux8r2_settings.UnselWE
 
 
-def get_mux8r2_settings(**kwargs):
+def get_mux8r2_settings(
+    *,
+    connect_sense_to_working_electrode: bool = False,
+    combine_reference_and_counter_electrodes: bool = False,
+    use_channel_1_reference_and_counter_electrodes: bool = False,
+    set_unselected_channel_working_electrode: int = 0,
+):
     """Create a mux8r2 multiplexer settings settings object.
 
     :Keyword Arguments:
@@ -254,18 +278,8 @@ def get_mux8r2_settings(**kwargs):
         * use_channel_1_reference_and_counter_electrodes
             -- Use channel 1 reference and counter electrodes for all working electrodes. Default is False.
         * set_unselected_channel_working_electrode
-            -- Set the unselected channel working electrode to disconnected/floating (0), ground (1), or standby potential (2). Default is 0.
+            -- Set the unselected channel working electrode to 0 = Disconnected / floating, 1 = Ground, 2 = Standby potential. Default is 0.
     """
-    connect_sense_to_working_electrode = kwargs.get('connect_sense_to_working_electrode', False)
-    combine_reference_and_counter_electrodes = kwargs.get(
-        'combine_reference_and_counter_electrodes', False
-    )
-    use_channel_1_reference_and_counter_electrodes = kwargs.get(
-        'use_channel_1_reference_and_counter_electrodes', False
-    )
-    set_unselected_channel_working_electrode = kwargs.get(
-        'set_unselected_channel_working_electrode', 0
-    )  # 0 = Disconnected / floating, 1 = Ground, 2 = Standby potential
 
     mux_settings = Method.MuxSettings(False)
     mux_settings.ConnSEWE = connect_sense_to_working_electrode
@@ -284,15 +298,15 @@ def set_filter_settings(method, dc_mains_filter, default_curve_post_processing_f
     method.DefaultCurvePostProcessingFilter = default_curve_post_processing_filter
 
 
-def get_method_estimated_duration(method, **kwargs):
+def get_method_estimated_duration(method, *, instrument_manager=None):
     """Get the estimated duration of a given method.
 
     :Keyword Arguments:
-    """
-    instrument_manager = kwargs.get(
-        'instrument_manager', None
-    )  # Specifies the instrument manager to get the connected instruments capabilities from, if not specified it will use the PalmSens4 capabilities to determine the estimated duration.
+        instrument_manager :
+            -- Specifies the instrument manager to get the connected instruments capabilities from,
+            if not specified it will use the PalmSens4 capabilities to determine the estimated duration.
 
+    """
     if instrument_manager is None or instrument_manager.__comm is None:
         instrument_capabilities = PalmSens4Capabilities()
     else:

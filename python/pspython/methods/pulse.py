@@ -1,4 +1,4 @@
-from .potential_method import PotentialMethod
+from .potential_method import PotentialMethodParameters
 
 
-class Pulse(PotentialMethod): ...
+class PulseParameters(PotentialMethodParameters): ...

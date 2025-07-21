@@ -1,4 +1,4 @@
-from .fast_amperometry import FastAmperometry
+from .fast_amperometry import FastAmperometryParameters
 
 
-class FastPotentiometry(FastAmperometry): ...
+class FastPotentiometryParameters(FastAmperometryParameters): ...

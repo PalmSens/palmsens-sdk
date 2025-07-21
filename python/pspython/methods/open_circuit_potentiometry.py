@@ -13,10 +13,10 @@ from ._shared import (
     set_pretreatment,
     set_trigger_at_measurement_settings,
 )
-from .potentiometry import Potentiometry
+from .potentiometry import PotentiometryParameters
 
 
-class OpenCircuitPotentiometry(Potentiometry): ...
+class OpenCircuitPotentiometryParameters(PotentiometryParameters): ...
 
 
 def open_circuit_potentiometry(**kwargs):

@@ -1,4 +1,4 @@
-from .method import Method
+from .method import MethodParameters
 
 
-class TimeMethod(Method): ...
+class TimeMethodParameters(MethodParameters): ...

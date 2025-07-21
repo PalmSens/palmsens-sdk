@@ -1,4 +1,4 @@
-from .pulse import Pulse
+from .pulse import PulseParameters
 
 
-class NormalPulse(Pulse): ...
+class NormalPulseParameters(PulseParameters): ...

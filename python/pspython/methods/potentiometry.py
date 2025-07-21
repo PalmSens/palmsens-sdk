@@ -13,10 +13,10 @@ from ._shared import (
     set_pretreatment,
     set_trigger_at_measurement_settings,
 )
-from .time_method import TimeMethod
+from .time_method import TimeMethodParameters
 
 
-class Potentiometry(TimeMethod): ...
+class PotentiometryParameters(TimeMethodParameters): ...
 
 
 def chronopotentiometry(**kwargs):

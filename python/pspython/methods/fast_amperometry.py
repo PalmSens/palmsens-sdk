@@ -1,4 +1,4 @@
-from .time_method import TimeMethod
+from .time_method import TimeMethodParameters
 
 
-class FastAmperometry(TimeMethod): ...
+class FastAmperometryParameters(TimeMethodParameters): ...

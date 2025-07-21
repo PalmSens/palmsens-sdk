@@ -14,10 +14,10 @@ from ._shared import (
     set_trigger_at_measurement_settings,
     set_versus_ocp,
 )
-from .pulse import Pulse
+from .pulse import PulseParameters
 
 
-class DifferentialPulse(Pulse): ...
+class DifferentialPulseParameters(PulseParameters): ...
 
 
 def differential_pulse_voltammetry(**kwargs):

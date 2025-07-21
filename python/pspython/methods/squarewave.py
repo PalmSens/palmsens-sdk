@@ -14,10 +14,10 @@ from ._shared import (
     set_trigger_at_measurement_settings,
     set_versus_ocp,
 )
-from .potential_method import PotentialMethod
+from .potential_method import PotentialMethodParameters
 
 
-class SquareWave(PotentialMethod): ...
+class SquareWave(PotentialMethodParameters): ...
 
 
 def square_wave_voltammetry(**kwargs):

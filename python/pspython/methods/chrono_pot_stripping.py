@@ -1,4 +1,4 @@
-from .scan_method import ScanMethod
+from .scan_method import ScanMethodParameters
 
 
-class ChronoPotStripping(ScanMethod): ...
+class ChronoPotStrippingParameters(ScanMethodParameters): ...

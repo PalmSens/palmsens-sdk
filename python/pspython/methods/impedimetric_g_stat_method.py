@@ -12,10 +12,10 @@ from ._shared import (
     set_trigger_at_equilibration_settings,
     set_trigger_at_measurement_settings,
 )
-from .impedimetric_method import ImpedimetricMethod
+from .impedimetric_method import ImpedimetricMethodParameters
 
 
-class ImpedimetricGstatMethod(ImpedimetricMethod): ...
+class ImpedimetricGstatMethodParameters(ImpedimetricMethodParameters): ...
 
 
 def galvanostatic_impedance_spectroscopy(**kwargs):

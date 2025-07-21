@@ -13,10 +13,10 @@ from ._shared import (
     set_trigger_at_measurement_settings,
     set_versus_ocp,
 )
-from .time_method import TimeMethod
+from .time_method import TimeMethodParameters
 
 
-class ImpedimetricMethod(TimeMethod): ...
+class ImpedimetricMethodParameters(TimeMethodParameters): ...
 
 
 def electrochemical_impedance_spectroscopy(**kwargs):

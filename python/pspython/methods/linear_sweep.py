@@ -29,6 +29,8 @@ class LinearSweepParameters(PotentialMethodParameters):
 
     def update_dotnet_method(self, *, dotnet_method):
         """Update method with linear sweep settings."""
+        super().update_dotnet_method(dotnet_method=dotnet_method)
+
         dotnet_method.BeginPotential = self.begin_potential
         dotnet_method.EndPotential = self.end_potential
         dotnet_method.StepPotential = self.step_potential
@@ -38,7 +40,6 @@ class LinearSweepParameters(PotentialMethodParameters):
         """Convert parameters to dotnet method."""
         obj = PSLinearSweep()
 
-        super().update_dotnet_method(dotnet_method=obj)
         self.update_dotnet_method(dotnet_method=obj)
 
         return obj

@@ -3,6 +3,7 @@ import logging
 import pytest
 from PalmSens.Techniques import CyclicVoltammetry as PSCyclicVoltammetry
 from PalmSens.Techniques import LinearSweep as PSLinearSweep
+from PalmSens.Techniques import OpenCircuitPotentiometry as PSOpenCircuitPotentiometry
 from PalmSens.Techniques import Potentiometry as PSPotentiometry
 from PalmSens.Techniques import SquareWave as PSSquareWave
 
@@ -11,7 +12,14 @@ from pspython.data.measurement import Measurement
 from pspython.methods._shared import get_current_range, get_potential_range
 from pspython.methods.cyclic_voltammetry import CyclicVoltammetryParameters, cyclic_voltammetry
 from pspython.methods.linear_sweep import LinearSweepParameters, linear_sweep_voltammetry
-from pspython.methods.potentiometry import PotentiometryParameters, chronopotentiometry
+from pspython.methods.open_circuit_potentiometry import (
+    OpenCircuitPotentiometryParameters,
+    open_circuit_potentiometry,
+)
+from pspython.methods.potentiometry import (
+    PotentiometryParameters,
+    chronopotentiometry,
+)
 from pspython.methods.squarewave import SquareWaveParameters, square_wave_voltammetry
 
 logger = logging.getLogger(__name__)
@@ -228,3 +236,29 @@ def test_cp(manager):
 
     assert dataset.array_names == {'potential', 'current', 'time', 'charge'}
     assert dataset.array_quantities == {'Current', 'Potential', 'Time', 'Charge'}
+
+
+def test_ocp(manager):
+    kwargs = {
+        'potential_range_max': get_potential_range(7),
+        'potential_range_min': get_potential_range(1),
+        'potential_range_start': get_potential_range(7),
+        'interval_time': 0.1,
+        'run_time': 1.0,
+    }
+
+    method_old = open_circuit_potentiometry(**kwargs)
+    assert isinstance(method_old, PSOpenCircuitPotentiometry)
+
+    method = OpenCircuitPotentiometryParameters(**kwargs)
+    measurement = manager.measure(method.to_dotnet_method())
+
+    assert measurement
+    assert isinstance(measurement, Measurement)
+    assert measurement.method.dotnet_method.nScans == 1
+
+    dataset = measurement.dataset
+    assert len(dataset) == 2
+
+    assert dataset.array_names == {'potential', 'time'}
+    assert dataset.array_quantities == {'Potential', 'Time'}

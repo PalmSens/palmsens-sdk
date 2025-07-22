@@ -39,6 +39,8 @@ class CyclicVoltammetryParameters(PotentialMethodParameters):
 
     def update_dotnet_method(self, *, dotnet_method):
         """Update method with cyclic voltammetry settings."""
+        super().update_dotnet_method(dotnet_method=dotnet_method)
+
         dotnet_method.BeginPotential = self.begin_potential
         dotnet_method.Vtx1Potential = self.vertex1_potential
         dotnet_method.Vtx2Potential = self.vertex2_potential
@@ -50,7 +52,6 @@ class CyclicVoltammetryParameters(PotentialMethodParameters):
         """Convert parameters to dotnet method."""
         obj = PSCyclicVoltammetry()
 
-        super().update_dotnet_method(dotnet_method=obj)
         self.update_dotnet_method(dotnet_method=obj)
 
         return obj

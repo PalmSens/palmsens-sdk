@@ -42,6 +42,9 @@ class PotentiometryParameters(TimeMethodParameters):
         Record cell potential (default: False) [counter electrode vs ground]
     record_we_current : bool
         Record working electrode current (default: False)
+    record_we_current_range: int=get_potential_range(4)
+        Record working electrode current range (default: 1 µA)
+        Use `get_current_range()` to get the range.
 
     use_limit_potential_max : bool
         Use limit potential max (default: False)
@@ -69,6 +72,7 @@ class PotentiometryParameters(TimeMethodParameters):
     record_auxiliary_input: bool = False
     record_cell_potential: bool = False
     record_we_current: bool = False
+    record_we_current_range: int = get_potential_range(4)
 
     # limit settings
     use_limit_potential_max: bool = False
@@ -78,6 +82,8 @@ class PotentiometryParameters(TimeMethodParameters):
 
     def update_dotnet_method(self, *, dotnet_method):
         """Update method with potentiometry settings."""
+        super().update_dotnet_method(dotnet_method=dotnet_method)
+
         # Set the autoranging potential for a given method
         dotnet_method.RangingPotential.MaximumPotentialRange = self.potential_range_max
         dotnet_method.RangingPotential.MinimumPotentialRange = self.potential_range_min
@@ -107,7 +113,6 @@ class PotentiometryParameters(TimeMethodParameters):
         """Convert parameters to dotnet method."""
         obj = PSPotentiometry()
 
-        super().update_dotnet_method(dotnet_method=obj)
         self.update_dotnet_method(dotnet_method=obj)
 
         return obj

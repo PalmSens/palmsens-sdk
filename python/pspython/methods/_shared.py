@@ -27,33 +27,36 @@ def get_current_range(id: int) -> CurrentRange:
     """Get the current range for a given id.
 
     The id corresponds to the following ranges:
-    * 100 pA = 0,
-    * 1 nA = 1,
-    * 10 nA = 2,
-    * 100 nA = 3,
-    * 1 uA = 4,
-    * 10 uA = 5,
-    * 100 uA = 6,
-    * 1 mA = 7,
-    * 10 mA = 8,
-    * 100 mA = 9,
-    * 2 uA = 10,
-    * 4 uA = 11,
-    * 8 uA = 12,
-    * 16 uA = 13,
-    * 32 uA = 14,
-    * 63 uA = 26,
-    * 125 uA = 17,
-    * 250 uA = 18,
-    * 500 uA = 19,
-    * 5 mA = 20,
-    * 6 uA = 21,
-    * 13 uA = 22,
-    * 25 uA = 23,
-    * 50 uA = 24,
-    * 200 uA = 25,
+    * 100 pA = 0
+    * 1 nA = 1
+    * 10 nA = 2
+    * 100 nA = 3
+    * 1 uA = 4
+    * 10 uA = 5
+    * 100 uA = 6
+    * 1 mA = 7
+    * 10 mA = 8
+    * 100 mA = 9
+    * 2 uA = 10
+    * 4 uA = 11
+    * 8 uA = 12
+    * 16 uA = 13
+    * 32 uA = 14
+    * 63 uA = 26
+    * 125 uA = 17
+    * 250 uA = 18
+    * 500 uA = 19
+    * 5 mA = 20
+    * 6 uA = 21
+    * 13 uA = 22
+    * 25 uA = 23
+    * 50 uA = 24
+    * 200 uA = 25
     * 1 A = 30
     """
+    if not 0 <= id <= 30:
+        raise ValueError('Invalid id for current range. Valid ids are: 0-30')
+
     return CurrentRange(CurrentRanges(id))
 
 
@@ -61,13 +64,13 @@ def get_potential_range(id: int) -> PotentialRange:
     """Get the potential range for a given id.
 
     The id corresponds to the following ranges:
-    * 1 mV = 0,
-    * 10 mV = 1,
-    * 20 mV = 2,
-    * 50 mV = 3,
-    * 100 mV = 4,
-    * 200 mV = 5,
-    * 500 mV = 6,
+    * 1 mV = 0
+    * 10 mV = 1
+    * 20 mV = 2
+    * 50 mV = 3
+    * 100 mV = 4
+    * 200 mV = 5
+    * 500 mV = 6
     * 1 V = 7
     """
     if not 0 <= id <= 7:

@@ -46,5 +46,5 @@ class LinearSweepParameters(PotentialMethodParameters):
 
 def linear_sweep_voltammetry(**kwargs):
     """Alias for LinearSweep for backwards compatibility"""
-    linear_sweep = LinearSweepParameters(**kwargs)
-    return linear_sweep.to_dotnet_method()
+    lsv = LinearSweepParameters(**kwargs)
+    return lsv.to_dotnet_method()

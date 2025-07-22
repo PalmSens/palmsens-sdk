@@ -63,5 +63,5 @@ class CyclicVoltammetryParameters(PotentialMethodParameters):
 
 def cyclic_voltammetry(**kwargs):
     """Alias for CyclicVoltammetry for backwards compatibility"""
-    cyclic_voltammetry = CyclicVoltammetryParameters(**kwargs)
-    return cyclic_voltammetry.to_dotnet_method()
+    cv = CyclicVoltammetryParameters(**kwargs)
+    return cv.to_dotnet_method()

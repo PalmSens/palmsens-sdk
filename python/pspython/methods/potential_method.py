@@ -1,9 +1,6 @@
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
-import PalmSens
 from PalmSens import Method as PSMethod
-from PalmSens import MuxMethod as PSMuxMethod
 
 from ._shared import (
     convert_bool_list_to_base2,
@@ -19,22 +16,6 @@ class PotentialMethodParameters(ScanMethodParameters):
 
     Attributes
     ----------
-    current_range_max: int
-        Maximum current range (default: 10 mA) [use get_current_range() to get the range]
-    current_range_min: int
-        Minimum current range (default: 1 µA) [use get_current_range() to get the range]
-    current_range_start: int
-         Start current range (default: 100 µA) [use get_current_range() to get the range]
-
-    deposition_potential: float
-        Deposition potential in V (default: 0.0)
-    deposition_time: float
-        Deposition time in s (default: 0.0)
-    conditioning_potential: float
-        Conditioning potential in V (default: 0.0)
-    conditioning_time: float
-        Conditioning time in s (default: 0.0)
-
     versus_ocp_mode: int
         Set versus OCP mode.
             0 = disable versus OCP
@@ -58,11 +39,14 @@ class PotentialMethodParameters(ScanMethodParameters):
     bipot_potential: float
         Set the bipotential in V (default: 0.0)
     bipot_current_range_max: int
-        Maximum bipotential current range (default: 10 mA) [use get_current_range() to get the range]
+        Maximum bipotential current range (default: 10 mA).
+        Use `get_current_range()` to get the range.
     bipot_current_range_min: int
-        Minimum bipotential current range (default: 1 µA) [use get_current_range() to get the range]
+        Minimum bipotential current range (default: 1 µA).
+        Use `get_current_range()` to get the range.
     bipot_current_range_start: int
-        Start bipotential current range (default: 100 µA) [use get_current_range() to get the range]
+        Start bipotential current range (default: 100 µA).
+        Use `get_current_range()` to get the range.
 
     record_auxiliary_input: bool
         Record auxiliary input (default: False)
@@ -103,48 +87,7 @@ class PotentialMethodParameters(ScanMethodParameters):
         Enable trigger at measurement lines (default: [False, False, False, False])
         Line order: d0 high, d1 high, d2 high, d3 high
 
-    dc_mains_filter: int
-        Set the DC mains filter in Hz. Set to 50 Hz or 60 Hz depending on your region (default: 50).
-    default_curve_post_processing_filter: int = 0
-        Set the default curve post processing filter (default: 0)
-           -1 = no filter
-            0 = spike rejection
-            1 = spike rejection + Savitsky-golay window 5
-            2 = spike rejection + Savitsky-golay window 9
-            3 = spike rejection + Savitsky-golay window 15
-            4 = spike rejection + Savitsky-golay window 25
-
-    set_mux_mode: int = -1
-        Set multiplexer mode
-           -1 = No multiplexer (disable)
-            0 = Consecutive
-            1 = Alternate
-    set_mux_channels: list[bool]
-        Set multiplexer channels as a list of bools for each channel (channel 1, channel 2, ..., channel 128).
-        In consecutive mode all selections are valid.
-        In alternating mode the first channel must be selected and all other
-        channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
-    set_mux8r2_settings: Optional[PalmSens.Method.MuxSettings]
-        Initialize the settings for the MUX8R2 multiplexer (default: None).
-        use get_mux8r2_settings() to create the settings.
-
-    save_on_internal_storage: bool
-        Save on internal storage (default: False)
-
-    use_hardware_sync: bool
-        Use hardware synchronization with other channels/instruments (default: False)
     """
-
-    # autoranging
-    current_range_max: int = get_current_range(8)
-    current_range_min: int = get_current_range(4)
-    current_range_start: int = get_current_range(6)
-
-    # pretreatment
-    deposition_potential: float = 0.0
-    deposition_time: float = 0.0
-    conditioning_potential: float = 0.0
-    conditioning_time: float = 0.0
 
     # advanced settings
     versus_ocp_mode: int = 0
@@ -164,10 +107,6 @@ class PotentialMethodParameters(ScanMethodParameters):
     record_cell_potential: bool = False
     record_we_potential: bool = False
 
-    # post measurement settings
-    cell_on_after_measurement: bool = False
-    cell_on_after_measurement_potential: float = 0.0  # V
-
     # limit settings
     use_limit_current_max: bool = False
     limit_current_max: float = 0.0  # µA
@@ -180,59 +119,27 @@ class PotentialMethodParameters(ScanMethodParameters):
 
     # set trigger settings
     trigger_at_equilibration: bool = False
-    # d0 high, d1 high, d2 high, d3 high
     trigger_at_equilibration_lines: tuple[bool, bool, bool, bool] = (False, False, False, False)
-    trigger_at_measurement: bool = False
-    # d0 high, d1 high, d2 high, d3 high
-    trigger_at_measurement_lines: tuple[bool, bool, bool, bool] = (False, False, False, False)
-
-    # set filter settings
-    dc_mains_filter: int = 50  # Hz
-    default_curve_post_processing_filter: int = 0
-
-    # multiplexer settings
-    set_mux_mode: int = -1
-    set_mux_channels: list[bool] = field(
-        default_factory=lambda: [False, False, False, False, False, False, False, False]
-    )
-    set_mux8r2_settings: Optional[PalmSens.Method.MuxSettings] = None
-
-    # internal storage
-    save_on_internal_storage: bool = False
-
-    # use hardware synchronization with other channels/instruments
-    use_hardware_sync: bool = False
 
     def update_dotnet_method(self, *, dotnet_method):
-        obj = dotnet_method
-
-        # Set the autoranging current for a given method
-        obj.Ranging.MaximumCurrentRange = self.current_range_max
-        obj.Ranging.MinimumCurrentRange = self.current_range_min
-        obj.Ranging.StartCurrentRange = self.current_range_start
-
-        # Set the pretreatment settings for a given method
-        obj.DepositionPotential = self.deposition_potential
-        obj.DepositionTime = self.deposition_time
-        obj.ConditioningPotential = self.conditioning_potential
-        obj.ConditioningTime = self.conditioning_time
+        super().update_dotnet_method(dotnet_method=dotnet_method)
 
         # Set the versus OCP settings for a given method
-        obj.OCPmode = self.versus_ocp_mode
-        obj.OCPMaxOCPTime = self.versus_ocp_max_ocp_time
-        obj.OCPStabilityCriterion = self.versus_ocp_stability_criterion
+        dotnet_method.OCPmode = self.versus_ocp_mode
+        dotnet_method.OCPMaxOCPTime = self.versus_ocp_max_ocp_time
+        dotnet_method.OCPStabilityCriterion = self.versus_ocp_stability_criterion
 
         # Set the bipot settings for a given method
-        obj.BiPotModePS = PSMethod.EnumPalmSensBipotMode(self.bipot_mode)
-        obj.BiPotPotential = self.bipot_potential
+        dotnet_method.BiPotModePS = PSMethod.EnumPalmSensBipotMode(self.bipot_mode)
+        dotnet_method.BiPotPotential = self.bipot_potential
 
         # Set the autoranging bipot current for a given method
-        obj.BipotRanging.MaximumCurrentRange = self.bipot_current_range_max
-        obj.BipotRanging.MinimumCurrentRange = self.bipot_current_range_min
-        obj.BipotRanging.StartCurrentRange = self.bipot_current_range_start
+        dotnet_method.BipotRanging.MaximumCurrentRange = self.bipot_current_range_max
+        dotnet_method.BipotRanging.MinimumCurrentRange = self.bipot_current_range_min
+        dotnet_method.BipotRanging.StartCurrentRange = self.bipot_current_range_start
 
         set_extra_value_mask(
-            obj,
+            dotnet_method,
             enable_bipot_current=self.enable_bipot_current,
             record_auxiliary_input=self.record_auxiliary_input,
             record_cell_potential=self.record_cell_potential,
@@ -240,55 +147,30 @@ class PotentialMethodParameters(ScanMethodParameters):
         )
 
         # Set the post measurement settings for a given method
-        obj.CellOnAfterMeasurement = self.cell_on_after_measurement
-        obj.StandbyPotential = self.cell_on_after_measurement_potential
+        dotnet_method.CellOnAfterMeasurement = self.cell_on_after_measurement
+        dotnet_method.StandbyPotential = self.cell_on_after_measurement_potential
 
         # Set the limit settings for a given method
-        obj.UseLimitMaxValue = self.use_limit_current_max
-        obj.LimitMaxValue = self.limit_current_max
-        obj.UseLimitMinValue = self.use_limit_current_min
-        obj.LimitMinValue = self.limit_current_min
+        dotnet_method.UseLimitMaxValue = self.use_limit_current_max
+        dotnet_method.LimitMaxValue = self.limit_current_max
+        dotnet_method.UseLimitMinValue = self.use_limit_current_min
+        dotnet_method.LimitMinValue = self.limit_current_min
 
         # Set the iR drop compensation settings for a given method
-        obj.UseIRDropComp = self.use_ir_compensation
-        obj.IRDropCompRes = self.ir_compensation
+        dotnet_method.UseIRDropComp = self.use_ir_compensation
+        dotnet_method.IRDropCompRes = self.ir_compensation
 
         # Set the trigger at equilibration settings for a given method
-        obj.UseTriggerOnEquil = self.trigger_at_equilibration
-        obj.TriggerValueOnEquil = convert_bool_list_to_base2(
+        dotnet_method.UseTriggerOnEquil = self.trigger_at_equilibration
+        dotnet_method.TriggerValueOnEquil = convert_bool_list_to_base2(
             self.trigger_at_equilibration_lines
         )
 
         # Set the trigger at measurement settings for a given method
-        obj.UseTriggerOnStart = self.trigger_at_measurement
-        obj.TriggerValueOnStart = convert_bool_list_to_base2(self.trigger_at_measurement_lines)
-
-        # Set the filter settings for a given method
-        obj.DCMainsFilter = self.dc_mains_filter
-        obj.DefaultCurvePostProcessingFilter = self.default_curve_post_processing_filter
-
-        # Create a mux8r2 multiplexer settings settings object
-        obj.MuxMethod = PSMuxMethod(self.set_mux_mode)
-
-        # disable all mux channels
-        for i in range(len(obj.UseMuxChannel)):
-            obj.UseMuxChannel[i] = False
-
-        # set the selected mux channels
-        for i, use_channel in enumerate(self.set_mux_channels):
-            obj.UseMuxChannel[i] = use_channel
-
-        if self.set_mux8r2_settings:
-            obj.MuxSett.ConnSEWE = self.set_mux8r2_settings.ConnSEWE
-            obj.MuxSett.ConnectCERE = self.set_mux8r2_settings.ConnectCERE
-            obj.MuxSett.CommonCERE = self.set_mux8r2_settings.CommonCERE
-            obj.MuxSett.UnselWE = self.set_mux8r2_settings.UnselWE
-
-        # Other settings
-        obj.SaveOnDevice = self.save_on_internal_storage
-        obj.UseHWSync = self.use_hardware_sync
-
-        return obj
+        dotnet_method.UseTriggerOnStart = self.trigger_at_measurement
+        dotnet_method.TriggerValueOnStart = convert_bool_list_to_base2(
+            self.trigger_at_measurement_lines
+        )
 
     def to_dotnet_method(self):
         """Convert parameters to dotnet method."""

@@ -3,13 +3,15 @@ import logging
 import pytest
 from PalmSens.Techniques import CyclicVoltammetry as PSCyclicVoltammetry
 from PalmSens.Techniques import LinearSweep as PSLinearSweep
+from PalmSens.Techniques import Potentiometry as PSPotentiometry
 from PalmSens.Techniques import SquareWave as PSSquareWave
 
 from pspython import pspyinstruments
 from pspython.data.measurement import Measurement
-from pspython.methods._shared import get_current_range
+from pspython.methods._shared import get_current_range, get_potential_range
 from pspython.methods.cyclic_voltammetry import CyclicVoltammetryParameters, cyclic_voltammetry
 from pspython.methods.linear_sweep import LinearSweepParameters, linear_sweep_voltammetry
+from pspython.methods.potentiometry import PotentiometryParameters, chronopotentiometry
 from pspython.methods.squarewave import SquareWaveParameters, square_wave_voltammetry
 
 logger = logging.getLogger(__name__)
@@ -49,6 +51,68 @@ def test_read_potential(manager):
     val = manager.read_current()
     assert val
     assert isinstance(val, float)
+
+
+def test_method_limits():
+    kwargs = {
+        'use_limit_current_max': True,
+        'limit_current_max': 2.0,
+        'use_limit_current_min': True,
+        'limit_current_min': 1.0,
+    }
+
+    method = CyclicVoltammetryParameters(**kwargs)
+    obj = method.to_dotnet_method()
+
+    assert obj.LimitMinValue == 1.0
+    assert obj.LimitMaxValue == 2.0
+    assert obj.UseLimitMinValue is True
+    assert obj.UseLimitMaxValue is True
+
+
+def test_method_current_range():
+    crmin = get_current_range(3)
+    crmax = get_current_range(7)
+    crstart = get_current_range(6)
+
+    method = CyclicVoltammetryParameters(
+        current_range_min=crmin,
+        current_range_max=crmax,
+        current_range_start=crstart,
+    )
+    obj = method.to_dotnet_method()
+
+    supported_ranges = obj.Ranging.SupportedCurrentRanges
+
+    assert crmin in supported_ranges
+    assert crmax in supported_ranges
+    assert crstart in supported_ranges
+
+    assert obj.Ranging.MinimumCurrentRange.Description == '100 nA'
+    assert obj.Ranging.MaximumCurrentRange.Description == '1 mA'
+    assert obj.Ranging.StartCurrentRange.Description == '100 uA'
+
+
+def test_method_potential_range():
+    potmin = get_potential_range(0)
+    potmax = get_potential_range(4)
+    potstart = get_potential_range(1)
+
+    method = PotentiometryParameters(
+        potential_range_min=potmin,
+        potential_range_max=potmax,
+        potential_range_start=potstart,
+    )
+    obj = method.to_dotnet_method()
+    supported_ranges = obj.RangingPotential.SupportedPotentialRanges
+
+    assert potmin in supported_ranges
+    assert potmax in supported_ranges
+    assert potstart in supported_ranges
+
+    assert obj.RangingPotential.MinimumPotentialRange.Description == '1 mV'
+    assert obj.RangingPotential.MaximumPotentialRange.Description == '100 mV'
+    assert obj.RangingPotential.StartPotentialRange.Description == '10 mV'
 
 
 def test_cv(manager):
@@ -134,5 +198,33 @@ def test_swv(manager):
     dataset = measurement.dataset
     assert len(dataset) == 5
 
-    assert dataset.array_names == {'potential', 'current', 'time', 'Reverse', 'Forward'}
+    assert dataset.array_names == {'potential', 'current', 'time', 'reverse', 'forward'}
     assert dataset.array_quantities == {'Current', 'Potential', 'Time'}
+
+
+def test_cp(manager):
+    kwargs = {
+        'potential_range_max': get_potential_range(7),
+        'potential_range_min': get_potential_range(1),
+        'potential_range_start': get_potential_range(7),
+        'current': 0.0,
+        'applied_current_range': get_current_range(6),
+        'interval_time': 0.1,
+        'run_time': 1.0,
+    }
+
+    method_old = chronopotentiometry(**kwargs)
+    assert isinstance(method_old, PSPotentiometry)
+
+    method = PotentiometryParameters(**kwargs)
+    measurement = manager.measure(method.to_dotnet_method())
+
+    assert measurement
+    assert isinstance(measurement, Measurement)
+    assert measurement.method.dotnet_method.nScans == 1
+
+    dataset = measurement.dataset
+    assert len(dataset) == 4
+
+    assert dataset.array_names == {'potential', 'current', 'time', 'charge'}
+    assert dataset.array_quantities == {'Current', 'Potential', 'Time', 'Charge'}

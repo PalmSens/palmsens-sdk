@@ -39,6 +39,8 @@ class SquareWaveParameters(PotentialMethodParameters):
 
     def update_dotnet_method(self, *, dotnet_method):
         """Update method with linear sweep settings."""
+        super().update_dotnet_method(dotnet_method=dotnet_method)
+
         dotnet_method.EquilibrationTime = self.equilibration_time
         dotnet_method.BeginPotential = self.begin_potential
         dotnet_method.EndPotential = self.end_potential
@@ -56,7 +58,6 @@ class SquareWaveParameters(PotentialMethodParameters):
         """Convert parameters to dotnet method."""
         obj = PSSquareWave()
 
-        super().update_dotnet_method(dotnet_method=obj)
         self.update_dotnet_method(dotnet_method=obj)
 
         return obj
@@ -64,5 +65,5 @@ class SquareWaveParameters(PotentialMethodParameters):
 
 def square_wave_voltammetry(**kwargs) -> PSSquareWave:
     """Alias for LinearSweep for backwards compatibility"""
-    square_wave = SquareWaveParameters(**kwargs)
-    return square_wave.to_dotnet_method()
+    swv = SquareWaveParameters(**kwargs)
+    return swv.to_dotnet_method()

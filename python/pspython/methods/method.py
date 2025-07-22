@@ -1,7 +1,13 @@
-from typing import Any
+from dataclasses import dataclass, field
+from typing import Any, Optional
 
 import PalmSens
 from PalmSens import Method as PSMethod
+from PalmSens import MuxMethod as PSMuxMethod
+
+from ._shared import (
+    get_current_range,
+)
 
 
 def method_ids() -> list[str]:
@@ -16,13 +22,149 @@ def method_ids_by_technique_id() -> dict[int, list[str]]:
 
 
 class BaseParameters:
+    def update_dotnet_method(self, *, dotnet_method: PSMethod): ...
+
     def to_dotnet_method(self) -> Any: ...
 
     @classmethod
     def from_dotnet_method(cls, dotnet_method: PSMethod) -> Any: ...
 
 
-class MethodParameters(BaseParameters): ...
+@dataclass
+class MethodParameters(BaseParameters):
+    """Create a general method parameters.
+
+    Attributes
+    ----------
+    current_range_max: int
+        Maximum current range (default: 10 mA).
+        Use `get_current_range()` to get the range.
+    current_range_min: int
+        Minimum current range (default: 1 µA).
+        Use `get_current_range()` to get the range.
+    current_range_start: int
+         Start current range (default: 100 µA).
+         Use `get_current_range()` to get the range.
+
+    deposition_potential: float
+        Deposition potential in V (default: 0.0)
+    deposition_time: float
+        Deposition time in s (default: 0.0)
+    conditioning_potential: float
+        Conditioning potential in V (default: 0.0)
+    conditioning_time: float
+        Conditioning time in s (default: 0.0)
+
+    dc_mains_filter: int
+        Set the DC mains filter in Hz. Set to 50 Hz or 60 Hz depending on your region (default: 50).
+    default_curve_post_processing_filter: int = 0
+        Set the default curve post processing filter (default: 0)
+           -1 = no filter
+            0 = spike rejection
+            1 = spike rejection + Savitsky-golay window 5
+            2 = spike rejection + Savitsky-golay window 9
+            3 = spike rejection + Savitsky-golay window 15
+            4 = spike rejection + Savitsky-golay window 25
+
+    set_mux_mode: int = -1
+        Set multiplexer mode
+           -1 = No multiplexer (disable)
+            0 = Consecutive
+            1 = Alternate
+    set_mux_channels: list[bool]
+        Set multiplexer channels as a list of bools for each channel (channel 1, channel 2, ..., channel 128).
+        In consecutive mode all selections are valid.
+        In alternating mode the first channel must be selected and all other
+        channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
+    set_mux8r2_settings: Optional[PalmSens.Method.MuxSettings]
+        Initialize the settings for the MUX8R2 multiplexer (default: None).
+        use get_mux8r2_settings() to create the settings.
+
+    save_on_internal_storage: bool
+        Save on internal storage (default: False)
+
+    use_hardware_sync: bool
+        Use hardware synchronization with other channels/instruments (default: False)
+    """
+
+    # autoranging
+    current_range_max: int = get_current_range(8)
+    current_range_min: int = get_current_range(4)
+    current_range_start: int = get_current_range(6)
+
+    # pretreatment
+    deposition_potential: float = 0.0
+    deposition_time: float = 0.0
+    conditioning_potential: float = 0.0
+    conditioning_time: float = 0.0
+
+    # post measurement settings
+    cell_on_after_measurement: bool = False
+    cell_on_after_measurement_potential: float = 0.0  # V
+
+    # set trigger settings
+    trigger_at_measurement: bool = False
+    trigger_at_measurement_lines: tuple[bool, bool, bool, bool] = (False, False, False, False)
+
+    # set filter settings
+    dc_mains_filter: int = 50  # Hz
+    default_curve_post_processing_filter: int = 0
+
+    # multiplexer settings
+    set_mux_mode: int = -1
+    set_mux_channels: list[bool] = field(
+        default_factory=lambda: [False, False, False, False, False, False, False, False]
+    )
+    set_mux8r2_settings: Optional[PalmSens.Method.MuxSettings] = None
+
+    # internal storage
+    save_on_internal_storage: bool = False
+
+    # use hardware synchronization with other channels/instruments
+    use_hardware_sync: bool = False
+
+    def update_dotnet_method(self, *, dotnet_method):
+        obj = dotnet_method
+
+        # Set the autoranging current for a given method
+        obj.Ranging.MaximumCurrentRange = self.current_range_max
+        obj.Ranging.MinimumCurrentRange = self.current_range_min
+        obj.Ranging.StartCurrentRange = self.current_range_start
+
+        # Set the pretreatment settings for a given method
+        obj.DepositionPotential = self.deposition_potential
+        obj.DepositionTime = self.deposition_time
+        obj.ConditioningPotential = self.conditioning_potential
+        obj.ConditioningTime = self.conditioning_time
+
+        # Set the filter settings for a given method
+        obj.DCMainsFilter = self.dc_mains_filter
+        obj.DefaultCurvePostProcessingFilter = self.default_curve_post_processing_filter
+
+        # Create a mux8r2 multiplexer settings settings object
+        obj.MuxMethod = PSMuxMethod(self.set_mux_mode)
+
+        # disable all mux channels
+        for i in range(len(obj.UseMuxChannel)):
+            obj.UseMuxChannel[i] = False
+
+        # set the selected mux channels
+        for i, use_channel in enumerate(self.set_mux_channels):
+            obj.UseMuxChannel[i] = use_channel
+
+        if self.set_mux8r2_settings:
+            obj.MuxSett.ConnSEWE = self.set_mux8r2_settings.ConnSEWE
+            obj.MuxSett.ConnectCERE = self.set_mux8r2_settings.ConnectCERE
+            obj.MuxSett.CommonCERE = self.set_mux8r2_settings.CommonCERE
+            obj.MuxSett.UnselWE = self.set_mux8r2_settings.UnselWE
+
+        # Other settings
+        obj.SaveOnDevice = self.save_on_internal_storage
+        obj.UseHWSync = self.use_hardware_sync
+
+    def to_dotnet_method(self):
+        """Convert parameters to dotnet method."""
+        raise NotImplementedError
 
 
 class Method:

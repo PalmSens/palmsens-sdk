@@ -29,7 +29,7 @@ class DataSet(Mapping):
 
     def __iter__(self) -> Generator[tuple[str, str], None, None]:
         for array in self.dotnet_dataset:
-            yield (array.Description, ArrayType(array.ArrayType).name)
+            yield (array.Description, array.Unit.Quantity)
 
     def __len__(self):
         return self.dotnet_dataset.Count

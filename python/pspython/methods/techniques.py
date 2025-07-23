@@ -218,7 +218,6 @@ class DifferentialPulseParameters(
         Scan rate in V/s (default: 1.0)
     """
 
-    # differential pulse voltammetry settings
     equilibration_time: float = 0.0  # Time (s)
     begin_potential: float = -0.5  # potential (V)
     end_potential: float = 0.5  # potential (V)
@@ -226,7 +225,7 @@ class DifferentialPulseParameters(
     pulse_potential: float = 0.05  # potential (V)
     pulse_time: float = 0.01  # time (s)
     scan_rate: float = 1.0  # potential/time (V/s)
-    _PSMethod = Techniques.SquareWave
+    _PSMethod = Techniques.DifferentialPulse
 
     def add_to_object(self, *, obj):
         """Update method with linear sweep settings."""
@@ -320,9 +319,9 @@ class MultiStepAmperometryParameters(
         Use multi_step_amperometry_level() to create levels.
     """
 
-    equilibration_time: float = 0.0  # Time (s)
-    interval_time: float = 0.1  # Time (s)
-    n_cycles: float = 1  # Number of cycles
+    equilibration_time: float = 0.0
+    interval_time: float = 0.1
+    n_cycles: float = 1
     levels: list[Techniques.ELevel] = field(
         default_factory=lambda: [multi_step_amperometry_level()]
     )
@@ -499,12 +498,12 @@ class ElectrochemicalImpedanceSpectroscopyParameters(
         Minimum frequency in Hz (default: 1e3)
     """
 
-    equilibration_time: float = 0.0  # Time (s)
-    dc_potential: float = 0.0  # in V
-    ac_potential: float = 0.01  # in V RMS
-    n_frequencies: float = 11  # Number of frequencies
-    max_frequency: float = 1e5  # in Hz
-    min_frequency: float = 1e3  # in Hz
+    equilibration_time: float = 0.0
+    dc_potential: float = 0.0
+    ac_potential: float = 0.01
+    n_frequencies: int = 11
+    max_frequency: float = 1e5
+    min_frequency: float = 1e3
 
     _PSMethod = Techniques.ImpedimetricMethod
 
@@ -552,13 +551,13 @@ class GalvanostaticImpedanceSpectroscopyParameters(
         Minimum frequency in Hz (default: 1e3)
     """
 
-    applied_current_range: float = get_current_range(6)  # in applied current range
-    equilibration_time: float = 0.0  # Time (s
-    ac_current: float = 0.01  # in applied current range RMS
-    dc_current: float = 0.0  # in applied current range
-    n_frequencies: int = 11  # Number of frequencies
-    max_frequency: float = 1e5  # in Hz
-    min_frequency: float = 1e3  # in Hz
+    applied_current_range: float = get_current_range(6)
+    equilibration_time: float = 0.0
+    ac_current: float = 0.01
+    dc_current: float = 0.0
+    n_frequencies: int = 11
+    max_frequency: float = 1e5
+    min_frequency: float = 1e3
 
     _PSMethod = Techniques.ImpedimetricGstatMethod
 

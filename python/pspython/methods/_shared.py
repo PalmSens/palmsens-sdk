@@ -274,15 +274,16 @@ def get_mux8r2_settings(
 ):
     """Create a mux8r2 multiplexer settings settings object.
 
-    :Keyword Arguments:
-        * connect_sense_to_working_electrode
-            -- Connect the sense electrode to the working electrode. Default is False.
-        * combine_reference_and_counter_electrodes
-            -- Combine the reference and counter electrodes. Default is False.
-        * use_channel_1_reference_and_counter_electrodes
-            -- Use channel 1 reference and counter electrodes for all working electrodes. Default is False.
-        * set_unselected_channel_working_electrode
-            -- Set the unselected channel working electrode to 0 = Disconnected / floating, 1 = Ground, 2 = Standby potential. Default is 0.
+    Parameters
+    ----------
+    connect_sense_to_working_electrode: bool
+        Connect the sense electrode to the working electrode. Default is False.
+    combine_reference_and_counter_electrodes: bool
+        Combine the reference and counter electrodes. Default is False.
+    use_channel_1_reference_and_counter_electrodes: bool
+        Use channel 1 reference and counter electrodes for all working electrodes. Default is False.
+    set_unselected_channel_working_electrode: int
+        Set the unselected channel working electrode to 0 = Disconnected / floating, 1 = Ground, 2 = Standby potential. Default is 0.
     """
 
     mux_settings = Method.MuxSettings(False)

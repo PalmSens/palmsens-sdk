@@ -28,7 +28,7 @@ serial = manager.get_instrument_serial()
 print(serial)
 
 # #Chronoamperometry measurement using helper class
-method = pspymethods.chronoamperometry(interval_time=0.0004, e=1.0, run_time=10.0)
+method = pspymethods.chronoamperometry(interval_time=0.0004, potential=1.0, run_time=10.0)
 
 measurement = manager.measure(method)
 if measurement is not None:

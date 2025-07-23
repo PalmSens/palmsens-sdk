@@ -31,7 +31,7 @@ async def main():
     tasks = [connect(instrument, i) for (i, instrument) in enumerate(available_instruments)]
     connected = await asyncio.gather(*tasks)
 
-    method = pspymethods.chronoamperometry(interval_time=0.0004, e=1.0, run_time=5.0)
+    method = pspymethods.chronoamperometry(interval_time=0.0004, potential=1.0, run_time=5.0)
 
     if all(connected):
 

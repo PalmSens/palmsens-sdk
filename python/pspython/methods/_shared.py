@@ -10,6 +10,7 @@ from PalmSens import (
     PotentialRanges,
 )
 from PalmSens.Devices import PalmSens4Capabilities
+from PalmSens.Techniques import ELevel
 
 
 def convert_bool_list_to_base2(lst: Sequence[bool]) -> int:
@@ -315,3 +316,57 @@ def get_method_estimated_duration(method, *, instrument_manager=None):
     else:
         instrument_capabilities = instrument_manager.__comm.Capabilities
     return method.GetMinimumEstimatedMeasurementDuration(instrument_capabilities)
+
+
+def multi_step_amperometry_level(
+    level: float = 0.0,
+    duration: float = 1.0,
+    record: bool = True,
+    use_limit_current_max: bool = False,
+    limit_current_max: float = 0.0,
+    use_limit_current_min: bool = False,
+    limit_current_min: float = 0.0,
+    trigger_at_level: bool = False,
+    trigger_at_level_lines: tuple[bool, bool, bool, bool] = (False, False, False, False),
+):
+    """Create a multi-step amperometry level method object.
+
+    Parameters
+    ----------
+    level : float
+        Level in V (default: 0.0)
+    duration : float
+        Duration in s (default: 1.0)
+    record : bool
+        Record the current (default: True)
+    use_limit_current_max : bool
+        Use limit current max (default: False)
+    limit_current_max : float
+        Limit current max in µA (default: 0.0)
+    use_limit_current_min : bool
+        Use limit current min (default: False)
+    limit_current_min : float
+        Limit current min in µA (default: 0.0)
+    trigger_at_level : bool
+        Use trigger at level (default: False)
+    trigger_at_level_lines : list
+        Trigger at level lines (default: [False, False, False, False])
+        [d0 high, d1 high, d2 high, d3 high]
+    """
+    multi_step_amperometry_level = ELevel()
+
+    multi_step_amperometry_level.Level = level
+    multi_step_amperometry_level.Duration = duration
+    multi_step_amperometry_level.Record = record
+
+    multi_step_amperometry_level.UseMaxLimit = use_limit_current_max
+    multi_step_amperometry_level.MaxLimit = limit_current_max
+    multi_step_amperometry_level.UseMinLimit = use_limit_current_min
+    multi_step_amperometry_level.MinLimit = limit_current_min
+
+    multi_step_amperometry_level.UseTriggerOnStart = trigger_at_level
+    multi_step_amperometry_level.TriggerValueOnStart = convert_bool_list_to_base2(
+        trigger_at_level_lines
+    )
+
+    return multi_step_amperometry_level

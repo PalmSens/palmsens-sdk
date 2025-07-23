@@ -25,7 +25,7 @@ async def main():
     print(serial)
 
     # Chronoamperometry measurement using helper class
-    method = pspymethods.chronoamperometry(interval_time=0.02, e=1.0, run_time=2.0)
+    method = pspymethods.chronoamperometry(interval_time=0.02, potential=1.0, run_time=2.0)
 
     measurement = await manager.measure(method)
 

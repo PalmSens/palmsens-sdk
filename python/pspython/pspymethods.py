@@ -1,23 +1,11 @@
 from PalmSens.Techniques import MethodScriptSandbox
 
-from .methods import (
-    chronoamperometry,
-    chronopotentiometry,
-    cyclic_voltammetry,
-    differential_pulse_voltammetry,
-    electrochemical_impedance_spectroscopy,
-    galvanostatic_impedance_spectroscopy,
-    linear_sweep_voltammetry,
-    multi_step_amperometry,
-    multi_step_amperometry_level,
-    open_circuit_potentiometry,
-    square_wave_voltammetry,
-)
 from .methods._shared import (
     get_current_range,
     get_method_estimated_duration,
     get_mux8r2_settings,
     get_potential_range,
+    multi_step_amperometry_level,
     set_autoranging_bipot_current,
     set_autoranging_current,
     set_autoranging_potential,
@@ -33,6 +21,18 @@ from .methods._shared import (
     set_trigger_at_equilibration_settings,
     set_trigger_at_measurement_settings,
     set_versus_ocp,
+)
+from .methods.techniques_old import (
+    chronoamperometry,
+    chronopotentiometry,
+    cyclic_voltammetry,
+    differential_pulse_voltammetry,
+    electrochemical_impedance_spectroscopy,
+    galvanostatic_impedance_spectroscopy,
+    linear_sweep_voltammetry,
+    multi_step_amperometry,
+    open_circuit_potentiometry,
+    square_wave_voltammetry,
 )
 
 

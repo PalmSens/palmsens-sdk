@@ -5,7 +5,6 @@ from PalmSens import (
     CurrentRanges,
     ExtraValueMask,
     Method,
-    MuxMethod,
     PotentialRange,
     PotentialRanges,
 )
@@ -90,71 +89,8 @@ def get_potential_range(id: int) -> PotentialRange:
     return PotentialRange(ranges)
 
 
-def set_autoranging_current(method, current_range_max, current_range_min, current_range_start):
-    """Set the autoranging current for a given method."""
-    method.Ranging.MaximumCurrentRange = current_range_max
-    method.Ranging.MinimumCurrentRange = current_range_min
-    method.Ranging.StartCurrentRange = current_range_start
-
-
-def set_autoranging_bipot_current(
-    method, bipot_current_range_max, bipot_current_range_min, bipot_current_range_start
-):
-    """Set the autoranging bipot current for a given method."""
-    method.BipotRanging.MaximumCurrentRange = bipot_current_range_max
-    method.BipotRanging.MinimumCurrentRange = bipot_current_range_min
-    method.BipotRanging.StartCurrentRange = bipot_current_range_start
-
-
-def set_autoranging_potential(
-    method, potential_range_max, potential_range_min, potential_range_start
-):
-    """Set the autoranging potential for a given method."""
-    method.RangingPotential.MaximumPotentialRange = potential_range_max
-    method.RangingPotential.MinimumPotentialRange = potential_range_min
-    method.RangingPotential.StartPotentialRange = potential_range_start
-
-
-def set_pretreatment(
-    method, deposition_potential, deposition_time, conditioning_potential, conditioning_time
-):
-    """Set the pretreatment settings for a given method."""
-    method.DepositionPotential = deposition_potential
-    method.DepositionTime = deposition_time
-    method.ConditioningPotential = conditioning_potential
-    method.ConditioningTime = conditioning_time
-
-
-def set_versus_ocp(
-    method, versus_ocp_mode, versus_ocp_max_ocp_time, versus_ocp_stability_criterion
-):
-    """Set the versus OCP settings for a given method."""
-    method.OCPmode = versus_ocp_mode
-    method.OCPMaxOCPTime = versus_ocp_max_ocp_time
-    method.OCPStabilityCriterion = versus_ocp_stability_criterion
-
-
-def set_bipot_settings(
-    method,
-    bipot_mode,
-    bipot_potential,
-    bipot_current_range_max,
-    bipot_current_range_min,
-    bipot_current_range_start,
-):
-    """Set the bipot settings for a given method."""
-    method.BiPotModePS = Method.EnumPalmSensBipotMode(bipot_mode)
-    method.BiPotPotential = bipot_potential
-    set_autoranging_bipot_current(
-        method,
-        bipot_current_range_max,
-        bipot_current_range_min,
-        bipot_current_range_start,
-    )
-
-
 def set_extra_value_mask(
-    method,
+    obj,
     *,
     enable_bipot_current: bool = False,
     record_auxiliary_input: bool = False,
@@ -182,87 +118,9 @@ def set_extra_value_mask(
         extra_values = extra_values | int(ExtraValueMask.IForwardReverse)
     if record_we_current:
         extra_values = extra_values | int(ExtraValueMask.CurrentExtraWE)
-        method.AppliedCurrentRange = record_we_current_range
+        obj.AppliedCurrentRange = record_we_current_range
 
-    method.ExtraValueMsk = ExtraValueMask(extra_values)
-
-
-def set_post_measurement_settings(
-    method, cell_on_after_measurement, cell_on_after_measurement_potential
-):
-    """Set the post measurement settings for a given method."""
-    method.CellOnAfterMeasurement = cell_on_after_measurement
-    method.StandbyPotential = cell_on_after_measurement_potential
-
-
-def set_limit_settings(method, use_limit_max, limit_max, use_limit_min, limit_min):
-    """Set the limit settings for a given method."""
-    method.UseLimitMaxValue = use_limit_max
-    method.LimitMaxValue = limit_max
-    method.UseLimitMinValue = use_limit_min
-    method.LimitMinValue = limit_min
-
-
-def set_charge_limit_settings(
-    method, use_limit_charge_max, limit_charge_max, use_limit_charge_min, limit_charge_min
-):
-    """Set the charge limit settings for a given method."""
-    method.UseChargeLimitMax = use_limit_charge_max
-    method.ChargeLimitMax = limit_charge_max
-    method.UseChargeLimitMin = use_limit_charge_min
-    method.ChargeLimitMin = limit_charge_min
-
-
-def set_ir_drop_compensation(method, use_ir_compensation, ir_compensation):
-    """Set the iR drop compensation settings for a given method."""
-    method.UseIRDropComp = use_ir_compensation
-    method.IRDropCompRes = ir_compensation
-
-
-def set_trigger_at_equilibration_settings(
-    method, trigger_at_equilibration, trigger_at_equilibration_lines
-):
-    """Set the trigger at equilibration settings for a given method."""
-    method.UseTriggerOnEquil = trigger_at_equilibration
-    lines = 0
-    for i, set_high in enumerate(trigger_at_equilibration_lines):
-        if set_high:
-            lines = lines | (1 << i)
-    method.TriggerValueOnEquil = lines
-
-
-def set_trigger_at_measurement_settings(
-    method, trigger_at_measurement, trigger_at_measurement_lines
-):
-    """Set the trigger at measurement settings for a given method."""
-    method.UseTriggerOnStart = trigger_at_measurement
-    lines = 0
-    for i, set_high in enumerate(trigger_at_measurement_lines):
-        if set_high:
-            lines = lines | (1 << i)
-    method.TriggerValueOnStart = lines
-
-
-def set_multiplexer_settings(
-    method,
-    set_mux_mode,
-    set_mux_channels,
-    set_mux8r2_settings,
-):
-    """Set the multiplexer settings for a given method."""
-    method.MuxMethod = MuxMethod(set_mux_mode)
-    # disable all mux channels
-    for i in range(0, len(method.UseMuxChannel)):
-        method.UseMuxChannel[i] = False
-    # set the selected mux channels
-    for i, use_channel in enumerate(set_mux_channels):
-        method.UseMuxChannel[i] = use_channel
-    # set the mux8r2 settings
-    if set_mux8r2_settings is not None:
-        method.MuxSett.ConnSEWE = set_mux8r2_settings.ConnSEWE
-        method.MuxSett.ConnectCERE = set_mux8r2_settings.ConnectCERE
-        method.MuxSett.CommonCERE = set_mux8r2_settings.CommonCERE
-        method.MuxSett.UnselWE = set_mux8r2_settings.UnselWE
+    obj.ExtraValueMsk = ExtraValueMask(extra_values)
 
 
 def get_mux8r2_settings(
@@ -297,19 +155,14 @@ def get_mux8r2_settings(
     return mux_settings
 
 
-def set_filter_settings(method, dc_mains_filter, default_curve_post_processing_filter):
-    """Set the filter settings for a given method."""
-    method.DCMainsFilter = dc_mains_filter
-    method.DefaultCurvePostProcessingFilter = default_curve_post_processing_filter
-
-
 def get_method_estimated_duration(method, *, instrument_manager=None):
     """Get the estimated duration of a given method.
 
-    :Keyword Arguments:
-        instrument_manager :
-            -- Specifies the instrument manager to get the connected instruments capabilities from,
-            if not specified it will use the PalmSens4 capabilities to determine the estimated duration.
+    Parameters
+    ----------
+    instrument_manager
+        Specifies the instrument manager to get the connected instruments capabilities from,
+        if not specified it will use the PalmSens4 capabilities to determine the estimated duration.
 
     """
     if instrument_manager is None or instrument_manager.__comm is None:

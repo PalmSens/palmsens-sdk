@@ -1,13 +1,13 @@
 from dataclasses import dataclass, field
 
+from PalmSens import Method as PSMethod
 from PalmSens import Techniques
 from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 
-from ._shared import get_current_range, multi_step_amperometry_level
+from ._shared import get_current_range, multi_step_amperometry_level, set_extra_value_mask
 from .settings import (
     AutorangingCurrentSettings,
     AutorangingPotentialSettings,
-    BaseParameters,
     BipotSettings,
     ChargeLimitSettings,
     CurrentLimitSettings,
@@ -22,6 +22,29 @@ from .settings import (
     TriggerAtMeasurementSettings,
     VersusOcpSettings,
 )
+
+
+class BaseParameters:
+    """Provide generic methods for interacting with the PalmSens.Method
+    object."""
+
+    _PSMethod: PSMethod = PSMethod
+
+    def to_dotnet_method(self):
+        """Convert parameters to dotnet method."""
+        obj = self._PSMethod()
+
+        for cls in self.__class__.__mro__:
+            if cls in (object, BaseParameters):
+                continue
+            cls.add_to_object(self, obj=obj)
+
+        return obj
+
+    @classmethod
+    def from_dotnet_method(cls, obj: PSMethod):
+        """Generate parameters from dotnet method."""
+        raise NotImplementedError
 
 
 @dataclass
@@ -56,17 +79,32 @@ class CyclicVoltammetryParameters(
         Scan rate in V/s (default: 1.0)
     n_scans: float
         Number of scans (default: 1)
+    enable_bipot_current: bool
+        Enable bipot current (default: False)
+    record_auxiliary_input : bool
+        Record auxiliary input (default: False)
+    record_cell_potential : bool
+        Record cell potential (default: False)
+        Counter electrode vs ground.
+    record_we_potential : bool
+        Record applied working electrode potential (default: False)
+        Reference electrode vs ground.
     """
 
-    # cyclic voltammetry settings
-    equilibration_time: float = 0.0  # Time (s)
-    begin_potential: float = -0.5  # potential (V)
-    vertex1_potential: float = 0.5  # potential (V)
-    vertex2_potential: float = -0.5  # potential (V)
-    step_potential: float = 0.1  # potential (V)
-    scanrate: float = 1.0  # potential/time (V/s)
-    n_scans: float = 1  # number of cycles
     _PSMethod = Techniques.CyclicVoltammetry
+
+    equilibration_time: float = 0.0
+    begin_potential: float = -0.5
+    vertex1_potential: float = 0.5
+    vertex2_potential: float = -0.5
+    step_potential: float = 0.1
+    scanrate: float = 1.0
+    n_scans: float = 1
+
+    enable_bipot_current: bool = False
+    record_auxiliary_input: bool = False
+    record_cell_potential: bool = False
+    record_we_potential: bool = False
 
     def add_to_object(self, *, obj):
         """Update method with cyclic voltammetry settings."""
@@ -77,6 +115,14 @@ class CyclicVoltammetryParameters(
         obj.StepPotential = self.step_potential
         obj.Scanrate = self.scanrate
         obj.nScans = self.n_scans
+
+        set_extra_value_mask(
+            obj=obj,
+            record_auxiliary_input=self.record_auxiliary_input,
+            record_cell_potential=self.record_cell_potential,
+            record_we_potential=self.record_we_potential,
+            enable_bipot_current=self.enable_bipot_current,
+        )
 
 
 @dataclass
@@ -107,14 +153,29 @@ class LinearSweepParameters(
         Step potential in V (default: 0.1)
     scanrate : float
         Scan rate in V/s (default: 1.0)
+    enable_bipot_current: bool
+        Enable bipot current (default: False)
+    record_auxiliary_input : bool
+        Record auxiliary input (default: False)
+    record_cell_potential : bool
+        Record cell potential (default: False)
+        Counter electrode vs ground.
+    record_we_potential : bool
+        Record applied working electrode potential (default: False)
+        Reference electrode vs ground.
     """
 
-    # linear sweep voltammetry settings
-    begin_potential: float = -0.5  # potential (V)
-    end_potential: float = 0.5  # potential (V)
-    step_potential: float = 0.1  # potential (V)
-    scanrate: float = 1.0  # potential/time (V/s)
     _PSMethod = Techniques.LinearSweep
+
+    begin_potential: float = -0.5
+    end_potential: float = 0.5
+    step_potential: float = 0.1
+    scanrate: float = 1.0
+
+    record_auxiliary_input: bool = False
+    record_cell_potential: bool = False
+    record_we_potential: bool = False
+    enable_bipot_current: bool = False
 
     def add_to_object(self, *, obj):
         """Update method with linear sweep settings."""
@@ -122,6 +183,14 @@ class LinearSweepParameters(
         obj.EndPotential = self.end_potential
         obj.StepPotential = self.step_potential
         obj.Scanrate = self.scanrate
+
+        set_extra_value_mask(
+            obj=obj,
+            record_auxiliary_input=self.record_auxiliary_input,
+            record_cell_potential=self.record_cell_potential,
+            record_we_potential=self.record_we_potential,
+            enable_bipot_current=self.enable_bipot_current,
+        )
 
 
 @dataclass
@@ -155,19 +224,34 @@ class SquareWaveParameters(
         Frequency in Hz (default: 10.0)
     amplitude : float
         Amplitude in V as half peak-to-peak value (default: 0.05).
+    enable_bipot_current: bool
+        Enable bipot current (default: False)
+    record_auxiliary_input : bool
+        Record auxiliary input (default: False)
+    record_cell_potential : bool
+        Record cell potential (default: False)
+        Counter electrode vs ground.
+    record_we_potential : bool
+        Record applied working electrode potential (default: False)
+        Reference electrode vs ground.
     record_forward_and_reverse_currents : bool
         Record forward and reverse currents (default: False)
     """
 
-    # square wave voltammetry settings
+    _PSMethod = Techniques.SquareWave
+
     equilibration_time: float = 0.0
     begin_potential: float = -0.5
     end_potential: float = 0.5
     step_potential: float = 0.1
     frequency: float = 10.0
     amplitude: float = 0.05
+
+    record_auxiliary_input: bool = False
+    record_cell_potential: bool = False
+    record_we_potential: bool = False
+    enable_bipot_current: bool = False
     record_forward_and_reverse_currents: bool = False
-    _PSMethod = Techniques.SquareWave
 
     def add_to_object(self, *, obj):
         """Update method with linear sweep settings."""
@@ -178,9 +262,14 @@ class SquareWaveParameters(
         obj.Frequency = self.frequency
         obj.PulseAmplitude = self.amplitude
 
-        # if self.record_forward_and_reverse_currents:
-        #     extra_values = int(obj.ExtraValueMsk) | int(ExtraValueMask.IForwardReverse)
-        #     obj.ExtraValueMsk = ExtraValueMask(extra_values)
+        set_extra_value_mask(
+            obj=obj,
+            record_auxiliary_input=self.record_auxiliary_input,
+            record_cell_potential=self.record_cell_potential,
+            record_we_potential=self.record_we_potential,
+            enable_bipot_current=self.enable_bipot_current,
+            record_forward_and_reverse_currents=self.record_forward_and_reverse_currents,
+        )
 
 
 @dataclass
@@ -216,7 +305,19 @@ class DifferentialPulseParameters(
         Pulse time in s (default: 0.01)
     scanrate : float
         Scan rate in V/s (default: 1.0)
+    enable_bipot_current: bool
+        Enable bipot current (default: False)
+    record_auxiliary_input : bool
+        Record auxiliary input (default: False)
+    record_cell_potential : bool
+        Record cell potential (default: False)
+        Counter electrode vs ground.
+    record_we_potential : bool
+        Record applied working electrode potential (default: False)
+        Reference electrode vs ground.
     """
+
+    _PSMethod = Techniques.DifferentialPulse
 
     equilibration_time: float = 0.0  # Time (s)
     begin_potential: float = -0.5  # potential (V)
@@ -225,7 +326,11 @@ class DifferentialPulseParameters(
     pulse_potential: float = 0.05  # potential (V)
     pulse_time: float = 0.01  # time (s)
     scan_rate: float = 1.0  # potential/time (V/s)
-    _PSMethod = Techniques.DifferentialPulse
+
+    record_auxiliary_input: bool = False
+    record_cell_potential: bool = False
+    record_we_potential: bool = False
+    enable_bipot_current: bool = False
 
     def add_to_object(self, *, obj):
         """Update method with linear sweep settings."""
@@ -236,6 +341,14 @@ class DifferentialPulseParameters(
         obj.PulsePotential = self.pulse_potential
         obj.PulseTime = self.pulse_time
         obj.Scanrate = self.scan_rate
+
+        set_extra_value_mask(
+            obj=obj,
+            record_auxiliary_input=self.record_auxiliary_input,
+            record_cell_potential=self.record_cell_potential,
+            record_we_potential=self.record_we_potential,
+            enable_bipot_current=self.enable_bipot_current,
+        )
 
 
 @dataclass
@@ -267,13 +380,29 @@ class ChronoAmperometryParameters(
         Potential in V (default: 0.0)
     run_time : float
         Run time in s (default: 1.0)
+    enable_bipot_current: bool
+        Enable bipot current (default: False)
+    record_auxiliary_input : bool
+        Record auxiliary input (default: False)
+    record_cell_potential : bool
+        Record cell potential (default: False)
+        Counter electrode vs ground.
+    record_we_potential : bool
+        Record applied working electrode potential (default: False)
+        Reference electrode vs ground.
     """
+
+    _PSMethod = Techniques.AmperometricDetection
 
     equilibration_time: float = 0.0
     interval_time: float = 0.1
     potential: float = 0.0
     run_time: float = 1.0
-    _PSMethod = Techniques.AmperometricDetection
+
+    record_auxiliary_input: bool = False
+    record_cell_potential: bool = False
+    record_we_potential: bool = False
+    enable_bipot_current: bool = False
 
     def add_to_object(self, *, obj):
         """Update method with chrono amperometry settings."""
@@ -282,13 +411,13 @@ class ChronoAmperometryParameters(
         obj.Potential = self.potential
         obj.RunTime = self.run_time
 
-        # set_extra_value_mask(
-        #     dotnet_method,
-        #     enable_bipot_current=self.enable_bipot_current,
-        #     record_auxiliary_input=self.record_auxiliary_input,
-        #     record_cell_potential=self.record_cell_potential,
-        #     record_we_potential=self.record_we_potential,
-        # )
+        set_extra_value_mask(
+            obj=obj,
+            record_auxiliary_input=self.record_auxiliary_input,
+            record_cell_potential=self.record_cell_potential,
+            record_we_potential=self.record_we_potential,
+            enable_bipot_current=self.enable_bipot_current,
+        )
 
 
 @dataclass
@@ -317,7 +446,19 @@ class MultiStepAmperometryParameters(
     levels : list
         List of levels (default: [multi_step_amperometry_level()].
         Use multi_step_amperometry_level() to create levels.
+    enable_bipot_current: bool
+        Enable bipot current (default: False)
+    record_auxiliary_input : bool
+        Record auxiliary input (default: False)
+    record_cell_potential : bool
+        Record cell potential (default: False)
+        Counter electrode vs ground.
+    record_we_potential : bool
+        Record applied working electrode potential (default: False)
+        Reference electrode vs ground.
     """
+
+    _PSMethod = Techniques.MultistepAmperometry
 
     equilibration_time: float = 0.0
     interval_time: float = 0.1
@@ -325,7 +466,11 @@ class MultiStepAmperometryParameters(
     levels: list[Techniques.ELevel] = field(
         default_factory=lambda: [multi_step_amperometry_level()]
     )
-    _PSMethod = Techniques.MultistepAmperometry
+
+    record_auxiliary_input: bool = False
+    record_cell_potential: bool = False
+    record_we_potential: bool = False
+    enable_bipot_current: bool = False
 
     def add_to_object(self, *, obj):
         """Update method with chrono amperometry settings."""
@@ -351,6 +496,14 @@ class MultiStepAmperometryParameters(
         obj.UseSelectiveRecord = use_partial_record
         obj.UseLimits = use_level_limits
 
+        set_extra_value_mask(
+            obj=obj,
+            record_auxiliary_input=self.record_auxiliary_input,
+            record_cell_potential=self.record_cell_potential,
+            record_we_potential=self.record_we_potential,
+            enable_bipot_current=self.enable_bipot_current,
+        )
+
 
 @dataclass
 class OpenCircuitPotentiometryParameters(
@@ -373,18 +526,25 @@ class OpenCircuitPotentiometryParameters(
         Interval time in s (default: 0.1)
     run_time : float
         Run time in s (default: 1.0)
+    enable_bipot_current: bool
+        Enable bipot current (default: False)
+    record_auxiliary_input : bool
+        Record auxiliary input (default: False)
+    record_we_current: bool
+        Record working electrode current (default: False)
     record_we_current_range: int
         Record working electrode current range (default: 1 µA)
         Use `get_current_range()` to get the range.
     """
 
+    _PSMethod = Techniques.OpenCircuitPotentiometry
+
     interval_time: float = 0.1  # Time (s)
     run_time: float = 1.0  # Time (s)
 
-    # record extra value settings
+    record_auxiliary_input: bool = False
+    record_we_current: bool = False
     record_we_current_range: int = get_current_range(4)
-
-    _PSMethod = Techniques.OpenCircuitPotentiometry
 
     def add_to_object(self, *, obj):
         """Update method with open circuit potentiometry settings."""
@@ -392,13 +552,12 @@ class OpenCircuitPotentiometryParameters(
         obj.IntervalTime = self.interval_time
         obj.RunTime = self.run_time
 
-        # set_extra_value_mask(
-        #     dotnet_method,
-        #     record_auxiliary_input=self.record_auxiliary_input,
-        #     record_cell_potential=self.record_cell_potential,
-        #     record_we_current=self.record_we_current,
-        #     record_we_current_range=self.record_we_current_range,
-        # )
+        set_extra_value_mask(
+            obj=obj,
+            record_auxiliary_input=self.record_auxiliary_input,
+            record_we_current=self.record_we_current,
+            record_we_current_range=self.record_we_current_range,
+        )
 
 
 @dataclass
@@ -419,7 +578,7 @@ class ChronopotentiometryParameters(
     Attributes
     ----------
     current : float
-        Current in applied current range (default: 0.0)
+        The current to apply. The unit of the value is the applied current range. So if 10 uA is the applied current range and 1.5 is given as value, the applied current will be 15 uA. (default: 0.0)
     applied_current_range : PalmSens.CurrentRange
         Applied current range (default: 100 µA).
         Use `get_current_range()` to get the range.
@@ -427,29 +586,24 @@ class ChronopotentiometryParameters(
         Interval time in s (default: 0.1)
     run_time : float
         Run time in s (default: 1.0)
-
     record_auxiliary_input : bool
         Record auxiliary input (default: False)
     record_cell_potential : bool
         Record cell potential (default: False) [counter electrode vs ground]
     record_we_current : bool
         Record working electrode current (default: False)
-    record_we_current_range: int=get_potential_range(4)
-        Record working electrode current range (default: 1 µA)
-        Use `get_current_range()` to get the range.
     """
 
-    current: float = 0.0  # in applied current range
-    applied_current_range: int = get_current_range(6)  # in applied current range
-    interval_time: float = 0.1  # Time (s)
-    run_time: float = 1.0  # Time (s)
-
     _PSMethod = Techniques.Potentiometry
+
+    current: float = 0.0
+    applied_current_range: int = get_current_range(6)
+    interval_time: float = 0.1
+    run_time: float = 1.0
 
     record_auxiliary_input: bool = False
     record_cell_potential: bool = False
     record_we_current: bool = False
-    record_we_current_range: int = get_current_range(4)
 
     def add_to_object(self, *, obj):
         """Update method with potentiometry settings."""
@@ -458,13 +612,13 @@ class ChronopotentiometryParameters(
         obj.IntervalTime = self.interval_time
         obj.RunTime = self.run_time
 
-        # set_extra_value_mask(
-        #     obj,
-        #     record_auxiliary_input=self.record_auxiliary_input,
-        #     record_cell_potential=self.record_cell_potential,
-        #     record_we_current=self.record_we_current,
-        #     record_we_current_range=self.applied_current_range,
-        # )
+        set_extra_value_mask(
+            obj=obj,
+            record_auxiliary_input=self.record_auxiliary_input,
+            record_cell_potential=self.record_cell_potential,
+            record_we_current=self.record_we_current,
+            record_we_current_range=self.applied_current_range,
+        )
 
 
 @dataclass
@@ -498,14 +652,14 @@ class ElectrochemicalImpedanceSpectroscopyParameters(
         Minimum frequency in Hz (default: 1e3)
     """
 
+    _PSMethod = Techniques.ImpedimetricMethod
+
     equilibration_time: float = 0.0
     dc_potential: float = 0.0
     ac_potential: float = 0.01
     n_frequencies: int = 11
     max_frequency: float = 1e5
     min_frequency: float = 1e3
-
-    _PSMethod = Techniques.ImpedimetricMethod
 
     def add_to_object(self, *, obj):
         """Update method with potentiometry settings."""
@@ -551,6 +705,8 @@ class GalvanostaticImpedanceSpectroscopyParameters(
         Minimum frequency in Hz (default: 1e3)
     """
 
+    _PSMethod = Techniques.ImpedimetricGstatMethod
+
     applied_current_range: float = get_current_range(6)
     equilibration_time: float = 0.0
     ac_current: float = 0.01
@@ -558,8 +714,6 @@ class GalvanostaticImpedanceSpectroscopyParameters(
     n_frequencies: int = 11
     max_frequency: float = 1e5
     min_frequency: float = 1e3
-
-    _PSMethod = Techniques.ImpedimetricGstatMethod
 
     def add_to_object(self, *, obj):
         """Update method with potentiometry settings."""

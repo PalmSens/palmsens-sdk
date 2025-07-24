@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 import PalmSens
-from PalmSens import Method as PSMethod
 from PalmSens import MuxMethod as PSMuxMethod
 
 from ._shared import convert_bool_list_to_base2, get_current_range, get_potential_range
@@ -434,25 +433,3 @@ class OtherSettings:
     def add_to_object(self, *, obj):
         obj.SaveOnDevice = self.save_on_internal_storage
         obj.UseHWSync = self.use_hardware_sync
-
-
-class BaseParameters:
-    """Provide generic methods for interacting with the PalmSens.Method object."""
-
-    _PSMethod: PSMethod = PSMethod
-
-    def to_dotnet_method(self):
-        """Convert parameters to dotnet method."""
-        obj = self._PSMethod()
-
-        for cls in self.__class__.__mro__:
-            if cls in (object, BaseParameters):
-                continue
-            cls.add_to_object(self, obj=obj)
-
-        return obj
-
-    @classmethod
-    def from_dotnet_method(cls, obj: PSMethod):
-        """Generate parameters from dotnet method."""
-        raise NotImplementedError

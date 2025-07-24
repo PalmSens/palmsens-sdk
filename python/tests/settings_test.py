@@ -1,8 +1,34 @@
-import pytest
 from PalmSens.Techniques import CyclicVoltammetry, Potentiometry
 
 from pspython.methods import settings
-from pspython.methods._shared import get_current_range, get_mux8r2_settings, get_potential_range
+from pspython.methods._shared import (
+    get_current_range,
+    get_mux8r2_settings,
+    get_potential_range,
+    set_extra_value_mask,
+)
+
+
+def test_ExtraValueMask():
+    obj = CyclicVoltammetry()
+    assert obj.ExtraValueMsk.value__ == 0
+
+    set_extra_value_mask(
+        obj=obj,
+        record_auxiliary_input=True,
+        record_cell_potential=True,
+        record_we_potential=True,
+    )
+    assert obj.ExtraValueMsk.value__ == 274
+
+    set_extra_value_mask(
+        obj=obj,
+        enable_bipot_current=True,
+        record_forward_and_reverse_currents=True,
+        record_we_current=True,
+        record_we_current_range=get_current_range(1),
+    )
+    assert obj.ExtraValueMsk.value__ == 101
 
 
 def test_AutorangingCurrentSettings():
@@ -82,11 +108,6 @@ def test_BipotSettings():
     assert obj.BipotRanging.MaximumCurrentRange.Description == '100 uA'
     assert obj.BipotRanging.MinimumCurrentRange.Description == '10 nA'
     assert obj.BipotRanging.StartCurrentRange.Description == '10 uA'
-
-
-@pytest.mark.xfail(reason='https://github.com/PalmSens/PalmSens_SDK/issues/37')
-def test_ExtraValueMask():
-    assert False
 
 
 def test_PostMeasurementSettings():

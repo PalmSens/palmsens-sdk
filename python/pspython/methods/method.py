@@ -24,7 +24,7 @@ def method_ids_by_technique_id() -> dict[int, list[str]]:
 class BaseParameters:
     def update_dotnet_method(self, *, dotnet_method: PSMethod): ...
 
-    def to_dotnet_method(self) -> Any: ...
+    def to_psobj(self) -> Any: ...
 
     @classmethod
     def from_dotnet_method(cls, dotnet_method: PSMethod) -> Any: ...
@@ -213,7 +213,7 @@ class MethodParameters(BaseParameters):
         obj.SaveOnDevice = self.save_on_internal_storage
         obj.UseHWSync = self.use_hardware_sync
 
-    def to_dotnet_method(self):
+    def to_psobj(self):
         """Convert parameters to dotnet method."""
         raise NotImplementedError
 
@@ -232,7 +232,7 @@ class Method:
     @classmethod
     def from_parameters(cls, *, parameters: BaseParameters) -> 'Method':
         """Create instance of Method from parameters"""
-        obj = parameters.to_dotnet_method()
+        obj = parameters.to_psobj()
         return cls(dotnet_method=obj)
 
     @property

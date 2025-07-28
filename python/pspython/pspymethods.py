@@ -1,11 +1,11 @@
 from PalmSens.Techniques import MethodScriptSandbox
 
 from .methods._shared import (
+    ELevel,
     get_current_range,
     get_method_estimated_duration,
     get_mux8r2_settings,
     get_potential_range,
-    multi_step_amperometry_level,
     set_extra_value_mask,
 )
 from .methods.techniques_old import (
@@ -48,7 +48,7 @@ __all__ = [
     'galvanostatic_impedance_spectroscopy',
     'linear_sweep_voltammetry',
     'multi_step_amperometry',
-    'multi_step_amperometry_level',
+    'ELevel',
     'open_circuit_potentiometry',
     'square_wave_voltammetry',
     'method_script_sandbox',

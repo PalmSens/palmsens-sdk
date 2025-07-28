@@ -1,5 +1,7 @@
-from typing import Any, Optional, Sequence
+from dataclasses import dataclass
+from typing import Any, Sequence
 
+import numpy as np
 from PalmSens import (
     CurrentRange,
     CurrentRanges,
@@ -7,20 +9,29 @@ from PalmSens import (
     Method,
     PotentialRange,
     PotentialRanges,
+    Techniques,
 )
 from PalmSens.Devices import PalmSens4Capabilities
-from PalmSens.Techniques import ELevel
 
 
-def convert_bool_list_to_base2(lst: Sequence[bool]) -> int:
+def single_to_double(val: float) -> float:
+    """Cast single precision to double precision.
+
+    Pythonnet returns System.Single, whereas python defaults to double precision.
+    This leads to incorrect rounding, which makes comparing values difficult."""
+    return float(str(np.float32(val)))
+
+
+def convert_bools_to_int(lst: Sequence[bool]) -> int:
     """Convert e.g. [True, False, True, False] to 5."""
+    return int(''.join('01'[set_high] for set_high in reversed(lst)), base=2)
 
-    lines = 0
-    for i, set_high in enumerate(lst):
-        if set_high:
-            lines = lines | (1 << i)
-    assert lines == int(''.join('01'[set_high] for set_high in reversed(lst)), base=2)
-    return lines
+
+def convert_int_to_bools(val) -> tuple[bool, bool, bool, bool]:
+    """Convert e.g. 5 to [True, False, True, False]."""
+    lst = tuple([bool(int(_)) for _ in reversed(f'{val:04b}')])
+    assert len(lst) == 4  # specify length to make mypy happy
+    return lst
 
 
 def get_current_range(id: int) -> CurrentRange:
@@ -98,29 +109,37 @@ def set_extra_value_mask(
     record_we_potential: bool = False,
     record_forward_and_reverse_currents: bool = False,
     record_we_current: bool = False,
-    record_we_current_range: Optional[Any] = None,
 ):
     """Set the extra value mask for a given method."""
-    if record_we_current_range is None:
-        record_we_current_range = get_current_range(4)
-
     extra_values = 0
 
-    if enable_bipot_current:
-        extra_values = extra_values | int(ExtraValueMask.BipotWE)
-    if record_auxiliary_input:
-        extra_values = extra_values | int(ExtraValueMask.AuxInput)
-    if record_cell_potential:
-        extra_values = extra_values | int(ExtraValueMask.CEPotential)
-    if record_we_potential:
-        extra_values = extra_values | int(ExtraValueMask.PotentialExtraRE)
-    if record_forward_and_reverse_currents:
-        extra_values = extra_values | int(ExtraValueMask.IForwardReverse)
-    if record_we_current:
-        extra_values = extra_values | int(ExtraValueMask.CurrentExtraWE)
-        obj.AppliedCurrentRange = record_we_current_range
+    for flag, enum in (
+        (enable_bipot_current, ExtraValueMask.BipotWE),
+        (record_auxiliary_input, ExtraValueMask.AuxInput),
+        (record_cell_potential, ExtraValueMask.CEPotential),
+        (record_we_potential, ExtraValueMask.PotentialExtraRE),
+        (record_forward_and_reverse_currents, ExtraValueMask.IForwardReverse),
+        (record_we_current, ExtraValueMask.CurrentExtraWE),
+    ):
+        if flag:
+            extra_values = extra_values | int(enum)
 
     obj.ExtraValueMsk = ExtraValueMask(extra_values)
+
+
+def get_extra_value_mask(obj) -> dict[str, Any]:
+    mask = obj.ExtraValueMsk
+
+    ret = {
+        'enable_bipot_current': mask.HasFlag(ExtraValueMask.BipotWE),
+        'record_auxiliary_input': mask.HasFlag(ExtraValueMask.AuxInput),
+        'record_cell_potential': mask.HasFlag(ExtraValueMask.CEPotential),
+        'record_we_potential': mask.HasFlag(ExtraValueMask.PotentialExtraRE),
+        'record_forward_and_reverse_currents': mask.HasFlag(ExtraValueMask.IForwardReverse),
+        'record_we_current': mask.HasFlag(ExtraValueMask.CurrentExtraWE),
+    }
+
+    return ret
 
 
 def get_mux8r2_settings(
@@ -172,20 +191,11 @@ def get_method_estimated_duration(method, *, instrument_manager=None):
     return method.GetMinimumEstimatedMeasurementDuration(instrument_capabilities)
 
 
-def multi_step_amperometry_level(
-    level: float = 0.0,
-    duration: float = 1.0,
-    record: bool = True,
-    use_limit_current_max: bool = False,
-    limit_current_max: float = 0.0,
-    use_limit_current_min: bool = False,
-    limit_current_min: float = 0.0,
-    trigger_at_level: bool = False,
-    trigger_at_level_lines: tuple[bool, bool, bool, bool] = (False, False, False, False),
-):
+@dataclass
+class ELevel:
     """Create a multi-step amperometry level method object.
 
-    Parameters
+    Attributes
     ----------
     level : float
         Level in V (default: 0.0)
@@ -207,20 +217,45 @@ def multi_step_amperometry_level(
         Trigger at level lines (default: [False, False, False, False])
         [d0 high, d1 high, d2 high, d3 high]
     """
-    multi_step_amperometry_level = ELevel()
 
-    multi_step_amperometry_level.Level = level
-    multi_step_amperometry_level.Duration = duration
-    multi_step_amperometry_level.Record = record
+    level: float = 0.0
+    duration: float = 1.0
+    record: bool = True
+    use_limit_current_max: bool = False
+    limit_current_max: float = 0.0
+    use_limit_current_min: bool = False
+    limit_current_min: float = 0.0
+    trigger_at_level: bool = False
+    trigger_at_level_lines: tuple[bool, bool, bool, bool] = (False, False, False, False)
 
-    multi_step_amperometry_level.UseMaxLimit = use_limit_current_max
-    multi_step_amperometry_level.MaxLimit = limit_current_max
-    multi_step_amperometry_level.UseMinLimit = use_limit_current_min
-    multi_step_amperometry_level.MinLimit = limit_current_min
+    def to_psobj(self):
+        obj = Techniques.ELevel()
 
-    multi_step_amperometry_level.UseTriggerOnStart = trigger_at_level
-    multi_step_amperometry_level.TriggerValueOnStart = convert_bool_list_to_base2(
-        trigger_at_level_lines
-    )
+        obj.Level = self.level
+        obj.Duration = self.duration
+        obj.Record = self.record
 
-    return multi_step_amperometry_level
+        obj.UseMaxLimit = self.use_limit_current_max
+        obj.MaxLimit = self.limit_current_max
+        obj.UseMinLimit = self.use_limit_current_min
+        obj.MinLimit = self.limit_current_min
+
+        obj.UseTriggerOnStart = self.trigger_at_level
+        obj.TriggerValueOnStart = convert_bools_to_int(self.trigger_at_level_lines)
+
+        return obj
+
+    @classmethod
+    def from_psobj(cls, psobj: Techniques.ELevel):
+        """Construct ELevel dataclass from PalmSens.Techniques.ELevel object."""
+        return cls(
+            level=single_to_double(psobj.Level),
+            duration=single_to_double(psobj.Duration),
+            record=psobj.Record,
+            use_limit_current_max=psobj.UseMaxLimit,
+            limit_current_max=single_to_double(psobj.MaxLimit),
+            use_limit_current_min=psobj.UseMinLimit,
+            limit_current_min=single_to_double(psobj.MinLimit),
+            trigger_at_level=psobj.UseTriggerOnStart,
+            trigger_at_level_lines=convert_int_to_bools(psobj.TriggerValueOnStart),
+        )

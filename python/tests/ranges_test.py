@@ -1,6 +1,7 @@
 import pytest
 from PalmSens import AutoRanging, AutoRangingPotential
 
+from pspython.methods import techniques
 from pspython.methods._shared import get_current_range, get_potential_range
 
 
@@ -22,6 +23,51 @@ def test_potential_range():
     with pytest.raises(ValueError):
         get_potential_range(-1)
         get_potential_range(100)
+
+
+def test_method_current_range():
+    crmin = get_current_range(3)
+    crmax = get_current_range(7)
+    crstart = get_current_range(6)
+
+    method = techniques.CyclicVoltammetryParameters(
+        current_range_min=crmin,
+        current_range_max=crmax,
+        current_range_start=crstart,
+    )
+    obj = method.to_psobj()
+
+    supported_ranges = obj.Ranging.SupportedCurrentRanges
+
+    assert crmin in supported_ranges
+    assert crmax in supported_ranges
+    assert crstart in supported_ranges
+
+    assert obj.Ranging.MinimumCurrentRange.Description == '100 nA'
+    assert obj.Ranging.MaximumCurrentRange.Description == '1 mA'
+    assert obj.Ranging.StartCurrentRange.Description == '100 uA'
+
+
+def test_method_potential_range():
+    potmin = get_potential_range(0)
+    potmax = get_potential_range(4)
+    potstart = get_potential_range(1)
+
+    method = techniques.ChronopotentiometryParameters(
+        potential_range_min=potmin,
+        potential_range_max=potmax,
+        potential_range_start=potstart,
+    )
+    obj = method.to_psobj()
+    supported_ranges = obj.RangingPotential.SupportedPotentialRanges
+
+    assert potmin in supported_ranges
+    assert potmax in supported_ranges
+    assert potstart in supported_ranges
+
+    assert obj.RangingPotential.MinimumPotentialRange.Description == '1 mV'
+    assert obj.RangingPotential.MaximumPotentialRange.Description == '100 mV'
+    assert obj.RangingPotential.StartPotentialRange.Description == '10 mV'
 
 
 def test_method_current_range_clipping():

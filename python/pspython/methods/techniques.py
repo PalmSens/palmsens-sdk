@@ -4,7 +4,12 @@ from PalmSens import Method as PSMethod
 from PalmSens import Techniques
 from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 
-from ._shared import get_current_range, multi_step_amperometry_level, set_extra_value_mask
+from ._shared import (
+    ELevel,
+    get_current_range,
+    get_extra_value_mask,
+    set_extra_value_mask,
+)
 from .settings import (
     AutorangingCurrentSettings,
     AutorangingPotentialSettings,
@@ -30,21 +35,30 @@ class BaseParameters:
 
     _PSMethod: PSMethod = PSMethod
 
-    def to_dotnet_method(self):
+    def to_psobj(self):
         """Convert parameters to dotnet method."""
         obj = self._PSMethod()
 
-        for cls in self.__class__.__mro__:
-            if cls in (object, BaseParameters):
+        for parent in self.__class__.__mro__:
+            if parent in (object, BaseParameters):
                 continue
-            cls.add_to_object(self, obj=obj)
+            parent.update_psobj(self, obj=obj)
 
         return obj
 
     @classmethod
-    def from_dotnet_method(cls, obj: PSMethod):
+    def from_psobj(cls, obj: PSMethod):
         """Generate parameters from dotnet method."""
-        raise NotImplementedError
+        new = cls()
+
+        for parent in cls.__mro__:
+            if parent in (object, BaseParameters):
+                continue
+            new.update_params(obj=obj)
+
+        return new
+
+    def update_params(self, *, obj): ...
 
 
 @dataclass
@@ -106,7 +120,7 @@ class CyclicVoltammetryParameters(
     record_cell_potential: bool = False
     record_we_potential: bool = False
 
-    def add_to_object(self, *, obj):
+    def update_psobj(self, *, obj):
         """Update method with cyclic voltammetry settings."""
         obj.EquilibrationTime = self.equilibration_time
         obj.BeginPotential = self.begin_potential
@@ -123,6 +137,25 @@ class CyclicVoltammetryParameters(
             record_we_potential=self.record_we_potential,
             enable_bipot_current=self.enable_bipot_current,
         )
+
+    def update_params(self, *, obj):
+        self.equilibration_time = obj.EquilibrationTime
+        self.begin_potential = obj.BeginPotential
+        self.vertex1_potential = obj.Vtx1Potential
+        self.vertex2_potential = obj.Vtx2Potential
+        self.step_potential = obj.StepPotential
+        self.scanrate = obj.Scanrate
+        self.n_scans = obj.nScans
+
+        msk = get_extra_value_mask(obj)
+
+        for key in (
+            'record_auxiliary_input',
+            'record_cell_potential',
+            'record_we_potential',
+            'enable_bipot_current',
+        ):
+            setattr(self, key, msk[key])
 
 
 @dataclass
@@ -177,7 +210,7 @@ class LinearSweepParameters(
     record_we_potential: bool = False
     enable_bipot_current: bool = False
 
-    def add_to_object(self, *, obj):
+    def update_psobj(self, *, obj):
         """Update method with linear sweep settings."""
         obj.BeginPotential = self.begin_potential
         obj.EndPotential = self.end_potential
@@ -191,6 +224,22 @@ class LinearSweepParameters(
             record_we_potential=self.record_we_potential,
             enable_bipot_current=self.enable_bipot_current,
         )
+
+    def update_params(self, *, obj):
+        self.begin_potential = obj.BeginPotential
+        self.end_potential = obj.EndPotential
+        self.step_potential = obj.StepPotential
+        self.scanrate = obj.Scanrate
+
+        msk = get_extra_value_mask(obj)
+
+        for key in (
+            'record_auxiliary_input',
+            'record_cell_potential',
+            'record_we_potential',
+            'enable_bipot_current',
+        ):
+            setattr(self, key, msk[key])
 
 
 @dataclass
@@ -253,7 +302,7 @@ class SquareWaveParameters(
     enable_bipot_current: bool = False
     record_forward_and_reverse_currents: bool = False
 
-    def add_to_object(self, *, obj):
+    def update_psobj(self, *, obj):
         """Update method with linear sweep settings."""
         obj.EquilibrationTime = self.equilibration_time
         obj.BeginPotential = self.begin_potential
@@ -270,6 +319,25 @@ class SquareWaveParameters(
             enable_bipot_current=self.enable_bipot_current,
             record_forward_and_reverse_currents=self.record_forward_and_reverse_currents,
         )
+
+    def update_params(self, *, obj):
+        self.equilibration_time = obj.EquilibrationTime
+        self.begin_potential = obj.BeginPotential
+        self.end_potential = obj.EndPotential
+        self.step_potential = obj.StepPotential
+        self.frequency = obj.Frequency
+        self.amplitude = obj.PulseAmplitude
+
+        msk = get_extra_value_mask(obj)
+
+        for key in (
+            'record_auxiliary_input',
+            'record_cell_potential',
+            'record_we_potential',
+            'enable_bipot_current',
+            'record_forward_and_reverse_currents',
+        ):
+            setattr(self, key, msk[key])
 
 
 @dataclass
@@ -332,7 +400,7 @@ class DifferentialPulseParameters(
     record_we_potential: bool = False
     enable_bipot_current: bool = False
 
-    def add_to_object(self, *, obj):
+    def update_psobj(self, *, obj):
         """Update method with linear sweep settings."""
         obj.EquilibrationTime = self.equilibration_time
         obj.BeginPotential = self.begin_potential
@@ -349,6 +417,25 @@ class DifferentialPulseParameters(
             record_we_potential=self.record_we_potential,
             enable_bipot_current=self.enable_bipot_current,
         )
+
+    def update_params(self, *, obj):
+        self.equilibration_time = obj.EquilibrationTime
+        self.begin_potential = obj.BeginPotential
+        self.end_potential = obj.EndPotential
+        self.step_potential = obj.StepPotential
+        self.pulse_potential = obj.PulsePotential
+        self.pulse_time = obj.PulseTime
+        self.scan_rate = obj.Scanrate
+
+        msk = get_extra_value_mask(obj)
+
+        for key in (
+            'record_auxiliary_input',
+            'record_cell_potential',
+            'record_we_potential',
+            'enable_bipot_current',
+        ):
+            setattr(self, key, msk[key])
 
 
 @dataclass
@@ -404,7 +491,7 @@ class ChronoAmperometryParameters(
     record_we_potential: bool = False
     enable_bipot_current: bool = False
 
-    def add_to_object(self, *, obj):
+    def update_psobj(self, *, obj):
         """Update method with chrono amperometry settings."""
         obj.EquilibrationTime = self.equilibration_time
         obj.IntervalTime = self.interval_time
@@ -418,6 +505,22 @@ class ChronoAmperometryParameters(
             record_we_potential=self.record_we_potential,
             enable_bipot_current=self.enable_bipot_current,
         )
+
+    def update_params(self, *, obj):
+        self.equilibration_time = obj.EquilibrationTime
+        self.interval_time = obj.IntervalTime
+        self.potential = obj.Potential
+        self.run_time = obj.RunTime
+
+        msk = get_extra_value_mask(obj)
+
+        for key in (
+            'record_auxiliary_input',
+            'record_cell_potential',
+            'record_we_potential',
+            'enable_bipot_current',
+        ):
+            setattr(self, key, msk[key])
 
 
 @dataclass
@@ -444,8 +547,8 @@ class MultiStepAmperometryParameters(
     n_cycles : int
         Number of cycles (default: 1)
     levels : list
-        List of levels (default: [multi_step_amperometry_level()].
-        Use multi_step_amperometry_level() to create levels.
+        List of levels (default: [ELevel()].
+        Use ELevel() to create levels.
     enable_bipot_current: bool
         Enable bipot current (default: False)
     record_auxiliary_input : bool
@@ -463,38 +566,31 @@ class MultiStepAmperometryParameters(
     equilibration_time: float = 0.0
     interval_time: float = 0.1
     n_cycles: float = 1
-    levels: list[Techniques.ELevel] = field(
-        default_factory=lambda: [multi_step_amperometry_level()]
-    )
+    levels: list[ELevel] = field(default_factory=lambda: [ELevel()])
 
     record_auxiliary_input: bool = False
     record_cell_potential: bool = False
     record_we_potential: bool = False
     enable_bipot_current: bool = False
 
-    def add_to_object(self, *, obj):
+    def update_psobj(self, *, obj):
         """Update method with chrono amperometry settings."""
         obj.EquilibrationTime = self.equilibration_time
         obj.IntervalTime = self.interval_time
         obj.nCycles = self.n_cycles
         obj.Levels.Clear()
 
-        if len(self.levels) == 0:
+        if not self.levels:
             raise ValueError('At least one level must be specified.')
 
-        use_partial_record = False
-        use_level_limits = False
-
         for level in self.levels:
-            if level.Record:
-                use_partial_record = True
-            if level.UseMaxLimit or level.UseMinLimit:
-                use_level_limits = True
+            obj.Levels.Add(level.to_psobj())
 
-            obj.Levels.Add(level)
-
-        obj.UseSelectiveRecord = use_partial_record
-        obj.UseLimits = use_level_limits
+        obj.UseSelectiveRecord = any(level.record for level in self.levels)
+        obj.UseLimits = any(
+            (level.use_limit_current_min or level.use_limit_current_max)
+            for level in self.levels
+        )
 
         set_extra_value_mask(
             obj=obj,
@@ -503,6 +599,23 @@ class MultiStepAmperometryParameters(
             record_we_potential=self.record_we_potential,
             enable_bipot_current=self.enable_bipot_current,
         )
+
+    def update_params(self, *, obj):
+        self.equilibration_time = obj.EquilibrationTime
+        self.interval_time = obj.IntervalTime
+        self.n_cycles = obj.nCycles
+
+        self.levels = [ELevel.from_psobj(pslevel) for pslevel in obj.Levels]
+
+        msk = get_extra_value_mask(obj)
+
+        for key in (
+            'record_auxiliary_input',
+            'record_cell_potential',
+            'record_we_potential',
+            'enable_bipot_current',
+        ):
+            setattr(self, key, msk[key])
 
 
 @dataclass
@@ -546,18 +659,30 @@ class OpenCircuitPotentiometryParameters(
     record_we_current: bool = False
     record_we_current_range: int = get_current_range(4)
 
-    def add_to_object(self, *, obj):
+    def update_psobj(self, *, obj):
         """Update method with open circuit potentiometry settings."""
-
         obj.IntervalTime = self.interval_time
         obj.RunTime = self.run_time
+        obj.AppliedCurrentRange = self.record_we_current_range
 
         set_extra_value_mask(
             obj=obj,
             record_auxiliary_input=self.record_auxiliary_input,
             record_we_current=self.record_we_current,
-            record_we_current_range=self.record_we_current_range,
         )
+
+    def update_params(self, *, obj):
+        self.interval_time = obj.IntervalTime
+        self.run_time = obj.RunTime
+        self.record_we_current_range = obj.AppliedCurrentRange
+
+        msk = get_extra_value_mask(obj)
+
+        for key in (
+            'record_auxiliary_input',
+            'record_we_current',
+        ):
+            setattr(self, key, msk[key])
 
 
 @dataclass
@@ -605,20 +730,36 @@ class ChronopotentiometryParameters(
     record_cell_potential: bool = False
     record_we_current: bool = False
 
-    def add_to_object(self, *, obj):
+    def update_psobj(self, *, obj):
         """Update method with potentiometry settings."""
         obj.Current = self.current
         obj.AppliedCurrentRange = self.applied_current_range
         obj.IntervalTime = self.interval_time
         obj.RunTime = self.run_time
 
+        obj.AppliedCurrentRange = self.applied_current_range
+
         set_extra_value_mask(
             obj=obj,
             record_auxiliary_input=self.record_auxiliary_input,
             record_cell_potential=self.record_cell_potential,
             record_we_current=self.record_we_current,
-            record_we_current_range=self.applied_current_range,
         )
+
+    def update_params(self, *, obj):
+        self.current = obj.Current
+        self.applied_current_range = obj.AppliedCurrentRange
+        self.interval_time = obj.IntervalTime
+        self.run_time = obj.RunTime
+
+        msk = get_extra_value_mask(obj)
+
+        for key in (
+            'record_auxiliary_input',
+            'record_cell_potential',
+            'record_we_current',
+        ):
+            setattr(self, key, msk[key])
 
 
 @dataclass
@@ -661,9 +802,8 @@ class ElectrochemicalImpedanceSpectroscopyParameters(
     max_frequency: float = 1e5
     min_frequency: float = 1e3
 
-    def add_to_object(self, *, obj):
+    def update_psobj(self, *, obj):
         """Update method with potentiometry settings."""
-
         obj.ScanType = enumScanType.Fixed
         obj.FreqType = enumFrequencyType.Scan
         obj.EquilibrationTime = self.equilibration_time
@@ -672,6 +812,14 @@ class ElectrochemicalImpedanceSpectroscopyParameters(
         obj.nFrequencies = self.n_frequencies
         obj.MaxFrequency = self.max_frequency
         obj.MinFrequency = self.min_frequency
+
+    def update_params(self, *, obj):
+        self.equilibration_time = obj.EquilibrationTime
+        self.dc_potential = obj.Potential
+        self.ac_potential = obj.Eac
+        self.n_frequencies = obj.nFrequencies
+        self.max_frequency = obj.MaxFrequency
+        self.min_frequency = obj.MinFrequency
 
 
 @dataclass
@@ -715,7 +863,7 @@ class GalvanostaticImpedanceSpectroscopyParameters(
     max_frequency: float = 1e5
     min_frequency: float = 1e3
 
-    def add_to_object(self, *, obj):
+    def update_psobj(self, *, obj):
         """Update method with potentiometry settings."""
 
         obj.ScanType = enumScanType.Fixed
@@ -727,3 +875,12 @@ class GalvanostaticImpedanceSpectroscopyParameters(
         obj.nFrequencies = self.n_frequencies
         obj.MaxFrequency = self.max_frequency
         obj.MinFrequency = self.min_frequency
+
+    def update_params(self, *, obj):
+        self.applied_current_range = obj.AppliedCurrentRange
+        self.equilibration_time = obj.EquilibrationTime
+        self.ac_current = obj.Iac
+        self.dc_current = obj.Idc
+        self.n_frequencies = obj.nFrequencies
+        self.max_frequency = obj.MaxFrequency
+        self.min_frequency = obj.MinFrequency

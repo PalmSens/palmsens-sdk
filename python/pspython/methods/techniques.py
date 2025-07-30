@@ -917,12 +917,18 @@ class MethodScriptParameters(ParameterType):
     Attributes
     ----------
     script : str
-        Method script
+        Method script, see https://www.palmsens.com/methodscript/ for more information.
     """
 
     _id = 'ms'
 
-    script: str = ''
+    script: str = """e
+wait 100m
+if 1 < 2
+    send_string "Hello world"
+endif
+
+"""
 
     def update_psmethod(self, *, obj):
         """Update method with MethodScript."""

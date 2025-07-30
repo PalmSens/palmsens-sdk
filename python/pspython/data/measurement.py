@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from ..methods.method import Method
@@ -17,8 +19,8 @@ class Measurement:
     def __init__(self, *, dotnet_measurement):
         self.psmeasurement = dotnet_measurement
 
-    def __str__(self):
-        return f'{self.__class__.__name__}(title={self.title})'
+    def __repr__(self):
+        return f'{self.__class__.__name__}(title={self.title}, timestamp={self.timestamp})'
 
     @property
     def title(self) -> str:

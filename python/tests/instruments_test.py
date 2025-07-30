@@ -370,7 +370,7 @@ class TestDP:
         assert dataset.array_quantities == {'Potential', 'Time', 'Current'}
 
 
-class TestMSA:
+class TestMA:
     kwargs = {
         'equilibration_time': 0.0,
         'interval_time': 0.01,
@@ -566,7 +566,23 @@ class TestGIS:
 
 
 class TestMS:
-    kwargs = {'script': ''}
+    kwargs = {
+        'script': (
+            'e\n'  # must start with e
+            'var p\n'
+            'var c\n'
+            'set_pgstat_chan 0\n'
+            'set_pgstat_mode 2\n'
+            'cell_on\n'
+            'meas_loop_ca p c 100m 200m 1000m\n'
+            '    pck_start\n'
+            '    pck_add p\n'
+            '    pck_add c\n'
+            '    pck_end\n'
+            'endloop\n'
+            '\n'  # must end with 2 newlines
+        )
+    }
     pycls = techniques.MethodScriptParameters
     pscls = Techniques.MethodScriptSandbox
 
@@ -581,9 +597,6 @@ class TestMS:
         method_old = method_script_sandbox(**self.kwargs)
         assert isinstance(method_old, self.pscls)
 
-    @pytest.mark.xfail(
-        reason='Not fully implemented yet: https://github.com/PalmSens/PalmSens_SDK/issues/47.'
-    )
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(**self.kwargs)
@@ -591,3 +604,9 @@ class TestMS:
 
         assert measurement
         assert isinstance(measurement, Measurement)
+
+        dataset = measurement.dataset
+        assert len(dataset) == 2
+
+        assert dataset.array_names == {'AppliedPotential1_1', 'Current1_1'}
+        assert dataset.array_quantities == {'Current', 'Potential'}

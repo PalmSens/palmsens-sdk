@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
 from typing import Union
@@ -24,7 +26,7 @@ def load_session_file(
         Return list of measurements
     """
     session = LoadSaveHelperFunctions.LoadSessionFile(str(path))
-    return [Measurement(dotnet_measurement=m) for m in session]
+    return [Measurement(psmeasurement=m) for m in session]
 
 
 def save_session_file(path: Union[str, Path], measurements: list[Measurement]):

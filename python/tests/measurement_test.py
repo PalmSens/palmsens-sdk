@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import FrozenInstanceError
+
 import pytest
 
 from pspython.data.curve import Curve
@@ -20,3 +24,7 @@ def test_measurement_properties(measurement):
     curves = measurement.curves
     assert len(curves) == 1
     assert isinstance(curves[0], Curve)
+
+    device = measurement.device
+    with pytest.raises(FrozenInstanceError):
+        device.type = 'foo'

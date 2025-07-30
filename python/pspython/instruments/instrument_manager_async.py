@@ -378,7 +378,7 @@ class InstrumentManagerAsync:
 
         measurement = self.__active_measurement
         self.__active_measurement = None
-        return Measurement(dotnet_measurement=measurement)
+        return Measurement(psmeasurement=measurement)
 
         # except Exception:
         #     traceback.print_exc()

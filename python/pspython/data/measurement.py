@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
+
+from PalmSens import Measurement as PSMeasurement
 
 from ..methods.method import Method
 from .curve import Curve
@@ -9,15 +12,44 @@ from .eisdata import EISData
 from .fit_result import EISFitResult
 from .peak import Peak
 
-# print(f'ocp: {measurement.curves[0].dotnet_curve.OCPValue}')
-# measurements[0].dotnet_measurement.Method
+
+@dataclass(frozen=True)
+class DeviceInfo:
+    """Dataclass for device information.
+
+    Attributes
+    ----------
+    type : str
+        Device type
+    firmware : str
+        Firmware version
+    serial : str
+        Serial number
+    id : int
+        Device ID
+    """
+
+    type: str
+    firmware: str
+    serial: str
+    id: int
+
+    @classmethod
+    def from_psmeasurement(cls, obj: PSMeasurement) -> DeviceInfo:
+        return cls(
+            type=obj.DeviceUsed.ToString(),
+            firmware=obj.DeviceUsedFW,
+            serial=obj.DeviceUsedSerial,
+            id=int(obj.DeviceUsed),
+        )
 
 
+@dataclass
 class Measurement:
     """Python wrapper for dotnet Measurement class."""
 
-    def __init__(self, *, dotnet_measurement):
-        self.psmeasurement = dotnet_measurement
+    def __init__(self, *, psmeasurement):
+        self.psmeasurement = psmeasurement
 
     def __repr__(self):
         return f'{self.__class__.__name__}(title={self.title}, timestamp={self.timestamp})'
@@ -31,6 +63,11 @@ class Measurement:
     def timestamp(self) -> str:
         """Date and time of the start of this measurement.."""
         return str(self.psmeasurement.TimeStamp)
+
+    @property
+    def device(self) -> DeviceInfo:
+        """Return dataclass with measurement device information."""
+        return DeviceInfo.from_psmeasurement(self.psmeasurement)
 
     @property
     def blank_curve(self) -> Curve:

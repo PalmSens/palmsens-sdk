@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import asyncio
 import traceback
 
 import clr
 import PalmSens
-from PalmSens import AsyncEventHandler, MuxModel
+from PalmSens import AsyncEventHandler, Method, MuxModel
 from PalmSens.Comm import CommManager, MuxType
 from PalmSens.Plottables import (
     Curve,
@@ -20,9 +22,10 @@ from PalmSens.Windows.Devices import (
 from System import EventHandler
 from System.Threading.Tasks import Task
 
+from pspython.methods.techniques import ParameterType
+
 from ..data._shared import ArrayType, _get_values_from_NETArray
 from ..data.measurement import Measurement
-from ..pspymethods import get_mux8r2_settings
 from .common import Instrument, create_future
 
 
@@ -205,7 +208,8 @@ class InstrumentManagerAsync:
 
         return True, None
 
-    async def measure(self, method, hardware_sync_initiated_event=None):
+    async def measure(self, parameters: ParameterType, hardware_sync_initiated_event=None):
+        method = parameters.to_psmethod()
         if self.__comm is None:
             print('Not connected to an instrument')
             return None
@@ -511,18 +515,25 @@ class InstrumentManagerAsync:
                 'Failed to read MUX info. Please check the connection, restart the instrument and try again.'
             )
 
-    async def set_mux8r2_settings(self, **kwargs):
+    async def set_mux8r2_settings(
+        self,
+        connect_sense_to_working_electrode: bool = False,
+        combine_reference_and_counter_electrodes: bool = False,
+        use_channel_1_reference_and_counter_electrodes: bool = False,
+        set_unselected_channel_working_electrode: int = 0,
+    ):
         """Set the settings for the Mux8R2 multiplexer.
 
-        :Keyword Arguments:
-        * connect_sense_to_working_electrode
-            -- Connect the sense electrode to the working electrode. Default is False.
-        * combine_reference_and_counter_electrodes
-            -- Combine the reference and counter electrodes. Default is False.
-        * use_channel_1_reference_and_counter_electrodes
-            -- Use channel 1 reference and counter electrodes for all working electrodes. Default is False.
-        * set_unselected_channel_working_electrode
-            -- Set the unselected channel working electrode to disconnected/floating (0), ground (1), or standby potential (2). Default is 0.
+        Parameters
+        ---------
+        connect_sense_to_working_electrode: float
+            Connect the sense electrode to the working electrode. Default is False.
+        combine_reference_and_counter_electrodes: float
+            Combine the reference and counter electrodes. Default is False.
+        use_channel_1_reference_and_counter_electrodes: float
+            Use channel 1 reference and counter electrodes for all working electrodes. Default is False.
+        set_unselected_channel_working_electrode: float
+            Set the unselected channel working electrode to disconnected/floating (0), ground (1), or standby potential (2). Default is 0.
         """
         if self.__comm is None:
             print('Not connected to an instrument')
@@ -531,28 +542,19 @@ class InstrumentManagerAsync:
         if self.__comm.Capabilities.MuxModel != MuxModel.MUX8R2:
             return
 
-        mux_settings = get_mux8r2_settings(
-            connect_sense_to_working_electrode=kwargs.get(
-                'connect_sense_to_working_electrode', False
-            ),
-            combine_reference_and_counter_electrodes=kwargs.get(
-                'combine_reference_and_counter_electrodes', False
-            ),
-            use_channel_1_reference_and_counter_electrodes=kwargs.get(
-                'use_channel_1_reference_and_counter_electrodes', False
-            ),
-            set_unselected_channel_working_electrode=kwargs.get(
-                'set_unselected_channel_working_electrode', 0
-            ),
+        mux_settings = Method.MuxSettings(False)
+        mux_settings.ConnSEWE = connect_sense_to_working_electrode
+        mux_settings.ConnectCERE = combine_reference_and_counter_electrodes
+        mux_settings.CommonCERE = use_channel_1_reference_and_counter_electrodes
+        mux_settings.UnselWE = Method.MuxSettings.UnselWESetting(
+            set_unselected_channel_working_electrode
         )
 
         await create_future(self.__comm.ClientConnection.Semaphore.WaitAsync())
 
         try:
             await create_future(
-                self._InstrumentManager__comm.ClientConnection.SetMuxSettingsAsync(
-                    MuxType(1), mux_settings
-                )
+                self.__comm.ClientConnection.SetMuxSettingsAsync(MuxType(1), mux_settings)
             )
             self.__comm.ClientConnection.Semaphore.Release()
         except Exception:

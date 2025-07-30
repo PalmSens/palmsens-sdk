@@ -1,6 +1,7 @@
 import asyncio
 
-from pspython import pspyinstruments, pspymethods
+from pspython import pspyinstruments
+from pspython.methods import ChronoAmperometryParameters
 
 
 def new_data_callback(new_data):
@@ -25,7 +26,11 @@ async def main():
     print(serial)
 
     # Chronoamperometry measurement using helper class
-    method = pspymethods.chronoamperometry(interval_time=0.02, potential=1.0, run_time=2.0)
+    method = ChronoAmperometryParameters(
+        interval_time=0.02,
+        potential=1.0,
+        run_time=2.0,
+    )
 
     measurement = await manager.measure(method)
 

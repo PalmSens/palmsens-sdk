@@ -1,4 +1,5 @@
-from pspython import pspyinstruments, pspymethods
+from pspython import pspyinstruments
+from pspython.methods import MethodScriptParameters
 
 
 def new_data_callback(new_data):
@@ -73,7 +74,7 @@ on_finished:
 
 """
 
-method = pspymethods.method_script_sandbox(script)
+method = MethodScriptParameters(script=script)
 
 measurement = manager.measure(method)
 

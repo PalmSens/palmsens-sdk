@@ -1,4 +1,9 @@
-from pspython.methods._shared import convert_bools_to_int, convert_int_to_bools
+from pspython.methods._shared import (
+    CURRENT_RANGE,
+    POTENTIAL_RANGE,
+    convert_bools_to_int,
+    convert_int_to_bools,
+)
 
 
 def test_convert_bool_list_to_int():
@@ -13,3 +18,21 @@ def test_convert_int_to_bool_list():
     assert convert_int_to_bools(10) == (False, True, False, True)
     assert convert_int_to_bools(0) == (False, False, False, False)
     assert convert_int_to_bools(15) == (True, True, True, True)
+
+
+def test_current_ranges_enum():
+    cr = CURRENT_RANGE.cr_1_A
+
+    psobj = cr.to_psobj()
+
+    cr2 = CURRENT_RANGE.from_psobj(psobj)
+    assert cr2 == cr
+
+
+def test_potential_ranges_enum():
+    pr = POTENTIAL_RANGE.pr_1_V
+
+    psobj = pr.to_psobj()
+
+    pr2 = POTENTIAL_RANGE.from_psobj(psobj)
+    assert pr2 == pr

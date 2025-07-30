@@ -1,14 +1,15 @@
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Literal
 
 import PalmSens
+from PalmSens import Method as PSMethod
 from PalmSens import MuxMethod as PSMuxMethod
 
 from ._shared import (
+    CURRENT_RANGE,
+    POTENTIAL_RANGE,
     convert_bools_to_int,
     convert_int_to_bools,
-    get_current_range,
-    get_potential_range,
 )
 
 
@@ -20,28 +21,28 @@ class AutorangingCurrentSettings:
     ----------
     current_range_max: int
         Maximum current range (default: 10 mA).
-        Use `get_current_range()` to get the range.
+        Use `CURRENT_RANGE` to define the range.
     current_range_min: int
         Minimum current range (default: 1 µA).
-        Use `get_current_range()` to get the range.
+        Use `CURRENT_RANGE` to define the range.
     current_range_start: int
          Start current range (default: 100 µA).
-         Use `get_current_range()` to get the range.
+         Use `CURRENT_RANGE` to define the range.
     """
 
-    current_range_max: int = get_current_range(8)
-    current_range_min: int = get_current_range(4)
-    current_range_start: int = get_current_range(6)
+    current_range_max: CURRENT_RANGE = CURRENT_RANGE.cr_10_mA
+    current_range_min: CURRENT_RANGE = CURRENT_RANGE.cr_1_uA
+    current_range_start: CURRENT_RANGE = CURRENT_RANGE.cr_100_uA
 
-    def update_psobj(self, *, obj):
-        obj.Ranging.MaximumCurrentRange = self.current_range_max
-        obj.Ranging.MinimumCurrentRange = self.current_range_min
-        obj.Ranging.StartCurrentRange = self.current_range_start
+    def update_psmethod(self, *, obj):
+        obj.Ranging.MaximumCurrentRange = self.current_range_max.to_psobj()
+        obj.Ranging.MinimumCurrentRange = self.current_range_min.to_psobj()
+        obj.Ranging.StartCurrentRange = self.current_range_start.to_psobj()
 
     def update_params(self, *, obj):
-        self.current_range_max = obj.Ranging.MaximumCurrentRange
-        self.current_range_min = obj.Ranging.MinimumCurrentRange
-        self.current_range_start = obj.Ranging.StartCurrentRange
+        self.current_range_max = CURRENT_RANGE.from_psobj(obj.Ranging.MaximumCurrentRange)
+        self.current_range_min = CURRENT_RANGE.from_psobj(obj.Ranging.MinimumCurrentRange)
+        self.current_range_start = CURRENT_RANGE.from_psobj(obj.Ranging.StartCurrentRange)
 
 
 @dataclass
@@ -52,28 +53,34 @@ class AutorangingPotentialSettings:
     ----------
     potential_range_max: int
         Maximum potential range (default: 1V).
-        Use `get_potential_range()` to get the range.
+        Use `POTENTIAL_RANGE` to define the range.
     potential_range_min: int
         Minimum potential range (default: 10mV).
-        Use `get_potential_range()` to get the range.
+        Use `POTENTIAL_RANGE` to define the range.
     potential_range_start: int
         Start potential range (default: 1V).
-        Use `get_potential_range()` to get the range.
+        Use `POTENTIAL_RANGE` to define the range.
     """
 
-    potential_range_max: int = get_potential_range(7)
-    potential_range_min: int = get_potential_range(1)
-    potential_range_start: int = get_potential_range(7)
+    potential_range_max: POTENTIAL_RANGE = POTENTIAL_RANGE.pr_1_V
+    potential_range_min: POTENTIAL_RANGE = POTENTIAL_RANGE.pr_1_mV
+    potential_range_start: POTENTIAL_RANGE = POTENTIAL_RANGE.pr_1_V
 
-    def update_psobj(self, *, obj):
-        obj.RangingPotential.MaximumPotentialRange = self.potential_range_max
-        obj.RangingPotential.MinimumPotentialRange = self.potential_range_min
-        obj.RangingPotential.StartPotentialRange = self.potential_range_start
+    def update_psmethod(self, *, obj):
+        obj.RangingPotential.MaximumPotentialRange = self.potential_range_max.to_psobj()
+        obj.RangingPotential.MinimumPotentialRange = self.potential_range_min.to_psobj()
+        obj.RangingPotential.StartPotentialRange = self.potential_range_start.to_psobj()
 
     def update_params(self, *, obj):
-        self.potential_range_max = obj.RangingPotential.MaximumPotentialRange
-        self.potential_range_min = obj.RangingPotential.MinimumPotentialRange
-        self.potential_range_start = obj.RangingPotential.StartPotentialRange
+        self.potential_range_max = POTENTIAL_RANGE.from_psobj(
+            obj.RangingPotential.MaximumPotentialRange
+        )
+        self.potential_range_min = POTENTIAL_RANGE.from_psobj(
+            obj.RangingPotential.MinimumPotentialRange
+        )
+        self.potential_range_start = POTENTIAL_RANGE.from_psobj(
+            obj.RangingPotential.StartPotentialRange
+        )
 
 
 @dataclass
@@ -97,7 +104,7 @@ class PretreatmentSettings:
     conditioning_potential: float = 0.0
     conditioning_time: float = 0.0
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         obj.DepositionPotential = self.deposition_potential
         obj.DepositionTime = self.deposition_time
         obj.ConditioningPotential = self.conditioning_potential
@@ -138,7 +145,7 @@ class VersusOcpSettings:
     versus_ocp_max_ocp_time: float = 20.0  # Time (s)
     versus_ocp_stability_criterion: int = 0
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         obj.OCPmode = self.versus_ocp_mode
         obj.OCPMaxOCPTime = self.versus_ocp_max_ocp_time
         obj.OCPStabilityCriterion = self.versus_ocp_stability_criterion
@@ -163,34 +170,40 @@ class BipotSettings:
         Set the bipotential in V (default: 0.0)
     bipot_current_range_max: int
         Maximum bipotential current range (default: 10 mA).
-        Use `get_current_range()` to get the range.
+        Use `CURRENT_RANGE` to define the range.
     bipot_current_range_min: int
         Minimum bipotential current range (default: 1 µA).
-        Use `get_current_range()` to get the range.
+        Use `CURRENT_RANGE` to define the range.
     bipot_current_range_start: int
         Start bipotential current range (default: 100 µA).
-        Use `get_current_range()` to get the range.
+        Use `CURRENT_RANGE` to define the range.
     """
 
     bipot_mode: int = 0
     bipot_potential: float = 0.0  # V
-    bipot_current_range_max: int = get_current_range(8)
-    bipot_current_range_min: int = get_current_range(4)
-    bipot_current_range_start: int = get_current_range(6)
+    bipot_current_range_max: CURRENT_RANGE = CURRENT_RANGE.cr_10_mA
+    bipot_current_range_min: CURRENT_RANGE = CURRENT_RANGE.cr_1_uA
+    bipot_current_range_start: CURRENT_RANGE = CURRENT_RANGE.cr_100_uA
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         obj.BiPotModePS = PalmSens.Method.EnumPalmSensBipotMode(self.bipot_mode)
         obj.BiPotPotential = self.bipot_potential
-        obj.BipotRanging.MaximumCurrentRange = self.bipot_current_range_max
-        obj.BipotRanging.MinimumCurrentRange = self.bipot_current_range_min
-        obj.BipotRanging.StartCurrentRange = self.bipot_current_range_start
+        obj.BipotRanging.MaximumCurrentRange = self.bipot_current_range_max.to_psobj()
+        obj.BipotRanging.MinimumCurrentRange = self.bipot_current_range_min.to_psobj()
+        obj.BipotRanging.StartCurrentRange = self.bipot_current_range_start.to_psobj()
 
     def update_params(self, *, obj):
         self.bipot_mode = int(obj.BiPotModePS)
         self.bipot_potential = obj.BiPotPotential
-        self.bipot_current_range_max = obj.BipotRanging.MaximumCurrentRange
-        self.bipot_current_range_min = obj.BipotRanging.MinimumCurrentRange
-        self.bipot_current_range_start = obj.BipotRanging.StartCurrentRange
+        self.bipot_current_range_max = CURRENT_RANGE.from_psobj(
+            obj.BipotRanging.MaximumCurrentRange
+        )
+        self.bipot_current_range_min = CURRENT_RANGE.from_psobj(
+            obj.BipotRanging.MinimumCurrentRange
+        )
+        self.bipot_current_range_start = CURRENT_RANGE.from_psobj(
+            obj.BipotRanging.StartCurrentRange
+        )
 
 
 @dataclass
@@ -200,21 +213,28 @@ class PostMeasurementSettings:
     Attributes
     ----------
     cell_on_after_measurement: bool
-        Cell on after measurement (default: False)
-    cell_on_after_measurement_potential: float
-        Cell on after measurement potential in V (default: 0.0)
+        Enable/disable cell after measurement (default: False)
+    standby_potential: float
+        Standby potential for use with cell on after measurement.
+        Potential in V (default: 0.0)
+    standby_time: float
+        Standby time for use with cell on after measurement.
+        Time in s (default)
     """
 
     cell_on_after_measurement: bool = False
-    cell_on_after_measurement_potential: float = 0.0  # V
+    standby_potential: float = 0.0  # V
+    standby_time: float = 0.0  # s
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         obj.CellOnAfterMeasurement = self.cell_on_after_measurement
-        obj.StandbyPotential = self.cell_on_after_measurement_potential
+        obj.StandbyPotential = self.standby_potential
+        obj.StandbyTime = self.standby_time
 
     def update_params(self, *, obj):
         self.cell_on_after_measurement = obj.CellOnAfterMeasurement
-        self.cell_on_after_measurement_potential = obj.StandbyPotential
+        self.standby_potential = obj.StandbyPotential
+        self.standby_time = obj.StandbyTime
 
 
 @dataclass
@@ -240,7 +260,7 @@ class CurrentLimitSettings:
     use_limit_current_min: bool = False
     limit_current_min: float = 0.0  # µA
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         obj.UseLimitMaxValue = self.use_limit_current_max
         obj.LimitMaxValue = self.limit_current_max
         obj.UseLimitMinValue = self.use_limit_current_min
@@ -274,7 +294,7 @@ class PotentialLimitSettings:
     use_limit_potential_min: bool = False
     limit_potential_min: float = 0.0  # V
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         obj.UseLimitMaxValue = self.use_limit_potential_max
         obj.LimitMaxValue = self.limit_potential_max
         obj.UseLimitMinValue = self.use_limit_potential_min
@@ -308,7 +328,7 @@ class ChargeLimitSettings:
     use_limit_charge_min: bool = False
     limit_charge_min: float = 0.0  # in µC
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         obj.UseChargeLimitMax = self.use_limit_charge_max
         obj.ChargeLimitMax = self.limit_charge_max
         obj.UseChargeLimitMin = self.use_limit_charge_min
@@ -337,7 +357,7 @@ class IrDropCompensationSettings:
     use_ir_compensation: bool = False
     ir_compensation: float = 0.0  # Ω
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         obj.UseIRDropComp = self.use_ir_compensation
         obj.IRDropCompRes = self.ir_compensation
 
@@ -363,7 +383,7 @@ class TriggerAtEquilibrationSettings:
     trigger_at_equilibration: bool = False
     trigger_at_equilibration_lines: tuple[bool, bool, bool, bool] = (False, False, False, False)
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         obj.UseTriggerOnEquil = self.trigger_at_equilibration
         obj.TriggerValueOnEquil = convert_bools_to_int(self.trigger_at_equilibration_lines)
 
@@ -389,7 +409,7 @@ class TriggerAtMeasurementSettings:
     trigger_at_measurement: bool = False
     trigger_at_measurement_lines: tuple[bool, bool, bool, bool] = (False, False, False, False)
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         obj.UseTriggerOnStart = self.trigger_at_measurement
         obj.TriggerValueOnStart = convert_bools_to_int(self.trigger_at_measurement_lines)
 
@@ -414,18 +434,27 @@ class MultiplexerSettings:
         In consecutive mode all selections are valid.
         In alternating mode the first channel must be selected and all other
         channels should be consequtive i.e. (channel 1, channel 2, channel 3 and so on).
-    set_mux8r2_settings: Optional[PalmSens.Method.MuxSettings]
-        Initialize the settings for the MUX8R2 multiplexer (default: None).
-        use `get_mux8r2_settings()` to create the settings.
+    connect_sense_to_working_electrode: bool
+        Connect the sense electrode to the working electrode. Default is False.
+    combine_reference_and_counter_electrodes: bool
+        Combine the reference and counter electrodes. Default is False.
+    use_channel_1_reference_and_counter_electrodes: bool
+        Use channel 1 reference and counter electrodes for all working electrodes. Default is False.
+    set_unselected_channel_working_electrode: int
+        Set the unselected channel working electrode to 0 = Disconnected / floating, 1 = Ground, 2 = Standby potential. Default is 0.
+
     """
 
     set_mux_mode: int = -1
     set_mux_channels: list[bool] = field(
         default_factory=lambda: [False, False, False, False, False, False, False, False]
     )
-    set_mux8r2_settings: Optional[PalmSens.Method.MuxSettings] = None
+    connect_sense_to_working_electrode: bool = False
+    combine_reference_and_counter_electrodes: bool = False
+    use_channel_1_reference_and_counter_electrodes: bool = False
+    set_unselected_channel_working_electrode: int = 0
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         # Create a mux8r2 multiplexer settings settings object
         obj.MuxMethod = PSMuxMethod(self.set_mux_mode)
 
@@ -437,11 +466,12 @@ class MultiplexerSettings:
         for i, use_channel in enumerate(self.set_mux_channels):
             obj.UseMuxChannel[i] = use_channel
 
-        if self.set_mux8r2_settings:
-            obj.MuxSett.ConnSEWE = self.set_mux8r2_settings.ConnSEWE
-            obj.MuxSett.ConnectCERE = self.set_mux8r2_settings.ConnectCERE
-            obj.MuxSett.CommonCERE = self.set_mux8r2_settings.CommonCERE
-            obj.MuxSett.UnselWE = self.set_mux8r2_settings.UnselWE
+        obj.MuxSett.ConnSEWE = self.connect_sense_to_working_electrode
+        obj.MuxSett.ConnectCERE = self.combine_reference_and_counter_electrodes
+        obj.MuxSett.CommonCERE = self.use_channel_1_reference_and_counter_electrodes
+        obj.MuxSett.UnselWE = PSMethod.MuxSettings.UnselWESetting(
+            self.set_unselected_channel_working_electrode
+        )
 
     def update_params(self, *, obj):
         self.set_mux_mode = int(obj.MuxMethod)
@@ -449,23 +479,26 @@ class MultiplexerSettings:
         channels = [i for i in range(len(obj.UseMuxChannel)) if obj.UseMuxChannel[i]]
         self.set_mux_channels = [i in channels for i in range(max(channels) + 1)]
 
-        self.set_mux8r2_settings = {
-            'connect_sense_to_working_electrode': obj.MuxSett.ConnSEWE,
-            'combine_reference_and_counter_electrodes': obj.MuxSett.ConnectCERE,
-            'use_channel_1_reference_and_counter_electrodes': obj.MuxSett.CommonCERE,
-            'set_unselected_channel_working_electrode': int(obj.MuxSett.UnselWE),
-        }
+        self.connect_sense_to_working_electrode = obj.MuxSett.ConnSEWE
+        self.combine_reference_and_counter_electrodes = obj.MuxSett.ConnectCERE
+        self.use_channel_1_reference_and_counter_electrodes = obj.MuxSett.CommonCERE
+        self.set_unselected_channel_working_electrode = int(obj.MuxSett.UnselWE)
 
 
 @dataclass
-class FilterSettings:
+class PeakSettings:
     """Set the filter settings for a given method.
 
     Attributes
     ----------
-    dc_mains_filter: int
-        Set the DC mains filter in Hz. Set to 50 Hz or 60 Hz depending on your region (default: 50).
-    default_curve_post_processing_filter: int = 0
+    min_peak_height: float
+        Determines the minimum peak height in µA.
+        Peaks lower than this value are neglected (default: 0.0 uA).
+    min_peak_width: float
+        The minimum peak width,
+        in the unit of the curves X axis (V).
+        Peaks narrower than this value are neglected (default: 0.1 V).
+    smooth_level: int
         Set the default curve post processing filter (default: 0)
            -1 = no filter
             0 = spike rejection
@@ -475,41 +508,55 @@ class FilterSettings:
             4 = spike rejection + Savitsky-golay window 25
     """
 
-    dc_mains_filter: int = 50  # Hz
-    default_curve_post_processing_filter: int = 0
+    smooth_level: int = 0
+    min_peak_height: float = 0.0  # uA
+    min_peak_width: float = 0.1  # V
 
-    def update_psobj(self, *, obj):
-        obj.DCMainsFilter = self.dc_mains_filter
-        obj.DefaultCurvePostProcessingFilter = self.default_curve_post_processing_filter
+    def update_psmethod(self, *, obj):
+        obj.SmoothLevel = self.smooth_level
+        obj.MinPeakHeight = self.min_peak_height
+        obj.MinPeakWidth = self.min_peak_width
 
     def update_params(self, *, obj):
-        self.dc_mains_filter = obj.DCMainsFilter
-        self.default_curve_post_processing_filter = obj.DefaultCurvePostProcessingFilter
+        self.smooth_level = obj.SmoothLevel
+        self.min_peak_width = obj.MinPeakWidth
+        self.min_peak_height = obj.MinPeakHeight
 
 
 @dataclass
-class OtherSettings:
+class CommonSettings:
     """Sets general/other settings for a given method.
 
     Attributes
     ----------
+    notes : str
+        Add some user notes for use with this technique
     save_on_internal_storage: bool
         Save on internal storage (default: False)
-
     use_hardware_sync: bool
         Use hardware synchronization with other channels/instruments (default: False)
+    power_frequency: int
+        Set the DC mains filter in Hz.
+        Adjusts sampling on instrument to account for mains frequency.
+        Set to 50 Hz or 60 Hz depending on your region (default: 50).
+
+
+
     """
 
-    # internal storage
     save_on_internal_storage: bool = False
-
-    # use hardware synchronization with other channels/instruments
     use_hardware_sync: bool = False
+    notes: str = ''
+    power_frequency: Literal[50, 60] = 50
 
-    def update_psobj(self, *, obj):
+    def update_psmethod(self, *, obj):
         obj.SaveOnDevice = self.save_on_internal_storage
         obj.UseHWSync = self.use_hardware_sync
+        obj.Notes = self.notes
+        obj.PowerFreq = self.power_frequency
 
     def update_params(self, *, obj):
         self.save_on_internal_storage = obj.SaveOnDevice
         self.use_hardware_sync = obj.UseHWSync
+        self.notes = obj.Notes
+        self.power_frequency = obj.PowerFreq

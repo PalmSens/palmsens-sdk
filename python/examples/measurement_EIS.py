@@ -1,4 +1,5 @@
-from pspython import pspyinstruments, pspymethods
+from pspython import pspyinstruments
+from pspython.methods import ElectrochemicalImpedanceSpectroscopyParameters
 
 
 def new_data_callback(new_data):
@@ -23,7 +24,7 @@ serial = manager.get_instrument_serial()
 print(serial)
 
 # EIS measurement using helper class
-method = pspymethods.electrochemical_impedance_spectroscopy()
+method = ElectrochemicalImpedanceSpectroscopyParameters()
 
 measurement = manager.measure(method)
 

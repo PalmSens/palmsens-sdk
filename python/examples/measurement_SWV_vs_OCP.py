@@ -1,4 +1,5 @@
-from pspython import pspyinstruments, pspymethods
+from pspython import pspyinstruments
+from pspython.methods import SquareWaveParameters
 
 
 def new_data_callback(new_data):
@@ -18,7 +19,7 @@ if connected != 1:
 
 print('connection established')
 
-method = pspymethods.square_wave_voltammetry(
+method = SquareWaveParameters(
     conditioning_potential=2.0,  # V
     conditioning_time=2,  # seconds
     versus_ocp_mode=3,  # versus begin and end potential
@@ -30,7 +31,7 @@ method = pspymethods.square_wave_voltammetry(
     frequency=10,  # Hz
 )
 
-method.Frequency = 50
+method.frequency = 50
 
 measurement = manager.measure(method)
 

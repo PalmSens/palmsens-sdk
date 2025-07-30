@@ -1,7 +1,8 @@
 import asyncio
 from pathlib import Path
 
-from pspython import pspyfiles, pspyinstruments, pspymethods
+from pspython import pspyfiles, pspyinstruments
+from pspython.methods import CURRENT_RANGE, POTENTIAL_RANGE, ChronopotentiometryParameters
 
 
 def new_data_callback(channel):
@@ -38,11 +39,11 @@ def update_method(method, **kwargs):
 
 async def run_steps(manager, channel, steps):
     # Create a new method, a separate method is required for each channel
-    method = pspymethods.chronopotentiometry(
-        potential_range_max=pspymethods.get_potential_range(7),  # 1V range
-        potential_range_min=pspymethods.get_potential_range(1),  # 10mV range
-        potential_range_start=pspymethods.get_potential_range(7),  # 1V range
-        applied_current_range=pspymethods.get_current_range(5),  # 10µA range
+    method = ChronopotentiometryParameters(
+        potential_range_max=POTENTIAL_RANGE.pr_1_V,  # 1V range
+        potential_range_min=POTENTIAL_RANGE.pr_10_mV,  # 10mV range
+        potential_range_start=POTENTIAL_RANGE.pr_1_V,  # 1V range
+        applied_current_range=CURRENT_RANGE.cr_10_uA,  # 10µA range
         current=0.5,  # applied current in range, i.e. 5µA when the 10µA range is set as the applied range
         interval_time=0.05,  # seconds
         run_time=5,  # seconds

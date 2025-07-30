@@ -1,6 +1,7 @@
 import csv
 
-from pspython import pspyinstruments, pspymethods
+from pspython import pspyinstruments
+from pspython.methods import ChronoAmperometryParameters
 
 
 def stream_to_csv_callback(new_data):
@@ -28,7 +29,11 @@ serial = manager.get_instrument_serial()
 print(serial)
 
 # #Chronoamperometry measurement using helper class
-method = pspymethods.chronoamperometry(interval_time=0.0004, potential=1.0, run_time=10.0)
+method = ChronoAmperometryParameters(
+    interval_time=0.0004,
+    potential=1.0,
+    run_time=10.0,
+)
 
 measurement = manager.measure(method)
 if measurement is not None:

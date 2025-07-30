@@ -41,10 +41,10 @@ def save_session_file(path: Union[str, Path], measurements: list[Measurement]):
         raise ValueError('cannot save null measurement')
 
     session = SessionManager()
-    session.MethodForEditor = measurements[0].dotnet_measurement.Method
+    session.MethodForEditor = measurements[0].psmeasurement.Method
 
     for measurement in measurements:
-        session.AddMeasurement(measurement.dotnet_measurement)
+        session.AddMeasurement(measurement.psmeasurement)
 
     LoadSaveHelperFunctions.SaveSessionFile(str(path), session)
 

@@ -84,7 +84,10 @@ ignore = [
 [tool.ruff.lint.isort]
 known-first-party=["pspython"]
 known-third-party = []
-required-imports = []
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.per-file-ignores]
+"examples/*.py" = ["I"]
 
 [tool.ruff.format]
 indent-style = "space"

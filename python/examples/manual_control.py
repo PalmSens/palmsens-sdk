@@ -1,4 +1,5 @@
-from pspython import pspyinstruments, pspymethods
+from pspython import pspyinstruments
+from pspython.methods import CURRENT_RANGE
 
 manager = pspyinstruments.InstrumentManager()
 
@@ -18,7 +19,7 @@ print('cell enabled')
 manager.set_potential(1)
 print('set potential to 1V')
 
-manager.set_current_range(pspymethods.get_current_range(7))
+manager.set_current_range(CURRENT_RANGE.cr_1_mA)
 print('set cell to to 1mA currrent range')
 
 current = manager.read_current()

@@ -1,4 +1,5 @@
-from pspython import pspyinstruments, pspymethods
+from pspython import pspyinstruments
+from pspython.methods import ChronoAmperometryParameters
 
 
 def new_data_callback(new_data):
@@ -23,7 +24,11 @@ serial = manager.get_instrument_serial()
 print(serial)
 
 # Chronoamperometry measurement using helper class
-method = pspymethods.chronoamperometry(interval_time=0.01, potential=1.0, run_time=10.0)
+method = ChronoAmperometryParameters(
+    interval_time=0.01,
+    potential=1.0,
+    run_time=10.0,
+)
 
 measurement = manager.measure(method)
 

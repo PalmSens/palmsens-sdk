@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 
 import pytest
@@ -8,9 +10,9 @@ from pspython import pspyinstruments
 from pspython.data.measurement import Measurement
 from pspython.methods import techniques
 from pspython.methods._shared import (
+    CURRENT_RANGE,
+    POTENTIAL_RANGE,
     ELevel,
-    get_current_range,
-    get_potential_range,
 )
 from pspython.methods.techniques_old import (
     chronoamperometry,
@@ -20,6 +22,7 @@ from pspython.methods.techniques_old import (
     electrochemical_impedance_spectroscopy,
     galvanostatic_impedance_spectroscopy,
     linear_sweep_voltammetry,
+    method_script_sandbox,
     multi_step_amperometry,
     open_circuit_potentiometry,
     square_wave_voltammetry,
@@ -41,7 +44,7 @@ def assert_params_round_trip_equal(*, pscls, pycls, kwargs):
     obj = pscls()
 
     params = pycls(**kwargs)
-    params.update_psobj(obj=obj)
+    params.update_psmethod(obj=obj)
 
     new_params = pycls()
     new_params.update_params(obj=obj)
@@ -111,16 +114,16 @@ class TestCV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_range_max=get_current_range(7),
-            current_range_min=get_current_range(3),
-            current_range_start=get_current_range(6),
+            current_range_max=CURRENT_RANGE.cr_1_mA,
+            current_range_min=CURRENT_RANGE.cr_100_nA,
+            current_range_start=CURRENT_RANGE.cr_100_uA,
             **self.kwargs,
         )
-        measurement = manager.measure(method.to_psobj())
+        measurement = manager.measure(method)
 
         assert measurement
         assert isinstance(measurement, Measurement)
-        assert measurement.method.dotnet_method.nScans == 2
+        assert measurement.method.psmethod.nScans == 2
 
         dataset = measurement.dataset
         assert len(dataset) == 7
@@ -152,16 +155,16 @@ class TestLSV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_range_max=get_current_range(7),
-            current_range_min=get_current_range(3),
-            current_range_start=get_current_range(6),
+            current_range_max=CURRENT_RANGE.cr_1_mA,
+            current_range_min=CURRENT_RANGE.cr_100_nA,
+            current_range_start=CURRENT_RANGE.cr_100_uA,
             **self.kwargs,
         )
-        measurement = manager.measure(method.to_psobj())
+        measurement = manager.measure(method)
 
         assert measurement
         assert isinstance(measurement, Measurement)
-        assert measurement.method.dotnet_method.nScans == 1
+        assert measurement.method.psmethod.nScans == 1
 
         dataset = measurement.dataset
         assert len(dataset) == 4
@@ -197,16 +200,16 @@ class TestSWV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_range_max=get_current_range(7),
-            current_range_min=get_current_range(3),
-            current_range_start=get_current_range(6),
+            current_range_max=CURRENT_RANGE.cr_1_mA,
+            current_range_min=CURRENT_RANGE.cr_100_nA,
+            current_range_start=CURRENT_RANGE.cr_100_uA,
             **self.kwargs,
         )
-        measurement = manager.measure(method.to_psobj())
+        measurement = manager.measure(method)
 
         assert measurement
         assert isinstance(measurement, Measurement)
-        assert measurement.method.dotnet_method.nScans == 1
+        assert measurement.method.psmethod.nScans == 1
 
         dataset = measurement.dataset
         assert len(dataset) == 5
@@ -218,7 +221,7 @@ class TestSWV:
 class TestCP:
     kwargs = {
         'current': 0.0,
-        'applied_current_range': get_current_range(6),
+        'applied_current_range': CURRENT_RANGE.cr_100_uA,
         'interval_time': 0.1,
         'run_time': 1.0,
     }
@@ -239,12 +242,12 @@ class TestCP:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            potential_range_max=get_potential_range(7),
-            potential_range_min=get_potential_range(1),
-            potential_range_start=get_potential_range(7),
+            potential_range_max=POTENTIAL_RANGE.pr_1_V,
+            potential_range_min=POTENTIAL_RANGE.pr_10_mV,
+            potential_range_start=POTENTIAL_RANGE.pr_1_V,
             **self.kwargs,
         )
-        measurement = manager.measure(method.to_psobj())
+        measurement = manager.measure(method)
 
         assert measurement
         assert isinstance(measurement, Measurement)
@@ -278,12 +281,12 @@ class TestOCP:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            potential_range_max=get_potential_range(7),
-            potential_range_min=get_potential_range(1),
-            potential_range_start=get_potential_range(7),
+            potential_range_max=POTENTIAL_RANGE.pr_1_V,
+            potential_range_min=POTENTIAL_RANGE.pr_10_mV,
+            potential_range_start=POTENTIAL_RANGE.pr_1_V,
             **self.kwargs,
         )
-        measurement = manager.measure(method.to_psobj())
+        measurement = manager.measure(method)
 
         assert measurement
         assert isinstance(measurement, Measurement)
@@ -317,7 +320,7 @@ class TestCA:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(**self.kwargs)
-        measurement = manager.measure(method.to_psobj())
+        measurement = manager.measure(method)
 
         assert measurement
         assert isinstance(measurement, Measurement)
@@ -355,7 +358,7 @@ class TestDP:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(**self.kwargs)
-        measurement = manager.measure(method.to_psobj())
+        measurement = manager.measure(method)
 
         assert measurement
         assert isinstance(measurement, Measurement)
@@ -394,7 +397,7 @@ class TestMSA:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(**self.kwargs)
-        measurement = manager.measure(method.to_psobj())
+        measurement = manager.measure(method)
 
         assert measurement
         assert isinstance(measurement, Measurement)
@@ -435,7 +438,7 @@ class TestEIS:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(**self.kwargs)
-        measurement = manager.measure(method.to_psobj())
+        measurement = manager.measure(method)
 
         assert measurement
         assert isinstance(measurement, Measurement)
@@ -488,7 +491,7 @@ class TestEIS:
 
 class TestGIS:
     kwargs = {
-        'applied_current_range': get_current_range(5),
+        'applied_current_range': CURRENT_RANGE.cr_10_uA,
         'equilibration_time': 0.0,
         'n_frequencies': 7,
         'max_frequency': 1e5,
@@ -511,7 +514,7 @@ class TestGIS:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(**self.kwargs)
-        measurement = manager.measure(method.to_psobj())
+        measurement = manager.measure(method)
 
         assert measurement
         assert isinstance(measurement, Measurement)
@@ -560,3 +563,31 @@ class TestGIS:
             'Z',
             "Z'",
         }
+
+
+class TestMS:
+    kwargs = {'script': ''}
+    pycls = techniques.MethodScriptParameters
+    pscls = Techniques.MethodScriptSandbox
+
+    def test_params_round_trip(self):
+        assert_params_round_trip_equal(
+            pscls=self.pscls,
+            pycls=self.pycls,
+            kwargs=self.kwargs,
+        )
+
+    def test_old_interface(self):
+        method_old = method_script_sandbox(**self.kwargs)
+        assert isinstance(method_old, self.pscls)
+
+    @pytest.mark.xfail(
+        reason='Not fully implemented yet: https://github.com/PalmSens/PalmSens_SDK/issues/47.'
+    )
+    @pytest.mark.instrument
+    def test_measurement(self, manager):
+        method = self.pycls(**self.kwargs)
+        measurement = manager.measure(method)
+
+        assert measurement
+        assert isinstance(measurement, Measurement)

@@ -2,46 +2,46 @@ import pytest
 from PalmSens import AutoRanging, AutoRangingPotential
 
 from pspython.methods import techniques
-from pspython.methods._shared import get_current_range, get_potential_range
+from pspython.methods._shared import CURRENT_RANGE, POTENTIAL_RANGE
 
 
 def test_current_range():
-    assert get_current_range(0).ToString() == '100 pA'
-    assert get_current_range(30).ToString() == '1 A'
-    assert get_current_range(26).ToString() == '63 uA'
+    assert CURRENT_RANGE.cr_100_pA.to_psobj().ToString() == '100 pA'
+    assert CURRENT_RANGE.cr_1_A.to_psobj().ToString() == '1 A'
+    assert CURRENT_RANGE.cr_63_uA.to_psobj().ToString() == '63 uA'
 
     with pytest.raises(ValueError):
-        get_current_range(-1)
-        get_current_range(100)
+        CURRENT_RANGE(-1)
+        CURRENT_RANGE(100)
 
 
 def test_potential_range():
-    assert get_potential_range(0).ToString() == '1 mV'
-    assert get_potential_range(4).ToString() == '100 mV'
-    assert get_potential_range(7).ToString() == '1 V'
+    assert POTENTIAL_RANGE.pr_1_mV.to_psobj().ToString() == '1 mV'
+    assert POTENTIAL_RANGE.pr_100_mV.to_psobj().ToString() == '100 mV'
+    assert POTENTIAL_RANGE.pr_1_V.to_psobj().ToString() == '1 V'
 
     with pytest.raises(ValueError):
-        get_potential_range(-1)
-        get_potential_range(100)
+        POTENTIAL_RANGE(-1)
+        POTENTIAL_RANGE(100)
 
 
 def test_method_current_range():
-    crmin = get_current_range(3)
-    crmax = get_current_range(7)
-    crstart = get_current_range(6)
+    crmin = CURRENT_RANGE.cr_100_nA
+    crmax = CURRENT_RANGE.cr_1_mA
+    crstart = CURRENT_RANGE.cr_100_uA
 
     method = techniques.CyclicVoltammetryParameters(
         current_range_min=crmin,
         current_range_max=crmax,
         current_range_start=crstart,
     )
-    obj = method.to_psobj()
+    obj = method.to_psmethod()
 
     supported_ranges = obj.Ranging.SupportedCurrentRanges
 
-    assert crmin in supported_ranges
-    assert crmax in supported_ranges
-    assert crstart in supported_ranges
+    assert crmin.to_psobj() in supported_ranges
+    assert crmax.to_psobj() in supported_ranges
+    assert crstart.to_psobj() in supported_ranges
 
     assert obj.Ranging.MinimumCurrentRange.Description == '100 nA'
     assert obj.Ranging.MaximumCurrentRange.Description == '1 mA'
@@ -49,21 +49,21 @@ def test_method_current_range():
 
 
 def test_method_potential_range():
-    potmin = get_potential_range(0)
-    potmax = get_potential_range(4)
-    potstart = get_potential_range(1)
+    potmin = POTENTIAL_RANGE.pr_1_mV
+    potmax = POTENTIAL_RANGE.pr_100_mV
+    potstart = POTENTIAL_RANGE.pr_10_mV
 
     method = techniques.ChronopotentiometryParameters(
         potential_range_min=potmin,
         potential_range_max=potmax,
         potential_range_start=potstart,
     )
-    obj = method.to_psobj()
+    obj = method.to_psmethod()
     supported_ranges = obj.RangingPotential.SupportedPotentialRanges
 
-    assert potmin in supported_ranges
-    assert potmax in supported_ranges
-    assert potstart in supported_ranges
+    assert potmin.to_psobj() in supported_ranges
+    assert potmax.to_psobj() in supported_ranges
+    assert potstart.to_psobj() in supported_ranges
 
     assert obj.RangingPotential.MinimumPotentialRange.Description == '1 mV'
     assert obj.RangingPotential.MaximumPotentialRange.Description == '100 mV'
@@ -72,12 +72,12 @@ def test_method_potential_range():
 
 def test_method_current_range_clipping():
     ranging = AutoRanging(
-        minRange=get_current_range(3),
-        maxRange=get_current_range(7),
-        startRange=get_current_range(6),
+        minRange=CURRENT_RANGE.cr_100_nA.to_psobj(),
+        maxRange=CURRENT_RANGE.cr_1_mA.to_psobj(),
+        startRange=CURRENT_RANGE.cr_100_uA.to_psobj(),
     )
 
-    cr_outside = get_current_range(20)
+    cr_outside = CURRENT_RANGE.cr_5_mA.to_psobj()
     assert cr_outside not in ranging.SupportedCurrentRanges
 
     # Check that start range gets clipped to max range
@@ -91,12 +91,12 @@ def test_method_current_range_clipping():
 
 def test_method_potential_range_clipping():
     ranging = AutoRangingPotential(
-        minRange=get_potential_range(0),
-        maxRange=get_potential_range(4),
-        startRange=get_potential_range(1),
+        minRange=POTENTIAL_RANGE.pr_1_mV.to_psobj(),
+        maxRange=POTENTIAL_RANGE.pr_100_mV.to_psobj(),
+        startRange=POTENTIAL_RANGE.pr_10_mV.to_psobj(),
     )
 
-    pot_outside = get_potential_range(6)
+    pot_outside = POTENTIAL_RANGE.pr_500_mV.to_psobj()
     assert pot_outside not in ranging.SupportedPotentialRanges
 
     # Check that start range gets clipped to max range

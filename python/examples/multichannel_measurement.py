@@ -1,7 +1,8 @@
 import asyncio
 import csv
 
-from pspython import pspyinstruments, pspymethods
+from pspython import pspyinstruments
+from pspython.methods import ChronoAmperometryParameters
 
 
 def stream_to_csv_callback(csv_writer):
@@ -31,7 +32,11 @@ async def main():
     tasks = [connect(instrument, i) for (i, instrument) in enumerate(available_instruments)]
     connected = await asyncio.gather(*tasks)
 
-    method = pspymethods.chronoamperometry(interval_time=0.0004, potential=1.0, run_time=5.0)
+    method = ChronoAmperometryParameters(
+        interval_time=0.0004,
+        potential=1.0,
+        run_time=5.0,
+    )
 
     if all(connected):
 

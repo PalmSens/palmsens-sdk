@@ -15,7 +15,7 @@ class Measurement:
     """Python wrapper for dotnet Measurement class."""
 
     def __init__(self, *, dotnet_measurement):
-        self.dotnet_measurement = dotnet_measurement
+        self.psmeasurement = dotnet_measurement
 
     def __str__(self):
         return f'{self.__class__.__name__}(title={self.title})'
@@ -23,12 +23,12 @@ class Measurement:
     @property
     def title(self) -> str:
         """Title for the measurement."""
-        return self.dotnet_measurement.Title
+        return self.psmeasurement.Title
 
     @property
     def timestamp(self) -> str:
         """Date and time of the start of this measurement.."""
-        return str(self.dotnet_measurement.TimeStamp)
+        return str(self.psmeasurement.TimeStamp)
 
     @property
     def blank_curve(self) -> Curve:
@@ -37,17 +37,17 @@ class Measurement:
         if Blank curve is present (not null) a new curve will be added after each measurement
         containing the result of the measured curve subtracted with the Blank curve.
         """
-        return self.dotnet_measurement.BlankCurve
+        return self.psmeasurement.BlankCurve
 
     @property
     def contains_blank_subtracted_curves(self) -> bool:
         """Return True if the curve collection contains a blank subtracted curve."""
-        return self.dotnet_measurement.ContainsBlankSubtractedCurves
+        return self.psmeasurement.ContainsBlankSubtractedCurves
 
     @property
     def contains_eis_data(self) -> bool:
         """Return True if EIS data are is available."""
-        return self.dotnet_measurement.ContainsEISData
+        return self.psmeasurement.ContainsEISData
 
     @property
     def dataset(self) -> DataSet:
@@ -56,16 +56,16 @@ class Measurement:
         All values are related by means of their indices.
         Data arrays in a dataset should always have an equal amount of entries.
         """
-        return DataSet(dotnet_dataset=self.dotnet_measurement.DataSet)
+        return DataSet(dotnet_dataset=self.psmeasurement.DataSet)
 
     @property
     def eis_data(self) -> Any:
         """EIS data in measurement."""
-        return EISData(dotnet_eisdata=self.dotnet_measurement.EISdata)
+        return EISData(dotnet_eisdata=self.psmeasurement.EISdata)
 
     def get_curve_by_index(self, index: int) -> Curve:
         """Retrieve curve with given index."""
-        dotnet_curve = self.dotnet_measurement.get_Item(index)
+        dotnet_curve = self.psmeasurement.get_Item(index)
         return Curve(dotnet_curve=dotnet_curve)
 
     @property
@@ -73,19 +73,19 @@ class Measurement:
         """Method related with this Measurement.
 
         The information from the Method is used when saving Curves."""
-        return Method(dotnet_method=self.dotnet_measurement.Method)
+        return Method(psmethod=self.psmeasurement.Method)
 
     def ocp_value(self) -> float:
         """First OCP Value from either curves or EISData."""
-        return self.dotnet_measurement.OcpValue
+        return self.psmeasurement.OcpValue
 
     def n_curves(self) -> int:
         """Number of curves that are part of the Measurement class."""
-        return self.dotnet_measurement.nCurves
+        return self.psmeasurement.nCurves
 
     def n_eis_data(self) -> int:
         """Number of EISdata curves that are part of the Measurement class."""
-        return self.dotnet_measurement.nEISData
+        return self.psmeasurement.nEISData
 
     @property
     def peaks(self) -> list[Peak]:
@@ -110,7 +110,7 @@ class Measurement:
         eis_fits : list[EISFitResults]
             Return list of EIS fits
         """
-        eisdatas = self.dotnet_measurement.EISdata
+        eisdatas = self.psmeasurement.EISdata
 
         if not eisdatas:
             return []
@@ -133,5 +133,5 @@ class Measurement:
         curves : list[Curve]
             List of curves
         """
-        curves = self.dotnet_measurement.GetCurveArray()
+        curves = self.psmeasurement.GetCurveArray()
         return [Curve(dotnet_curve=curve) for curve in curves]

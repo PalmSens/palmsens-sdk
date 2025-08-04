@@ -127,6 +127,15 @@ class TestCV:
 
         dataset = measurement.dataset
         assert len(dataset) == 7
+        assert list(dataset.keys()) == [
+            'Time',
+            'Potential_1',
+            'Current_1',
+            'Charge_1',
+            'Potential_2',
+            'Current_2',
+            'Charge_2',
+        ]
         assert dataset.array_names == {'scan1', 'scan2', 'time'}
         assert dataset.array_quantities == {'Charge', 'Current', 'Potential', 'Time'}
 
@@ -403,16 +412,15 @@ class TestMA:
         assert isinstance(measurement, Measurement)
 
         dataset = measurement.dataset
-        assert len(dataset) == 5
+        assert len(dataset) == 4
 
         assert dataset.array_names == {
             'potential',
             'time',
             'current',
             'charge',
-            'MeasuredStepStartIndex',
         }
-        assert dataset.array_quantities == {'', 'Charge', 'Potential', 'Time', 'Current'}
+        assert dataset.array_quantities == {'Charge', 'Potential', 'Time', 'Current'}
 
 
 class TestEIS:
@@ -444,22 +452,16 @@ class TestEIS:
         assert isinstance(measurement, Measurement)
 
         dataset = measurement.dataset
-        assert len(dataset) == 22
+        assert len(dataset) == 18
 
         assert dataset.array_names == {
-            'Capacitance',
             "Capacitance'",
             "Capacitance''",
+            'Capacitance',
             'Eac',
             'Frequency',
             'Iac',
             'Idc',
-            'miDC',
-            'nPointsAC',
-            'potential',
-            'realtintac',
-            'time',
-            'ymean',
             'Phase',
             'Y',
             'YIm',
@@ -467,8 +469,10 @@ class TestEIS:
             'Z',
             'ZIm',
             'ZRe',
-            'debugtext',
             'mEdc',
+            'miDC',
+            'potential',
+            'time',
         }
         assert dataset.array_quantities == {
             "-C''",
@@ -478,7 +482,6 @@ class TestEIS:
             "C'",
             'Current',
             'Frequency',
-            None,
             'Potential',
             'Time',
             'Y',
@@ -520,22 +523,16 @@ class TestGIS:
         assert isinstance(measurement, Measurement)
 
         dataset = measurement.dataset
-        assert len(dataset) == 22
+        assert len(dataset) == 18
 
         assert dataset.array_names == {
-            'Capacitance',
             "Capacitance'",
             "Capacitance''",
+            'Capacitance',
             'Eac',
             'Frequency',
             'Iac',
             'Idc',
-            'miDC',
-            'nPointsAC',
-            'potential',
-            'realtintac',
-            'time',
-            'ymean',
             'Phase',
             'Y',
             'YIm',
@@ -543,8 +540,10 @@ class TestGIS:
             'Z',
             'ZIm',
             'ZRe',
-            'debugtext',
             'mEdc',
+            'miDC',
+            'potential',
+            'time',
         }
         assert dataset.array_quantities == {
             "-C''",
@@ -554,7 +553,6 @@ class TestGIS:
             "C'",
             'Current',
             'Frequency',
-            None,
             'Potential',
             'Time',
             'Y',

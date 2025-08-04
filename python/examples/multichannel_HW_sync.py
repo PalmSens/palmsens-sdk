@@ -7,8 +7,7 @@ from pspython.methods import CURRENT_RANGE, POTENTIAL_RANGE, Chronopotentiometry
 def new_data_callback(channel):
     def print_results(new_data):
         for point in new_data:
-            for type, value in point.items():
-                print(f'channel {channel}: {type} = {value}')
+            print(f'channel {channel}: {point}')
 
     return lambda x: print_results(x)
 

@@ -1,71 +1,93 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
-from typing import Callable, Generator
+from typing import TYPE_CHECKING, Callable, Generator
+
+import clr
+from PalmSens.Data import CurrentReading
 
 from ._shared import ArrayType
 from .data_array import DataArray
 
+if TYPE_CHECKING:
+    from PalmSens.Data import DataSet as PSDataSet
+
+
+def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, DataArray]:
+    """Suffix non-unique keys with integer. Keys are derived from the array type."""
+    arrays = [array for array in psdataset.GetDataArrays()]
+    array_types = [ArrayType(array.ArrayType).name for array in arrays]
+
+    mapping = {}
+
+    for array in arrays:
+        array_type = ArrayType(array.ArrayType).name
+
+        is_unique = array_types.count(array_type) == 1
+
+        if not is_unique:
+            i = 1
+            while (key := f'{array_type}_{i}') in mapping:
+                i += 1
+        else:
+            key = array_type
+
+        mapping[key] = DataArray(psarray=array)
+
+    return mapping
+
 
 class DataSet(Mapping):
-    def __init__(self, *, dotnet_dataset):
-        self.dotnet_dataset = dotnet_dataset
+    def __init__(self, *, psdataset: PSDataSet):
+        self.psdataset = psdataset
+        self._mapping = _dataset_to_mapping_with_unique_keys(psdataset)
 
     def __repr__(self):
         return f'{self.__class__.__name__}({list(self.keys())})'
 
-    def __getitem__(self, key: tuple[str, str]):
-        if not (isinstance(key, tuple) and len(key) == 2):
-            raise KeyError(f'Key must be a tuple with 2 values, got: {key}')
-        name, quantity = key
+    def __getitem__(self, key: str):
+        return self._mapping[key]
 
-        ret = self._filter(
-            key=lambda array: array.Description == name and array.Unit.Quantity == quantity
-        )
-
-        if not ret:
-            raise KeyError(f'{key}')
-        if len(ret) > 1:
-            raise KeyError(f'This should not happen, got multiple instances for key: {key}')
-        return ret[0]
-
-    def __iter__(self) -> Generator[tuple[str, str], None, None]:
-        for array in self.dotnet_dataset:
-            yield (array.Description, array.Unit.Quantity)
+    def __iter__(self) -> Generator[str, None, None]:
+        # Note that iterating over self.psdataset also returns the 'hidden' debug arrays
+        # `.GetDataArrays()` excludes those.
+        yield from self._mapping
 
     def __len__(self):
-        return self.dotnet_dataset.Count
+        return len(self._mapping)
 
     def _filter(self, key: Callable) -> list[DataArray]:
         """Filter array list based on callable.
 
         Callable takes dotnet DataArray as its only argument.
         """
-        return [
-            DataArray(dotnet_data_array=dotnet_data_array)
-            for dotnet_data_array in self.dotnet_dataset
-            if key(dotnet_data_array)
-        ]
+        return [array for array in self._mapping.values() if key(array)]
 
-    def to_dict(self) -> dict[tuple[str, str], DataArray]:
-        """Return DataSet as dictionary."""
-        return dict(self)
+    def psarrays(self):
+        """Return underlying PalmSens SDK objects."""
+        return self.psdataset.GetDataArrays()
 
-    def to_list(self) -> list[DataArray]:
-        """Return list of arrays."""
+    def arrays(self) -> list[DataArray]:
+        """Return list of all arrays. Alias for `.to_list()`"""
         return list(self.values())
 
-    def arrays_by_name(self, description: str) -> list[DataArray]:
-        """Get arrays by description.
+    def hidden_arrays(self) -> list[DataArray]:
+        """Return 'hidden' arrays used for debugging."""
+        return [DataArray(psarray=psarray) for psarray in self.psdataset if psarray.Hidden]
+
+    def arrays_by_name(self, name: str) -> list[DataArray]:
+        """Get arrays by name.
 
         Parameters
         ----------
-        description : str
-            Description of the array.
+        name : str
+            Name of the array.
 
         Returns
         -------
         arrays : list[DataArray]
         """
-        return self._filter(key=lambda array: array.Description == description)
+        return self._filter(key=lambda array: array.name == name)
 
     def arrays_by_quantity(self, quantity: str) -> list[DataArray]:
         """Get arrays by quantity.
@@ -79,7 +101,7 @@ class DataSet(Mapping):
         -------
         arrays : list[DataArray]
         """
-        return self._filter(key=lambda array: array.Unit.Quantity == quantity)
+        return self._filter(key=lambda array: array.quantity == quantity)
 
     def arrays_by_type(self, array_type: ArrayType) -> list[DataArray]:
         """Get arrays by data type.
@@ -93,27 +115,22 @@ class DataSet(Mapping):
         -------
         arrays : list[DataArray]
         """
-        return self._filter(key=lambda array: array.ArrayType == array_type.value)
+        return self._filter(key=lambda array: array.type == array_type)
 
     @property
     def array_types(self) -> set[ArrayType]:
         """Return unique set of array type (enum) for arrays in dataset."""
-        return set(ArrayType(arr.ArrayType) for arr in self.dotnet_dataset)
+        return set(array.type for array in self.values())
 
     @property
     def array_names(self) -> set[str]:
         """Return unique set of names for arrays in dataset."""
-        return set(arr.Description for arr in self.dotnet_dataset)
+        return set(array.name for array in self.values())
 
     @property
     def array_quantities(self) -> set[str]:
         """Return unique set of quantities for arrays in dataset."""
-        return set(arr.Unit.Quantity for arr in self.dotnet_dataset)
-
-    @property
-    def arrays(self) -> list[DataArray]:
-        """Return list of all arrays. Alias for `.to_list()`"""
-        return self.to_list()
+        return set(arr.quantity for arr in self.values())
 
     @property
     def current_arrays(self) -> list[DataArray]:
@@ -149,3 +166,48 @@ class DataSet(Mapping):
     def aux_input_arrays(self) -> list[DataArray]:
         """Return all AuxInput arrays."""
         return self.arrays_by_type(ArrayType.AuxInput)
+
+    def current_range(self) -> list[str]:
+        """Return current range as list of strings."""
+        array = self.current_arrays[-1]
+
+        clr_type = clr.GetClrType(CurrentReading)
+        field_info = clr_type.GetField('CurrentRange')
+
+        return [field_info.GetValue(val).ToString() for val in array.psarray]
+
+    def reading_status(self) -> list[str]:
+        """Return reading status as list of strings."""
+        array = self.current_arrays[-1]
+
+        clr_type = clr.GetClrType(CurrentReading)
+        field_info = clr_type.GetField('ReadingStatus')
+
+        return [field_info.GetValue(val).ToString() for val in array.psarray]
+
+    def timing_status(self) -> list[str]:
+        """Return timing status as list of strings."""
+        array = self.current_arrays[-1]
+
+        clr_type = clr.GetClrType(CurrentReading)
+        field_info = clr_type.GetField('TimingStatus')
+
+        return [field_info.GetValue(val).ToString() for val in array.psarray]
+
+    def to_dataframe(self):
+        """Return dataset as pandas dataframe."""
+        import pandas as pd
+
+        cols, arrays = zip(*[(key, arr.to_list()) for key, arr in self.items() if len(arr)])
+
+        arrays = list(arrays)
+        arrays.append(self.current_range())
+        arrays.append(self.reading_status())
+
+        cols = list(cols)
+        cols.append('CR')
+        cols.append('ReadingStatus')
+
+        df = pd.DataFrame(arrays, index=cols).T
+
+        return df

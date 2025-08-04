@@ -1,6 +1,5 @@
 import asyncio
-from pathlib import Path
-
+from dataclasses import replace
 from pspython import pspyfiles, pspyinstruments
 from pspython.methods import CURRENT_RANGE, POTENTIAL_RANGE, ChronopotentiometryParameters
 
@@ -8,33 +7,9 @@ from pspython.methods import CURRENT_RANGE, POTENTIAL_RANGE, Chronopotentiometry
 def new_data_callback(channel):
     def print_results(new_data):
         for point in new_data:
-            for type, value in point.items():
-                print(f'channel {channel + 1}: {type} = {value}')
+            print(f'channel {channel + 1}: {point}')
 
     return lambda x: print_results(x)
-
-
-def update_method(method, **kwargs):
-    i_applied = kwargs.get('i_applied', None)
-    upper_e_limit = kwargs.get('upper_e_limit', None)
-    lower_e_limit = kwargs.get('lower_e_limit', None)
-
-    if i_applied is not None:
-        method.Current = i_applied
-
-    if upper_e_limit is not None:
-        method.UseLimitMaxValue = True
-        method.LimitMaxValue = upper_e_limit
-    else:
-        method.UseLimitMaxValue = False
-
-    if lower_e_limit is not None:
-        method.UseLimitMinValue = True
-        method.LimitMinValue = lower_e_limit
-    else:
-        method.UseLimitMinValue = False
-
-    return method
 
 
 async def run_steps(manager, channel, steps):
@@ -51,7 +26,7 @@ async def run_steps(manager, channel, steps):
     measurements = []
 
     for step in steps:
-        method = update_method(method, **step)
+        method = replace(method, **step)
         measurements.append(await manager.measure(method))
 
     return measurements
@@ -60,9 +35,9 @@ async def run_steps(manager, channel, steps):
 async def main():
     # Create a list of of parameters you want to change
     steps = [
-        {'i_applied': 0.1, 'upper_e_limit': 2},
-        {'i_applied': -0.2, 'lower_e_limit': -0.5},
-        {'i_applied': 2, 'lower_e_limit': -2, 'upper_e_limit': 2},
+        {'current': 0.1, 'limit_potential_max': 2, 'use_limit_potential_min': False},
+        {'current': -0.2, 'limit_potential_min': -0.5, 'use_limit_potential_max': False},
+        {'current': 2, 'limit_potential_min': -2, 'limit_potential_max': 2},
     ]
 
     available_instruments = await pspyinstruments.discover_instruments_async()
@@ -89,7 +64,7 @@ async def main():
         channels = await asyncio.gather(*tasks)  # use gather to await results
 
         for measurements in channels:
-            pspyfiles.save_session_file(Path.cwd() / 'example.pssession', measurements)
+            pspyfiles.save_session_file('example.pssession', measurements)
 
         for channel, manager in managers.items():
             success = manager.disconnect()

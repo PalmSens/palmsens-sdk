@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 
 from pspython.data._shared import ArrayType
@@ -17,41 +19,39 @@ def test_mapping(dataset):
     assert len([_ for _ in dataset]) == 4
 
     assert list(dataset) == [
-        ('time', 'Time'),
-        ('scan1channel1', 'Potential'),
-        ('scan1channel1', 'Current'),
-        ('scan1channel1', 'Charge'),
+        'Time',
+        'Potential',
+        'Current',
+        'Charge',
     ]
 
     assert isinstance(repr(dataset), str)
-    assert isinstance(dataset[('time', 'Time')], DataArray)
+    assert 'Time' in dataset
+    assert isinstance(dataset['Time'], DataArray)
 
-    assert ('time', 'Time') in dataset
-    assert ('foo', 'bar') not in dataset
+    assert 'foo' not in dataset
     with pytest.raises(KeyError):
         dataset['FAIL']
-    with pytest.raises(KeyError):
-        dataset[('ALSO', 'FAIL')]
 
 
 def test_to_list(dataset):
-    lst = dataset.to_list()
+    lst = list(dataset.values())
     assert isinstance(lst, list)
     assert len(lst) == 4
     assert all(isinstance(item, DataArray) for item in lst)
-    assert isinstance(dataset.arrays, list)
+    assert isinstance(dataset.arrays(), list)
 
 
 def test_to_dict(dataset):
-    dct = dataset.to_dict()
+    dct = dict(dataset)
     assert isinstance(dct, dict)
     assert len(dct) == 4
     assert all(isinstance(item, DataArray) for item in dct.values())
     assert list(dct.keys()) == [
-        ('time', 'Time'),
-        ('scan1channel1', 'Potential'),
-        ('scan1channel1', 'Current'),
-        ('scan1channel1', 'Charge'),
+        'Time',
+        'Potential',
+        'Current',
+        'Charge',
     ]
 
 

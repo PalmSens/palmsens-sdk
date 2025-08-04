@@ -1,7 +1,6 @@
 from pathlib import Path
 
-import numpy as np
-import pandas
+import pandas as pd
 
 from pspython import pspyfiles, pspymethods
 
@@ -42,40 +41,8 @@ frame_names = []
 for measurement in measurements:
     dataset = measurement.dataset
 
-    data = []
-    columns = []
-
-    for i, a in enumerate(dataset.time_arrays):
-        columns.append(f'time {i + 1}')
-        data.append(a)
-
-    for i, a in enumerate(dataset.freq_arrays):
-        columns.append(f'frequency {i + 1}')
-        data.append(a)
-
-    for i, a in enumerate(dataset.potential_arrays):
-        columns.append(f'potential {i + 1}')
-        data.append(a)
-
-    for i, a in enumerate(dataset.current_arrays):
-        columns.append(f'current {i + 1}')
-        data.append(a)
-
-    for i, a in enumerate(dataset.zre_arrays):
-        columns.append(f'zre {i + 1}')
-        data.append(a)
-
-    for i, a in enumerate(dataset.zim_arrays):
-        columns.append(f'zim {i + 1}')
-        data.append(a)
-
-    length = max(map(len, data))
-    arrays = np.array(
-        [np.pad(xi, (0, length - len(xi)), constant_values=np.nan) for xi in data]
-    )
-    df_m = pandas.DataFrame(arrays.transpose(), index=range(length), columns=columns)
-    frames.append(df_m)
+    frames.append(dataset.to_dataframe())
     frame_names.append(measurement.title)
 
-df = pandas.concat(frames, keys=frame_names)
-print(df.head(10))
+df = pd.concat(frames, keys=frame_names)
+print(df)

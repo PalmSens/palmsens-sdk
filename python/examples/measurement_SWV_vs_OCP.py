@@ -4,8 +4,7 @@ from pspython.methods import SquareWaveParameters
 
 def new_data_callback(new_data):
     for point in new_data:
-        for type, value in point.items():
-            print(f'{type} = {value}')
+        print(point)
 
 
 available_instruments = pspyinstruments.discover_instruments()

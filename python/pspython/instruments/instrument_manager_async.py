@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 import traceback
 from typing import Callable, Optional
 
@@ -14,15 +15,10 @@ from PalmSens.Plottables import (
     EISData,
     EISDataEventHandler,
 )
-from PalmSens.Windows.Devices import (
-    BLEDevice,
-    BluetoothDevice,
-    FTDIDevice,
-    USBCDCDevice,
-)
 from System import EventHandler
 from System.Threading.Tasks import Task
 
+from pspython.instruments.instrument_manager import discover_instruments
 from pspython.methods import CURRENT_RANGE
 from pspython.methods.techniques import ParameterType
 
@@ -30,11 +26,44 @@ from ..data._shared import ArrayType, _get_values_from_NETArray
 from ..data.measurement import Measurement
 from .common import Instrument, create_future, firmware_warning
 
+WINDOWS = sys.platform == 'win32'
+LINUX = not WINDOWS
+
+if WINDOWS:
+    from PalmSens.Windows.Devices import (
+        BLEDevice,
+        BluetoothDevice,
+        FTDIDevice,
+        USBCDCDevice,
+    )
+
 
 async def discover_instruments_async(
-    ftdi: bool = True, usbcdc: bool = True, bluetooth: bool = False
-):
+    ftdi: bool = False,
+    usbcdc: bool = True,
+    bluetooth: bool = False,
+    serial: bool = True,
+) -> list[Instrument]:
+    """Discover instruments.
+
+    Parameters
+    ----------
+    ftdi : bool
+        If True, discover ftdi devices
+    usbcdc : bool
+        If True, discover usbcdc devices (Windows only)
+    bluetooth : bool
+        If True, discover bluetooth devices (Windows only)
+    """
     available_instruments = []
+
+    if LINUX:
+        raise NotImplementedError(
+            (
+                'Async instrument discovery is only implemented on Windows'
+                'Use `instrument_manager.discover_instruments()` instead.'
+            )
+        )
 
     if ftdi:
         ftdi_instruments = await create_future(FTDIDevice.DiscoverDevicesAsync())

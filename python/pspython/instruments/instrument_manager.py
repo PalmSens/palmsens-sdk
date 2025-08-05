@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 import traceback
 from time import sleep
 from typing import Callable, Optional
@@ -15,12 +16,6 @@ from PalmSens.Plottables import (
     EISData,
     EISDataEventHandler,
 )
-from PalmSens.Windows.Devices import (
-    BLEDevice,
-    BluetoothDevice,
-    FTDIDevice,
-    USBCDCDevice,
-)
 from System import EventHandler  # type: ignore
 
 from pspython.methods._shared import CURRENT_RANGE
@@ -30,32 +25,71 @@ from ..data._shared import ArrayType, _get_values_from_NETArray
 from ..data.measurement import Measurement
 from .common import Instrument, create_future, firmware_warning
 
+WINDOWS = sys.platform == 'win32'
+LINUX = not WINDOWS
 
-def discover_instruments(ftdi: bool = True, usbcdc: bool = True, bluetooth: bool = False):
+if WINDOWS:
+    from PalmSens.Windows.Devices import (
+        BLEDevice,
+        BluetoothDevice,
+        FTDIDevice,
+        USBCDCDevice,
+    )
+else:
+    from PalmSens.Core.Linux.Comm.Devices import FTDIDevice, SerialPortDevice
+
+
+def discover_instruments(
+    ftdi: bool = False,
+    usbcdc: bool = True,
+    bluetooth: bool = False,
+    serial: bool = True,
+) -> list[Instrument]:
+    """Discover instruments.
+
+    Parameters
+    ----------
+    ftdi : bool
+        If True, discover ftdi devices
+    usbcdc : bool
+        If True, discover usbcdc devices (Windows only)
+    bluetooth : bool
+        If True, discover bluetooth devices (Windows only)
+    serial : bool
+        If True, discover serial devices
+    """
     available_instruments = []
 
+    args = [''] if WINDOWS else []
+
     if ftdi:
-        ftdi_instruments = FTDIDevice.DiscoverDevices('')
+        ftdi_instruments = FTDIDevice.DiscoverDevices(*args)
         for ftdi_instrument in ftdi_instruments[0]:
             instrument = Instrument(ftdi_instrument.ToString(), 'ftdi', ftdi_instrument)
             available_instruments.append(instrument)
 
-    if usbcdc:
-        usbcdc_instruments = USBCDCDevice.DiscoverDevices('')
+    if WINDOWS and usbcdc:
+        usbcdc_instruments = USBCDCDevice.DiscoverDevices(*args)
         for usbcdc_instrument in usbcdc_instruments[0]:
             instrument = Instrument(usbcdc_instrument.ToString(), 'usbcdc', usbcdc_instrument)
             available_instruments.append(instrument)
 
-    if bluetooth:
-        ble_instruments = BLEDevice.DiscoverDevices('')
+    if WINDOWS and bluetooth:
+        ble_instruments = BLEDevice.DiscoverDevices(*args)
         for ble_instrument in ble_instruments[0]:
             instrument = Instrument(ble_instrument.ToString(), 'ble', ble_instrument)
             available_instruments.append(instrument)
-        bluetooth_instruments = BluetoothDevice.DiscoverDevices('')
+        bluetooth_instruments = BluetoothDevice.DiscoverDevices(*args)
         for bluetooth_instrument in bluetooth_instruments[0]:
             instrument = Instrument(
                 bluetooth_instrument.ToString(), 'bluetooth', bluetooth_instrument
             )
+            available_instruments.append(instrument)
+
+    if LINUX and serial:
+        serial_instruments = SerialPortDevice.DiscoverDevices(*args)
+        for serial_instrument in serial_instruments:
+            instrument = Instrument(serial_instrument.ToString(), 'serial', serial_instrument)
             available_instruments.append(instrument)
 
     available_instruments.sort(key=lambda instrument: instrument.name)

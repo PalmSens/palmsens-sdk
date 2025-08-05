@@ -48,7 +48,7 @@
         </member>
         <member name="M:PalmSens.Windows.Comm.ADUCUploader.SendReset">
             <summary>
-            Reset the currently connected device. 
+            Reset the currently connected device.
             </summary>
             <remarks>
             This will restart the firmware.
@@ -56,7 +56,7 @@
         </member>
         <member name="M:PalmSens.Windows.Comm.ADUCUploader.SendResetAsync(System.Threading.SemaphoreSlim)">
             <summary>
-            Reset the currently connected device. 
+            Reset the currently connected device.
             </summary>
             <remarks>
             This will restart the firmware.
@@ -64,7 +64,7 @@
         </member>
         <member name="M:PalmSens.Windows.Comm.ADUCUploader.Reset">
             <summary>
-            Reset the device. 
+            Reset the device.
             </summary>
         </member>
         <member name="M:PalmSens.Windows.Comm.ADUCUploader.WaitVersion">
@@ -214,7 +214,7 @@
             <returns>Packet without header.</returns>
         </member>
         <member name="F:PalmSens.Windows.Comm.SAMBAUploader.SAM_BA_APPLETS_VERSION">
-            Refers to the Version of SAM-BA 
+            Refers to the Version of SAM-BA
         </member>
         <member name="F:PalmSens.Windows.Comm.SAMBAUploader.AppletCommand.APPLET_CMD_INIT">
             Applet initialization command code.
@@ -256,13 +256,13 @@
             Read the Unique ID bits (on SAM3)
         </member>
         <member name="F:PalmSens.Windows.Comm.SAMBAUploader.AppletCommand.APPLET_CMD_ERASE_BLOCKS">
-            Applet blocks erase command code. 
+            Applet blocks erase command code.
         </member>
         <member name="F:PalmSens.Windows.Comm.SAMBAUploader.AppletCommand.APPLET_CMD_BATCH_ERASE">
-            Applet batch full erase command code. 
+            Applet batch full erase command code.
         </member>
         <member name="F:PalmSens.Windows.Comm.SAMBAUploader.AppletCommand.APPLET_CMD_RESET">
-            Applet reset command code. 
+            Applet reset command code.
         </member>
         <member name="F:PalmSens.Windows.Comm.SAMBAUploader.AppletResponse.APPLET_SUCCESS">
             Operation was successful.
@@ -516,7 +516,7 @@
             <summary>
             Connect to a PalmSens using a FTDI USB cable.
             </summary>
-            <param name="com">number of the device to connect to. 0 means the 
+            <param name="com">number of the device to connect to. 0 means the
             first currently connected PalmSens, 1 for every next PalmSens</param>
         </member>
         <member name="T:PalmSens.Windows.Comm.FTDIPort.FTDIException">
@@ -575,13 +575,13 @@
             <summary>
             Connect to a PalmSens using a FTDI USB cable.
             </summary>
-            <param name="com">number of the device to connect to. 0 means the 
+            <param name="com">number of the device to connect to. 0 means the
             first currently connected PalmSens, 1 for every next PalmSens</param>
             <param name="baudrate">Baudrate to communicate using. Default is 57600.</param>
         </member>
         <member name="T:PalmSens.Windows.Comm.TCPServer">
             <summary>
-            
+
             </summary>
         </member>
         <member name="M:PalmSens.Windows.Comm.TCPServer.Start(System.Net.IPEndPoint)">
@@ -816,7 +816,7 @@
         </member>
         <member name="T:PalmSens.Windows.Data.EISTable">
             <summary>
-            
+
             </summary>
         </member>
         <member name="M:PalmSens.Windows.Data.EISTable.#ctor(PalmSens.Plottables.EISData,PalmSens.Techniques.ImpedimetricMethodBase,System.Boolean)">
@@ -1931,7 +1931,7 @@
         </member>
         <member name="F:FTD2XX_NET.FTDI.FT232R_EEPROM_STRUCTURE.UseExtOsc">
             <summary>
-            Disables the FT232R internal clock source.  
+            Disables the FT232R internal clock source.
             If the device has external oscillator enabled it must have an external oscillator fitted to function
             </summary>
         </member>
@@ -1998,40 +1998,40 @@
         <member name="F:FTD2XX_NET.FTDI.FT232R_EEPROM_STRUCTURE.Cbus0">
             <summary>
             Sets the function of the CBUS0 pin for FT232R devices.
-            Valid values are FT_CBUS_TXDEN, FT_CBUS_PWRON , FT_CBUS_RXLED, FT_CBUS_TXLED, 
-            FT_CBUS_TXRXLED, FT_CBUS_SLEEP, FT_CBUS_CLK48, FT_CBUS_CLK24, FT_CBUS_CLK12, 
+            Valid values are FT_CBUS_TXDEN, FT_CBUS_PWRON , FT_CBUS_RXLED, FT_CBUS_TXLED,
+            FT_CBUS_TXRXLED, FT_CBUS_SLEEP, FT_CBUS_CLK48, FT_CBUS_CLK24, FT_CBUS_CLK12,
             FT_CBUS_CLK6, FT_CBUS_IOMODE, FT_CBUS_BITBANG_WR, FT_CBUS_BITBANG_RD
             </summary>
         </member>
         <member name="F:FTD2XX_NET.FTDI.FT232R_EEPROM_STRUCTURE.Cbus1">
             <summary>
             Sets the function of the CBUS1 pin for FT232R devices.
-            Valid values are FT_CBUS_TXDEN, FT_CBUS_PWRON , FT_CBUS_RXLED, FT_CBUS_TXLED, 
-            FT_CBUS_TXRXLED, FT_CBUS_SLEEP, FT_CBUS_CLK48, FT_CBUS_CLK24, FT_CBUS_CLK12, 
+            Valid values are FT_CBUS_TXDEN, FT_CBUS_PWRON , FT_CBUS_RXLED, FT_CBUS_TXLED,
+            FT_CBUS_TXRXLED, FT_CBUS_SLEEP, FT_CBUS_CLK48, FT_CBUS_CLK24, FT_CBUS_CLK12,
             FT_CBUS_CLK6, FT_CBUS_IOMODE, FT_CBUS_BITBANG_WR, FT_CBUS_BITBANG_RD
             </summary>
         </member>
         <member name="F:FTD2XX_NET.FTDI.FT232R_EEPROM_STRUCTURE.Cbus2">
             <summary>
             Sets the function of the CBUS2 pin for FT232R devices.
-            Valid values are FT_CBUS_TXDEN, FT_CBUS_PWRON , FT_CBUS_RXLED, FT_CBUS_TXLED, 
-            FT_CBUS_TXRXLED, FT_CBUS_SLEEP, FT_CBUS_CLK48, FT_CBUS_CLK24, FT_CBUS_CLK12, 
+            Valid values are FT_CBUS_TXDEN, FT_CBUS_PWRON , FT_CBUS_RXLED, FT_CBUS_TXLED,
+            FT_CBUS_TXRXLED, FT_CBUS_SLEEP, FT_CBUS_CLK48, FT_CBUS_CLK24, FT_CBUS_CLK12,
             FT_CBUS_CLK6, FT_CBUS_IOMODE, FT_CBUS_BITBANG_WR, FT_CBUS_BITBANG_RD
             </summary>
         </member>
         <member name="F:FTD2XX_NET.FTDI.FT232R_EEPROM_STRUCTURE.Cbus3">
             <summary>
             Sets the function of the CBUS3 pin for FT232R devices.
-            Valid values are FT_CBUS_TXDEN, FT_CBUS_PWRON , FT_CBUS_RXLED, FT_CBUS_TXLED, 
-            FT_CBUS_TXRXLED, FT_CBUS_SLEEP, FT_CBUS_CLK48, FT_CBUS_CLK24, FT_CBUS_CLK12, 
+            Valid values are FT_CBUS_TXDEN, FT_CBUS_PWRON , FT_CBUS_RXLED, FT_CBUS_TXLED,
+            FT_CBUS_TXRXLED, FT_CBUS_SLEEP, FT_CBUS_CLK48, FT_CBUS_CLK24, FT_CBUS_CLK12,
             FT_CBUS_CLK6, FT_CBUS_IOMODE, FT_CBUS_BITBANG_WR, FT_CBUS_BITBANG_RD
             </summary>
         </member>
         <member name="F:FTD2XX_NET.FTDI.FT232R_EEPROM_STRUCTURE.Cbus4">
             <summary>
             Sets the function of the CBUS4 pin for FT232R devices.
-            Valid values are FT_CBUS_TXDEN, FT_CBUS_PWRON , FT_CBUS_RXLED, FT_CBUS_TXLED, 
-            FT_CBUS_TXRXLED, FT_CBUS_SLEEP, FT_CBUS_CLK48, FT_CBUS_CLK24, FT_CBUS_CLK12, 
+            Valid values are FT_CBUS_TXDEN, FT_CBUS_PWRON , FT_CBUS_RXLED, FT_CBUS_TXLED,
+            FT_CBUS_TXRXLED, FT_CBUS_SLEEP, FT_CBUS_CLK48, FT_CBUS_CLK24, FT_CBUS_CLK12,
             FT_CBUS_CLK6
             </summary>
         </member>
@@ -2669,39 +2669,39 @@
         </member>
         <member name="M:FTD2XX_NET.FTDI.FT_EXCEPTION.#ctor">
             <summary>
-            
+
             </summary>
         </member>
         <member name="M:FTD2XX_NET.FTDI.FT_EXCEPTION.#ctor(System.String)">
             <summary>
-            
+
             </summary>
             <param name="message"></param>
         </member>
         <member name="M:FTD2XX_NET.FTDI.FT_EXCEPTION.#ctor(System.String,System.Exception)">
             <summary>
-            
+
             </summary>
             <param name="message"></param>
             <param name="inner"></param>
         </member>
         <member name="M:FTD2XX_NET.FTDI.FT_EXCEPTION.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
-            
+
             </summary>
             <param name="info"></param>
             <param name="context"></param>
         </member>
         <member name="M:FTD2XX_NET.FTDI.GetNumberOfDevices(System.UInt32@)">
             <summary>
-            Gets the number of FTDI devices available.  
+            Gets the number of FTDI devices available.
             </summary>
             <returns>FT_STATUS value from FT_CreateDeviceInfoList in FTD2XX.DLL</returns>
             <param name="devcount">The number of FTDI devices available.</param>
         </member>
         <member name="M:FTD2XX_NET.FTDI.GetDeviceList(FTD2XX_NET.FTDI.FT_DEVICE_INFO_NODE[])">
             <summary>
-            Gets information on all of the FTDI devices available.  
+            Gets information on all of the FTDI devices available.
             </summary>
             <returns>FT_STATUS value from FT_GetDeviceInfoDetail in FTD2XX.DLL</returns>
             <param name="devicelist">An array of type FT_DEVICE_INFO_NODE to contain the device information for all available devices.</param>
@@ -2709,7 +2709,7 @@
         </member>
         <member name="M:FTD2XX_NET.FTDI.OpenByIndex(System.UInt32)">
             <summary>
-            Opens the FTDI device with the specified index.  
+            Opens the FTDI device with the specified index.
             </summary>
             <returns>FT_STATUS value from FT_Open in FTD2XX.DLL</returns>
             <param name="index">Index of the device to open.
@@ -2718,7 +2718,7 @@
         </member>
         <member name="M:FTD2XX_NET.FTDI.OpenBySerialNumber(System.String)">
             <summary>
-            Opens the FTDI device with the specified serial number.  
+            Opens the FTDI device with the specified serial number.
             </summary>
             <returns>FT_STATUS value from FT_OpenEx in FTD2XX.DLL</returns>
             <param name="serialnumber">Serial number of the device to open.</param>
@@ -2726,7 +2726,7 @@
         </member>
         <member name="M:FTD2XX_NET.FTDI.OpenByDescription(System.String)">
             <summary>
-            Opens the FTDI device with the specified description.  
+            Opens the FTDI device with the specified description.
             </summary>
             <returns>FT_STATUS value from FT_OpenEx in FTD2XX.DLL</returns>
             <param name="description">Description of the device to open.</param>
@@ -2734,7 +2734,7 @@
         </member>
         <member name="M:FTD2XX_NET.FTDI.OpenByLocation(System.UInt32)">
             <summary>
-            Opens the FTDI device at the specified physical location.  
+            Opens the FTDI device at the specified physical location.
             </summary>
             <returns>FT_STATUS value from FT_OpenEx in FTD2XX.DLL</returns>
             <param name="location">Location of the device to open.</param>
@@ -2742,7 +2742,7 @@
         </member>
         <member name="M:FTD2XX_NET.FTDI.Close">
             <summary>
-            Closes the handle to an open FTDI device.  
+            Closes the handle to an open FTDI device.
             </summary>
             <returns>FT_STATUS value from FT_Close in FTD2XX.DLL</returns>
         </member>
@@ -3170,7 +3170,7 @@
             Gets or sets the reset pipe retry count.  Default value is 50.
             </summary>
             <returns>FT_STATUS vlaue from FT_SetResetPipeRetryCount in FTD2XX.DLL</returns>
-            <param name="ResetPipeRetryCount">The reset pipe retry count.  
+            <param name="ResetPipeRetryCount">The reset pipe retry count.
             Electrically noisy environments may benefit from a larger value.</param>
         </member>
         <member name="M:FTD2XX_NET.FTDI.GetDriverVersion(System.UInt32@)">

@@ -2,10 +2,16 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from sys import platform
 from typing import Union
 
 from PalmSens.Data import SessionManager  # type: ignore
-from PalmSens.Windows import LoadSaveHelperFunctions  # type: ignore
+
+if platform == 'win32':
+    from PalmSens.Windows import LoadSaveHelperFunctions  # type: ignore
+else:
+    raise ImportError('Loading and saving session/method files is implemented on Linux/OSX.')
+
 
 from .data.measurement import Measurement
 

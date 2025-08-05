@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Sequence
 
-import numpy as np
 from PalmSens import (
     CurrentRange,
     CurrentRanges,
@@ -12,6 +13,8 @@ from PalmSens import (
     Techniques,
 )
 from PalmSens.Devices import PalmSens4Capabilities
+
+from .._shared import single_to_double
 
 
 class CURRENT_RANGE(Enum):
@@ -74,14 +77,6 @@ class POTENTIAL_RANGE(Enum):
     def from_psobj(cls, psobj):
         """Convert from PS object."""
         return cls(int(PotentialRange.get_PR(psobj)))
-
-
-def single_to_double(val: float) -> float:
-    """Cast single precision to double precision.
-
-    Pythonnet returns System.Single, whereas python defaults to double precision.
-    This leads to incorrect rounding, which makes comparing values difficult."""
-    return float(str(np.float32(val)))
 
 
 def convert_bools_to_int(lst: Sequence[bool]) -> int:

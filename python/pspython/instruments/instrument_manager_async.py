@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import traceback
+from typing import Callable, Optional
 
 import clr
 import PalmSens
@@ -22,32 +23,32 @@ from PalmSens.Windows.Devices import (
 from System import EventHandler
 from System.Threading.Tasks import Task
 
+from pspython.methods import CURRENT_RANGE
 from pspython.methods.techniques import ParameterType
 
 from ..data._shared import ArrayType, _get_values_from_NETArray
 from ..data.measurement import Measurement
-from .common import Instrument, create_future
+from .common import Instrument, create_future, firmware_warning
 
 
-async def discover_instruments_async(**kwargs):
-    discover_ftdi = kwargs.get('ftdi', True)
-    discover_usbcdc = kwargs.get('usbcdc', True)
-    discover_bluetooth = kwargs.get('bluetooth', False)
+async def discover_instruments_async(
+    ftdi: bool = True, usbcdc: bool = True, bluetooth: bool = False
+):
     available_instruments = []
 
-    if discover_ftdi:
+    if ftdi:
         ftdi_instruments = await create_future(FTDIDevice.DiscoverDevicesAsync())
         for ftdi_instrument in ftdi_instruments:
             instrument = Instrument(ftdi_instrument.ToString(), 'ftdi', ftdi_instrument)
             available_instruments.append(instrument)
 
-    if discover_usbcdc:
+    if usbcdc:
         usbcdc_instruments = await create_future(USBCDCDevice.DiscoverDevicesAsync())
         for usbcdc_instrument in usbcdc_instruments:
             instrument = Instrument(usbcdc_instrument.ToString(), 'usbcdc', usbcdc_instrument)
             available_instruments.append(instrument)
 
-    if discover_bluetooth:
+    if bluetooth:
         ble_instruments = await create_future(BLEDevice.DiscoverDevicesAsync())
         for ble_instrument in ble_instruments:
             instrument = Instrument(ble_instrument.ToString(), 'ble', ble_instrument)
@@ -64,8 +65,8 @@ async def discover_instruments_async(**kwargs):
 
 
 class InstrumentManagerAsync:
-    def __init__(self, **kwargs):
-        self.new_data_callback = kwargs.get('new_data_callback', None)
+    def __init__(self, new_data_callback: Optional[Callable] = None):
+        self.new_data_callback = new_data_callback
         self.__comm = None
         self.__measuring = False
         self.__active_measurement = None
@@ -77,10 +78,14 @@ class InstrumentManagerAsync:
                 'An instance of the InstrumentManager can only be connected to one instrument at a time'
             )
             return 0
+
         try:
             __instrument = instrument.device
             await create_future(__instrument.OpenAsync())
             self.__comm = await create_future(CommManager.CommManagerAsync(__instrument))
+
+            firmware_warning(self.__comm.Capabilities)
+
             return 1
         except Exception:
             traceback.print_exc()
@@ -124,7 +129,7 @@ class InstrumentManagerAsync:
                 # release lock on library (required when communicating with instrument)
                 self.__comm.ClientConnection.Semaphore.Release()
 
-    async def set_current_range(self, current_range):
+    async def set_current_range(self, current_range: CURRENT_RANGE):
         if self.__comm is None:
             print('Not connected to an instrument')
             return 0
@@ -132,7 +137,7 @@ class InstrumentManagerAsync:
         await create_future(self.__comm.ClientConnection.Semaphore.WaitAsync())
 
         try:
-            await create_future(self.__comm.SetCurrentRangeAsync(current_range))
+            await create_future(self.__comm.SetCurrentRangeAsync(current_range.to_psobj()))
             self.__comm.ClientConnection.Semaphore.Release()
         except Exception:
             traceback.print_exc()

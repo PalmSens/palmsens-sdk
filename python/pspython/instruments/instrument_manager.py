@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import traceback
 from time import sleep
+from typing import Callable, Optional
 
 import clr
 import PalmSens
@@ -22,32 +23,30 @@ from PalmSens.Windows.Devices import (
 )
 from System import EventHandler  # type: ignore
 
+from pspython.methods._shared import CURRENT_RANGE
 from pspython.methods.techniques import ParameterType
 
 from ..data._shared import ArrayType, _get_values_from_NETArray
 from ..data.measurement import Measurement
-from .common import Instrument, create_future
+from .common import Instrument, create_future, firmware_warning
 
 
-def discover_instruments(**kwargs):
-    discover_ftdi = kwargs.get('ftdi', True)
-    discover_usbcdc = kwargs.get('usbcdc', True)
-    discover_bluetooth = kwargs.get('bluetooth', False)
+def discover_instruments(ftdi: bool = True, usbcdc: bool = True, bluetooth: bool = False):
     available_instruments = []
 
-    if discover_ftdi:
+    if ftdi:
         ftdi_instruments = FTDIDevice.DiscoverDevices('')
         for ftdi_instrument in ftdi_instruments[0]:
             instrument = Instrument(ftdi_instrument.ToString(), 'ftdi', ftdi_instrument)
             available_instruments.append(instrument)
 
-    if discover_usbcdc:
+    if usbcdc:
         usbcdc_instruments = USBCDCDevice.DiscoverDevices('')
         for usbcdc_instrument in usbcdc_instruments[0]:
             instrument = Instrument(usbcdc_instrument.ToString(), 'usbcdc', usbcdc_instrument)
             available_instruments.append(instrument)
 
-    if discover_bluetooth:
+    if bluetooth:
         ble_instruments = BLEDevice.DiscoverDevices('')
         for ble_instrument in ble_instruments[0]:
             instrument = Instrument(ble_instrument.ToString(), 'ble', ble_instrument)
@@ -64,8 +63,8 @@ def discover_instruments(**kwargs):
 
 
 class InstrumentManager:
-    def __init__(self, **kwargs):
-        self.new_data_callback = kwargs.get('new_data_callback', None)
+    def __init__(self, new_data_callback: Optional[Callable] = None):
+        self.new_data_callback = new_data_callback
         self.__comm = None
         self.__measuring = False
         self.__active_measurement = None
@@ -81,6 +80,9 @@ class InstrumentManager:
             __instrument = instrument.device
             __instrument.Open()
             self.__comm = CommManager(__instrument)
+
+            firmware_warning(self.__comm.Capabilities)
+
             return 1
         except Exception:
             traceback.print_exc()
@@ -124,7 +126,7 @@ class InstrumentManager:
                 # release lock on library (required when communicating with instrument)
                 self.__comm.ClientConnection.Semaphore.Release()
 
-    def set_current_range(self, current_range):
+    def set_current_range(self, current_range: CURRENT_RANGE):
         if self.__comm is None:
             print('Not connected to an instrument')
             return 0
@@ -132,7 +134,7 @@ class InstrumentManager:
         self.__comm.ClientConnection.Semaphore.Wait()
 
         try:
-            self.__comm.CurrentRange = current_range
+            self.__comm.CurrentRange = current_range.to_psobj()
             self.__comm.ClientConnection.Semaphore.Release()
         except Exception:
             traceback.print_exc()

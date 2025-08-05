@@ -33,8 +33,14 @@ clr.AddReference(str(ble_dll))
 
 clr.AddReference('System')
 
-from PalmSens.Windows import CoreDependencies  # type: ignore  # noqa: E402
+from PalmSens.Windows import (  # type: ignore  # noqa: E402
+    CoreDependencies,
+    LoadSaveHelperFunctions,
+)
 
 CoreDependencies.Init()
 
 atexit.register(unload)
+
+__version__ = '0.0.1'
+__sdk_version__ = LoadSaveHelperFunctions.GetExecutingAssemblyNameAndVersion()

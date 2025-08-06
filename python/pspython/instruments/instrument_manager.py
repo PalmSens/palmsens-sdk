@@ -255,7 +255,7 @@ class InstrumentManager:
             print(message)
             return None
 
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         begin_measurement_event = asyncio.Event()
         end_measurement_event = asyncio.Event()
 
@@ -385,6 +385,7 @@ class InstrumentManager:
                 await end_measurement_event.wait()
 
             loop.run_until_complete(await_measurement())
+            loop.close()
 
             # unsubscribe to events indicating the start and end of the measurement
             self.__comm.BeginMeasurement -= begin_measurement_handler

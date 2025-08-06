@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from dataclasses import Field, dataclass, field
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Protocol
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, Protocol, runtime_checkable
 
 from PalmSens import Method as PSMethod
 from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
@@ -35,6 +35,7 @@ if TYPE_CHECKING:
     from .method import Method
 
 
+@runtime_checkable
 class ParameterType(Protocol):
     """Protocol to provide generic methods for parameters."""
 

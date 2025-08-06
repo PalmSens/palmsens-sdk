@@ -45,9 +45,10 @@ clr.AddReference(str(ioports_dll))
 clr.AddReference('System')
 
 from PalmSens.Core.Linux import CoreDependencies  # noqa: E402
+from System import Diagnostics  # noqa: E402
 
 CoreDependencies.Init()
 
-version = 'PalmSens.Core.Linux 5.12'
+sdk_version = Diagnostics.FileVersionInfo.GetVersionInfo(str(core_dll)).ProductVersion
 
 atexit.register(unload)

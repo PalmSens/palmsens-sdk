@@ -18,7 +18,6 @@ from PalmSens.Plottables import (
 from System import EventHandler
 from System.Threading.Tasks import Task
 
-from pspython.instruments.instrument_manager import discover_instruments
 from pspython.methods import CURRENT_RANGE
 from pspython.methods.techniques import ParameterType
 
@@ -60,7 +59,7 @@ async def discover_instruments_async(
     if LINUX:
         raise NotImplementedError(
             (
-                'Async instrument discovery is only implemented on Windows'
+                'Async instrument discovery is only implemented on Windows. '
                 'Use `instrument_manager.discover_instruments()` instead.'
             )
         )

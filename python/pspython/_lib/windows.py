@@ -32,13 +32,11 @@ clr.AddReference(str(ble_dll))
 
 clr.AddReference('System')
 
-from PalmSens.Windows import (  # noqa: E402
-    CoreDependencies,
-    LoadSaveHelperFunctions,
-)
+from PalmSens.Windows import CoreDependencies  # noqa: E402
+from System import Diagnostics  # noqa: E402
 
 CoreDependencies.Init()
 
-version = LoadSaveHelperFunctions.GetExecutingAssemblyNameAndVersion()
+sdk_version = Diagnostics.FileVersionInfo.GetVersionInfo(str(core_dll)).ProductVersion
 
 atexit.register(unload)

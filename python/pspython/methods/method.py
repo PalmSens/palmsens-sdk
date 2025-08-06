@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import TYPE_CHECKING, Any
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Union
 
 from PalmSens import Method as PSMethod
 
@@ -34,6 +35,14 @@ class Method:
     def short_name(self) -> str:
         """Short name for the technique."""
         return self.psmethod.ShortName
+
+    @property
+    def filename(self) -> Union[Path, None]:
+        """Filename for the method if applicable."""
+        fn = self.psmethod.MethodFilename
+        if fn:
+            return Path(fn)
+        return None
 
     @property
     def technique_number(self) -> int:

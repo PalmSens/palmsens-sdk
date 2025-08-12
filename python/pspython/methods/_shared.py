@@ -147,7 +147,7 @@ def get_method_estimated_duration(method, *, instrument_manager=None):
         instrument_capabilities = PalmSens4Capabilities()
     else:
         instrument_capabilities = instrument_manager.__comm.Capabilities
-    return method.GetMinimumEstimatedMeasurementDuration(instrument_capabilities)
+    return method.psmethod.GetMinimumEstimatedMeasurementDuration(instrument_capabilities)
 
 
 @dataclass

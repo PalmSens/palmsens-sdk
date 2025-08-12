@@ -144,10 +144,12 @@ class EISData:
         """Current ranges for the measurement."""
         return [self.pseis.GetCurrentRange(val).Description for val in range(self.n_points)]
 
+    @property
     def cdc(self) -> str:
         """Gets the CDC circuit for fitting."""
         return self.pseis.CDC
 
+    @property
     def cdc_values(self) -> list[float]:
         """Return values for circuit description code (CDC)."""
         return list(self.pseis.CDCValues)

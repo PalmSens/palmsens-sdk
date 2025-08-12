@@ -34,7 +34,7 @@ method.frequency = 50
 
 measurement = manager.measure(method)
 
-print(f'ocp: {measurement.curves[0].dotnet_curve.OCPValue}')
+print(f'ocp: {measurement.curves[0].pscurve.OCPValue}')
 
 success = manager.disconnect()
 if success:

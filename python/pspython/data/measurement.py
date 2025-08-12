@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Union
 
 from PalmSens import Measurement as PSMeasurement
 
 from ..methods.method import Method
+from ..models import FitResult
 from .curve import Curve
 from .dataset import DataSet
 from .eisdata import EISData
-from .fit_result import EISFitResult
 from .peak import Peak
 
 
@@ -70,13 +69,16 @@ class Measurement:
         return DeviceInfo.from_psmeasurement(self.psmeasurement)
 
     @property
-    def blank_curve(self) -> Curve:
+    def blank_curve(self) -> Curve | None:
         """Blank curve.
 
         if Blank curve is present (not null) a new curve will be added after each measurement
         containing the result of the measured curve subtracted with the Blank curve.
         """
-        return self.psmeasurement.BlankCurve
+        curve = self.psmeasurement.BlankCurve
+        if curve:
+            return Curve(pscurve=curve)
+        return None
 
     @property
     def contains_blank_subtracted_curves(self) -> bool:
@@ -98,7 +100,7 @@ class Measurement:
         return DataSet(psdataset=self.psmeasurement.DataSet)
 
     @property
-    def eis_data(self) -> Union[EISData, list[EISData]]:
+    def eis_data(self) -> list[EISData]:
         """EIS data in measurement."""
         lst = [EISData(pseis=pseis) for pseis in self.psmeasurement.EISdata]
 
@@ -106,8 +108,8 @@ class Measurement:
 
     def get_curve_by_index(self, index: int) -> Curve:
         """Retrieve curve with given index."""
-        dotnet_curve = self.psmeasurement.get_Item(index)
-        return Curve(dotnet_curve=dotnet_curve)
+        pscurve = self.psmeasurement.get_Item(index)
+        return Curve(pscurve=pscurve)
 
     @property
     def method(self) -> Method:
@@ -146,7 +148,7 @@ class Measurement:
         return peaks
 
     @property
-    def eis_fit(self) -> list[EISFitResult]:
+    def eis_fit(self) -> list[FitResult]:
         """Get all EIS fits from measurement
 
         Returns
@@ -154,18 +156,8 @@ class Measurement:
         eis_fits : list[EISFitResults]
             Return list of EIS fits
         """
-        eisdatas = self.psmeasurement.EISdata
-
-        if not eisdatas:
-            return []
-
-        eis_fits = []
-
-        for eisdata in eisdatas:
-            if not eisdata:
-                continue
-            eis_fits.append(EISFitResult(eisdata.CDC, eisdata.CDCValues))
-
+        eisdatas = self.eis_data
+        eis_fits = [FitResult.from_eisdata(eisdata) for eisdata in eisdatas]
         return eis_fits
 
     @property
@@ -178,4 +170,4 @@ class Measurement:
             List of curves
         """
         curves = self.psmeasurement.GetCurveArray()
-        return [Curve(dotnet_curve=curve) for curve in curves]
+        return [Curve(pscurve=curve) for curve in curves]

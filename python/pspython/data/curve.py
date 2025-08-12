@@ -1,13 +1,18 @@
-from typing import Optional, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional, Union
 
 from .peak import Peak
+
+if TYPE_CHECKING:
+    from matplotlib import axes, fig
 
 
 class Curve:
     """Python wrapper for dotnet Curve class."""
 
-    def __init__(self, *, dotnet_curve):
-        self.dotnet_curve = dotnet_curve
+    def __init__(self, *, pscurve):
+        self.pscurve = pscurve
 
     def __str__(self):
         return f'{self.__class__.__name__}(title={self.title}, n_points={self.n_points})'
@@ -22,7 +27,7 @@ class Curve:
             The smooth level to be used. -1 = none, 0 = no smooth (spike rejection only),
             1 = 5 points, 2 = 9 points, 3 = 15 points, 4 = 25 points
         """
-        return self.dotnet_curve.Smooth(smoothLevel=smooth_level)
+        return self.pscurve.Smooth(smoothLevel=smooth_level)
 
     def savitsky_golay(self, window_size: int):
         """Smooth the .y_array using a Savitsky-Golay filter with the specified window
@@ -35,7 +40,7 @@ class Curve:
         window_size : int
             Size of the window
         """
-        return self.dotnet_curve.SavitskyGolay(windowSize=window_size)
+        return self.pscurve.SavitskyGolay(windowSize=window_size)
 
     def find_peaks(
         self,
@@ -63,42 +68,42 @@ class Curve:
         -------
         peak_list : list[Peak]
         """
-        dotnet_peaks = self.dotnet_curve.FindPeaks(
+        pspeaks = self.pscurve.FindPeaks(
             minPeakWidth=min_peak_width,
             minPeakHeight=min_peak_height,
             peakShoulders=peak_shoulders,
             mergeOverlappingPeaks=merge_overlapping_peaks,
         )
 
-        peaks_list = [Peak(dotnet_peak=peak) for peak in dotnet_peaks]
+        peaks_list = [Peak(pspeak=peak) for peak in pspeaks]
 
         return peaks_list
 
     @property
     def max_x(self) -> float:
         """Maximum X value found in this curve."""
-        return self.dotnet_curve.MaxX
+        return self.pscurve.MaxX
 
     @property
     def max_y(self) -> float:
         """Maximum Y value found in this curve."""
-        return self.dotnet_curve.MaxY
+        return self.pscurve.MaxY
 
     @property
     def min_x(self) -> float:
         """Minimum X value found in this curve."""
-        return self.dotnet_curve.MinX
+        return self.pscurve.MinX
 
     @property
     def min_y(self) -> float:
         """Minimum Y value found in this curve."""
-        return self.dotnet_curve.MinY
+        return self.pscurve.MinY
 
     @property
     def mux_channel(self) -> int:
         """The corresponding MUX channel number with the curve starting at 0.
         Return -1 when no MUX channel used."""
-        return self.dotnet_curve.MuxChannel
+        return self.pscurve.MuxChannel
 
     @property
     def n_points(self) -> int:
@@ -106,93 +111,93 @@ class Curve:
         return len(self)
 
     def __len__(self):
-        return self.dotnet_curve.NPoints
+        return self.pscurve.NPoints
 
     @property
     def ocp_value(self) -> float:
         """OCP value for curve."""
-        return self.dotnet_curve.OCPValue
+        return self.pscurve.OCPValue
 
     @property
     def reference_electrode_name(self) -> Union[None, str]:
         """The name of the reference electrode. Return None if not set."""
-        if ret := self.dotnet_curve.ReferenceElectrodeName:
+        if ret := self.pscurve.ReferenceElectrodeName:
             return str(ret)
         return None
 
     @property
     def reference_electrode_potential(self) -> Union[None, str]:
         """The reference electrode potential offset. Return None if not set."""
-        if ret := self.dotnet_curve.ReferenceElectrodePotential:
+        if ret := self.pscurve.ReferenceElectrodePotential:
             return str(ret)
         return None
 
     @property
     def x_unit(self) -> str:
         """Units for X dimension."""
-        return self.dotnet_curve.XUnit.ToString()
+        return self.pscurve.XUnit.ToString()
 
     @property
     def x_label(self) -> str:
         """Label for X dimension."""
-        return self.dotnet_curve.XUnit.Quantity
+        return self.pscurve.XUnit.Quantity
 
     @property
     def y_unit(self) -> str:
         """Units for Y dimension."""
-        return self.dotnet_curve.YUnit.ToString()
+        return self.pscurve.YUnit.ToString()
 
     @property
     def y_label(self) -> str:
         """Label for Y dimension."""
-        return self.dotnet_curve.YUnit.Quantity
+        return self.pscurve.YUnit.Quantity
 
     @property
     def z_unit(self) -> Union[None, str]:
         """Units for Z dimension. Returns None if not set."""
-        if ret := self.dotnet_curve.ZUnit:
+        if ret := self.pscurve.ZUnit:
             return ret.ToString()
         return None
 
     @property
     def z_label(self) -> Union[None, str]:
         """Units for Z dimension. Returns None if not set."""
-        if ret := self.dotnet_curve.ZUnit:
+        if ret := self.pscurve.ZUnit:
             return ret.Quantity
         return None
 
     @property
     def title(self) -> str:
         """Title for the curve."""
-        return self.dotnet_curve.Title
+        return self.pscurve.Title
 
     @title.setter
     def title(self, title: str):
         """Set the title for the curve."""
-        self.dotnet_curve.Title = title
+        self.pscurve.Title = title
 
     @property
     def peaks(self) -> list[Peak]:
         """Return peaks stored on object."""
         try:
-            peaks = [Peak(dotnet_peak=peak) for peak in self.dotnet_curve.Peaks]
+            peaks = [Peak(pspeak=peak) for peak in self.pscurve.Peaks]
         except TypeError:
             peaks = []
         return peaks
 
     def clear_peaks(self):
         """Clear peaks stored on object."""
-        self.dotnet_curve.ClearPeaks()
+        self.pscurve.ClearPeaks()
 
     @property
     def x_array(self) -> list[float]:
         """Y data for the curve"""
-        return list(self.dotnet_curve.GetXValues())
+        return list(self.pscurve.GetXValues())
 
     @property
     def y_array(self) -> list[float]:
         """Y data for the curve."""
-        return list(self.dotnet_curve.GetYValues())
+        return list(self.pscurve.GetYValues())
 
     def linear_slope(
         self, start: Optional[int] = None, stop: Optional[int] = None
@@ -216,25 +221,46 @@ class Curve:
             Coefficient of determination (R2)
         """
         if start and stop:
-            return self.dotnet_curve.LLS(start, stop)
+            return self.pscurve.LLS(start, stop)
         else:
-            return self.dotnet_curve.LLS()
+            return self.pscurve.LLS()
 
-    # FindLevels
-    # ClearLevels
-    # Levels
+    def plot(
+        self,
+        ax: Optional[axes.Axes] = None,
+        legend: bool = True,
+        **plot_kwargs,
+    ) -> fig.Figure:
+        """Generate simple plot for this curve using matplotlib.
 
-    def plot(self):
-        """Generate simple plot for this curve using matplotlib."""
+        Parameters
+        ----------
+        ax : Optional[axes.Axes]
+            Add plot to this ax if specified.
+        legend : bool
+            If True, add legend.
+        plot_kwargs
+            These keyword arguments are passed to `ax.plot`.
+
+        Returns
+        -------
+        fig : fig.Figure
+            Matplotlib figure. Use `fig.show()` to render plot.
+        """
         import matplotlib.pyplot as plt
 
-        fig, ax = plt.subplots()
-        ax.plot(self.x_array, self.y_array, label=self.title)
-        ax.set_xlabel(f'{self.x_label} / {self.x_label}')
-        ax.set_xlabel(f'{self.y_label} / {self.y_label}')
+        if not ax:
+            fig, ax = plt.subplots()
+
+        ax.plot(self.x_array, self.y_array, label=self.title, **plot_kwargs)
+        ax.set_xlabel(f'{self.x_label} ({self.x_unit})')
+        ax.set_ylabel(f'{self.y_label} ({self.y_unit})')
 
         if peaks := self.peaks:
             x, y = list(zip(*((peak.x, peak.y) for peak in peaks)))
             ax.scatter(x, y, label='Peaks')
 
-        plt.legend()
+        if legend:
+            ax.legend()
+
+        return ax.figure

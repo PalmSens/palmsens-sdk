@@ -18,11 +18,9 @@ from PalmSens.Plottables import (
 from System import EventHandler
 from System.Threading.Tasks import Task
 
-from pspython.methods import CURRENT_RANGE
-from pspython.methods.techniques import ParameterType
-
 from ..data._shared import ArrayType, _get_values_from_NETArray
 from ..data.measurement import Measurement
+from ..methods import CURRENT_RANGE, ParameterType
 from .common import Instrument, create_future, firmware_warning
 
 WINDOWS = sys.platform == 'win32'

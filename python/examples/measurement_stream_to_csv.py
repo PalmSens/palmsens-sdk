@@ -1,7 +1,7 @@
 import csv
 
-from pspython import pspyinstruments
-from pspython.methods import ChronoAmperometryParameters
+from pypalmsens import instruments
+from pypalmsens.methods import ChronoAmperometryParameters
 
 
 def stream_to_csv_callback(new_data):
@@ -13,9 +13,9 @@ def stream_to_csv_callback(new_data):
 csv_file = open('test.csv', 'w', newline='')
 csv_writer = csv.writer(csv_file, delimiter=' ')
 
-manager = pspyinstruments.InstrumentManager(new_data_callback=stream_to_csv_callback)
+manager = instruments.InstrumentManager(new_data_callback=stream_to_csv_callback)
 
-available_instruments = pspyinstruments.discover_instruments()
+available_instruments = instruments.discover_instruments()
 print('connecting to ' + available_instruments[0].name)
 success = manager.connect(available_instruments[0])
 

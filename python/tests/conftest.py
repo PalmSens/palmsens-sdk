@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from pspython.pspyfiles import load_session_file
+from pypalmsens.io import load_session_file
 
 DATA_DIR = Path(__file__).parent / 'test_data'
 

@@ -7,7 +7,7 @@ from pathlib import Path
 import clr
 from pythonnet import unload
 
-PSSDK_DIR = files('pspython._pssdk.win')
+PSSDK_DIR = files('pypalmsens._pssdk.win')
 
 core_dll = PSSDK_DIR / 'PalmSens.Core.dll'
 ble_dll = PSSDK_DIR / 'PalmSens.Core.Windows.BLE.dll'

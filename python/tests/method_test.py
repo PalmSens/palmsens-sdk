@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import pytest
 
-from pspython.methods import techniques
+from pypalmsens.methods import techniques
 
 
 @pytest.fixture

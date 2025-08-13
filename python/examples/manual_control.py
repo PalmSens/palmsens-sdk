@@ -1,9 +1,9 @@
-from pspython import pspyinstruments
-from pspython.methods import CURRENT_RANGE
+from pypalmsens import instruments
+from pypalmsens.methods import CURRENT_RANGE
 
-manager = pspyinstruments.InstrumentManager()
+manager = instruments.InstrumentManager()
 
-available_instruments = pspyinstruments.discover_instruments()
+available_instruments = instruments.discover_instruments()
 print('connecting to ' + available_instruments[0].name)
 success = manager.connect(available_instruments[0])
 

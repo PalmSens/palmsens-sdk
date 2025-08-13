@@ -2,7 +2,7 @@
 
 The following chapter details how to connect to a device, read data from the device, manually controlling the potential, run measurements on the device and finally how to properly close a connection to a device.
 
-The `pspyinstruments.py` script in the `pspython` module contains all the relevant functions for discovering and controlling instruments. 
+The `pspyinstruments.py` script in the `pypalmsens` module contains all the relevant functions for discovering and controlling instruments.
 The `InstrumentManager` and `InstrumentManagerAsync` class are wrappers around our .NET libraries which make it possible to connect to and control PalmSens instruments from Python.
 
 == Connecting to a device
@@ -11,19 +11,19 @@ The following example shows how to get a list of all available devices, and how 
 
 [source,python]
 ----
-available_instruments = pspyinstruments.discover_instruments()
+available_instruments = instruments.discover_instruments()
 
-manager = pspyinstruments.InstrumentManager()
+manager = instruments.InstrumentManager()
 
 manager.connect(available_instruments[0])
 ----
 
-Currently the `pspython` module supports discovering instruments connected via FTDI, serial (usbcdc/com), and Bluetooth (classic/low energy). By default scanning with Bluetooth is disabled.
+Currently the `pypalmsens` module supports discovering instruments connected via FTDI, serial (usbcdc/com), and Bluetooth (classic/low energy). By default scanning with Bluetooth is disabled.
 
 == Manually controlling the device
 
-Depending on your device’s capabilities it can be used to set a potential/current and to switch current ranges. 
-The potential can be set manually in potentiostatic mode and the current can be set in galvanostatic mode. 
+Depending on your device’s capabilities it can be used to set a potential/current and to switch current ranges.
+The potential can be set manually in potentiostatic mode and the current can be set in galvanostatic mode.
 The following example show how to manually set a potential, for more examples refer to the `ManualControlExample` and `ManualControlExampleAsync` scripts included with the SDK.
 
 [source,python]
@@ -33,7 +33,7 @@ manager.set_potential(1)
 
 == Measuring
 
-Starting a measurement is done by sending method parameters to a PalmSens/Nexus/EmStat/Sensit device. 
+Starting a measurement is done by sending method parameters to a PalmSens/Nexus/EmStat/Sensit device.
 The `InstrumentManager` measure function returns a `Measurement` and also supports keeping a reference to the underlying .NET object.
 For more information please refer to xref:core_dll.adoc[].
 
@@ -41,7 +41,7 @@ The following example runs a chronoamperometry measurement on an instrument.
 
 [source,python]
 ----
-method = pspymethods.chronoamperometry(interval_time=0.01, e=1.0,
+method = methods.chronoamperometry(interval_time=0.01, e=1.0,
 run_time=10.0)
 
 measurement = manager.measure(method)
@@ -55,7 +55,7 @@ def new_data_callback(new_data):
     for point in new_data:
         print(point)
 
-manager = pspyinstruments.InstrumentManager(
+manager = instruments.InstrumentManager(
     new_data_callback=new_data_callback
 )
 ----
@@ -67,7 +67,7 @@ or by setting it on the `InstrumentManager`’s new_data_callback field.
 manager.new_data_callback = stream_to_csv_callback(csv_writer)
 ----
 
-The callback is passed a collection of points that have been added since the last time it was called. 
+The callback is passed a collection of points that have been added since the last time it was called.
 Points contain a dictionary with the following information:
 
 === Non-impedimetric techniques
@@ -108,7 +108,7 @@ To eliminate noise induced by other electrical appliances it is highly recommend
 
 The MethodSCRIPT™ scripting language is designed to integrate our OEM potentiostat (modules) effortlessly in your hardware setup or product.
 
-MethodSCRIPT™ allows developers to program a human-readable script directly into the potentiostat module by means of a serial (TTL) connection. 
+MethodSCRIPT™ allows developers to program a human-readable script directly into the potentiostat module by means of a serial (TTL) connection.
 The simple script language allows for running all supported electrochemical techniques and makes it easy to combine different measurements and other tasks.
 
 More script features include:
@@ -124,7 +124,7 @@ See the https://www.palmsens.com/methodscript[MethodSCRIPT™ documentation] for
 
 === Sandbox Measurements
 
-PSTrace includes an option to make use MethodSCRIPT™ Sandbox to write and run scripts. 
+PSTrace includes an option to make use MethodSCRIPT™ Sandbox to write and run scripts.
 This is a great place to test MethodSCRIPT™ measurements to see what the result would be.
 That script can then be used in the MethodScriptSandbox technique in the SDK as demonstrated below.
 

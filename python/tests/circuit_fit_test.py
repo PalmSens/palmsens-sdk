@@ -4,7 +4,7 @@ import pytest
 from numpy.testing import assert_allclose
 from PalmSens import Fitting as PSFitting
 
-from pspython.models import CircuitModel, Parameter, Parameters
+from pypalmsens.models import CircuitModel, Parameter, Parameters
 
 
 def test_parameter_slots():

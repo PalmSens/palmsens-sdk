@@ -1,7 +1,8 @@
 import asyncio
 from dataclasses import replace
-from pspython import pspyfiles, pspyinstruments
-from pspython.methods import CURRENT_RANGE, POTENTIAL_RANGE, ChronopotentiometryParameters
+from pypalmsens import instruments
+from pypalmsens.io import save_session_file
+from pypalmsens.methods import CURRENT_RANGE, POTENTIAL_RANGE, ChronopotentiometryParameters
 
 
 def new_data_callback(channel):
@@ -40,12 +41,12 @@ async def main():
         {'current': 2, 'limit_potential_min': -2, 'limit_potential_max': 2},
     ]
 
-    available_instruments = await pspyinstruments.discover_instruments_async()
+    available_instruments = await instruments.discover_instruments_async()
     managers = {}
 
     # create an instance of the instrumentmanager per channel
     async def connect(instrument, index):
-        managers[index] = pspyinstruments.InstrumentManagerAsync(
+        managers[index] = instruments.InstrumentManagerAsync(
             new_data_callback=new_data_callback(index)
         )
         success = await managers[index].connect(instrument)
@@ -64,7 +65,7 @@ async def main():
         channels = await asyncio.gather(*tasks)  # use gather to await results
 
         for measurements in channels:
-            pspyfiles.save_session_file('example.pssession', measurements)
+            save_session_file('example.pssession', measurements)
 
         for channel, manager in managers.items():
             success = manager.disconnect()

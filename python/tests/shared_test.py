@@ -1,4 +1,6 @@
-from pspython.methods._shared import (
+from __future__ import annotations
+
+from pypalmsens.methods._shared import (
     CURRENT_RANGE,
     POTENTIAL_RANGE,
     convert_bools_to_int,

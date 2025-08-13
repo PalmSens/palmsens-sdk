@@ -4,13 +4,13 @@ from dataclasses import asdict
 
 from pytest import approx
 
-from pspython.methods import techniques
-from pspython.pspyfiles import (
+from pypalmsens.io import (
     load_method_file,
     load_session_file,
     save_method_file,
     save_session_file,
 )
+from pypalmsens.methods import techniques
 
 
 def test_save_load_session(tmpdir, data_dpv):

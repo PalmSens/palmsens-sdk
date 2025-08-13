@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
 [project]
-name = "palmsens-python"
+name = "PyPalmSens"
 version = "0.0.1"
 description = "Python SDK for PalmSens instruments"
 readme = "README.md"
@@ -63,7 +63,7 @@ package-dir = {"" = "src"}
 
 [tool.coverage.run]
 branch = true
-source = ["pspython"]
+source = ["pypalmsens"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -92,7 +92,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party=["pspython"]
+known-first-party=["pypalmsens"]
 known-third-party = []
 required-imports = ["from __future__ import annotations"]
 

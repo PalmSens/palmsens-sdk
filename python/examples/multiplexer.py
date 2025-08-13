@@ -1,5 +1,5 @@
-from pspython import pspyinstruments
-from pspython.methods import ChronoAmperometryParameters, SquareWaveParameters
+from pypalmsens import instruments
+from pypalmsens.methods import ChronoAmperometryParameters, SquareWaveParameters
 
 
 def new_data_callback(new_data):
@@ -8,8 +8,8 @@ def new_data_callback(new_data):
             print(f'{type} = {value}')
 
 
-manager = pspyinstruments.InstrumentManager(new_data_callback=new_data_callback)
-available_instruments = pspyinstruments.discover_instruments()
+manager = instruments.InstrumentManager(new_data_callback=new_data_callback)
+available_instruments = instruments.discover_instruments()
 print('connecting to ' + available_instruments[0].name)
 success = manager.connect(available_instruments[0])
 

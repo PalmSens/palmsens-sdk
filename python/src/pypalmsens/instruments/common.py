@@ -29,7 +29,7 @@ def on_completion(future, loop, task):
 
 def firmware_warning(capabilities, /) -> None:
     """Raise warning if firmware is not supported."""
-    from pspython import __sdk_version__
+    from pypalmsens import __sdk_version__
 
     device_type = capabilities.DeviceType
     firmware_version = capabilities.FirmwareVersion

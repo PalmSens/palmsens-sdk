@@ -32,6 +32,6 @@ image:vscode_select_venv.png[Select virtual environment in VSCode]
 +
 image:vscode_select_python.png[Select Python interpreter in VSCode]
 
-. Select the `requirements.txt` to install the python dependencies for the pspython SDK module and examples.
+. Select the `requirements.txt` to install the python dependencies for the pypalmsens SDK module and examples.
 +
 image:vscode_select_dependencies.png[Select dependencies in VSCode]

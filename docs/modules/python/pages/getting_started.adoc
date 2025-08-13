@@ -29,7 +29,7 @@ The PalmSens SDK is backward compatible with following filetypes:
 |`.mux`
 |===
 
-The `pspyfiles.py` script in the `pspython` module contains the functions needed to load and save methods and session files.
+The `pspyfiles.py` script in the `pypalmsens` module contains the functions needed to load and save methods and session files.
 The `pspydata.py` script contain the python classes that store the loaded data.
 The pspymethods scripts contains helper functions for creating and working with methods.
 
@@ -63,7 +63,7 @@ This example creates a method for a square-wave voltammetry measurement versus t
 
 [source,python]
 ----
-method = pspymethods.square_wave_voltammetry(
+method = methods.square_wave_voltammetry(
     conditioning_potential = 2.0,  # V
     conditioning_time = 2,  # seconds
     versus_ocp_mode = 3,  # versus begin and end potential
@@ -91,7 +91,7 @@ method.
 
 [source,python]
 ----
-import pspython
+import pypalmsens
 
 # import the alternating current voltammetry method object
 from PalmSens.Techniques import ACVoltammetry

@@ -23,7 +23,7 @@ capabilities.
 ** `PalmSens.Units`: Contains a collection of units used by these
 libraries.nsrt
 
-. *pspython*
+. *pypalmsens*
 +
 A python wrapper for the .NET libraries above.
 

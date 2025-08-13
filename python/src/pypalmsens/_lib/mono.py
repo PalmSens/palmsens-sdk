@@ -7,7 +7,7 @@ from pathlib import Path
 
 from pythonnet import load, unload
 
-PSSDK_DIR = files('pspython._pssdk.mono')
+PSSDK_DIR = files('pypalmsens._pssdk.mono')
 
 # runtime must be imported before clr is loaded
 load('coreclr', runtime_config=str(PSSDK_DIR / 'runtimeconfig.json'))
@@ -17,7 +17,7 @@ import clr  # noqa: E402
 core_dll = PSSDK_DIR / 'PalmSens.Core.dll'
 core_linux_dll = PSSDK_DIR / 'PalmSens.Core.Linux.dll'
 
-RUNTIME_DIR = files('pspython._runtimes')
+RUNTIME_DIR = files('pypalmsens._runtimes')
 
 system = platform.system()  # Windows, Linux, Darwin
 machine = platform.machine()  # AMD64, x86_64, arm64

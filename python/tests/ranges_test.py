@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import pytest
 from PalmSens import AutoRanging, AutoRangingPotential
 
-from pspython.methods import techniques
-from pspython.methods._shared import CURRENT_RANGE, POTENTIAL_RANGE
+from pypalmsens.methods import techniques
+from pypalmsens.methods._shared import CURRENT_RANGE, POTENTIAL_RANGE
 
 
 def test_current_range():

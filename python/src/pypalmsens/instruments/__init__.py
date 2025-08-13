@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from .instruments.common import Instrument, create_future, on_completion
-from .instruments.instrument_manager import (
+from .common import Instrument, create_future, on_completion
+from .instrument_manager import (
     InstrumentManager,
     discover_instruments,
 )
-from .instruments.instrument_manager_async import (
+from .instrument_manager_async import (
     InstrumentManagerAsync,
     discover_instruments_async,
 )

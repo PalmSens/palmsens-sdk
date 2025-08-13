@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import pytest
 from PalmSens.Comm import enumDeviceType
 
-from pspython.instruments.common import firmware_warning
+from pypalmsens.instruments.common import firmware_warning
 
 
 @dataclass

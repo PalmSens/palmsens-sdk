@@ -1,13 +1,13 @@
 import asyncio
 
-from pspython import pspyinstruments
-from pspython.methods import CURRENT_RANGE
+from pypalmsens import instruments
+from pypalmsens.methods import CURRENT_RANGE
 
 
 async def main():
-    manager = pspyinstruments.InstrumentManagerAsync()
+    manager = instruments.InstrumentManagerAsync()
 
-    available_instruments = await pspyinstruments.discover_instruments_async()
+    available_instruments = await instruments.discover_instruments_async()
     print(f'connecting to {available_instruments[0].name}')
     success = await manager.connect(available_instruments[0])
 

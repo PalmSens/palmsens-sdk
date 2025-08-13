@@ -1,11 +1,33 @@
-# PalmSens SDK: Python
+# PyPalmSens: Python SDK for PalmSens devices
 
-The Python SDK from PalmSens wraps around the .NET SDK. All instruments are supported and examples are included.
+The PyPalmSens SDK wraps around the .NET SDKs. All instruments are supported and examples are included.
 
 To install:
 
 ```
-pip install .
+pip install pypalmsens
+```
+
+PyPalmSens controls your instruments, and automates running electrochemical experiments:
+
+```python
+from pypalmsens import instruments
+from pypalmsens.methods import ChronoAmperometryParameters
+
+available_instruments = instruments.discover_instruments()
+
+manager = instruments.InstrumentManager()
+manager.connect(available_instruments[0])
+
+method = ChronoAmperometryParameters(
+    interval_time=0.01,
+    potential=1.0,
+    run_time=10.0,
+)
+
+measurement = manager.measure(method)
+
+manager.disconnect()
 ```
 
 For more information, see the [documentation](http://palmsens.github.io/palmsens_sdk/python).
@@ -14,9 +36,9 @@ For more information, see the [documentation](http://palmsens.github.io/palmsens
 
 ### Setup
 
-The PalmSens Python SDK targets Python 3.9 or newer.
+The PalmSens Python SDK targets Python 3.10 or newer.
 
-Clone the repository into the `gemdat` directory:
+Clone the repository into the `palmsens-sdk` directory:
 
 ```console
 git clone https://github.com/palmsens/palmsens-sdk

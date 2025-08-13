@@ -6,6 +6,7 @@ from ._shared import (
     get_method_estimated_duration,
     set_extra_value_mask,
 )
+from .method import Method
 from .techniques import (
     ChronoAmperometryParameters,
     ChronopotentiometryParameters,
@@ -17,6 +18,7 @@ from .techniques import (
     MethodScriptParameters,
     MultiStepAmperometryParameters,
     OpenCircuitPotentiometryParameters,
+    ParameterType,
     SquareWaveParameters,
 )
 
@@ -29,9 +31,11 @@ __all__ = [
     'ElectrochemicalImpedanceSpectroscopyParameters',
     'GalvanostaticImpedanceSpectroscopyParameters',
     'LinearSweepParameters',
+    'Method',
     'MethodScriptParameters',
     'MultiStepAmperometryParameters',
     'OpenCircuitPotentiometryParameters',
+    'ParameterType',
     'POTENTIAL_RANGE',
     'SquareWaveParameters',
     'get_method_estimated_duration',

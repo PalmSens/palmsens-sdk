@@ -2,23 +2,27 @@ from pathlib import Path
 
 import pandas as pd
 
-from pspython import pspyfiles, pspymethods
+from pypalmsens import methods
+from pypalmsens.io import (
+    load_method_file,
+    save_method_file,
+    load_session_file,
+    save_session_file,
+)
 
 script_dir = Path(__file__).parent
 
 # load a method file
-method = pspyfiles.load_method_file(script_dir / 'PSDummyCell_LSV.psmethod')
+method = load_method_file(script_dir / 'PSDummyCell_LSV.psmethod')
 print(
-    f'loaded method, estimated duration: {pspymethods.get_method_estimated_duration(method)} seconds'
+    f'loaded method, estimated duration: {methods.get_method_estimated_duration(method)} seconds'
 )
 
 # save the method file
-pspyfiles.save_method_file(script_dir / 'PSDummyCell_LSV_copy.psmethod', method)
+save_method_file(script_dir / 'PSDummyCell_LSV_copy.psmethod', method)
 
 # load a session file
-measurements = pspyfiles.load_session_file(
-    script_dir / 'Demo CV DPV EIS IS-C electrode.pssession'
-)
+measurements = load_session_file(script_dir / 'Demo CV DPV EIS IS-C electrode.pssession')
 
 for measurement in measurements:
     print(f'loaded measurement: {measurement.title}, {measurement.timestamp}')
@@ -30,7 +34,7 @@ for measurement in measurements:
     print(f'Has EIS fit results: {"yes" if len(measurement.eis_fit) > 0 else "no"}')
 
 # save the session file
-pspyfiles.save_session_file(
+save_session_file(
     script_dir / 'Demo CV DPV EIS IS-C electrode_copy.pssession', [measurements[0]]
 )
 

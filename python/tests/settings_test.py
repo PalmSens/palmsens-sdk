@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from dataclasses import asdict
 
 from PalmSens import Techniques
 
-from pspython.methods import settings
-from pspython.methods._shared import (
+from pypalmsens.methods import settings
+from pypalmsens.methods._shared import (
     CURRENT_RANGE,
     POTENTIAL_RANGE,
     get_extra_value_mask,

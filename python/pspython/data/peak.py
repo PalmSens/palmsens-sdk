@@ -3,15 +3,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from PalmSens.Analysis import Peak as PSPeak
+
     from .curve import Curve
 
 
 class Peak:
     """Python wrapper for dotnet Peak class."""
 
-    def __init__(self, *, pspeak):
+    def __init__(self, *, pspeak: PSPeak):
         self.pspeak = pspeak
-        self._curve = None
+        self._curve: Curve | None = None
 
     def __str__(self):
         x_unit = self.x_unit
@@ -47,7 +49,7 @@ class Peak:
 
     @property
     def y_unit(self) -> str:
-        """Unitss for Y axis"""
+        """Units for Y axis"""
         return self.curve.y_unit
 
     @property

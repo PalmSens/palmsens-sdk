@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from math import isnan
 
 import pytest
@@ -17,20 +19,17 @@ def test_curve_smooth(curve_noise):
     x = curve_noise.x_array
     y = curve_noise.y_array
 
-    success = curve_noise.smooth(smooth_level=1)
-    assert success
+    curve_noise.smooth(smooth_level=1)
 
     assert x == curve_noise.x_array
     assert y != curve_noise.y_array
 
 
-@pytest.mark.xfail(reason='Savitsky-Golay returns None, expected True.')
 def test_savitsky_golay(curve_noise):
     x = curve_noise.x_array
     y = curve_noise.y_array
 
-    success = curve_noise.savitsky_golay(window_size=2)
-    assert success
+    curve_noise.savitsky_golay(window_size=2)
 
     assert x == curve_noise.x_array
     assert y != curve_noise.y_array

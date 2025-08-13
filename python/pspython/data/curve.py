@@ -14,10 +14,10 @@ class Curve:
     def __init__(self, *, pscurve):
         self.pscurve = pscurve
 
-    def __str__(self):
+    def __repr__(self):
         return f'{self.__class__.__name__}(title={self.title}, n_points={self.n_points})'
 
-    def smooth(self, smooth_level: int):
+    def smooth(self, smooth_level: int = 0):
         """Smooth the .y_array using a Savitsky-Golay filter with the specified smooth
         level.
 
@@ -27,9 +27,11 @@ class Curve:
             The smooth level to be used. -1 = none, 0 = no smooth (spike rejection only),
             1 = 5 points, 2 = 9 points, 3 = 15 points, 4 = 25 points
         """
-        return self.pscurve.Smooth(smoothLevel=smooth_level)
+        success = self.pscurve.Smooth(smoothLevel=smooth_level)
+        if not success:
+            raise ValueError('Something went wrong.')
 
-    def savitsky_golay(self, window_size: int):
+    def savitsky_golay(self, window_size: int = 3):
         """Smooth the .y_array using a Savitsky-Golay filter with the specified window
         size.
 
@@ -40,12 +42,12 @@ class Curve:
         window_size : int
             Size of the window
         """
-        return self.pscurve.SavitskyGolay(windowSize=window_size)
+        self.pscurve.SavitskyGolay(windowSize=window_size)
 
     def find_peaks(
         self,
-        min_peak_width: float,
-        min_peak_height: float,
+        min_peak_width: float = 0.1,
+        min_peak_height: float = 0.0,
         peak_shoulders: bool = False,
         merge_overlapping_peaks: bool = True,
     ) -> list[Peak]:

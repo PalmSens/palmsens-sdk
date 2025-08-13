@@ -35,6 +35,7 @@ class DeviceInfo:
 
     @classmethod
     def from_psmeasurement(cls, obj: PSMeasurement) -> DeviceInfo:
+        """Construct device dataclass from SDK measurement object."""
         return cls(
             type=obj.DeviceUsed.ToString(),
             firmware=obj.DeviceUsedFW,
@@ -51,7 +52,7 @@ class Measurement:
         self.psmeasurement = psmeasurement
 
     def __repr__(self):
-        return f'{self.__class__.__name__}(title={self.title}, timestamp={self.timestamp})'
+        return f'{self.__class__.__name__}(title={self.title}, timestamp={self.timestamp}, device={self.device.type})'
 
     @property
     def title(self) -> str:
@@ -106,17 +107,17 @@ class Measurement:
 
         return lst
 
-    def get_curve_by_index(self, index: int) -> Curve:
-        """Retrieve curve with given index."""
-        pscurve = self.psmeasurement.get_Item(index)
-        return Curve(pscurve=pscurve)
-
     @property
     def method(self) -> Method:
         """Method related with this Measurement.
 
         The information from the Method is used when saving Curves."""
         return Method(psmethod=self.psmeasurement.Method)
+
+    @property
+    def channel(self) -> float:
+        """Get the channel that the measurement was measured on."""
+        return self.psmeasurement.Channel
 
     @property
     def ocp_value(self) -> float:

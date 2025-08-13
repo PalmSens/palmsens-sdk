@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .instruments.common import Instrument, create_future, on_completion
 from .instruments.instrument_manager import (
     InstrumentManager,

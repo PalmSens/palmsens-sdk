@@ -37,10 +37,7 @@ if WINDOWS:
     )
 
 if LINUX:
-    from PalmSens.Core.Linux.Comm.Devices import (
-        FTDIDevice, 
-        SerialPortDevice
-    )
+    from PalmSens.Core.Linux.Comm.Devices import FTDIDevice, SerialPortDevice
 
 
 async def discover_instruments_async(
@@ -72,14 +69,18 @@ async def discover_instruments_async(
         if serial:
             serial_instruments = await create_future(SerialPortDevice.DiscoverDevicesAsync())
             for serial_instrument in serial_instruments:
-                instrument = Instrument(serial_instrument.ToString(), 'serial', serial_instrument)
+                instrument = Instrument(
+                    serial_instrument.ToString(), 'serial', serial_instrument
+                )
                 available_instruments.append(instrument)
 
     if WINDOWS:
         if usbcdc:
             usbcdc_instruments = await create_future(USBCDCDevice.DiscoverDevicesAsync())
             for usbcdc_instrument in usbcdc_instruments:
-                instrument = Instrument(usbcdc_instrument.ToString(), 'usbcdc', usbcdc_instrument)
+                instrument = Instrument(
+                    usbcdc_instrument.ToString(), 'usbcdc', usbcdc_instrument
+                )
                 available_instruments.append(instrument)
 
         if bluetooth:

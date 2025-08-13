@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.2"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
@@ -13,8 +13,14 @@ authors = [
 	{name = "Palmsens BV", email = "info@palmsens.com"},
 ]
 keywords = [
+    "electrochemistry",
+    "data-analysis",
+    "voltammetry",
+    "potentiometry",
+    "impedance-specroscopy",
 ]
-license = {text = "LicenseRef-BSD-3-Clause-PalmSens"}
+license= "LicenseRef-Modified-BSD-3-Clause-PalmSens"
+license-files = ["LICENSE"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
@@ -52,6 +58,9 @@ publishing = [
     "build",
 ]
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+
 [tool.coverage.run]
 branch = true
 source = ["pspython"]
@@ -66,8 +75,9 @@ log_cli = false
 log_cli_level = "INFO"
 
 [tool.ruff]
+src=['src']
 line-length = 96
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 # Enable Pyflakes `E` and `F` codes by default.

@@ -36,6 +36,12 @@ if WINDOWS:
         USBCDCDevice,
     )
 
+if LINUX:
+    from PalmSens.Core.Linux.Comm.Devices import (
+        FTDIDevice, 
+        SerialPortDevice
+    )
+
 
 async def discover_instruments_async(
     ftdi: bool = False,
@@ -56,37 +62,37 @@ async def discover_instruments_async(
     """
     available_instruments = []
 
-    if LINUX:
-        raise NotImplementedError(
-            (
-                'Async instrument discovery is only implemented on Windows. '
-                'Use `instrument_manager.discover_instruments()` instead.'
-            )
-        )
-
     if ftdi:
         ftdi_instruments = await create_future(FTDIDevice.DiscoverDevicesAsync())
         for ftdi_instrument in ftdi_instruments:
             instrument = Instrument(ftdi_instrument.ToString(), 'ftdi', ftdi_instrument)
             available_instruments.append(instrument)
 
-    if usbcdc:
-        usbcdc_instruments = await create_future(USBCDCDevice.DiscoverDevicesAsync())
-        for usbcdc_instrument in usbcdc_instruments:
-            instrument = Instrument(usbcdc_instrument.ToString(), 'usbcdc', usbcdc_instrument)
-            available_instruments.append(instrument)
+    if LINUX:
+        if serial:
+            serial_instruments = await create_future(SerialPortDevice.DiscoverDevicesAsync())
+            for serial_instrument in serial_instruments:
+                instrument = Instrument(serial_instrument.ToString(), 'serial', serial_instrument)
+                available_instruments.append(instrument)
 
-    if bluetooth:
-        ble_instruments = await create_future(BLEDevice.DiscoverDevicesAsync())
-        for ble_instrument in ble_instruments:
-            instrument = Instrument(ble_instrument.ToString(), 'ble', ble_instrument)
-            available_instruments.append(instrument)
-        bluetooth_instruments = await create_future(BluetoothDevice.DiscoverDevicesAsync())
-        for bluetooth_instrument in bluetooth_instruments[0]:
-            instrument = Instrument(
-                bluetooth_instrument.ToString(), 'bluetooth', bluetooth_instrument
-            )
-            available_instruments.append(instrument)
+    if WINDOWS:
+        if usbcdc:
+            usbcdc_instruments = await create_future(USBCDCDevice.DiscoverDevicesAsync())
+            for usbcdc_instrument in usbcdc_instruments:
+                instrument = Instrument(usbcdc_instrument.ToString(), 'usbcdc', usbcdc_instrument)
+                available_instruments.append(instrument)
+
+        if bluetooth:
+            ble_instruments = await create_future(BLEDevice.DiscoverDevicesAsync())
+            for ble_instrument in ble_instruments:
+                instrument = Instrument(ble_instrument.ToString(), 'ble', ble_instrument)
+                available_instruments.append(instrument)
+            bluetooth_instruments = await create_future(BluetoothDevice.DiscoverDevicesAsync())
+            for bluetooth_instrument in bluetooth_instruments[0]:
+                instrument = Instrument(
+                    bluetooth_instrument.ToString(), 'bluetooth', bluetooth_instrument
+                )
+                available_instruments.append(instrument)
 
     available_instruments.sort(key=lambda instrument: instrument.name)
     return available_instruments

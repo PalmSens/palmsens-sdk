@@ -43,6 +43,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9'
+
       - uses: actions/cache@v3
         id: cache-virtualenv
         with:

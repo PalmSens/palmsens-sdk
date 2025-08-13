@@ -3,6 +3,7 @@ from __future__ import annotations
 import atexit
 import platform
 from importlib.resources import files
+from pathlib import Path
 
 from pythonnet import load, unload
 
@@ -35,12 +36,17 @@ plat = PLATFORMS[system, machine]
 
 ioports_dll = RUNTIME_DIR / plat / 'native' / 'System.IO.Ports.dll'
 
+assert isinstance(core_dll, Path)
+assert isinstance(core_linux_dll, Path)
+assert isinstance(ioports_dll, Path)
+
 # This dll contains the classes in which the data is stored
-clr.AddReference(str(core_dll))
-clr.AddReference(str(core_linux_dll))
+clr.AddReference(str(core_dll.with_suffix('')))
 
 # This dll is used to load your session file
-clr.AddReference(str(ioports_dll))
+clr.AddReference(str(core_linux_dll.with_suffix('')))
+
+clr.AddReference(str(ioports_dll.with_suffix('')))
 
 clr.AddReference('System')
 

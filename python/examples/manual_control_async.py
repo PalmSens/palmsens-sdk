@@ -7,7 +7,7 @@ from pypalmsens.methods import CURRENT_RANGE
 async def main():
     manager = instruments.InstrumentManagerAsync()
 
-    available_instruments = await instruments.discover_instruments_async()
+    available_instruments = await instruments.discover_async()
     print(f'connecting to {available_instruments[0].name}')
     success = await manager.connect(available_instruments[0])
 

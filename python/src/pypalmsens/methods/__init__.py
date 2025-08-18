@@ -3,7 +3,6 @@ from __future__ import annotations
 from ._shared import (
     CURRENT_RANGE,
     POTENTIAL_RANGE,
-    get_method_estimated_duration,
     set_extra_value_mask,
 )
 from .method import Method
@@ -38,6 +37,5 @@ __all__ = [
     'ParameterType',
     'POTENTIAL_RANGE',
     'SquareWaveParameters',
-    'get_method_estimated_duration',
     'set_extra_value_mask',
 ]

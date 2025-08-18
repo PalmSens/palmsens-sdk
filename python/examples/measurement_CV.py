@@ -7,9 +7,9 @@ def new_data_callback(new_data):
         print(point)
 
 
-manager = instruments.InstrumentManager(new_data_callback=new_data_callback)
+manager = instruments.InstrumentManager(callback=new_data_callback)
 
-available_instruments = instruments.discover_instruments()
+available_instruments = instruments.discover()
 print('connecting to ' + available_instruments[0].name)
 success = manager.connect(available_instruments[0])
 

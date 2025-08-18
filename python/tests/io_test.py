@@ -4,7 +4,7 @@ from dataclasses import asdict
 
 from pytest import approx
 
-from pypalmsens.io import (
+from pypalmsens import (
     load_method_file,
     load_session_file,
     save_method_file,
@@ -39,7 +39,7 @@ def test_save_load_method(tmpdir):
     cv = techniques.CyclicVoltammetryParameters()
     save_method_file(path=path, method=cv)
 
-    method_cv2 = load_method_file(path=path)
+    method_cv2 = load_method_file(path=path, as_method=True)
 
     assert method_cv2.filename == path
 

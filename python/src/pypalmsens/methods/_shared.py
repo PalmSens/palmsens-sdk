@@ -12,7 +12,6 @@ from PalmSens import (
     PotentialRanges,
     Techniques,
 )
-from PalmSens.Devices import PalmSens4Capabilities
 
 from .._shared import single_to_double
 
@@ -131,23 +130,6 @@ def get_extra_value_mask(obj) -> dict[str, Any]:
     }
 
     return ret
-
-
-def get_method_estimated_duration(method, *, instrument_manager=None):
-    """Get the estimated duration of a given method.
-
-    Parameters
-    ----------
-    instrument_manager
-        Specifies the instrument manager to get the connected instruments capabilities from,
-        if not specified it will use the PalmSens4 capabilities to determine the estimated duration.
-
-    """
-    if instrument_manager is None or instrument_manager.__comm is None:
-        instrument_capabilities = PalmSens4Capabilities()
-    else:
-        instrument_capabilities = instrument_manager.__comm.Capabilities
-    return method.psmethod.GetMinimumEstimatedMeasurementDuration(instrument_capabilities)
 
 
 @dataclass

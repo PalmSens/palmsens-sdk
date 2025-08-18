@@ -8,8 +8,8 @@ def new_data_callback(new_data):
             print(f'{type} = {value}')
 
 
-manager = instruments.InstrumentManager(new_data_callback=new_data_callback)
-available_instruments = instruments.discover_instruments()
+manager = instruments.InstrumentManager(callback=new_data_callback)
+available_instruments = instruments.discover()
 print('connecting to ' + available_instruments[0].name)
 success = manager.connect(available_instruments[0])
 

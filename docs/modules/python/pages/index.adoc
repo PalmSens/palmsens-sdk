@@ -1,40 +1,99 @@
-= Python
+= PyPalmSens: Python SDK for PalmSens devices
 
-Based on PalmSens SDK v5.12 +
-Last revision: April 24, 2025
+PyPalmSens is a Python library for automating electrochemistry experiments with your PalmSens instruments.
+PyPalmSens is built on top of the xref:ROOT:index.adoc[PalmSens .NET libraries].
+It provides an intuitive Python API, making it straightforward to integrate into your Python workflows.
 
-== Contents of the PalmSens SDK
+With PyPalmSens, you can:
 
-The PalmSens SDK contains the following libraries and projects:
+- Connect to one or more instruments/channels
+- Automate electrochemistry measurements
+- Access and process measured data
+- Analyze and manipulate data
+- Perform peak detection
+- Do Equivalent Circuit Fitting on impedance data
+- Manually control of the cell
+- Read and write method and data files
 
-. *PalmSens.Core.dll & PalmSens.Core.Windows.BLE.dll*
-+
-These libraries contain the namespaces with all the necessary files for
-using PalmSens/EmStat/Nexus/Sensit devices in your software.
+To install:
 
-** `PalmSens`: All necessary classes and functions for performing
-measurements and doing analysis with PalmSens, EmStat, Sensit or Nexus.
-** `PalmSens.Comm`: For Serial, USB, TCP, Bluetooth (Classic/Low Energy)
-communication with instruments.
-** `PalmSens.DataFiles`: For saving and loading method and data files.
-** `PalmSens.Devices`: For handling communications and device
-capabilities.
-** `PalmSens.Techniques`: Contains all measurement techniques.
-** `PalmSens.Units`: Contains a collection of units used by these
-libraries.nsrt
+```bash
+pip install pypalmsens
+```
 
-. *pypalmsens*
-+
-A python wrapper for the .NET libraries above.
+PyPalmSens requires the .NET runtime to be installed.
+For specific installation instructions for your platform, see xref:installation.adoc[]
 
-** `pspyinstruments.py`: Contains the functions to scan for available
-instruments and the InstrumentManager class used to control the
-PalmSens, EmStat, Sensit or Nexus instruments.
-** `pspydata.py`: Defines the measurements and curves classes
-** `pspyfiles.py`: For saving/loading session and method files
-** `pspymethods.py`: Work in progress, helper functions to create methods
+== Getting started
+
+The following example shows how to discover devices and manually read out the current.
+
+```python
+from pypalmsens import instruments
+from pypalmsens.methods import CURRENT_RANGE
+
+manager = instruments.InstrumentManager()
+
+available_instruments = instruments.discover_instruments()
+manager.connect(available_instruments[0])
+
+# enable cell
+manager.set_cell(True)
+# set potential to 1 V
+manager.set_potential(1)
+# set current range to 1 mA
+manager.set_current_range(CURRENT_RANGE.cr_1_mA)
+
+current = manager.read_current()
+print(f'{current=} µA')
+
+manager.set_cell(False)
+manager.disconnect()
+```
+
+Set up and measure a simple chronoamperometry experiment:
+
+```python
+from pypalmsens import instruments
+from pypalmsens.methods import ChronoAmperometryParameters
+
+manager = instruments.InstrumentManager()
+
+available_instruments = instruments.discover_instruments()
+manager.connect(available_instruments[0])
+
+method = ChronoAmperometryParameters(
+    interval_time=0.01,
+    potential=1.0,
+    run_time=10.0,
+)
+
+measurement = manager.measure(method)
+manager.disconnect()
+```
+
+Analyze a previous measurement with https://pandas.pydata.org/[pandas]:
+
+```python
+import pandas as pd
+from pypalmsens import load_session_file
+
+measurements = load_session_file('Demo CV DPV EIS IS-C electrode.pssession')
+
+frames = []
+frame_names = []
+
+for measurement in measurements:
+    frames.append(measurement.dataset.to_dataframe())
+    frame_names.append(measurement.title)
+
+df = pd.concat(frames, keys=frame_names)
+print(df)
+```
 
 == Compatible devices and firmware
+
+The following devices and firmwares are supported:
 
 [cols=",",options="header",]
 |===
@@ -44,6 +103,7 @@ PalmSens, EmStat, Sensit or Nexus instruments.
 |EmStat3 |7.7
 |EmStat3{plus} |7.7
 |EmStat4 |1.3
+|EmStat4T |1.4
 |EmStat Go |7.7
 |EmStat Pico |1.5
 |Sensit Smart |1.5

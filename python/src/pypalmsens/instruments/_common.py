@@ -73,6 +73,8 @@ def firmware_warning(capabilities, /) -> None:
 
 @dataclass
 class Instrument:
+    """Dataclass holding instrument info."""
+
     name: str
     connection: str
     device: Any

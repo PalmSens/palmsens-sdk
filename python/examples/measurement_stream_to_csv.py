@@ -13,9 +13,9 @@ def stream_to_csv_callback(new_data):
 csv_file = open('test.csv', 'w', newline='')
 csv_writer = csv.writer(csv_file, delimiter=' ')
 
-manager = instruments.InstrumentManager(new_data_callback=stream_to_csv_callback)
+manager = instruments.InstrumentManager(callback=stream_to_csv_callback)
 
-available_instruments = instruments.discover_instruments()
+available_instruments = instruments.discover()
 print('connecting to ' + available_instruments[0].name)
 success = manager.connect(available_instruments[0])
 

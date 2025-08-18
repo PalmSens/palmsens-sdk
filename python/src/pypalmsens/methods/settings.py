@@ -188,14 +188,14 @@ class BipotSettings:
     bipot_current_range_start: CURRENT_RANGE = CURRENT_RANGE.cr_100_uA
 
     def update_psmethod(self, *, obj):
-        obj.BiPotModePS = PalmSens.Method.EnumPalmSensBipotMode(self.bipot_mode)
+        obj.BipotModePS = PalmSens.Method.EnumPalmSensBipotMode(self.bipot_mode)
         obj.BiPotPotential = self.bipot_potential
         obj.BipotRanging.MaximumCurrentRange = self.bipot_current_range_max.to_psobj()
         obj.BipotRanging.MinimumCurrentRange = self.bipot_current_range_min.to_psobj()
         obj.BipotRanging.StartCurrentRange = self.bipot_current_range_start.to_psobj()
 
     def update_params(self, *, obj):
-        self.bipot_mode = int(obj.BiPotModePS)
+        self.bipot_mode = int(obj.BipotModePS)
         self.bipot_potential = obj.BiPotPotential
         self.bipot_current_range_max = CURRENT_RANGE.from_psobj(
             obj.BipotRanging.MaximumCurrentRange
@@ -479,7 +479,10 @@ class MultiplexerSettings:
         self.set_mux_mode = int(obj.MuxMethod)
 
         channels = [i for i in range(len(obj.UseMuxChannel)) if obj.UseMuxChannel[i]]
-        self.set_mux_channels = [i in channels for i in range(max(channels) + 1)]
+
+        n_channels = max(channels) + 1 if channels else 0
+
+        self.set_mux_channels = [i in channels for i in range(n_channels)]
 
         self.connect_sense_to_working_electrode = obj.MuxSett.ConnSEWE
         self.combine_reference_and_counter_electrodes = obj.MuxSett.ConnectCERE

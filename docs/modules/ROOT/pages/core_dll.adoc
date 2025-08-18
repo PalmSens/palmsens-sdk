@@ -1,5 +1,22 @@
 = `PalmSens.Core.dll`
 
+The PalmSens SDK contains the following libraries and projects:
+
+. *PalmSens.Core.dll & PalmSens.Core.Windows.BLE.dll*
++
+These libraries contain the namespaces with all the necessary files for
+using PalmSens/EmStat/Nexus/Sensit devices in your software.
+
+** `PalmSens`: All necessary classes and functions for performing
+measurements and doing analysis with PalmSens, EmStat, Sensit or Nexus.
+** `PalmSens.Comm`: For Serial, USB, TCP, Bluetooth (Classic/Low Energy)
+communication with instruments.
+** `PalmSens.DataFiles`: For saving and loading method and data files.
+** `PalmSens.Devices`: For handling communications and device
+capabilities.
+** `PalmSens.Techniques`: Contains all measurement techniques.
+** `PalmSens.Units`: Contains a collection of units used by these
+
 The basis for handling measurements is the `PalmSens.Measurement` class, or the `PalmSens.Core.Simplified.Data.SimpleMeasurement` class when using the simplified wrapper.
 
 The measurement class contains all classes, functions, and parameters necessary for performing a measurement with a _PalmSens_ or _EmStat_ instrument.

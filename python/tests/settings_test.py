@@ -156,7 +156,7 @@ def test_BipotSettings():
     params = settings.BipotSettings(**kwargs)
     params.update_psmethod(obj=obj)
 
-    assert obj.BiPotModePS == Techniques.CyclicVoltammetry.EnumPalmSensBipotMode(1)
+    assert obj.BipotModePS == Techniques.CyclicVoltammetry.EnumPalmSensBipotMode(1)
     assert obj.BiPotPotential == 10.0
     assert obj.BipotRanging.MaximumCurrentRange.Description == '100 uA'
     assert obj.BipotRanging.MinimumCurrentRange.Description == '10 nA'

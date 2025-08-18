@@ -1,6 +1,6 @@
 = Working with files
 
-As of version 5 of the PalmSens SDK and PSTrace measurements and their corresponding methods are stored in `.pssession` files.
+As of version 5 of the PalmSens SDK and PSTrace measurements, and their corresponding methods are stored in `.pssession` files.
 Methods can be stored separately in `.psmethod` files.
 
 The PalmSens SDK is backward compatible with following filetypes:
@@ -29,41 +29,88 @@ The PalmSens SDK is backward compatible with following filetypes:
 |`.mux`
 |===
 
-The `pspyfiles.py` script in the `pypalmsens` module contains the functions needed to load and save methods and session files.
-The `pspydata.py` script contain the python classes that store the loaded data.
-The pspymethods scripts contains helper functions for creating and working with methods.
+`pypalmsens` contains the functions needed to load and save methods and session files.
+The session file contains the measurement data, whereas the method file contains method information.
 
-== Loading a method file (`.psmethod`)
+== Loading and saving a method file (`.psmethod`)
 
-The `pspyfiles.py` script function `load_method_file()` can be
-used to load method files.
-This function returns a `PalmSens.Method` .NET object which can be used to run a measurement.
+The `pypalmsens.load_method_file()` can be used to load method files.
+This returns a 'Method' dataclass with all the method parameters.
 
 [source,python]
 ----
-method = pspyfiles.load_method_file('PSDummyCell_LSV.psmethod')
+>>> method = pypalmsens.load_method_file('PSDummyCell_LSV.psmethod')
+>>> method
+LinearSweepParameters(
+    'conditioning_time': 0.0,
+    'begin_potential': -5.0,
+    'end_potential': 5.0,
+    'step_potential': 0.01,
+    'scanrate': 1.0,
+    ...
+)
 ----
+
+Save the method using `pypalmsens.save_method_file()`.
+
+[source,python]
+----
+>>> pypalmsens.save_method_file(method, 'PSDummyCell_LSV.psmethod')
+----
+
 
 == Setting up a method
 
-The `pspymethods.py` script contains helper functions to create .NET method objects for the following techniques:
+The following methods are supported:
 
-* Linear sweep voltammetry
-* Cyclic voltammetry
-* Square-wave voltammetry
-* Differential pulse voltammetry
-* Chronoamperometry
-* Multi-step amperometry
-* Open circuit potentiometry
-* Chronopotentiometry
-* Electrochemical impedance spectroscopy
-* Galvanostatic impedance spectroscopy
+Voltammetric Techniques::
+
+- Linear Sweep Voltammetry
+- Cyclic Voltammetry
+// - Fast Cyclic Voltammetry
+// - AC Voltammetry
+
+Pulsed Techniques::
+
+- Differential Pulse Voltammetry
+- Square Wave Voltammetry
+// - Normal Pulse Voltammetry
+
+Amperometric Techniques::
+
+- Chronoamperometry
+- Multistep Amperometry
+// - Fast Amperometry
+// - Pulsed Amperometric Detection
+// - Multiple Pulse Amperometry
+
+Potentiometric Techniques::
+
+- Open Circuit Potentiometry
+- Chronopotentiometry
+// - Linear Sweep Potentiometry
+// - Multistep Potentiometry
+// - Stripping Chronopotentiometry
+
+// Coulometric techniques::
+
+// - Chronocoulometry
+
+Other::
+
+- Impedance Spectroscopy
+// - Fast Impedance Spectroscopy
+- Galvanostatic Impedance Spectroscopy
+// - Fast Galvanostatic Impedance Spectroscopy
+// - Mixed Mode
+- Method Script
 
 This example creates a method for a square-wave voltammetry measurement versus the open circuit potential:
 
 [source,python]
 ----
-method = methods.square_wave_voltammetry(
+>>> import pypalmsens
+>>> method = pypalmsens.methods.SquareWaveParameters(
     conditioning_potential = 2.0,  # V
     conditioning_time = 2,  # seconds
     versus_ocp_mode = 3,  # versus begin and end potential
@@ -75,51 +122,51 @@ method = methods.square_wave_voltammetry(
     frequency = 10,  # Hz
 )
 ----
-xref:ROOT:api.adoc[] contains a reference to the method parameters for each technique. Parameters of a .NET method object can be modified by adjusting these properties.
 
-For example, the frequency of a square-wave voltammetry is modified by adjusting the Frequency property on the .NET object.
-
-[source,python]
-----
-method.Frequency = 50
-----
-
-To create an instance of a method without using one of the helper functions in `pspymethods.py` you need to import the .NET class, create an instance and adjust the parameters. xref:ROOT:api.adoc[] lists the classes for the techniques.
-
-This example creates an instance of an alternating current voltammetry
-method.
+Because this is a https://docs.python.org/3/library/dataclasses.html[Python dataclass], all attributes can be modified:
 
 [source,python]
 ----
-import pypalmsens
+>>> method.begin_potential = -1.0
+>>> method.end_potential = 1.0
+>>> method.step_potential = 0.02
+----
 
-# import the alternating current voltammetry method object
-from PalmSens.Techniques import ACVoltammetry
+It can be serialized to and from a dictionary:
 
-# create a new method object
-method = ACVoltammetry()
-method.BeginPotential = -.5 \# volts
-method.EndPotential = 0.5 \# volts
-method.StepPotential = 0.01 \# volts
-method.SineWaveAmplitude = 0.05 \# volts RMS
-method.Frequency = 50 \# Hz
+[source,python]
+----
+>>> from dataclasses import asdict
+>>> d = asdict(method)
+>>> d
+{'equilibration_time': 0.0,
+ 'begin_potential': -1.0,
+ 'end_potential': 1.0,
+ 'step_potential': 0.02,
+ 'frequency': 10,
+ 'amplitude': 0.08,
+ ...}
+>>> method2 == pypalmsens.methods.SquareWaveParameters(**d)
+>>> method == method2
+True
+----
+
+It can be updated like a dataclass:
+
+[source,python]
+----
+>>> from dataclasses import replace
+>>> method2 = replace(method, equilibration_time=10.0)
+>>> method == method2
+False
 ----
 
 [TIP]
 ====
-The VSCode Debug Console or another Python REPL environment will auto complete on the properties and functions of .NET objects like the `PalmSens.Method` objects returned by the helper methods.
+The VSCode Debug Console or another Python REPL environment like https://ipython.readthedocs.io[IPython] will auto complete on the properties and functions.
 
 image:vscode_autocomplete.png[Debug console in VSCode]
 ====
-
-== Saving a method
-
-The `pspyfiles.py` script function save_method_file can be used to save method files.
-
-[source,python]
-----
-pspyfiles.save_method_file('PSDummyCell_LSV_copy.psmethod', method)
-----
 
 == Loading and saving data
 
@@ -128,21 +175,25 @@ image:pssession.png[Data in pssession files]
 Data from measurements can be loaded from and stored to `.pssession` files.
 This contains a session with one or more measurements containing its respective method and curves.
 
-The `pspyfiles.py` script function `load_session_file()` can be used to load session files.
-It returns a list of measurements, with the exception of (galvanostatic) electrochemical impedance spectroscopy measurements measurements contain one or more curves.
-The measurement and curve classes are defined in the pspydata script.
+The `pypalmsens.load_session_file()` can be used to load session files.
+It returns a list of measurements, which contains the dataset and curves.
+The dataset is a list of raw data in array form, whereas the curves resemble the plots.
+In PSTrace or PSTrace Express these would be the 'Data' and the 'Plot' tab, respectively.
 
-The load_session_file function contains overloads for loading equivalent circuit fit results and peaks and an overload to keep the underlying .NET objects.
-Keeping the underlying .NET objects is not necessary but useful when you need to access extra information or functionality not provided in the python measurement and curve classes.
+The exceptions are (galvanostatic) electrochemical impedance spectroscopy measurements, which contain additional plots.
+
+The measurement and curve classes are defined in the `.curves` attribute, the ral data by the `.dataset` attribute, and the EIS data by the `.eis_data` attribute.
 
 The following example loads a collection of measurements from a session file and saves the first measurement to a different file.
 
 [source,python]
 ----
-measurements = pspyfiles.load_session_file('Demo CV DPV EIS IS-C electrode.pssession')
+from pypalmsens import load_session_file
 
-pspyfiles.save_session_file(
-    'Demo CV DPV EIS IS-C electrode_copy.pssession',
+measurements = load_session_file('my_measurement.pssession')
+
+pypalmsens.save_session_file(
+    'my_measurement_copy.pssession',
     [measurements[0]]
 )
 ----

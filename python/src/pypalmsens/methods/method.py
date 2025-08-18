@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Union
 
 from PalmSens import Method as PSMethod
+from PalmSens.Devices import PalmSens4Capabilities
 
 from . import techniques
 
@@ -43,6 +44,21 @@ class Method:
         if fn:
             return Path(fn)
         return None
+
+    def get_estimated_duration(self, *, instrument_manager=None):
+        """Get the estimated duration for this method.
+
+        Parameters
+        ----------
+        instrument_manager : InstrumentManager
+            Specifies the instrument manager to get the connected instruments capabilities from,
+            If not specified it will use the PalmSens4 capabilities to determine the estimated duration.
+        """
+        if instrument_manager is None or instrument_manager.__comm is None:
+            instrument_capabilities = PalmSens4Capabilities()
+        else:
+            instrument_capabilities = instrument_manager.__comm.Capabilities
+        return self.psmethod.GetMinimumEstimatedMeasurementDuration(instrument_capabilities)
 
     @property
     def technique_number(self) -> int:

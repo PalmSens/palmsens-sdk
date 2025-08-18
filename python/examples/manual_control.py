@@ -3,7 +3,7 @@ from pypalmsens.methods import CURRENT_RANGE
 
 manager = instruments.InstrumentManager()
 
-available_instruments = instruments.discover_instruments()
+available_instruments = instruments.discover()
 print('connecting to ' + available_instruments[0].name)
 success = manager.connect(available_instruments[0])
 

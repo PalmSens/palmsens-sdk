@@ -43,7 +43,7 @@ def assert_params_round_trip_equal(*, pscls, pycls, kwargs):
 def manager():
     mgr = instruments.InstrumentManager()
 
-    available_instruments = instruments.discover_instruments()
+    available_instruments = instruments.discover()
     logger.warning('Connecting to %s' % available_instruments[0].name)
     success = mgr.connect(available_instruments[0])
     assert success

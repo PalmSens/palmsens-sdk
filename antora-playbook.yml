@@ -12,4 +12,5 @@ ui:
     snapshot: true
 antora:
   extensions:
-  - '@antora/collector-extension'
+    - require: '@antora/collector-extension'
+      enabled: true

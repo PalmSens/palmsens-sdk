@@ -1,42 +1,6 @@
-# PyPalmSens: Python SDK for PalmSens devices
+# Development
 
-The PyPalmSens SDK wraps around the .NET SDKs. All instruments are supported and examples are included.
-
-To install:
-
-```
-pip install pypalmsens
-```
-
-PyPalmSens controls your instruments, and automates running electrochemical experiments:
-
-```python
-from pypalmsens import instruments
-from pypalmsens.methods import ChronoAmperometryParameters
-
-available_instruments = instruments.discover_instruments()
-
-manager = instruments.InstrumentManager()
-manager.connect(available_instruments[0])
-
-method = ChronoAmperometryParameters(
-    interval_time=0.01,
-    potential=1.0,
-    run_time=10.0,
-)
-
-measurement = manager.measure(method)
-
-manager.disconnect()
-```
-
-For more information, see the [documentation](http://palmsens.github.io/palmsens_sdk/python).
-
-## Development
-
-### Setup
-
-The PalmSens Python SDK targets Python 3.10 or newer.
+## Setup
 
 Clone the repository into the `palmsens-sdk` directory:
 
@@ -53,7 +17,7 @@ source .venv/Scripts/activate.ps1
 python3 -m pip install -e .[develop]
 ```
 
-### Running tests
+## Running tests
 
 The PalmSens Python SDK uses [pytest](https://docs.pytest.org/en/latest/) to run the tests. You can run the tests for yourself using:
 
@@ -75,7 +39,7 @@ coverage report  # to output to terminal
 coverage html    # to generate html report
 ```
 
-### Running linters and code formatters
+## Running linters and code formatters
 
 The PalmSens Python SDK uses [ruff](https://astral.sh/ruff) for code [formatting](https://docs.astral.sh/ruff/formatter/)/[linting](https://docs.astral.sh/ruff/linter/), and [mypy](https://www.mypy-lang.org/) for type checking.
 [pre-commit](https://pre-commit.com/) is a tool that can run many tools for checking code quality with a single command.

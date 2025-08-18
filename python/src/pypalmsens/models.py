@@ -95,7 +95,7 @@ class Parameters(Sequence):
     def __str__(self) -> str:
         return self._parameters.__str__()
 
-    def update_psmodel_parameters(self, psmodel: PSFitting.CircuitModel) -> None:
+    def update_psmodel_parameters(self, psmodel: PSFitting.Models.CircuitModel) -> None:
         """Update the initial parameters in the SDK model with parameters in this instance.
 
         Note that the length and type of parameters must match that of the SDK class.

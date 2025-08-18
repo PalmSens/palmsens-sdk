@@ -2,6 +2,4 @@
 ** xref:installation.adoc[]
 ** xref:getting_started.adoc[]
 ** xref:measuring.adoc[]
-** xref:core_dll.adoc[]
-** xref:api.adoc[]
-
+** xref:attachment$api/index.html[API Reference]

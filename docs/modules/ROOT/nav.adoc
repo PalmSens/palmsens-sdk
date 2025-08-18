@@ -1,1 +1,3 @@
 * xref:index.adoc[]
+** xref:api.adoc[]
+** xref:core_dll.adoc[]

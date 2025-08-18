@@ -4,3 +4,11 @@ title: PalmSens SDK
 nav:
 - modules/ROOT/nav.adoc
 - modules/python/nav.adoc
+ext:
+  collector:
+    run: |
+      pdoc pypalmsens !pypalmsens._lib -o pdocs-html -d numpy
+    scan:
+      clean: true
+      dir: pdocs-html
+      into: modules/python/attachments/api

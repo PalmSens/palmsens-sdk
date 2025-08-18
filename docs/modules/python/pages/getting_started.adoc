@@ -75,7 +75,7 @@ method = methods.square_wave_voltammetry(
     frequency = 10,  # Hz
 )
 ----
-xref:api.adoc[] contains a reference to the method parameters for each technique. Parameters of a .NET method object can be modified by adjusting these properties.
+xref:ROOT:api.adoc[] contains a reference to the method parameters for each technique. Parameters of a .NET method object can be modified by adjusting these properties.
 
 For example, the frequency of a square-wave voltammetry is modified by adjusting the Frequency property on the .NET object.
 
@@ -84,7 +84,7 @@ For example, the frequency of a square-wave voltammetry is modified by adjusting
 method.Frequency = 50
 ----
 
-To create an instance of a method without using one of the helper functions in `pspymethods.py` you need to import the .NET class, create an instance and adjust the parameters. xref:api.adoc[] lists the classes for the techniques.
+To create an instance of a method without using one of the helper functions in `pspymethods.py` you need to import the .NET class, create an instance and adjust the parameters. xref:ROOT:api.adoc[] lists the classes for the techniques.
 
 This example creates an instance of an alternating current voltammetry
 method.

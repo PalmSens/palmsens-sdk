@@ -3,8 +3,9 @@ from __future__ import annotations
 import asyncio
 import sys
 import traceback
+from contextlib import contextmanager
 from time import sleep
-from typing import Callable, Optional
+from typing import Callable, Generator, Optional
 
 import clr
 import PalmSens
@@ -92,6 +93,42 @@ def discover(
 
     available_instruments.sort(key=lambda instrument: instrument.name)
     return available_instruments
+
+
+@contextmanager
+def connect(
+    instrument: Optional[Instrument] = None,
+) -> Generator[InstrumentManager, None, None]:
+    """Context manager for device connection.
+
+    Parameters
+    ----------
+    instrument : Instrument, optional
+        Connect to this instrument.
+        If not specified, automatically discover and connect to the first instrument.
+
+    Returns
+    -------
+    manager : InstrumentManager
+        Return instance of `InstrumentManager` connected to the given instrument.
+        The connection will be terminated after the context ends.
+    """
+    # connect to first device if not specified
+    if not instrument:
+        available_instruments = discover()
+
+        if not available_instruments:
+            raise ConnectionError('No instruments were discovered.')
+
+        # connect to first instrument
+        instrument = available_instruments[0]
+
+    manager = InstrumentManager()
+    manager.connect(instrument)
+    try:
+        yield manager
+    finally:
+        manager.disconnect()
 
 
 class InstrumentManager:

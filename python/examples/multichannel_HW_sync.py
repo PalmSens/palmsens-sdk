@@ -1,7 +1,8 @@
 import asyncio
 
-from pypalmsens import instruments
+import pypalmsens
 from pypalmsens.methods import CURRENT_RANGE, POTENTIAL_RANGE, ChronopotentiometryParameters
+from pypalmsens.instruments import InstrumentManagerAsync
 
 
 def new_data_callback(channel):
@@ -13,12 +14,12 @@ def new_data_callback(channel):
 
 
 async def main():
-    available_instruments = await instruments.discover_async()
+    available_instruments = await pypalmsens.discover_async()
     managers = {}
 
     # create an instance of the instrumentmanager per channel
     async def connect(instrument, index):
-        managers[index] = instruments.InstrumentManagerAsync(callback=new_data_callback(index))
+        managers[index] = InstrumentManagerAsync(callback=new_data_callback(index))
         success = await managers[index].connect(instrument)
         if success:
             print(f'{index + 1}: connected to {instrument.name}')

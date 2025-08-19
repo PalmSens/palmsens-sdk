@@ -14,35 +14,54 @@ To eliminate noise induced by other electrical appliances it is highly recommend
 
 == Connecting to a device
 
-The following example shows how to get a list of all available devices, and how to connect to one of the discovered devices.
+The recommended way to connect to a device for most workflows is to use the `pypalmsens.connect()` https://docs.python.org/3/library/stdtypes.html#typecontextmanager[context manager]. The contextmanager manages the connection, and closes the connection to the device if it is no longer needed. It returns an instance of `InstrumentManager()`, which can be used to control the instrument and start a measurement:
+
+[source,python]
+----
+>>> import pypalmsens
+
+>>> with pypalmsens.connect() as manager:
+...     measurement = manager.measure(method)
+----
+
+By default, `connect()` connects to the first instrument it discovers. With only one device connected, this is fine. With more than one instrument connected, you can use `pypalmsens.discover()` to find all devices and manage them yourself. For example, this is how to get a list of all available devices, and how to connect to the first one.
+
+[source,python]
+----
+>>> available_instruments = pypalmsens.discover()
+>>> available_instruments
+[Instrument(name='EmStat4 HR [1]', connection='usbcdc', device=<PalmSens.Windows.Devices.USBCDCDevice object>)]
+
+>>> first_instrument = available_instruments[0]
+
+>>> with pypalmsens.connect(first_instrument) as manager:
+...    measurement = manager.measure(method)
+----
+
+Finally, you can set up the `InstrumentManager()` yourself.
 
 [source,python]
 ----
 >>> from pypalmsens import instruments
 >>> available_instruments = instruments.discover()
->>> available_instruments
-[Instrument(name='EmStat4 HR [1]', connection='usbcdc', device=<PalmSens.Windows.Devices.USBCDCDevice object>)]
 >>> manager = instruments.InstrumentManager()
 >>> manager.connect(available_instruments[0])
+----
+
+The `InstrumentManager.disconnect()` function disconnects from the device freeing it up for other things to connect to it.
+
+[source,python]
+----
+>>> manager.disconnect()
 ----
 
 Currently PyPalmSens supports discovering instruments connected via FTDI, serial (usbcdc/com), and Bluetooth (classic/low energy). By default scanning with Bluetooth is disabled.
 
 You can enable scanning with Bluetooth by setting:
 
-
 [source,python]
 ----
 >>> instruments.discover(bluetooth=True)
-----
-
-=== Disconnecting from the device
-
-The `InstrumentManager.disconnect()` function disconnects from the device freeing it up for other things to connect to it.
-
-[source,python]
-----
-manager.disconnect()
 ----
 
 == Manually controlling the device
@@ -53,7 +72,7 @@ The following example show how to manually set a potential, for more examples re
 
 [source,python]
 ----
-manager.set_potential(1)
+>>> manager.set_potential(1)
 ----
 
 == Measuring
@@ -66,13 +85,12 @@ The following example runs a chronoamperometry measurement on an instrument.
 
 [source,python]
 ----
-method = methods.chronoamperometry(
-    interval_time=0.01,
-    e=1.0,
-    run_time=10.0
-)
-
-measurement = manager.measure(method)
+>>> method = methods.chronoamperometry(
+...     interval_time=0.01,
+...     e=1.0,
+...     run_time=10.0
+... )
+>>> measurement = manager.measure(method)
 ----
 
 === Callback
@@ -81,20 +99,21 @@ It is possible to process measurement results in real-time by specifying a callb
 
 [source,python]
 ----
-def new_data_callback(new_data):
-    for point in new_data:
-        print(point)
-
-manager = instruments.InstrumentManager(
-    callback=new_data_callback
-)
+>>> def new_data_callback(new_data):
+...     for point in new_data:
+...         print(point)
+...
+>>> manager = instruments.InstrumentManager(
+...     callback=new_data_callback
+... )
 ----
 
 or by setting it on the `InstrumentManager`’s callback field.
 
 [source,python]
 ----
-manager.callback = stream_to_csv_callback(csv_writer)
+>>> with pypalmsens.connect() as manager:
+...     manager.callback = stream_to_csv_callback(csv_writer)
 ----
 
 The callback is passed a collection of points that have been added since the last time it was called.
@@ -127,7 +146,6 @@ Impedimetric techniques::
   * `frequency`: the applied frequency of the sample in hertz
   * `z_re`: the real impedance in ohms
   * `z_im`: the imaginary impedance in ohms
-
 
 == MethodSCRIPT™
 

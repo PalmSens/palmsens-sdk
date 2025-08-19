@@ -26,70 +26,65 @@ For specific installation instructions for your platform, see xref:installation.
 
 == Getting started
 
+The following example shows how to set up and measure a simple chronoamperometry experiment:
+
+[source,python]
+----
+>>> import pypalmsens
+>>> from pypalmsens.methods import ChronoAmperometryParameters
+
+>>> method = ChronoAmperometryParameters(
+...     interval_time=0.01,
+...     potential=1.0,
+...     run_time=10.0,
+... )
+
+>>> with pypalmsens.connect() as manager:  # <1>
+...     measurement = manager.measure(method)
+----
+<1> `connect()` tries to connect to the first instrument it finds
+
 The following example shows how to discover devices and manually read out the current.
 
-```python
-from pypalmsens import instruments
-from pypalmsens.methods import CURRENT_RANGE
+[source,python]
+----
+>>> import pypalmsens
+>>> from pypalmsens.methods import CURRENT_RANGE
 
-manager = instruments.InstrumentManager()
+>>> instruments = pypalmsens.discover()
 
-available_instruments = instruments.discover_instruments()
-manager.connect(available_instruments[0])
-
-# enable cell
-manager.set_cell(True)
-# set potential to 1 V
-manager.set_potential(1)
-# set current range to 1 mA
-manager.set_current_range(CURRENT_RANGE.cr_1_mA)
-
-current = manager.read_current()
-print(f'{current=} µA')
-
-manager.set_cell(False)
-manager.disconnect()
-```
-
-Set up and measure a simple chronoamperometry experiment:
-
-```python
-from pypalmsens import instruments
-from pypalmsens.methods import ChronoAmperometryParameters
-
-manager = instruments.InstrumentManager()
-
-available_instruments = instruments.discover_instruments()
-manager.connect(available_instruments[0])
-
-method = ChronoAmperometryParameters(
-    interval_time=0.01,
-    potential=1.0,
-    run_time=10.0,
-)
-
-measurement = manager.measure(method)
-manager.disconnect()
-```
+>>> with pypalmsens.connect(device=instruments[0]) as manager:
+...     manager.set_cell(True)
+...     manager.set_potential(1)
+...     manager.set_current_range(CURRENT_RANGE.cr_1_mA)
+...
+...     current = manager.read_current()
+...     print(f'{current=} µA')
+...
+...     manager.set_cell(False)
+current=92.8065 µA
+----
 
 Analyze a previous measurement with https://pandas.pydata.org/[pandas]:
 
-```python
-import pandas as pd
-from pypalmsens import load_session_file
+[source,python]
+----
+>>> import pandas as pd
+>>> from pypalmsens import load_session_file
 
-measurements = load_session_file('Demo CV DPV EIS IS-C electrode.pssession')
+>>> measurements = load_session_file('Demo CV DPV EIS IS-C electrode.pssession')
 
-frames = []
-frame_names = []
+>>> frames = []
+>>> frame_names = []
 
-for measurement in measurements:
-    frames.append(measurement.dataset.to_dataframe())
-    frame_names.append(measurement.title)
+>>> for measurement in measurements:
+...     frames.append(measurement.dataset.to_dataframe())  # <1>
+...     frame_names.append(measurement.title)
 
-df = pd.concat(frames, keys=frame_names)
-print(df)
-```
+>>> df = pd.concat(frames, keys=frame_names)
+>>> print(df)
+----
+<1> Extract all arrays from the dataset into a https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html[pandas dataframe].
 
 == Compatible devices and firmware
 

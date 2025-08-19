@@ -1,5 +1,5 @@
-from pypalmsens import instruments
 from pypalmsens.methods import ChronoAmperometryParameters
+import pypalmsens
 
 
 def new_data_callback(new_data):
@@ -7,38 +7,27 @@ def new_data_callback(new_data):
         print(point)
 
 
-manager = instruments.InstrumentManager(callback=new_data_callback)
-
-available_instruments = instruments.discover()
+available_instruments = pypalmsens.discover()
 print('connecting to ' + available_instruments[0].name)
-success = manager.connect(available_instruments[0])
 
-if success != 1:
-    print('connection failed')
-    exit()
+with pypalmsens.connect(available_instruments[0]) as manager:
+    print('connection established')
 
-print('connection established')
+    manager.callback = new_data_callback
 
-serial = manager.get_instrument_serial()
-print(serial)
+    serial = manager.get_instrument_serial()
+    print(serial)
 
-# Chronoamperometry measurement using helper class
-method = ChronoAmperometryParameters(
-    interval_time=0.01,
-    potential=1.0,
-    run_time=10.0,
-)
+    # Chronoamperometry measurement using helper class
+    method = ChronoAmperometryParameters(
+        interval_time=0.01,
+        potential=1.0,
+        run_time=10.0,
+    )
 
-measurement = manager.measure(method)
+    measurement = manager.measure(method)
 
-if measurement is not None:
-    print('measurement finished')
-else:
-    print('failed to start measurement')
-
-success = manager.disconnect()
-
-if success == 1:
-    print('disconnected')
-else:
-    print('error while disconnecting')
+    if measurement is not None:
+        print('measurement finished')
+    else:
+        print('failed to start measurement')

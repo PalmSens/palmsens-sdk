@@ -1,6 +1,7 @@
 import asyncio
 import csv
 
+import pypalmsens
 from pypalmsens import instruments
 from pypalmsens.methods import ChronoAmperometryParameters
 
@@ -14,7 +15,7 @@ def stream_to_csv_callback(csv_writer):
 
 
 async def main():
-    available_instruments = await instruments.discover_async()
+    available_instruments = await pypalmsens.discover_async()
     managers = {}
 
     # create an instance of the instrumentmanager per channel

@@ -111,16 +111,16 @@ This example creates a method for a square-wave voltammetry measurement versus t
 ----
 >>> import pypalmsens
 >>> method = pypalmsens.methods.SquareWaveParameters(
-    conditioning_potential = 2.0,  # V
-    conditioning_time = 2,  # seconds
-    versus_ocp_mode = 3,  # versus begin and end potential
-    versus_ocp_max_ocp_time = 1,  # seconds
-    begin_potential = -0.5,  # V
-    end_potential = 0.5,  # V
-    step_potential = 0.01,  # V
-    amplitude = 0.08,  # V
-    frequency = 10,  # Hz
-)
+...    conditioning_potential = 2.0,  # V
+...    conditioning_time = 2,  # seconds
+...    versus_ocp_mode = 3,  # versus begin and end potential
+...    versus_ocp_max_ocp_time = 1,  # seconds
+...    begin_potential = -0.5,  # V
+...    end_potential = 0.5,  # V
+...    step_potential = 0.01,  # V
+...    amplitude = 0.08,  # V
+...    frequency = 10,  # Hz
+...)
 ----
 
 Because this is a https://docs.python.org/3/library/dataclasses.html[Python dataclass], all attributes can be modified:
@@ -188,12 +188,12 @@ The following example loads a collection of measurements from a session file and
 
 [source,python]
 ----
-from pypalmsens import load_session_file
+>>> from pypalmsens import load_session_file
 
-measurements = load_session_file('my_measurement.pssession')
-
-pypalmsens.save_session_file(
-    'my_measurement_copy.pssession',
-    [measurements[0]]
-)
+>>> measurements = load_session_file('my_measurement.pssession')
+>>>
+>>> pypalmsens.save_session_file(
+...     'my_measurement_copy.pssession',
+...     [measurements[0]]
+... )
 ----

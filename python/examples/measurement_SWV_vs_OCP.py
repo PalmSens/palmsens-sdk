@@ -1,5 +1,4 @@
 import pypalmsens
-from pypalmsens.methods import SquareWaveParameters
 
 
 def new_data_callback(new_data):
@@ -14,11 +13,15 @@ with pypalmsens.connect(available_instruments[0]) as manager:
 
     manager.callback = new_data_callback
 
-    method = SquareWaveParameters(
-        conditioning_potential=2.0,  # V
-        conditioning_time=2,  # seconds
-        versus_ocp_mode=3,  # versus begin and end potential
-        versus_ocp_max_ocp_time=1,  # seconds
+    method = pypalmsens.SquareWaveVoltammetry(
+        pretreatment=pypalmsens.config.Pretreatment(
+            conditioning_potential=2.0,  # V
+            conditioning_time=2,  # seconds
+        ),
+        versus_ocp=pypalmsens.config.VersusOCP(
+            mode=3,  # versus begin and end potential
+            max_ocp_time=1,  # seconds
+        ),
         begin_potential=-0.5,  # V
         end_potential=0.5,  # V
         step_potential=0.01,  # V

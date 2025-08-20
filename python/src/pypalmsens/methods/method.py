@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import asdict
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Union
 
+from attrs import asdict
 from PalmSens import Method as PSMethod
 from PalmSens.Devices import PalmSens4Capabilities
 
 from . import techniques
 
 if TYPE_CHECKING:
-    from .techniques import ParameterType
+    from .techniques import BaseConfig
 
 
 class Method:
@@ -65,9 +65,9 @@ class Method:
         """The technique number used in the firmware."""
         return self.psmethod.Technique
 
-    def to_parameters(self) -> ParameterType:
+    def to_parameters(self) -> BaseConfig:
         """Extract techniques parameters as dataclass."""
-        return techniques.psmethod_to_parameters(psmethod=self.psmethod)
+        return techniques.BaseConfig._from_psmethod(psmethod=self.psmethod)
 
     def to_dict(self) -> dict[str, Any]:
         """Return dictionary with technique parameters."""

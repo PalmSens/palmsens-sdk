@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from dataclasses import Field, dataclass, field
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Protocol, runtime_checkable
+from typing import ClassVar, Protocol, Type, runtime_checkable
 
+import attrs
 from PalmSens import Method as PSMethod
 from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 
@@ -14,92 +14,78 @@ from ._shared import (
     set_extra_value_mask,
 )
 from .settings import (
-    AutorangingCurrentSettings,
-    AutorangingPotentialSettings,
-    BipotSettings,
-    ChargeLimitSettings,
-    CommonSettings,
-    CurrentLimitSettings,
-    IrDropCompensationSettings,
-    MultiplexerSettings,
-    PeakSettings,
-    PostMeasurementSettings,
-    PotentialLimitSettings,
-    PretreatmentSettings,
-    TriggerAtEquilibrationSettings,
-    TriggerAtMeasurementSettings,
-    VersusOcpSettings,
+    BiPot,
+    ChargeLimits,
+    CurrentLimits,
+    CurrentRanges,
+    DataProcessing,
+    EquilibrationTriggers,
+    General,
+    IrDropCompensation,
+    MeasurementTriggers,
+    Multiplexer,
+    PostMeasurement,
+    PotentialLimits,
+    PotentialRanges,
+    Pretreatment,
+    VersusOCP,
 )
-
-if TYPE_CHECKING:
-    from .method import Method
 
 
 @runtime_checkable
-class ParameterType(Protocol):
+class BaseConfig(Protocol):
     """Protocol to provide generic methods for parameters."""
 
-    __dataclass_fields__: ClassVar[dict[str, Field[Any]]]
+    __attrs_attrs__: ClassVar[list[attrs.Attribute]] = []
+    _id: str
 
-    def to_psmethod(self):
-        return parameters_to_psmethod(self)
+    def _to_psmethod(self) -> PSMethod:
+        """Convert parameters to dotnet method."""
+        psmethod = PSMethod.FromMethodID(self._id)
+
+        self._update_psmethod(obj=psmethod)
+
+        for field in self.__attrs_attrs__:
+            attribute = getattr(self, field.name)
+            try:
+                # Update parameters if attribute has the `update_params` method
+                attribute._update_psmethod(obj=psmethod)
+            except AttributeError:
+                pass
+
+        return psmethod
 
     @staticmethod
-    def from_psmethod(obj: PSMethod) -> ParameterType:
-        return psmethod_to_parameters(obj)
+    def _from_psmethod(psmethod: PSMethod) -> BaseConfig:
+        """Generate parameters from dotnet method object."""
+        id = psmethod.MethodID
+
+        cls = ID_TO_PARAMETER_MAPPING[id]
+
+        if cls is None:
+            raise NotImplementedError(f'Mapping of {id} parameters is not implemented yet')
+
+        new = cls()
+
+        for field in new.__attrs_attrs__:
+            attribute = getattr(new, field.name)
+            try:
+                # Update parameters if attribute has the `update_params` method
+                attribute._update_params(obj=psmethod)
+            except AttributeError:
+                pass
+
+        return new
 
     @abstractmethod
-    def update_psmethod(self, *, obj: PSMethod) -> None: ...
+    def _update_psmethod(self, *, obj: PSMethod) -> None: ...
 
     @abstractmethod
-    def update_params(self, *, obj: PSMethod) -> None: ...
+    def _update_params(self, *, obj: PSMethod) -> None: ...
 
 
-def parameters_to_psmethod(params) -> Method:
-    """Convert parameters to dotnet method."""
-    psmethod = PSMethod.FromMethodID(params._id)
-
-    for parent in params.__class__.__mro__:
-        if parent in (Generic, ParameterType, Protocol, object):
-            continue
-        parent.update_psmethod(params, obj=psmethod)
-
-    return psmethod
-
-
-def psmethod_to_parameters(psmethod: PSMethod) -> ParameterType:
-    """Generate parameters from dotnet method object."""
-    id = psmethod.MethodID
-
-    cls = ID_TO_PARAMETER_MAPPING[id]
-
-    if not cls:
-        raise NotImplementedError(f'Mapping of {id} parameters is not implemented yet')
-
-    new = cls()
-
-    for parent in new.__class__.__mro__:
-        if parent in (Generic, ParameterType, Protocol, object):
-            continue
-        parent.update_params(new, obj=psmethod)  # type: ignore
-
-    return new
-
-
-@dataclass
-class CyclicVoltammetryParameters(
-    ParameterType,
-    AutorangingCurrentSettings,
-    PretreatmentSettings,
-    VersusOcpSettings,
-    PostMeasurementSettings,
-    CurrentLimitSettings,
-    IrDropCompensationSettings,
-    TriggerAtEquilibrationSettings,
-    TriggerAtMeasurementSettings,
-    PeakSettings,
-    CommonSettings,
-):
+@attrs.define
+class CyclicVoltammetry(BaseConfig):
     """Create cyclic voltammetry method parameters.
 
     Attributes
@@ -145,7 +131,18 @@ class CyclicVoltammetryParameters(
     record_cell_potential: bool = False
     record_we_potential: bool = False
 
-    def update_psmethod(self, *, obj):
+    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+    pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+    versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+    post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+    current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
+    ir_drop_compensation: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+    equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+    measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+    data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+    general: General = attrs.field(factory=General)
+
+    def _update_psmethod(self, *, obj):
         """Update method with cyclic voltammetry settings."""
         obj.EquilibrationTime = self.equilibration_time
         obj.BeginPotential = self.begin_potential
@@ -163,7 +160,7 @@ class CyclicVoltammetryParameters(
             enable_bipot_current=self.enable_bipot_current,
         )
 
-    def update_params(self, *, obj):
+    def _update_params(self, *, obj):
         self.equilibration_time = obj.EquilibrationTime
         self.begin_potential = obj.BeginPotential
         self.vertex1_potential = obj.Vtx1Potential
@@ -183,22 +180,8 @@ class CyclicVoltammetryParameters(
             setattr(self, key, msk[key])
 
 
-@dataclass
-class LinearSweepParameters(
-    ParameterType,
-    AutorangingCurrentSettings,
-    PretreatmentSettings,
-    VersusOcpSettings,
-    BipotSettings,
-    PostMeasurementSettings,
-    CurrentLimitSettings,
-    IrDropCompensationSettings,
-    TriggerAtEquilibrationSettings,
-    TriggerAtMeasurementSettings,
-    PeakSettings,
-    MultiplexerSettings,
-    CommonSettings,
-):
+@attrs.define
+class LinearSweepVoltammetry(BaseConfig):
     """Create linear sweep method parameters.
 
     Attributes
@@ -235,7 +218,20 @@ class LinearSweepParameters(
     record_we_potential: bool = False
     enable_bipot_current: bool = False
 
-    def update_psmethod(self, *, obj):
+    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+    pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+    versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+    bipot: BiPot = attrs.field(factory=BiPot)
+    post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+    current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
+    ir_drop: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+    equilibration_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+    measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+    data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+    multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+    general: General = attrs.field(factory=General)
+
+    def _update_psmethod(self, *, obj):
         """Update method with linear sweep settings."""
         obj.BeginPotential = self.begin_potential
         obj.EndPotential = self.end_potential
@@ -250,7 +246,7 @@ class LinearSweepParameters(
             enable_bipot_current=self.enable_bipot_current,
         )
 
-    def update_params(self, *, obj):
+    def _update_params(self, *, obj):
         self.begin_potential = obj.BeginPotential
         self.end_potential = obj.EndPotential
         self.step_potential = obj.StepPotential
@@ -267,21 +263,8 @@ class LinearSweepParameters(
             setattr(self, key, msk[key])
 
 
-@dataclass
-class SquareWaveParameters(
-    ParameterType,
-    AutorangingCurrentSettings,
-    PretreatmentSettings,
-    VersusOcpSettings,
-    BipotSettings,
-    PostMeasurementSettings,
-    IrDropCompensationSettings,
-    TriggerAtEquilibrationSettings,
-    TriggerAtMeasurementSettings,
-    PeakSettings,
-    MultiplexerSettings,
-    CommonSettings,
-):
+@attrs.define
+class SquareWaveVoltammetry(BaseConfig):
     """Create square wave method parameters.
 
     Attributes
@@ -327,7 +310,19 @@ class SquareWaveParameters(
     enable_bipot_current: bool = False
     record_forward_and_reverse_currents: bool = False
 
-    def update_psmethod(self, *, obj):
+    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+    pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+    versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+    bipot: BiPot = attrs.field(factory=BiPot)
+    post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+    ir_drop: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+    equilibration_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+    measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+    data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+    multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+    general: General = attrs.field(factory=General)
+
+    def _update_psmethod(self, *, obj):
         """Update method with linear sweep settings."""
         obj.EquilibrationTime = self.equilibration_time
         obj.BeginPotential = self.begin_potential
@@ -345,7 +340,7 @@ class SquareWaveParameters(
             record_forward_and_reverse_currents=self.record_forward_and_reverse_currents,
         )
 
-    def update_params(self, *, obj):
+    def _update_params(self, *, obj):
         self.equilibration_time = obj.EquilibrationTime
         self.begin_potential = obj.BeginPotential
         self.end_potential = obj.EndPotential
@@ -365,21 +360,8 @@ class SquareWaveParameters(
             setattr(self, key, msk[key])
 
 
-@dataclass
-class DifferentialPulseParameters(
-    ParameterType,
-    AutorangingCurrentSettings,
-    PretreatmentSettings,
-    VersusOcpSettings,
-    BipotSettings,
-    PostMeasurementSettings,
-    IrDropCompensationSettings,
-    TriggerAtEquilibrationSettings,
-    TriggerAtMeasurementSettings,
-    PeakSettings,
-    MultiplexerSettings,
-    CommonSettings,
-):
+@attrs.define
+class DifferentialPulseVoltammetry(BaseConfig):
     """Create square wave method parameters.
 
     Attributes
@@ -425,7 +407,19 @@ class DifferentialPulseParameters(
     record_we_potential: bool = False
     enable_bipot_current: bool = False
 
-    def update_psmethod(self, *, obj):
+    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+    pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+    versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+    bipot: BiPot = attrs.field(factory=BiPot)
+    post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+    ir_drop: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+    equilibration_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+    measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+    data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+    multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+    general: General = attrs.field(factory=General)
+
+    def _update_psmethod(self, *, obj):
         """Update method with linear sweep settings."""
         obj.EquilibrationTime = self.equilibration_time
         obj.BeginPotential = self.begin_potential
@@ -443,7 +437,7 @@ class DifferentialPulseParameters(
             enable_bipot_current=self.enable_bipot_current,
         )
 
-    def update_params(self, *, obj):
+    def _update_params(self, *, obj):
         self.equilibration_time = obj.EquilibrationTime
         self.begin_potential = obj.BeginPotential
         self.end_potential = obj.EndPotential
@@ -463,23 +457,8 @@ class DifferentialPulseParameters(
             setattr(self, key, msk[key])
 
 
-@dataclass
-class ChronoAmperometryParameters(
-    ParameterType,
-    AutorangingCurrentSettings,
-    PretreatmentSettings,
-    VersusOcpSettings,
-    BipotSettings,
-    PostMeasurementSettings,
-    CurrentLimitSettings,
-    ChargeLimitSettings,
-    IrDropCompensationSettings,
-    TriggerAtEquilibrationSettings,
-    TriggerAtMeasurementSettings,
-    PeakSettings,
-    MultiplexerSettings,
-    CommonSettings,
-):
+@attrs.define
+class ChronoAmperometry(BaseConfig):
     """Create chrono amperometry method parameters.
 
     Attributes
@@ -516,7 +495,21 @@ class ChronoAmperometryParameters(
     record_we_potential: bool = False
     enable_bipot_current: bool = False
 
-    def update_psmethod(self, *, obj):
+    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+    pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+    versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+    bipot: BiPot = attrs.field(factory=BiPot)
+    post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+    current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
+    charge_limits: ChargeLimits = attrs.field(factory=ChargeLimits)
+    ir_drop: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+    equilibration_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+    measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+    data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+    multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+    general: General = attrs.field(factory=General)
+
+    def _update_psmethod(self, *, obj):
         """Update method with chrono amperometry settings."""
         obj.EquilibrationTime = self.equilibration_time
         obj.IntervalTime = self.interval_time
@@ -531,7 +524,7 @@ class ChronoAmperometryParameters(
             enable_bipot_current=self.enable_bipot_current,
         )
 
-    def update_params(self, *, obj):
+    def _update_params(self, *, obj):
         self.equilibration_time = obj.EquilibrationTime
         self.interval_time = obj.IntervalTime
         self.potential = obj.Potential
@@ -548,19 +541,8 @@ class ChronoAmperometryParameters(
             setattr(self, key, msk[key])
 
 
-@dataclass
-class MultiStepAmperometryParameters(
-    ParameterType,
-    AutorangingCurrentSettings,
-    PretreatmentSettings,
-    BipotSettings,
-    PostMeasurementSettings,
-    CurrentLimitSettings,
-    IrDropCompensationSettings,
-    PeakSettings,
-    MultiplexerSettings,
-    CommonSettings,
-):
+@attrs.define
+class MultiStepAmperometry(BaseConfig):
     """Create multi-step amperometry method parameters.
 
     Attributes
@@ -591,14 +573,24 @@ class MultiStepAmperometryParameters(
     equilibration_time: float = 0.0
     interval_time: float = 0.1
     n_cycles: float = 1
-    levels: list[ELevel] = field(default_factory=lambda: [ELevel()])
+    levels: list[ELevel] = attrs.field(factory=lambda: [ELevel()])
 
     record_auxiliary_input: bool = False
     record_cell_potential: bool = False
     record_we_potential: bool = False
     enable_bipot_current: bool = False
 
-    def update_psmethod(self, *, obj):
+    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+    pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+    bipot: BiPot = attrs.field(factory=BiPot)
+    post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+    current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
+    ir_drop: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+    data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+    multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+    general: General = attrs.field(factory=General)
+
+    def _update_psmethod(self, *, obj):
         """Update method with chrono amperometry settings."""
         obj.EquilibrationTime = self.equilibration_time
         obj.IntervalTime = self.interval_time
@@ -625,7 +617,7 @@ class MultiStepAmperometryParameters(
             enable_bipot_current=self.enable_bipot_current,
         )
 
-    def update_params(self, *, obj):
+    def _update_params(self, *, obj):
         self.equilibration_time = obj.EquilibrationTime
         self.interval_time = obj.IntervalTime
         self.n_cycles = obj.nCycles
@@ -643,19 +635,8 @@ class MultiStepAmperometryParameters(
             setattr(self, key, msk[key])
 
 
-@dataclass
-class OpenCircuitPotentiometryParameters(
-    ParameterType,
-    AutorangingCurrentSettings,
-    AutorangingPotentialSettings,
-    PretreatmentSettings,
-    PostMeasurementSettings,
-    PotentialLimitSettings,
-    TriggerAtMeasurementSettings,
-    PeakSettings,
-    MultiplexerSettings,
-    CommonSettings,
-):
+@attrs.define
+class OpenCircuitPotentiometry(BaseConfig):
     """Create open circuit potentiometry method parameters.
 
     Attributes
@@ -684,11 +665,21 @@ class OpenCircuitPotentiometryParameters(
     record_we_current: bool = False
     record_we_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_1_uA
 
-    def update_psmethod(self, *, obj):
+    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+    potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
+    pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+    post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+    potential_limits: PotentialLimits = attrs.field(factory=PotentialLimits)
+    measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+    data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+    multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+    general: General = attrs.field(factory=General)
+
+    def _update_psmethod(self, *, obj):
         """Update method with open circuit potentiometry settings."""
         obj.IntervalTime = self.interval_time
         obj.RunTime = self.run_time
-        obj.AppliedCurrentRange = self.record_we_current_range.to_psobj()
+        obj.AppliedCurrentRange = self.record_we_current_range._to_psobj()
 
         set_extra_value_mask(
             obj=obj,
@@ -696,10 +687,10 @@ class OpenCircuitPotentiometryParameters(
             record_we_current=self.record_we_current,
         )
 
-    def update_params(self, *, obj):
+    def _update_params(self, *, obj):
         self.interval_time = obj.IntervalTime
         self.run_time = obj.RunTime
-        self.record_we_current_range = CURRENT_RANGE.from_psobj(obj.AppliedCurrentRange)
+        self.record_we_current_range = CURRENT_RANGE._from_psobj(obj.AppliedCurrentRange)
 
         msk = get_extra_value_mask(obj)
 
@@ -710,19 +701,8 @@ class OpenCircuitPotentiometryParameters(
             setattr(self, key, msk[key])
 
 
-@dataclass
-class ChronopotentiometryParameters(
-    ParameterType,
-    AutorangingCurrentSettings,
-    AutorangingPotentialSettings,
-    PretreatmentSettings,
-    PostMeasurementSettings,
-    PotentialLimitSettings,
-    TriggerAtMeasurementSettings,
-    PeakSettings,
-    MultiplexerSettings,
-    CommonSettings,
-):
+@attrs.define
+class ChronoPotentiometry(BaseConfig):
     """Create potentiometry method parameters.
 
     Attributes
@@ -755,14 +735,24 @@ class ChronopotentiometryParameters(
     record_cell_potential: bool = False
     record_we_current: bool = False
 
-    def update_psmethod(self, *, obj):
+    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+    potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
+    pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+    post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+    potential_limits: PotentialLimits = attrs.field(factory=PotentialLimits)
+    measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+    data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+    multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+    general: General = attrs.field(factory=General)
+
+    def _update_psmethod(self, *, obj):
         """Update method with potentiometry settings."""
         obj.Current = self.current
-        obj.AppliedCurrentRange = self.applied_current_range.to_psobj()
+        obj.AppliedCurrentRange = self.applied_current_range._to_psobj()
         obj.IntervalTime = self.interval_time
         obj.RunTime = self.run_time
 
-        obj.AppliedCurrentRange = self.applied_current_range.to_psobj()
+        obj.AppliedCurrentRange = self.applied_current_range._to_psobj()
 
         set_extra_value_mask(
             obj=obj,
@@ -771,9 +761,9 @@ class ChronopotentiometryParameters(
             record_we_current=self.record_we_current,
         )
 
-    def update_params(self, *, obj):
+    def _update_params(self, *, obj):
         self.current = obj.Current
-        self.applied_current_range = CURRENT_RANGE.from_psobj(obj.AppliedCurrentRange)
+        self.applied_current_range = CURRENT_RANGE._from_psobj(obj.AppliedCurrentRange)
         self.interval_time = obj.IntervalTime
         self.run_time = obj.RunTime
 
@@ -787,19 +777,8 @@ class ChronopotentiometryParameters(
             setattr(self, key, msk[key])
 
 
-@dataclass
-class ElectrochemicalImpedanceSpectroscopyParameters(
-    ParameterType,
-    AutorangingCurrentSettings,
-    AutorangingPotentialSettings,
-    PretreatmentSettings,
-    VersusOcpSettings,
-    PostMeasurementSettings,
-    TriggerAtMeasurementSettings,
-    TriggerAtEquilibrationSettings,
-    MultiplexerSettings,
-    CommonSettings,
-):
+@attrs.define
+class ElectrochemicalImpedanceSpectroscopy(BaseConfig):
     """Create potentiometry method parameters.
 
     Attributes
@@ -827,7 +806,17 @@ class ElectrochemicalImpedanceSpectroscopyParameters(
     max_frequency: float = 1e5
     min_frequency: float = 1e3
 
-    def update_psmethod(self, *, obj):
+    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+    potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
+    pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+    versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+    post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+    measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+    equilibration_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+    multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+    general: General = attrs.field(factory=General)
+
+    def _update_psmethod(self, *, obj):
         """Update method with potentiometry settings."""
         obj.ScanType = enumScanType.Fixed
         obj.FreqType = enumFrequencyType.Scan
@@ -838,7 +827,7 @@ class ElectrochemicalImpedanceSpectroscopyParameters(
         obj.MaxFrequency = self.max_frequency
         obj.MinFrequency = self.min_frequency
 
-    def update_params(self, *, obj):
+    def _update_params(self, *, obj):
         self.equilibration_time = obj.EquilibrationTime
         self.dc_potential = obj.Potential
         self.ac_potential = obj.Eac
@@ -847,18 +836,8 @@ class ElectrochemicalImpedanceSpectroscopyParameters(
         self.min_frequency = obj.MinFrequency
 
 
-@dataclass
-class GalvanostaticImpedanceSpectroscopyParameters(
-    ParameterType,
-    AutorangingCurrentSettings,
-    AutorangingPotentialSettings,
-    PretreatmentSettings,
-    PostMeasurementSettings,
-    TriggerAtEquilibrationSettings,
-    TriggerAtMeasurementSettings,
-    MultiplexerSettings,
-    CommonSettings,
-):
+@attrs.define
+class GalvanostaticImpedanceSpectroscopy(BaseConfig):
     """Create potentiometry method parameters.
 
     Attributes
@@ -888,12 +867,21 @@ class GalvanostaticImpedanceSpectroscopyParameters(
     max_frequency: float = 1e5
     min_frequency: float = 1e3
 
-    def update_psmethod(self, *, obj):
+    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+    potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
+    pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+    post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+    equilibration_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+    measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+    multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+    general: General = attrs.field(factory=General)
+
+    def _update_psmethod(self, *, obj):
         """Update method with potentiometry settings."""
 
         obj.ScanType = enumScanType.Fixed
         obj.FreqType = enumFrequencyType.Scan
-        obj.AppliedCurrentRange = self.applied_current_range.to_psobj()
+        obj.AppliedCurrentRange = self.applied_current_range._to_psobj()
         obj.EquilibrationTime = self.equilibration_time
         obj.Iac = self.ac_current
         obj.Idc = self.dc_current
@@ -901,8 +889,8 @@ class GalvanostaticImpedanceSpectroscopyParameters(
         obj.MaxFrequency = self.max_frequency
         obj.MinFrequency = self.min_frequency
 
-    def update_params(self, *, obj):
-        self.applied_current_range = CURRENT_RANGE.from_psobj(obj.AppliedCurrentRange)
+    def _update_params(self, *, obj):
+        self.applied_current_range = CURRENT_RANGE._from_psobj(obj.AppliedCurrentRange)
         self.equilibration_time = obj.EquilibrationTime
         self.ac_current = obj.Iac
         self.dc_current = obj.Idc
@@ -911,8 +899,8 @@ class GalvanostaticImpedanceSpectroscopyParameters(
         self.min_frequency = obj.MinFrequency
 
 
-@dataclass
-class MethodScriptParameters(ParameterType):
+@attrs.define
+class MethodScript(BaseConfig):
     """Create a method script sandbox object.
 
     Attributes
@@ -931,42 +919,42 @@ endif
 
 """
 
-    def update_psmethod(self, *, obj):
+    def _update_psmethod(self, *, obj):
         """Update method with MethodScript."""
         obj.MethodScript = self.script
 
-    def update_params(self, *, obj):
+    def _update_params(self, *, obj):
         self.script = obj.MethodScript
 
 
-ID_TO_PARAMETER_MAPPING = {
+ID_TO_PARAMETER_MAPPING: dict[str, Type[BaseConfig] | None] = {
     'acv': None,
-    'ad': ChronoAmperometryParameters,
+    'ad': ChronoAmperometry,
     'cc': None,
-    'cp': ChronopotentiometryParameters,
+    'cp': ChronoPotentiometry,
     'cpot': None,
-    'cv': CyclicVoltammetryParameters,
-    'dpv': DifferentialPulseParameters,
-    'eis': ElectrochemicalImpedanceSpectroscopyParameters,
+    'cv': CyclicVoltammetry,
+    'dpv': DifferentialPulseVoltammetry,
+    'eis': ElectrochemicalImpedanceSpectroscopy,
     'fam': None,
     'fcv': None,
     'fgis': None,
     'fis': None,
-    'gis': GalvanostaticImpedanceSpectroscopyParameters,
+    'gis': GalvanostaticImpedanceSpectroscopy,
     'gs': None,
     'lp': None,
     'lsp': None,
-    'lsv': LinearSweepParameters,
-    'ma': MultiStepAmperometryParameters,
+    'lsv': LinearSweepVoltammetry,
+    'ma': MultiStepAmperometry,
     'mm': None,
     'mp': None,
     'mpad': None,
-    'ms': MethodScriptParameters,
+    'ms': MethodScript,
     'npv': None,
-    'ocp': OpenCircuitPotentiometryParameters,
+    'ocp': OpenCircuitPotentiometry,
     'pad': None,
     'pot': None,
     'ps': None,
     'scp': None,
-    'swv': SquareWaveParameters,
+    'swv': SquareWaveVoltammetry,
 }

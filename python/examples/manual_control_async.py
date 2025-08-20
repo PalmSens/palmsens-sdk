@@ -1,14 +1,13 @@
 import asyncio
 
 import pypalmsens
-from pypalmsens.methods import CURRENT_RANGE
 
 
 async def main():
     available_instruments = await pypalmsens.discover_async()
     print(f'connecting to {available_instruments[0].name}')
 
-    async with pypalmsens.connect_async(available_instruments[0]) as manager:
+    async with await pypalmsens.connect_async(available_instruments[0]) as manager:
         print('connection established')
 
         await manager.set_cell(True)
@@ -17,7 +16,7 @@ async def main():
         await manager.set_potential(1)
         print('set potential to 1V')
 
-        await manager.set_current_range(CURRENT_RANGE.cr_1_mA)
+        await manager.set_current_range(pypalmsens.config.CURRENT_RANGE.cr_1_mA)
         print('set cell to to 1mA currrent range')
 
         current = await manager.read_current()

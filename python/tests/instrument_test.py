@@ -7,7 +7,7 @@ import pytest
 from PalmSens.Comm import enumDeviceType
 
 import pypalmsens
-from pypalmsens.instruments._common import firmware_warning
+from pypalmsens._instruments._common import firmware_warning
 
 
 @dataclass
@@ -86,14 +86,14 @@ def test_firmware_warning_fail(cap):
 @pytest.mark.instrument
 def test_connect():
     with pypalmsens.connect() as manager:
-        assert isinstance(manager, pypalmsens.instruments.InstrumentManager)
+        assert isinstance(manager, pypalmsens.InstrumentManager)
 
 
 @pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_connect_async():
-    async with pypalmsens.connect_async() as manager:
-        assert isinstance(manager, pypalmsens.instruments.InstrumentManagerAsync)
+    async with await pypalmsens.connect_async() as manager:
+        assert isinstance(manager, pypalmsens.InstrumentManagerAsync)
 
 
 @pytest.mark.instrument

@@ -123,7 +123,7 @@ This example creates a method for a square-wave voltammetry measurement versus t
 ...)
 ----
 
-Because this is a https://docs.python.org/3/library/dataclasses.html[Python dataclass], all attributes can be modified:
+Because methods are https://www.attrs.org/[attrs dataclasses], all attributes can be modified:
 
 [source,python]
 ----
@@ -136,7 +136,7 @@ It can be serialized to and from a dictionary:
 
 [source,python]
 ----
->>> from dataclasses import asdict
+>>> from attrs import asdict
 >>> d = asdict(method)
 >>> d
 {'equilibration_time': 0.0,
@@ -155,8 +155,8 @@ It can be updated like a dataclass:
 
 [source,python]
 ----
->>> from dataclasses import replace
->>> method2 = replace(method, equilibration_time=10.0)
+>>> from attrs import evolve
+>>> method2 = evolve(method, equilibration_time=10.0)
 >>> method == method2
 False
 ----

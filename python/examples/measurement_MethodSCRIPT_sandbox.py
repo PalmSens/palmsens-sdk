@@ -1,5 +1,4 @@
 import pypalmsens
-from pypalmsens.methods import MethodScriptParameters
 
 
 def new_data_callback(new_data):
@@ -68,7 +67,7 @@ with pypalmsens.connect(available_instruments[0]) as manager:
     serial = manager.get_instrument_serial()
     print(serial)
 
-    method = MethodScriptParameters(script=script)
+    method = pypalmsens.MethodScript(script=script)
 
     measurement = manager.measure(method)
 

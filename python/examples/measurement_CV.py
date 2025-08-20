@@ -1,5 +1,4 @@
 import pypalmsens
-from pypalmsens.methods import CyclicVoltammetryParameters, CURRENT_RANGE
 
 
 def new_data_callback(new_data):
@@ -18,10 +17,12 @@ with pypalmsens.connect(available_instruments[0]) as manager:
     serial = manager.get_instrument_serial()
     print(serial)
 
-    method = CyclicVoltammetryParameters(
-        current_range_max=CURRENT_RANGE.cr_1_A,  # 1A range
-        current_range_min=CURRENT_RANGE.cr_1_uA,  # 1µA range
-        current_range_start=CURRENT_RANGE.cr_1_mA,  # 1mA range
+    method = pypalmsens.CyclicVoltammetry(
+        current_ranges=pypalmsens.config.CurrentRanges(
+            max=pypalmsens.config.CURRENT_RANGE.cr_1_A,  # 1 A range
+            min=pypalmsens.config.CURRENT_RANGE.cr_1_uA,  # 1 µA range
+            start=pypalmsens.config.CURRENT_RANGE.cr_1_mA,  # 1 mA range
+        ),
         equilibration_time=2,  # seconds
         begin_potential=-2,  # V
         vertex1_potential=-2,  # V

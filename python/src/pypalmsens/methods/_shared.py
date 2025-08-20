@@ -46,12 +46,12 @@ class CURRENT_RANGE(Enum):
     cr_200_uA = 25
     cr_1_A = 30
 
-    def to_psobj(self):
+    def _to_psobj(self):
         """Get equivalent PS object."""
         return CurrentRange(CurrentRanges(self.value))
 
     @classmethod
-    def from_psobj(cls, psobj):
+    def _from_psobj(cls, psobj):
         """Convert from PS object."""
         return cls(int(CurrentRange.GetCRfromCRByte(psobj.CRbyte)))
 
@@ -68,12 +68,12 @@ class POTENTIAL_RANGE(Enum):
     pr_500_mV = 6
     pr_1_V = 7
 
-    def to_psobj(self):
+    def _to_psobj(self):
         """Get equivalent PS object."""
         return PotentialRange(PotentialRanges(self.value))
 
     @classmethod
-    def from_psobj(cls, psobj):
+    def _from_psobj(cls, psobj):
         """Convert from PS object."""
         return cls(int(PotentialRange.get_PR(psobj)))
 

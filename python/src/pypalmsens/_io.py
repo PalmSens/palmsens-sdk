@@ -11,7 +11,7 @@ from System.IO import StreamReader, StreamWriter
 from System.Text import Encoding
 
 from .data.measurement import Measurement
-from .methods import Method, ParameterType
+from .methods import BaseConfig, Method
 
 if TYPE_CHECKING:
     from .methods.method import Method
@@ -91,7 +91,7 @@ def save_session_file(path: Union[str, Path], measurements: list[Measurement]):
         session.Save(stream.BaseStream, str(path))
 
 
-def load_method_file(path: Union[str, Path], as_method: bool = False) -> ParameterType | Method:
+def load_method_file(path: Union[str, Path], as_method: bool = False) -> BaseConfig | Method:
     """Load a method file (.psmethod).
 
     Parameters
@@ -124,7 +124,7 @@ def load_method_file(path: Union[str, Path], as_method: bool = False) -> Paramet
         return method.to_parameters()
 
 
-def save_method_file(path: Union[str, Path], method: Union[Method, ParameterType]):
+def save_method_file(path: Union[str, Path], method: Union[Method, BaseConfig]):
     """Load a method file (.psmethod).
 
     Parameters
@@ -136,8 +136,8 @@ def save_method_file(path: Union[str, Path], method: Union[Method, ParameterType
     """
     from pypalmsens import __sdk_version__
 
-    if isinstance(method, ParameterType):
-        psmethod = method.to_psmethod()
+    if isinstance(method, BaseConfig):
+        psmethod = method._to_psmethod()
     elif isinstance(method, Method):
         psmethod = method.psmethod
     else:

@@ -1,7 +1,6 @@
 import csv
 
 import pypalmsens
-from pypalmsens.methods import ChronoAmperometryParameters
 
 
 def stream_to_csv_callback(new_data):
@@ -25,7 +24,7 @@ with pypalmsens.connect(available_instruments[0]) as manager:
     print(serial)
 
     # #Chronoamperometry measurement using helper class
-    method = ChronoAmperometryParameters(
+    method = pypalmsens.ChronoAmperometry(
         interval_time=0.0004,
         potential=1.0,
         run_time=10.0,

@@ -25,4 +25,4 @@ def test_to_dict(method):
 
 def test_to_parameters(method):
     params = method.to_parameters()
-    assert isinstance(params, techniques.CyclicVoltammetryParameters)
+    assert isinstance(params, techniques.CyclicVoltammetry)

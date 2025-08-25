@@ -9,10 +9,17 @@ if TYPE_CHECKING:
 
 
 class Peak:
-    """Python wrapper for dotnet Peak class."""
+    """Python wrapper for .NET Peak class.
+
+    Parameters
+    ----------
+    pspeak : PalmSens.Analysis.Peak
+        Reference to .NET Peak object.
+    """
 
     def __init__(self, *, pspeak: PSPeak):
-        self.pspeak = pspeak
+        self._pspeak = pspeak
+
         self._curve: Curve | None = None
 
     def __str__(self):
@@ -34,7 +41,7 @@ class Peak:
         from .curve import Curve
 
         if not self._curve:
-            self._curve = Curve(pscurve=self.pspeak.Curve)
+            self._curve = Curve(pscurve=self._pspeak.Curve)
         return self._curve
 
     @property
@@ -55,107 +62,105 @@ class Peak:
     @property
     def analyte_name(self) -> str:
         """Name of analyte."""
-        return self.pspeak.AnalyteName
+        return self._pspeak.AnalyteName
 
     @analyte_name.setter
     def analyte_name(self, name: str):
         """Set name of analyte."""
-        self.pspeak.set_AnalyteName(name)
+        self._pspeak.set_AnalyteName(name)
 
     @property
     def area(self) -> float:
         """Area of the peak."""
-        return self.pspeak.Area
+        return self._pspeak.Area
 
     @property
     def label(self) -> str:
         """Formatted label for the peak value."""
-        return self.pspeak.Label
+        return self._pspeak.Label
 
     @property
     def left_index(self) -> int:
         """Left side of the peaks baseline as index number of the curve."""
-        return self.pspeak.LeftIndex
+        return self._pspeak.LeftIndex
 
     @property
     def left_x(self) -> float:
         """X of the left side of the peak baseline."""
-        return self.pspeak.LeftX
+        return self._pspeak.LeftX
 
     @property
     def left_y(self) -> float:
         """Y of the left side of the peak baseline."""
-        return self.pspeak.LeftY
+        return self._pspeak.LeftY
 
     @property
     def maximum_of_derivative_neg(self) -> float:
         """Maximum derivative of the negative slope of the peak."""
-        return self.pspeak.MaximumOfDerivativeNeg
+        return self._pspeak.MaximumOfDerivativeNeg
 
     @property
     def maximum_of_derivative_pos(self) -> float:
         """Maximum derivative of the positive slope of the peak."""
-        return self.pspeak.MaximumOfDerivativePos
+        return self._pspeak.MaximumOfDerivativePos
 
     @property
     def maximum_of_derivative_sum(self) -> float:
         """Sum of the absolute values for both the positive and negative maximum derivative."""
-        return self.pspeak.MaximumOfDerivativeSum
+        return self._pspeak.MaximumOfDerivativeSum
 
     @property
     def notes(self) -> str:
         """User notes stored on this peak."""
-        return self.pspeak.Notes
+        return self._pspeak.Notes
 
     @property
     def offset_y(self) -> float:
         """Offset of Y."""
-        return self.pspeak.OffsetY
+        return self._pspeak.OffsetY
 
     @property
     def index(self) -> int:
         """Location of the peak as index number of the curve."""
-        return self.pspeak.PeakIndex
+        return self._pspeak.PeakIndex
 
     @property
     def type(self) -> str:
         """Used to determine if a peak is auto found."""
-        return str(self.pspeak.PeakType)
+        return str(self._pspeak.PeakType)
 
     @property
     def value(self) -> float:
         """Value of the peak in units of the curve.
         This is the value of the peak height relative to the baseline of the peak."""
-        return self.pspeak.PeakValue
-
-    peak_height = value  # alias for backward compatibility
+        return self._pspeak.PeakValue
 
     @property
     def x(self) -> float:
         """X value of the peak."""
-        return self.pspeak.PeakX
+        return self._pspeak.PeakX
 
     @property
     def y(self) -> float:
         """Y value of the peak."""
-        return self.pspeak.PeakY
+        return self._pspeak.PeakY
 
     @property
     def right_index(self) -> int:
         """Left side of the peaks baseline as index number of the curve."""
-        return self.pspeak.RightIndex
+        return self._pspeak.RightIndex
 
     @property
     def right_x(self) -> float:
         """X of the right side of the peak baseline."""
-        return self.pspeak.RightX
+        return self._pspeak.RightX
 
     @property
     def right_y(self) -> float:
         """Returns the Y of the right side of the peak baseline."""
-        return self.pspeak.RightY
+        return self._pspeak.RightY
 
     @property
     def width(self) -> float:
         """Full width at half-height of the peak."""
-        return self.pspeak.Width
+        return self._pspeak.Width

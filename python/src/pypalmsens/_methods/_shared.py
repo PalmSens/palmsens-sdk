@@ -17,34 +17,62 @@ from .._shared import single_to_double
 
 
 class CURRENT_RANGE(Enum):
-    """Get the id for a given current range."""
+    """Get the id for a given current range.
+
+    Use these when defining a current range."""
 
     cr_100_pA = 0
+    """100 pA"""
     cr_1_nA = 1
+    """1 nA"""
     cr_10_nA = 2
+    """10 nA"""
     cr_100_nA = 3
+    """100 nA"""
     cr_1_uA = 4
+    """1 μA"""
     cr_10_uA = 5
+    """10 μA"""
     cr_100_uA = 6
+    """100 μA"""
     cr_1_mA = 7
+    """1 mA"""
     cr_10_mA = 8
+    """10 mA"""
     cr_100_mA = 9
+    """100 mA"""
     cr_2_uA = 10
+    """2 μA"""
     cr_4_uA = 11
+    """4 μA"""
     cr_8_uA = 12
+    """8 μA"""
     cr_16_uA = 13
+    """16 μA"""
     cr_32_uA = 14
+    """32 μA"""
     cr_63_uA = 26
+    """63 μA"""
     cr_125_uA = 17
+    """125 μA"""
     cr_250_uA = 18
+    """250 μA"""
     cr_500_uA = 19
+    """500 μA"""
     cr_5_mA = 20
+    """5 mA"""
     cr_6_uA = 21
+    """6 μA"""
     cr_13_uA = 22
+    """13 μA"""
     cr_25_uA = 23
+    """25 μA"""
     cr_50_uA = 24
+    """50 μA"""
     cr_200_uA = 25
+    """200 μA"""
     cr_1_A = 30
+    """1 A"""
 
     def _to_psobj(self):
         """Get equivalent PS object."""
@@ -57,16 +85,26 @@ class CURRENT_RANGE(Enum):
 
 
 class POTENTIAL_RANGE(Enum):
-    """Get the id for a given current range."""
+    """Get the id for a given current range.
+
+    Use these when defining a potential range."""
 
     pr_1_mV = 0
+    """1 mV"""
     pr_10_mV = 1
+    """10 mV"""
     pr_20_mV = 2
+    """20 mV"""
     pr_50_mV = 3
+    """50 mV"""
     pr_100_mV = 4
+    """100 mV"""
     pr_200_mV = 5
+    """200 mV"""
     pr_500_mV = 6
+    """500 mV"""
     pr_1_V = 7
+    """1 V"""
 
     def _to_psobj(self):
         """Get equivalent PS object."""
@@ -134,40 +172,36 @@ def get_extra_value_mask(obj) -> dict[str, Any]:
 
 @dataclass
 class ELevel:
-    """Create a multi-step amperometry level method object.
-
-    Attributes
-    ----------
-    level : float
-        Level in V (default: 0.0)
-    duration : float
-        Duration in s (default: 1.0)
-    record : bool
-        Record the current (default: True)
-    use_limit_current_max : bool
-        Use limit current max (default: False)
-    limit_current_max : float
-        Limit current max in µA (default: 0.0)
-    use_limit_current_min : bool
-        Use limit current min (default: False)
-    limit_current_min : float
-        Limit current min in µA (default: 0.0)
-    trigger_at_level : bool
-        Use trigger at level (default: False)
-    trigger_at_level_lines : list
-        Trigger at level lines (default: [False, False, False, False])
-        [d0 high, d1 high, d2 high, d3 high]
-    """
+    """Create a multi-step amperometry level method object."""
 
     level: float = 0.0
+    """Level in V."""
+
     duration: float = 1.0
+    """Duration in s."""
+
     record: bool = True
+    """Record the current."""
+
     use_limit_current_max: bool = False
+    """Use limit current max."""
+
     limit_current_max: float = 0.0
+    """Limit current max in µA."""
+
     use_limit_current_min: bool = False
+    """Use limit current min."""
+
     limit_current_min: float = 0.0
+    """Limit current min in µA."""
+
     trigger_at_level: bool = False
+    """Use trigger at level."""
+
     trigger_at_level_lines: tuple[bool, bool, bool, bool] = (False, False, False, False)
+    """Trigger at level lines.
+
+    Line order : [d0 high, d1 high, d2 high, d3 high]"""
 
     def to_psobj(self):
         obj = Techniques.ELevel()

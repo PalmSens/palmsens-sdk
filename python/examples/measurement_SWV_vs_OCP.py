@@ -14,11 +14,11 @@ with pypalmsens.connect(available_instruments[0]) as manager:
     manager.callback = new_data_callback
 
     method = pypalmsens.SquareWaveVoltammetry(
-        pretreatment=pypalmsens.config.Pretreatment(
+        pretreatment=pypalmsens.settings.Pretreatment(
             conditioning_potential=2.0,  # V
             conditioning_time=2,  # seconds
         ),
-        versus_ocp=pypalmsens.config.VersusOCP(
+        versus_ocp=pypalmsens.settings.VersusOCP(
             mode=3,  # versus begin and end potential
             max_ocp_time=1,  # seconds
         ),
@@ -33,4 +33,4 @@ with pypalmsens.connect(available_instruments[0]) as manager:
 
     measurement = manager.measure(method)
 
-    print(f'ocp: {measurement.curves[0].pscurve.OCPValue}')
+    print(f'ocp: {measurement.curves[0]._pscurve.OCPValue}')

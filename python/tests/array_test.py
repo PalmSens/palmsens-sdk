@@ -5,7 +5,7 @@ from math import isnan
 import numpy as np
 import pytest
 
-from pypalmsens.data._shared import ArrayType
+from pypalmsens._data._shared import ArrayType
 
 
 @pytest.fixture

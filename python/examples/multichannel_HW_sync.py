@@ -33,16 +33,16 @@ async def main():
 
     if all(connected) and 1 in managers:
         method = pypalmsens.ChronoPotentiometry(
-            potential_ranges=pypalmsens.config.PotentialRanges(
-                max=pypalmsens.config.POTENTIAL_RANGE.pr_1_V,  # 1V range
-                min=pypalmsens.config.POTENTIAL_RANGE.pr_10_mV,  # 10mV range
-                start=pypalmsens.config.POTENTIAL_RANGE.pr_1_V,  # 1V range
+            potential_ranges=pypalmsens.settings.PotentialRanges(
+                max=pypalmsens.settings.POTENTIAL_RANGE.pr_1_V,  # 1V range
+                min=pypalmsens.settings.POTENTIAL_RANGE.pr_10_mV,  # 10mV range
+                start=pypalmsens.settings.POTENTIAL_RANGE.pr_1_V,  # 1V range
             ),
-            applied_current_range=pypalmsens.config.CURRENT_RANGE.cr_10_uA,  # 10µA range
+            applied_current_range=pypalmsens.settings.CURRENT_RANGE.cr_10_uA,  # 10µA range
             current=0.5,  # applied current in range, i.e. 5µA when the 10µA range is set as the applied range
             interval_time=0.05,  # seconds
             run_time=5,  # seconds
-            general=pypalmsens.config.General(
+            general=pypalmsens.settings.General(
                 use_hardware_sync=True,  # enable hw sync
             ),
         )

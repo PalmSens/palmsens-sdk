@@ -33,8 +33,8 @@ from .settings import (
 
 
 @runtime_checkable
-class BaseConfig(Protocol):
-    """Protocol to provide generic methods for parameters."""
+class MethodSettings(Protocol):
+    """Protocol to provide base methods for method classes."""
 
     __attrs_attrs__: ClassVar[list[attrs.Attribute]] = []
     _id: str
@@ -56,7 +56,7 @@ class BaseConfig(Protocol):
         return psmethod
 
     @staticmethod
-    def _from_psmethod(psmethod: PSMethod) -> BaseConfig:
+    def _from_psmethod(psmethod: PSMethod) -> MethodSettings:
         """Generate parameters from dotnet method object."""
         id = psmethod.MethodID
 
@@ -85,51 +85,47 @@ class BaseConfig(Protocol):
 
 
 @attrs.define
-class CyclicVoltammetry(BaseConfig):
-    """Create cyclic voltammetry method parameters.
-
-    Attributes
-    ----------
-    equilibration_time : float
-        Equilibration time in s (default: 0.0)
-    begin_potential: float
-        Begin potential in V (default: -0.5)
-    vertex1_potential: float
-        Vertex 1 potential in V (default: 0.5)
-    vertex2_potential: float
-        Vertex 2 potential in V (default: -0.5)
-    step_potential: float
-        Step potential in V (default: 0.1)
-    scanrate: float
-        Scan rate in V/s (default: 1.0)
-    n_scans: float
-        Number of scans (default: 1)
-    enable_bipot_current: bool
-        Enable bipot current (default: False)
-    record_auxiliary_input : bool
-        Record auxiliary input (default: False)
-    record_cell_potential : bool
-        Record cell potential (default: False)
-        Counter electrode vs ground.
-    record_we_potential : bool
-        Record applied working electrode potential (default: False)
-        Reference electrode vs ground.
-    """
+class CyclicVoltammetry(MethodSettings):
+    """Create cyclic voltammetry method parameters."""
 
     _id = 'cv'
 
     equilibration_time: float = 0.0
+    """Equilibration time in s"""
+
     begin_potential: float = -0.5
+    """Begin potential in V"""
+
     vertex1_potential: float = 0.5
+    """Vertex 1 potential in V"""
+
     vertex2_potential: float = -0.5
+    """Vertex 2 potential in V"""
+
     step_potential: float = 0.1
+    """Step potential in V"""
+
     scanrate: float = 1.0
+    """Scan rate in V/s"""
+
     n_scans: float = 1
+    """Number of scans"""
 
     enable_bipot_current: bool = False
+    """Enable bipot current."""
+
     record_auxiliary_input: bool = False
+    """Record auxiliary input."""
+
     record_cell_potential: bool = False
+    """Record cell potential.
+
+    Counter electrode vs ground."""
+
     record_we_potential: bool = False
+    """Record applied working electrode potential.
+
+    Reference electrode vs ground."""
 
     current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
     pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
@@ -181,44 +177,40 @@ class CyclicVoltammetry(BaseConfig):
 
 
 @attrs.define
-class LinearSweepVoltammetry(BaseConfig):
-    """Create linear sweep method parameters.
-
-    Attributes
-    ----------
-    begin_potential : float
-        Begin potential in V (default: -0.5)
-    end_potential : float
-        End potential in V (default: 0.5)
-    step_potential : float
-        Step potential in V (default: 0.1)
-    scanrate : float
-        Scan rate in V/s (default: 1.0)
-    enable_bipot_current: bool
-        Enable bipot current (default: False)
-    record_auxiliary_input : bool
-        Record auxiliary input (default: False)
-    record_cell_potential : bool
-        Record cell potential (default: False)
-        Counter electrode vs ground.
-    record_we_potential : bool
-        Record applied working electrode potential (default: False)
-        Reference electrode vs ground.
-    """
+class LinearSweepVoltammetry(MethodSettings):
+    """Create linear sweep method parameters."""
 
     _id = 'lsv'
 
     begin_potential: float = -0.5
+    """Begin potential in V."""
+
     end_potential: float = 0.5
+    """End potential in V."""
+
     step_potential: float = 0.1
+    """Step potential in V."""
+
     scanrate: float = 1.0
+    """Scan rate in V/s."""
+
+    enable_bipot_current: bool = False
+    """Enable bipot current."""
 
     record_auxiliary_input: bool = False
-    record_cell_potential: bool = False
-    record_we_potential: bool = False
-    enable_bipot_current: bool = False
+    """Record auxiliary input."""
 
-    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+    record_cell_potential: bool = False
+    """Record cell potential.
+
+    Counter electrode vs ground."""
+
+    record_we_potential: bool = False
+    """Record applied working electrode potential.
+
+    Reference electrode vs ground."""
+
+    current_ranges: CurrentRanges = CurrentRanges()
     pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
     versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
     bipot: BiPot = attrs.field(factory=BiPot)
@@ -264,51 +256,47 @@ class LinearSweepVoltammetry(BaseConfig):
 
 
 @attrs.define
-class SquareWaveVoltammetry(BaseConfig):
-    """Create square wave method parameters.
-
-    Attributes
-    ----------
-    equilibration_time : float
-        Equilibration time in s (default: 0.0)
-    begin_potential : float
-        Begin potential in V (default: -0.5)
-    end_potential : float
-        End potential in V (default: 0.5)
-    step_potential : float
-        Step potential in V (default: 0.1)
-    frequency : float
-        Frequency in Hz (default: 10.0)
-    amplitude : float
-        Amplitude in V as half peak-to-peak value (default: 0.05).
-    enable_bipot_current: bool
-        Enable bipot current (default: False)
-    record_auxiliary_input : bool
-        Record auxiliary input (default: False)
-    record_cell_potential : bool
-        Record cell potential (default: False)
-        Counter electrode vs ground.
-    record_we_potential : bool
-        Record applied working electrode potential (default: False)
-        Reference electrode vs ground.
-    record_forward_and_reverse_currents : bool
-        Record forward and reverse currents (default: False)
-    """
+class SquareWaveVoltammetry(MethodSettings):
+    """Create square wave method parameters."""
 
     _id = 'swv'
 
     equilibration_time: float = 0.0
+    """Equilibration time in s."""
+
     begin_potential: float = -0.5
+    """Begin potential in V."""
+
     end_potential: float = 0.5
+    """End potential in V."""
+
     step_potential: float = 0.1
+    """Step potential in V."""
+
     frequency: float = 10.0
+    """Frequency in Hz."""
+
     amplitude: float = 0.05
+    """Amplitude in V as half peak-to-peak value."""
+
+    enable_bipot_current: bool = False
+    """Enable bipot current."""
 
     record_auxiliary_input: bool = False
+    """Record auxiliary input."""
+
     record_cell_potential: bool = False
+    """Record cell potential.
+
+    Counter electrode vs ground."""
+
     record_we_potential: bool = False
-    enable_bipot_current: bool = False
+    """Record applied working electrode potential.
+
+    Reference electrode vs ground."""
+
     record_forward_and_reverse_currents: bool = False
+    """Record forward and reverse currents"""
 
     current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
     pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
@@ -361,51 +349,47 @@ class SquareWaveVoltammetry(BaseConfig):
 
 
 @attrs.define
-class DifferentialPulseVoltammetry(BaseConfig):
-    """Create square wave method parameters.
-
-    Attributes
-    ----------
-    equilibration_time : float
-        Equilibration time in s (default: 0.0)
-    begin_potential : float
-        Begin potential in V (default: -0.5)
-    end_potential : float
-        End potential in V (default: 0.5)
-    step_potential : float
-        Step potential in V (default: 0.1)
-    pulse_potential : float
-        Pulse potential in V (default: 0.05)
-    pulse_time : float
-        Pulse time in s (default: 0.01)
-    scanrate : float
-        Scan rate in V/s (default: 1.0)
-    enable_bipot_current: bool
-        Enable bipot current (default: False)
-    record_auxiliary_input : bool
-        Record auxiliary input (default: False)
-    record_cell_potential : bool
-        Record cell potential (default: False)
-        Counter electrode vs ground.
-    record_we_potential : bool
-        Record applied working electrode potential (default: False)
-        Reference electrode vs ground.
-    """
+class DifferentialPulseVoltammetry(MethodSettings):
+    """Create square wave method parameters."""
 
     _id = 'dpv'
 
-    equilibration_time: float = 0.0  # Time (s)
-    begin_potential: float = -0.5  # potential (V)
-    end_potential: float = 0.5  # potential (V)
-    step_potential: float = 0.1  # potential (V)
-    pulse_potential: float = 0.05  # potential (V)
-    pulse_time: float = 0.01  # time (s)
-    scan_rate: float = 1.0  # potential/time (V/s)
+    equilibration_time: float = 0.0
+    """Equilibration time in s."""
+
+    begin_potential: float = -0.5
+    """Begin potential in V."""
+
+    end_potential: float = 0.5
+    """End potential in V."""
+
+    step_potential: float = 0.1
+    """Step potential in V."""
+
+    pulse_potential: float = 0.05
+    """Pulse potential in V."""
+
+    pulse_time: float = 0.01
+    """Pulse time in s."""
+
+    scan_rate: float = 1.0
+    """Scan rate (potential/time) in V/s."""
+
+    enable_bipot_current: bool = False
+    """Enable bipot current."""
 
     record_auxiliary_input: bool = False
+    """Record auxiliary input."""
+
     record_cell_potential: bool = False
+    """Record cell potential.
+
+    Counter electrode vs ground."""
+
     record_we_potential: bool = False
-    enable_bipot_current: bool = False
+    """Record applied working electrode potential.
+
+    Reference electrode vs ground."""
 
     current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
     pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
@@ -458,42 +442,38 @@ class DifferentialPulseVoltammetry(BaseConfig):
 
 
 @attrs.define
-class ChronoAmperometry(BaseConfig):
-    """Create chrono amperometry method parameters.
-
-    Attributes
-    ----------
-    equilibration_time : float
-        Equilibration time in s (default: 0.0)
-    interval_time : float
-        Interval time in s (default: 0.1)
-    potential : float
-        Potential in V (default: 0.0)
-    run_time : float
-        Run time in s (default: 1.0)
-    enable_bipot_current: bool
-        Enable bipot current (default: False)
-    record_auxiliary_input : bool
-        Record auxiliary input (default: False)
-    record_cell_potential : bool
-        Record cell potential (default: False)
-        Counter electrode vs ground.
-    record_we_potential : bool
-        Record applied working electrode potential (default: False)
-        Reference electrode vs ground.
-    """
+class ChronoAmperometry(MethodSettings):
+    """Create chrono amperometry method parameters."""
 
     _id = 'ad'
 
     equilibration_time: float = 0.0
+    """Equilibration time in s."""
+
     interval_time: float = 0.1
+    """Interval time in s."""
+
     potential: float = 0.0
+    """Potential in V."""
+
     run_time: float = 1.0
+    """Run time in s."""
+
+    enable_bipot_current: bool = False
+    """Enable bipot current."""
 
     record_auxiliary_input: bool = False
+    """Record auxiliary input."""
+
     record_cell_potential: bool = False
+    """Record cell potential.
+
+    Counter electrode vs ground."""
+
     record_we_potential: bool = False
-    enable_bipot_current: bool = False
+    """Record applied working electrode potential.
+
+    Reference electrode vs ground."""
 
     current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
     pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
@@ -542,43 +522,41 @@ class ChronoAmperometry(BaseConfig):
 
 
 @attrs.define
-class MultiStepAmperometry(BaseConfig):
-    """Create multi-step amperometry method parameters.
-
-    Attributes
-    ----------
-    equilibration_time : float
-        Equilibration time in s (default: 0.0)
-    interval_time : float
-        Interval time in s (default: 0.1)
-    n_cycles : int
-        Number of cycles (default: 1)
-    levels : list
-        List of levels (default: [ELevel()].
-        Use ELevel() to create levels.
-    enable_bipot_current: bool
-        Enable bipot current (default: False)
-    record_auxiliary_input : bool
-        Record auxiliary input (default: False)
-    record_cell_potential : bool
-        Record cell potential (default: False)
-        Counter electrode vs ground.
-    record_we_potential : bool
-        Record applied working electrode potential (default: False)
-        Reference electrode vs ground.
-    """
+class MultiStepAmperometry(MethodSettings):
+    """Create multi-step amperometry method parameters."""
 
     _id = 'ma'
 
     equilibration_time: float = 0.0
+    """Equilibration time in s."""
+
     interval_time: float = 0.1
+    """Interval time in s."""
+
     n_cycles: float = 1
+    """Number of cycles."""
+
     levels: list[ELevel] = attrs.field(factory=lambda: [ELevel()])
+    """List of levels.
+
+    Use `ELevel()` to create levels.
+    """
+
+    enable_bipot_current: bool = False
+    """Enable bipot current."""
 
     record_auxiliary_input: bool = False
+    """Record auxiliary input."""
+
     record_cell_potential: bool = False
+    """Record cell potential.
+
+    Counter electrode vs ground."""
+
     record_we_potential: bool = False
-    enable_bipot_current: bool = False
+    """Record applied working electrode potential.
+
+    Reference electrode vs ground."""
 
     current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
     pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
@@ -636,34 +614,27 @@ class MultiStepAmperometry(BaseConfig):
 
 
 @attrs.define
-class OpenCircuitPotentiometry(BaseConfig):
-    """Create open circuit potentiometry method parameters.
-
-    Attributes
-    ----------
-    interval_time : float
-        Interval time in s (default: 0.1)
-    run_time : float
-        Run time in s (default: 1.0)
-    enable_bipot_current: bool
-        Enable bipot current (default: False)
-    record_auxiliary_input : bool
-        Record auxiliary input (default: False)
-    record_we_current: bool
-        Record working electrode current (default: False)
-    record_we_current_range: int
-        Record working electrode current range (default: 1 µA)
-        Use `CURRENT_RANGE` to define the range.
-    """
+class OpenCircuitPotentiometry(MethodSettings):
+    """Create open circuit potentiometry method parameters."""
 
     _id = 'ocp'
 
-    interval_time: float = 0.1  # Time (s)
-    run_time: float = 1.0  # Time (s)
+    interval_time: float = 0.1
+    """Interval time in s."""
+
+    run_time: float = 1.0
+    """Run time in s."""
 
     record_auxiliary_input: bool = False
+    """Record auxiliary input."""
+
     record_we_current: bool = False
+    """Record working electrode current."""
+
     record_we_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_1_uA
+    """Record working electrode current range.
+
+    Use `CURRENT_RANGE` to define the range."""
 
     current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
     potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
@@ -702,38 +673,40 @@ class OpenCircuitPotentiometry(BaseConfig):
 
 
 @attrs.define
-class ChronoPotentiometry(BaseConfig):
-    """Create potentiometry method parameters.
-
-    Attributes
-    ----------
-    current : float
-        The current to apply. The unit of the value is the applied current range. So if 10 uA is the applied current range and 1.5 is given as value, the applied current will be 15 uA. (default: 0.0)
-    applied_current_range : PalmSens.CurrentRange
-        Applied current range (default: 100 µA).
-        Use `CURRENT_RANGE` to define the range.
-    interval_time : float
-        Interval time in s (default: 0.1)
-    run_time : float
-        Run time in s (default: 1.0)
-    record_auxiliary_input : bool
-        Record auxiliary input (default: False)
-    record_cell_potential : bool
-        Record cell potential (default: False) [counter electrode vs ground]
-    record_we_current : bool
-        Record working electrode current (default: False)
-    """
+class ChronoPotentiometry(MethodSettings):
+    """Create potentiometry method parameters."""
 
     _id = 'pot'
 
     current: float = 0.0
+    """The current to apply in the given current range.
+
+    Note that this value acts as a multiplier in the applied current range.
+
+    So if 10 uA is the applied current range and 1.5 is given as current value,
+    the applied current will be 15 uA."""
+
     applied_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_100_uA
+    """Applied current range.
+
+    Use `CURRENT_RANGE` to define the range."""
+
     interval_time: float = 0.1
+    """Interval time in s (default: 0.1)"""
+
     run_time: float = 1.0
+    """Run time in s (default: 1.0)"""
 
     record_auxiliary_input: bool = False
+    """Record auxiliary input."""
+
     record_cell_potential: bool = False
+    """Record cell potential.
+
+    Counter electrode vs ground."""
+
     record_we_current: bool = False
+    """Record working electrode current."""
 
     current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
     potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
@@ -778,33 +751,28 @@ class ChronoPotentiometry(BaseConfig):
 
 
 @attrs.define
-class ElectrochemicalImpedanceSpectroscopy(BaseConfig):
-    """Create potentiometry method parameters.
-
-    Attributes
-    ----------
-    equilibration_time : float
-        Equilibration time in s (default: 0.0)
-    dc_potential : float
-        DC potential in V (default: 0.0)
-    ac_potential : float
-        AC potential in V RMS (default: 0.01)
-    n_frequencies : int
-        Number of frequencies (default: 11)
-    max_frequency : float
-        Maximum frequency in Hz (default: 1e5)
-    min_frequency : float
-        Minimum frequency in Hz (default: 1e3)
-    """
+class ElectrochemicalImpedanceSpectroscopy(MethodSettings):
+    """Create potentiometry method parameters."""
 
     _id = 'eis'
 
     equilibration_time: float = 0.0
+    """Equilibration time in s."""
+
     dc_potential: float = 0.0
+    """DC potential in V."""
+
     ac_potential: float = 0.01
+    """AC potential in V RMS."""
+
     n_frequencies: int = 11
+    """Number of frequencies."""
+
     max_frequency: float = 1e5
+    """Maximum frequency in Hz."""
+
     min_frequency: float = 1e3
+    """Minimum frequency in Hz."""
 
     current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
     potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
@@ -837,35 +805,33 @@ class ElectrochemicalImpedanceSpectroscopy(BaseConfig):
 
 
 @attrs.define
-class GalvanostaticImpedanceSpectroscopy(BaseConfig):
-    """Create potentiometry method parameters.
-
-    Attributes
-    ----------
-    applied_current_range : PalmSens.CurrentRange
-        Applied current range (default: 100 µA)
-        Use `CURRENT_RANGE` to define the range.
-    ac_current : float
-        AC current in applied current range RMS (default: 0.01)
-    dc_current : float
-        DC current in applied current range (default: 0.0)
-    n_frequencies : int
-        Number of frequencies (default: 11)
-    max_frequency : float
-        Maximum frequency in Hz (default: 1e5)
-    min_frequency : float
-        Minimum frequency in Hz (default: 1e3)
-    """
+class GalvanostaticImpedanceSpectroscopy(MethodSettings):
+    """Create potentiometry method parameters."""
 
     _id = 'gis'
 
     applied_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_100_uA
+    """Applied current range.
+
+    Use `CURRENT_RANGE` to define the range."""
+
     equilibration_time: float = 0.0
+    """Equilibration time in s."""
+
     ac_current: float = 0.01
+    """AC current in applied current range RMS."""
+
     dc_current: float = 0.0
+    """DC current in applied current range."""
+
     n_frequencies: int = 11
+    """Number of frequencies."""
+
     max_frequency: float = 1e5
+    """Maximum frequency in Hz."""
+
     min_frequency: float = 1e3
+    """Minimum frequency in Hz."""
 
     current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
     potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
@@ -900,14 +866,8 @@ class GalvanostaticImpedanceSpectroscopy(BaseConfig):
 
 
 @attrs.define
-class MethodScript(BaseConfig):
-    """Create a method script sandbox object.
-
-    Attributes
-    ----------
-    script : str
-        Method script, see https://www.palmsens.com/methodscript/ for more information.
-    """
+class MethodScript(MethodSettings):
+    """Create a method script sandbox object."""
 
     _id = 'ms'
 
@@ -918,6 +878,10 @@ if 1 < 2
 endif
 
 """
+    """Script to run.
+
+    For more info on MethodSCRIPT, see:
+        https://www.palmsens.com/methodscript/ for more information."""
 
     def _update_psmethod(self, *, obj):
         """Update method with MethodScript."""
@@ -927,7 +891,7 @@ endif
         self.script = obj.MethodScript
 
 
-ID_TO_PARAMETER_MAPPING: dict[str, Type[BaseConfig] | None] = {
+ID_TO_PARAMETER_MAPPING: dict[str, Type[MethodSettings] | None] = {
     'acv': None,
     'ad': ChronoAmperometry,
     'cc': None,

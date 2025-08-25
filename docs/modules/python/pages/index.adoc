@@ -17,9 +17,10 @@ With PyPalmSens, you can:
 
 To install:
 
-```bash
+[source,console]
+----
 pip install pypalmsens
-```
+----
 
 PyPalmSens requires the .NET runtime to be installed.
 For specific installation instructions for your platform, see xref:installation.adoc[]
@@ -31,9 +32,8 @@ The following example shows how to set up and measure a simple chronoamperometry
 [source,python]
 ----
 >>> import pypalmsens
->>> from pypalmsens.methods import ChronoAmperometryParameters
 
->>> method = ChronoAmperometryParameters(
+>>> method = pypalmsens.ChronoAmperometry(
 ...     interval_time=0.01,
 ...     potential=1.0,
 ...     run_time=10.0,
@@ -49,14 +49,13 @@ The following example shows how to discover devices and manually read out the cu
 [source,python]
 ----
 >>> import pypalmsens
->>> from pypalmsens.methods import CURRENT_RANGE
 
 >>> instruments = pypalmsens.discover()
 
 >>> with pypalmsens.connect(device=instruments[0]) as manager:
 ...     manager.set_cell(True)
 ...     manager.set_potential(1)
-...     manager.set_current_range(CURRENT_RANGE.cr_1_mA)
+...     manager.set_current_range(pypalmsens.settings.CURRENT_RANGE.cr_1_mA)
 ...
 ...     current = manager.read_current()
 ...     print(f'{current=} µA')
@@ -122,24 +121,24 @@ Shows how to discover devices, establish a connection and control an instrument 
 `manual_control_async.py`::
 Shows how to discover devices, establish a connection and control an instrument manually using the asynchronous instrument manager.
 `measurement_CA.py`::
-Shows how to configure and run a chronoamperometry measurement.
+Shows how to set up and run a chronoamperometry measurement.
 `measurement_CA_async.py`::
-Shows how to configure and run a chronoamperometry measurement using the asynchronous instrument manager.
+Shows how to set up and run a chronoamperometry measurement using the asynchronous instrument manager.
 `measurement_CV.py`::
-Shows how to configure and run a cyclic voltammetry measurement.
+Shows how to set up and run a cyclic voltammetry measurement.
 `measurement_EIS.py`::
-Shows how to configure and run a EIS measurement.
+Shows how to set up and run a EIS measurement.
 `measurement_MethodSCRIPT_sandbox.py`::
-Shows how to configure and run a MethodSCRIPT Sandbox measurement.
+Shows how to set up and run a MethodSCRIPT Sandbox measurement.
 `measurement_stream_to_csv.py`::
-Shows how to configure and run a chronoamperometry measurement and write the results to a CSV file in real-time.
+Shows how to set up and run a chronoamperometry measurement and write the results to a CSV file in real-time.
 `measurement_SWV_vs_OCP.py`::
-Shows how to configure and run a square wave voltammetry measurement versus OCP.
+Shows how to set up and run a square wave voltammetry measurement versus OCP.
 `multiplexer.py`::
-Shows how to configure and control a multiplexer and run consecutive and alternating multiplexer measurments.
+Shows how to set up and control a multiplexer and run consecutive and alternating multiplexer measurments.
 `multichannel_measurement.py`::
 Shows how to connect to a collection of instruments and run a chronoamperometry measurement on all channels simultaneously.
 `multichannel_measurement_custom_loop.py`::
-Shows how to run and configure a sequence of measurements on a collection of channels simultaneously.
+Shows how to run and set up a sequence of measurements on a collection of channels simultaneously.
 `multichannel_HW_sync.py`::
 Shows how to connect to a collection of instruments and run a chronopotentiometry measurement on all channels simultaneously using hardware synchronization.

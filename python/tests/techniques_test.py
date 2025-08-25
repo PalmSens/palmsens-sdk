@@ -7,9 +7,8 @@ from PalmSens import Techniques
 from pytest import approx
 
 import pypalmsens
-from pypalmsens.data.measurement import Measurement
-from pypalmsens.methods import techniques
-from pypalmsens.methods._shared import (
+from pypalmsens.data import Measurement
+from pypalmsens.settings import (
     CURRENT_RANGE,
     POTENTIAL_RANGE,
     ELevel,
@@ -76,7 +75,7 @@ class TestCV:
         'scanrate': 5,
         'n_scans': 2,
     }
-    pycls = techniques.CyclicVoltammetry
+    pycls = pypalmsens.CyclicVoltammetry
     pscls = Techniques.CyclicVoltammetry
 
     def test_params_round_trip(self):
@@ -89,11 +88,11 @@ class TestCV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_ranges={
-                'max': CURRENT_RANGE.cr_1_mA,
-                'min': CURRENT_RANGE.cr_100_nA,
-                'start': CURRENT_RANGE.cr_100_uA,
-            },
+            current_ranges=pypalmsens.settings.CurrentRanges(
+                max=CURRENT_RANGE.cr_1_mA,
+                min=CURRENT_RANGE.cr_100_nA,
+                start=CURRENT_RANGE.cr_100_uA,
+            ),
             **self.kwargs,
         )
         measurement = manager.measure(method)
@@ -124,7 +123,7 @@ class TestLSV:
         'step_potential': 0.1,
         'scanrate': 2.0,
     }
-    pycls = techniques.LinearSweepVoltammetry
+    pycls = pypalmsens.LinearSweepVoltammetry
     pscls = Techniques.LinearSweep
 
     def test_params_round_trip(self):
@@ -137,11 +136,11 @@ class TestLSV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_ranges={
-                'max': CURRENT_RANGE.cr_1_mA,
-                'min': CURRENT_RANGE.cr_100_nA,
-                'start': CURRENT_RANGE.cr_100_uA,
-            },
+            current_ranges=pypalmsens.settings.CurrentRanges(
+                max=CURRENT_RANGE.cr_1_mA,
+                min=CURRENT_RANGE.cr_100_nA,
+                start=CURRENT_RANGE.cr_100_uA,
+            ),
             **self.kwargs,
         )
         measurement = manager.measure(method)
@@ -167,7 +166,7 @@ class TestSWV:
         'amplitude': 0.05,
         'record_forward_and_reverse_currents': True,
     }
-    pycls = techniques.SquareWaveVoltammetry
+    pycls = pypalmsens.SquareWaveVoltammetry
     pscls = Techniques.SquareWave
 
     def test_params_round_trip(self):
@@ -180,11 +179,11 @@ class TestSWV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_ranges={
-                'max': CURRENT_RANGE.cr_1_mA,
-                'min': CURRENT_RANGE.cr_100_nA,
-                'start': CURRENT_RANGE.cr_100_uA,
-            },
+            current_ranges=pypalmsens.settings.CurrentRanges(
+                max=CURRENT_RANGE.cr_1_mA,
+                min=CURRENT_RANGE.cr_100_nA,
+                start=CURRENT_RANGE.cr_100_uA,
+            ),
             **self.kwargs,
         )
         measurement = manager.measure(method)
@@ -207,7 +206,7 @@ class TestCP:
         'interval_time': 0.1,
         'run_time': 1.0,
     }
-    pycls = techniques.ChronoPotentiometry
+    pycls = pypalmsens.ChronoPotentiometry
     pscls = Techniques.Potentiometry
 
     def test_params_round_trip(self):
@@ -220,11 +219,11 @@ class TestCP:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            potential_ranges={
-                'max': POTENTIAL_RANGE.pr_1_V,
-                'min': POTENTIAL_RANGE.pr_10_mV,
-                'start': POTENTIAL_RANGE.pr_1_V,
-            },
+            potential_ranges=pypalmsens.settings.PotentialRanges(
+                max=POTENTIAL_RANGE.pr_1_V,
+                min=POTENTIAL_RANGE.pr_10_mV,
+                start=POTENTIAL_RANGE.pr_1_V,
+            ),
             **self.kwargs,
         )
         measurement = manager.measure(method)
@@ -244,7 +243,7 @@ class TestOCP:
         'interval_time': 0.1,
         'run_time': 1.0,
     }
-    pycls = techniques.OpenCircuitPotentiometry
+    pycls = pypalmsens.OpenCircuitPotentiometry
     pscls = Techniques.OpenCircuitPotentiometry
 
     def test_params_round_trip(self):
@@ -257,11 +256,11 @@ class TestOCP:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            potential_ranges={
-                'max': POTENTIAL_RANGE.pr_1_V,
-                'min': POTENTIAL_RANGE.pr_10_mV,
-                'start': POTENTIAL_RANGE.pr_1_V,
-            },
+            potential_ranges=pypalmsens.settings.PotentialRanges(
+                max=POTENTIAL_RANGE.pr_1_V,
+                min=POTENTIAL_RANGE.pr_10_mV,
+                start=POTENTIAL_RANGE.pr_1_V,
+            ),
             **self.kwargs,
         )
         measurement = manager.measure(method)
@@ -281,7 +280,7 @@ class TestCA:
         'interval_time': 0.1,
         'run_time': 1.0,
     }
-    pycls = techniques.ChronoAmperometry
+    pycls = pypalmsens.ChronoAmperometry
     pscls = Techniques.AmperometricDetection
 
     def test_params_round_trip(self):
@@ -315,7 +314,7 @@ class TestDP:
         'pulse_time': 0.1,
         'scan_rate': 0.5,
     }
-    pycls = techniques.DifferentialPulseVoltammetry
+    pycls = pypalmsens.DifferentialPulseVoltammetry
     pscls = Techniques.DifferentialPulse
 
     def test_params_round_trip(self):
@@ -350,7 +349,7 @@ class TestMA:
             ELevel(level=0.3, duration=0.2),
         ],
     }
-    pycls = techniques.MultiStepAmperometry
+    pycls = pypalmsens.MultiStepAmperometry
     pscls = Techniques.MultistepAmperometry
 
     def test_params_round_trip(self):
@@ -386,7 +385,7 @@ class TestEIS:
         'max_frequency': 1e5,
         'min_frequency': 1e3,
     }
-    pycls = techniques.ElectrochemicalImpedanceSpectroscopy
+    pycls = pypalmsens.ElectrochemicalImpedanceSpectroscopy
     pscls = Techniques.ImpedimetricMethod
 
     def test_params_round_trip(self):
@@ -453,7 +452,7 @@ class TestGIS:
         'max_frequency': 1e5,
         'min_frequency': 1e3,
     }
-    pycls = techniques.GalvanostaticImpedanceSpectroscopy
+    pycls = pypalmsens.GalvanostaticImpedanceSpectroscopy
     pscls = Techniques.ImpedimetricGstatMethod
 
     def test_params_round_trip(self):
@@ -530,7 +529,7 @@ class TestMS:
             '\n'  # must end with 2 newlines
         )
     }
-    pycls = techniques.MethodScript
+    pycls = pypalmsens.MethodScript
     pscls = Techniques.MethodScriptSandbox
 
     def test_params_round_trip(self):

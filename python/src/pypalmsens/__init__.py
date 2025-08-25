@@ -11,19 +11,19 @@ else:
 __version__ = '0.0.1'
 __sdk_version__ = sdk_version
 
-from . import config, data, models
-from ._instruments._instrument_manager import (
+from . import data, fitting, settings
+from ._instruments.instrument_manager import (
     InstrumentManager,
     connect,
     discover,
 )
-from ._instruments._instrument_manager_async import (
+from ._instruments.instrument_manager_async import (
     InstrumentManagerAsync,
     connect_async,
     discover_async,
 )
 from ._io import load_method_file, load_session_file, save_method_file, save_session_file
-from .methods.techniques import (
+from ._methods.techniques import (
     ChronoAmperometry,
     ChronoPotentiometry,
     CyclicVoltammetry,
@@ -38,9 +38,9 @@ from .methods.techniques import (
 )
 
 __all__ = [
-    'config',
+    'settings',
     'data',
-    'models',
+    'fitting',
     'connect',
     'connect_async',
     'discover',

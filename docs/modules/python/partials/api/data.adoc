@@ -1,0 +1,1589 @@
+== `pypalmsens.data`
+
+This module contains the public api for classes representing measurement
+data.
+
+*Classes:*
+
+* link:#pypalmsens.data.DataArray[*DataArray*] – Python wrapper for .NET
+DataArray class.
+* link:#pypalmsens.data.Curve[*Curve*] – Python wrapper for .NET Curve
+class.
+* link:#pypalmsens.data.Peak[*Peak*] – Python wrapper for .NET Peak
+class.
+* link:#pypalmsens.data.DeviceInfo[*DeviceInfo*] – Dataclass for device
+information.
+* link:#pypalmsens.data.Measurement[*Measurement*] – Python wrapper for
+.NET Measurement class.
+* link:#pypalmsens.data.DataSet[*DataSet*] – Python wrapper for .NET
+DataSet class.
+* link:#pypalmsens.data.EISData[*EISData*] – Python wrapper for .NET
+EISdata class.
+
+=== `DataArray`
+
+[source,python]
+----
+DataArray(*, psarray)
+----
+
+Bases: link:#collections.abc.Sequence[Sequence]
+
+Python wrapper for .NET DataArray class.
+
+*Parameters:*
+
+* *psarray* – Reference to .NET DataArray object.
+
+*Functions:*
+
+* link:#pypalmsens.data.DataArray.min[*min*] – Return min value.
+* link:#pypalmsens.data.DataArray.max[*max*] – Return max value.
+* link:#pypalmsens.data.DataArray.to_numpy[*to++_++numpy*] – Export data
+array to numpy.
+* link:#pypalmsens.data.DataArray.to_list[*to++_++list*] – Export data
+array to list.
+
+*Attributes:*
+
+* link:#pypalmsens.data.DataArray.name[*name*] (link:#str[str]) – Name
+of the array.
+* link:#pypalmsens.data.DataArray.type[*type*]
+(link:#pypalmsens._data._shared.ArrayType[ArrayType]) – ArrayType enum.
+* link:#pypalmsens.data.DataArray.unit[*unit*] (link:#str[str]) – Unit
+for array.
+* link:#pypalmsens.data.DataArray.quantity[*quantity*] (link:#str[str])
+– Quantity for array.
+* link:#pypalmsens.data.DataArray.ocp_value[*ocp++_++value*]
+(link:#float[float]) – OCP Value.
+
+==== `name`
+
+[source,python]
+----
+name: str
+----
+
+Name of the array.
+
+==== `type`
+
+[source,python]
+----
+type: ArrayType
+----
+
+ArrayType enum.
+
+==== `unit`
+
+[source,python]
+----
+unit: str
+----
+
+Unit for array.
+
+==== `quantity`
+
+[source,python]
+----
+quantity: str
+----
+
+Quantity for array.
+
+==== `ocp++_++value`
+
+[source,python]
+----
+ocp_value: float
+----
+
+OCP Value.
+
+==== `min`
+
+[source,python]
+----
+min()
+----
+
+Return min value.
+
+==== `max`
+
+[source,python]
+----
+max()
+----
+
+Return max value.
+
+==== `to++_++numpy`
+
+[source,python]
+----
+to_numpy()
+----
+
+Export data array to numpy.
+
+==== `to++_++list`
+
+[source,python]
+----
+to_list()
+----
+
+Export data array to list.
+
+=== `Curve`
+
+[source,python]
+----
+Curve(*, pscurve)
+----
+
+Python wrapper for .NET Curve class.
+
+*Parameters:*
+
+* *pscurve* – Reference to .NET curve object.
+
+*Functions:*
+
+* link:#pypalmsens.data.Curve.smooth[*smooth*] – Smooth the .y++_++array
+using a Savitsky-Golay filter with the specified smooth
+* link:#pypalmsens.data.Curve.savitsky_golay[*savitsky++_++golay*] –
+Smooth the .y++_++array using a Savitsky-Golay filter with the specified
+window
+* link:#pypalmsens.data.Curve.find_peaks[*find++_++peaks*] – Find peaks
+in a curve in all directions; CV can have 1 or 2 direction changes
+* link:#pypalmsens.data.Curve.clear_peaks[*clear++_++peaks*] – Clear
+peaks stored on object.
+* link:#pypalmsens.data.Curve.linear_slope[*linear++_++slope*] –
+Calculate linear line parameters for this curve between two indexes.
+* link:#pypalmsens.data.Curve.plot[*plot*] – Generate simple plot for
+this curve using matplotlib.
+
+*Attributes:*
+
+* link:#pypalmsens.data.Curve.max_x[*max++_++x*] (link:#float[float]) –
+Maximum X value found in this curve.
+* link:#pypalmsens.data.Curve.max_y[*max++_++y*] (link:#float[float]) –
+Maximum Y value found in this curve.
+* link:#pypalmsens.data.Curve.min_x[*min++_++x*] (link:#float[float]) –
+Minimum X value found in this curve.
+* link:#pypalmsens.data.Curve.min_y[*min++_++y*] (link:#float[float]) –
+Minimum Y value found in this curve.
+* link:#pypalmsens.data.Curve.mux_channel[*mux++_++channel*]
+(link:#int[int]) – The corresponding MUX channel number with the curve
+starting at 0.
+* link:#pypalmsens.data.Curve.n_points[*n++_++points*] (link:#int[int])
+– Number of points for this curve.
+* link:#pypalmsens.data.Curve.ocp_value[*ocp++_++value*]
+(link:#float[float]) – OCP value for curve.
+* link:#pypalmsens.data.Curve.reference_electrode_name[*reference++_++electrode++_++name*]
+(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – The name of
+the reference electrode. Return None if not set.
+* link:#pypalmsens.data.Curve.reference_electrode_potential[*reference++_++electrode++_++potential*]
+(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – The
+reference electrode potential offset. Return None if not set.
+* link:#pypalmsens.data.Curve.x_unit[*x++_++unit*] (link:#str[str]) –
+Units for X dimension.
+* link:#pypalmsens.data.Curve.x_label[*x++_++label*] (link:#str[str]) –
+Label for X dimension.
+* link:#pypalmsens.data.Curve.y_unit[*y++_++unit*] (link:#str[str]) –
+Units for Y dimension.
+* link:#pypalmsens.data.Curve.y_label[*y++_++label*] (link:#str[str]) –
+Label for Y dimension.
+* link:#pypalmsens.data.Curve.z_unit[*z++_++unit*]
+(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – Units for Z
+dimension. Returns None if not set.
+* link:#pypalmsens.data.Curve.z_label[*z++_++label*]
+(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – Units for Z
+dimension. Returns None if not set.
+* link:#pypalmsens.data.Curve.title[*title*] (link:#str[str]) – Title
+for the curve.
+* link:#pypalmsens.data.Curve.peaks[*peaks*]
+(link:#list[list]++[++link:#pypalmsens._data.peak.Peak[Peak]++]++) –
+Return peaks stored on object.
+* link:#pypalmsens.data.Curve.x_array[*x++_++array*]
+(link:#list[list]++[++link:#float[float]++]++) – Y data for the curve
+* link:#pypalmsens.data.Curve.y_array[*y++_++array*]
+(link:#list[list]++[++link:#float[float]++]++) – Y data for the curve.
+
+==== `max++_++x`
+
+[source,python]
+----
+max_x: float
+----
+
+Maximum X value found in this curve.
+
+==== `max++_++y`
+
+[source,python]
+----
+max_y: float
+----
+
+Maximum Y value found in this curve.
+
+==== `min++_++x`
+
+[source,python]
+----
+min_x: float
+----
+
+Minimum X value found in this curve.
+
+==== `min++_++y`
+
+[source,python]
+----
+min_y: float
+----
+
+Minimum Y value found in this curve.
+
+==== `mux++_++channel`
+
+[source,python]
+----
+mux_channel: int
+----
+
+The corresponding MUX channel number with the curve starting at 0.
+Return -1 when no MUX channel used.
+
+==== `n++_++points`
+
+[source,python]
+----
+n_points: int
+----
+
+Number of points for this curve.
+
+==== `ocp++_++value`
+
+[source,python]
+----
+ocp_value: float
+----
+
+OCP value for curve.
+
+==== `reference++_++electrode++_++name`
+
+[source,python]
+----
+reference_electrode_name: Union[None, str]
+----
+
+The name of the reference electrode. Return None if not set.
+
+==== `reference++_++electrode++_++potential`
+
+[source,python]
+----
+reference_electrode_potential: Union[None, str]
+----
+
+The reference electrode potential offset. Return None if not set.
+
+==== `x++_++unit`
+
+[source,python]
+----
+x_unit: str
+----
+
+Units for X dimension.
+
+==== `x++_++label`
+
+[source,python]
+----
+x_label: str
+----
+
+Label for X dimension.
+
+==== `y++_++unit`
+
+[source,python]
+----
+y_unit: str
+----
+
+Units for Y dimension.
+
+==== `y++_++label`
+
+[source,python]
+----
+y_label: str
+----
+
+Label for Y dimension.
+
+==== `z++_++unit`
+
+[source,python]
+----
+z_unit: Union[None, str]
+----
+
+Units for Z dimension. Returns None if not set.
+
+==== `z++_++label`
+
+[source,python]
+----
+z_label: Union[None, str]
+----
+
+Units for Z dimension. Returns None if not set.
+
+==== `title`
+
+[source,python]
+----
+title: str
+----
+
+Title for the curve.
+
+==== `peaks`
+
+[source,python]
+----
+peaks: list[Peak]
+----
+
+Return peaks stored on object.
+
+==== `x++_++array`
+
+[source,python]
+----
+x_array: list[float]
+----
+
+Y data for the curve
+
+==== `y++_++array`
+
+[source,python]
+----
+y_array: list[float]
+----
+
+Y data for the curve.
+
+==== `smooth`
+
+[source,python]
+----
+smooth(smooth_level=0)
+----
+
+Smooth the .y++_++array using a Savitsky-Golay filter with the specified
+smooth level.
+
+*Parameters:*
+
+* *smooth++_++level* (link:#int[int]) – The smooth level to be used. -1
+= none, 0 = no smooth (spike rejection only), 1 = 5 points, 2 = 9
+points, 3 = 15 points, 4 = 25 points
+
+==== `savitsky++_++golay`
+
+[source,python]
+----
+savitsky_golay(window_size=3)
+----
+
+Smooth the .y++_++array using a Savitsky-Golay filter with the specified
+window size.
+
+(i.e. window size 2 will filter points based on the values of the
+next/previous 2 points)
+
+*Parameters:*
+
+* *window++_++size* (link:#int[int]) – Size of the window
+
+==== `find++_++peaks`
+
+[source,python]
+----
+find_peaks(min_peak_width=0.1, min_peak_height=0.0, peak_shoulders=False, merge_overlapping_peaks=True)
+----
+
+Find peaks in a curve in all directions; CV can have 1 or 2 direction
+changes
+
+*Parameters:*
+
+* *min++_++peak++_++width* (link:#float[float]) – Minimum width of the
+peak in V
+* *min++_++peak++_++height* (link:#float[float]) – Minimum height of the
+peak in uA
+* *peak++_++shoulders* (link:#bool[bool]) – Use alternative peak search
+algorithm optimized for finding peaks on slopes
+* *merge++_++overlapping++_++peaks* (link:#bool[bool]) – Two or more
+peaks that overlap will be identified as a single base peak and as
+shoulder peaks on the base peak.
+
+*Returns:*
+
+* *peak++_++list*
+(link:#list[list]++[++link:#pypalmsens._data.peak.Peak[Peak]++]++) –
+
+==== `clear++_++peaks`
+
+[source,python]
+----
+clear_peaks()
+----
+
+Clear peaks stored on object.
+
+==== `linear++_++slope`
+
+[source,python]
+----
+linear_slope(start=None, stop=None)
+----
+
+Calculate linear line parameters for this curve between two indexes.
+
+current = a {plus} b ++*++ x
+
+*Parameters:*
+
+* *start* (link:#int[int]) – begin index
+* *stop* (link:#int[int]) – end index
+
+*Returns:*
+
+* *a* (link:#float[float]) –
+* *b* (link:#float[float]) –
+* *coefdet* (link:#float[float]) – Coefficient of determination (R2)
+
+==== `plot`
+
+[source,python]
+----
+plot(ax=None, legend=True, **plot_kwargs)
+----
+
+Generate simple plot for this curve using matplotlib.
+
+*Parameters:*
+
+* *ax*
+(link:#typing.Optional[Optional]++[++link:#matplotlib.axes.Axes[Axes]++]++)
+– Add plot to this ax if specified.
+* *legend* (link:#bool[bool]) – If True, add legend.
+* *plot++_++kwargs* – These keyword arguments are passed to `ax.plot`.
+
+*Returns:*
+
+* *fig* (link:#matplotlib.fig.Figure[Figure]) – Matplotlib figure. Use
+`fig.show()` to render plot.
+
+=== `Peak`
+
+[source,python]
+----
+Peak(*, pspeak)
+----
+
+Python wrapper for .NET Peak class.
+
+*Parameters:*
+
+* *pspeak* (link:#PalmSens.Analysis.Peak[Peak]) – Reference to .NET Peak
+object.
+
+*Attributes:*
+
+* link:#pypalmsens.data.Peak.curve[*curve*]
+(link:#pypalmsens._data.curve.Curve[Curve]) – Parent curve associated
+with Peak.
+* link:#pypalmsens.data.Peak.curve_title[*curve++_++title*]
+(link:#str[str]) – Title of parent curve.
+* link:#pypalmsens.data.Peak.x_unit[*x++_++unit*] (link:#str[str]) –
+Units of X axis
+* link:#pypalmsens.data.Peak.y_unit[*y++_++unit*] (link:#str[str]) –
+Units for Y axis
+* link:#pypalmsens.data.Peak.analyte_name[*analyte++_++name*]
+(link:#str[str]) – Name of analyte.
+* link:#pypalmsens.data.Peak.area[*area*] (link:#float[float]) – Area of
+the peak.
+* link:#pypalmsens.data.Peak.label[*label*] (link:#str[str]) – Formatted
+label for the peak value.
+* link:#pypalmsens.data.Peak.left_index[*left++_++index*]
+(link:#int[int]) – Left side of the peaks baseline as index number of
+the curve.
+* link:#pypalmsens.data.Peak.left_x[*left++_++x*] (link:#float[float]) –
+X of the left side of the peak baseline.
+* link:#pypalmsens.data.Peak.left_y[*left++_++y*] (link:#float[float]) –
+Y of the left side of the peak baseline.
+* link:#pypalmsens.data.Peak.maximum_of_derivative_neg[*maximum++_++of++_++derivative++_++neg*]
+(link:#float[float]) – Maximum derivative of the negative slope of the
+peak.
+* link:#pypalmsens.data.Peak.maximum_of_derivative_pos[*maximum++_++of++_++derivative++_++pos*]
+(link:#float[float]) – Maximum derivative of the positive slope of the
+peak.
+* link:#pypalmsens.data.Peak.maximum_of_derivative_sum[*maximum++_++of++_++derivative++_++sum*]
+(link:#float[float]) – Sum of the absolute values for both the positive
+and negative maximum derivative.
+* link:#pypalmsens.data.Peak.notes[*notes*] (link:#str[str]) – User
+notes stored on this peak.
+* link:#pypalmsens.data.Peak.offset_y[*offset++_++y*]
+(link:#float[float]) – Offset of Y.
+* link:#pypalmsens.data.Peak.index[*index*] (link:#int[int]) – Location
+of the peak as index number of the curve.
+* link:#pypalmsens.data.Peak.type[*type*] (link:#str[str]) – Used to
+determine if a peak is auto found.
+* link:#pypalmsens.data.Peak.value[*value*] (link:#float[float]) – Value
+of the peak in units of the curve.
+* link:#pypalmsens.data.Peak.x[*x*] (link:#float[float]) – X value of
+the peak.
+* link:#pypalmsens.data.Peak.y[*y*] (link:#float[float]) – Y value of
+the peak.
+* link:#pypalmsens.data.Peak.right_index[*right++_++index*]
+(link:#int[int]) – Left side of the peaks baseline as index number of
+the curve.
+* link:#pypalmsens.data.Peak.right_x[*right++_++x*] (link:#float[float])
+– X of the right side of the peak baseline.
+* link:#pypalmsens.data.Peak.right_y[*right++_++y*] (link:#float[float])
+– Returns the Y of the right side of the peak baseline.
+* link:#pypalmsens.data.Peak.width[*width*] (link:#float[float]) – Full
+width at half-height of the peak.
+
+==== `curve`
+
+[source,python]
+----
+curve: Curve
+----
+
+Parent curve associated with Peak.
+
+==== `curve++_++title`
+
+[source,python]
+----
+curve_title: str
+----
+
+Title of parent curve.
+
+==== `x++_++unit`
+
+[source,python]
+----
+x_unit: str
+----
+
+Units of X axis
+
+==== `y++_++unit`
+
+[source,python]
+----
+y_unit: str
+----
+
+Units for Y axis
+
+==== `analyte++_++name`
+
+[source,python]
+----
+analyte_name: str
+----
+
+Name of analyte.
+
+==== `area`
+
+[source,python]
+----
+area: float
+----
+
+Area of the peak.
+
+==== `label`
+
+[source,python]
+----
+label: str
+----
+
+Formatted label for the peak value.
+
+==== `left++_++index`
+
+[source,python]
+----
+left_index: int
+----
+
+Left side of the peaks baseline as index number of the curve.
+
+==== `left++_++x`
+
+[source,python]
+----
+left_x: float
+----
+
+X of the left side of the peak baseline.
+
+==== `left++_++y`
+
+[source,python]
+----
+left_y: float
+----
+
+Y of the left side of the peak baseline.
+
+==== `maximum++_++of++_++derivative++_++neg`
+
+[source,python]
+----
+maximum_of_derivative_neg: float
+----
+
+Maximum derivative of the negative slope of the peak.
+
+==== `maximum++_++of++_++derivative++_++pos`
+
+[source,python]
+----
+maximum_of_derivative_pos: float
+----
+
+Maximum derivative of the positive slope of the peak.
+
+==== `maximum++_++of++_++derivative++_++sum`
+
+[source,python]
+----
+maximum_of_derivative_sum: float
+----
+
+Sum of the absolute values for both the positive and negative maximum
+derivative.
+
+==== `notes`
+
+[source,python]
+----
+notes: str
+----
+
+User notes stored on this peak.
+
+==== `offset++_++y`
+
+[source,python]
+----
+offset_y: float
+----
+
+Offset of Y.
+
+==== `index`
+
+[source,python]
+----
+index: int
+----
+
+Location of the peak as index number of the curve.
+
+==== `type`
+
+[source,python]
+----
+type: str
+----
+
+Used to determine if a peak is auto found.
+
+==== `value`
+
+[source,python]
+----
+value: float
+----
+
+Value of the peak in units of the curve. This is the value of the peak
+height relative to the baseline of the peak.
+
+==== `x`
+
+[source,python]
+----
+x: float
+----
+
+X value of the peak.
+
+==== `y`
+
+[source,python]
+----
+y: float
+----
+
+Y value of the peak.
+
+==== `right++_++index`
+
+[source,python]
+----
+right_index: int
+----
+
+Left side of the peaks baseline as index number of the curve.
+
+==== `right++_++x`
+
+[source,python]
+----
+right_x: float
+----
+
+X of the right side of the peak baseline.
+
+==== `right++_++y`
+
+[source,python]
+----
+right_y: float
+----
+
+Returns the Y of the right side of the peak baseline.
+
+==== `width`
+
+[source,python]
+----
+width: float
+----
+
+Full width at half-height of the peak.
+
+=== `DeviceInfo`
+
+[source,python]
+----
+DeviceInfo(type, firmware, serial, id)
+----
+
+Dataclass for device information.
+
+*Attributes:*
+
+* link:#pypalmsens.data.DeviceInfo.type[*type*] (link:#str[str]) –
+Device type
+* link:#pypalmsens.data.DeviceInfo.firmware[*firmware*] (link:#str[str])
+– Firmware version
+* link:#pypalmsens.data.DeviceInfo.serial[*serial*] (link:#str[str]) –
+Serial number
+* link:#pypalmsens.data.DeviceInfo.id[*id*] (link:#int[int]) – Device ID
+
+==== `type`
+
+[source,python]
+----
+type: str
+----
+
+Device type
+
+==== `firmware`
+
+[source,python]
+----
+firmware: str
+----
+
+Firmware version
+
+==== `serial`
+
+[source,python]
+----
+serial: str
+----
+
+Serial number
+
+==== `id`
+
+[source,python]
+----
+id: int
+----
+
+Device ID
+
+=== `Measurement`
+
+[source,python]
+----
+Measurement(*, psmeasurement)
+----
+
+Python wrapper for .NET Measurement class.
+
+*Parameters:*
+
+* *psmeasurement* (link:#PalmSens.Measurement[Measurement]) – Reference
+to .NET measurement object.
+
+*Attributes:*
+
+* link:#pypalmsens.data.Measurement.title[*title*] (link:#str[str]) –
+Title for the measurement.
+* link:#pypalmsens.data.Measurement.timestamp[*timestamp*]
+(link:#str[str]) – Date and time of the start of this measurement..
+* link:#pypalmsens.data.Measurement.device[*device*]
+(link:#pypalmsens._data.measurement.DeviceInfo[DeviceInfo]) – Return
+dataclass with measurement device information.
+* link:#pypalmsens.data.Measurement.blank_curve[*blank++_++curve*]
+(link:#pypalmsens._data.curve.Curve[Curve] ++|++ None) – Blank curve.
+* link:#pypalmsens.data.Measurement.contains_blank_subtracted_curves[*contains++_++blank++_++subtracted++_++curves*]
+(link:#bool[bool]) – Return True if the curve collection contains a
+blank subtracted curve.
+* link:#pypalmsens.data.Measurement.contains_eis_data[*contains++_++eis++_++data*]
+(link:#bool[bool]) – Return True if EIS data are is available.
+* link:#pypalmsens.data.Measurement.dataset[*dataset*]
+(link:#pypalmsens._data.dataset.DataSet[DataSet]) – Dataset containing
+multiple arrays of values.
+* link:#pypalmsens.data.Measurement.eis_data[*eis++_++data*]
+(link:#list[list]++[++link:#pypalmsens._data.eisdata.EISData[EISData]++]++)
+– EIS data in measurement.
+* link:#pypalmsens.data.Measurement.method[*method*]
+(link:#pypalmsens._methods.method.Method[Method]) – Method related with
+this Measurement.
+* link:#pypalmsens.data.Measurement.channel[*channel*]
+(link:#float[float]) – Get the channel that the measurement was measured
+on.
+* link:#pypalmsens.data.Measurement.ocp_value[*ocp++_++value*]
+(link:#float[float]) – First OCP Value from either curves or EISData.
+* link:#pypalmsens.data.Measurement.n_curves[*n++_++curves*]
+(link:#int[int]) – Number of curves that are part of the Measurement
+class.
+* link:#pypalmsens.data.Measurement.n_eis_data[*n++_++eis++_++data*]
+(link:#int[int]) – Number of EISdata curves (channels) that are part of
+the Measurement class.
+* link:#pypalmsens.data.Measurement.peaks[*peaks*]
+(link:#list[list]++[++link:#pypalmsens._data.peak.Peak[Peak]++]++) – Get
+peaks from all curves.
+* link:#pypalmsens.data.Measurement.eis_fit[*eis++_++fit*]
+(link:#list[list]++[++link:#pypalmsens._fitting.FitResult[FitResult]++]++)
+– Get all EIS fits from measurement
+* link:#pypalmsens.data.Measurement.curves[*curves*]
+(link:#list[list]++[++link:#pypalmsens._data.curve.Curve[Curve]++]++) –
+Get all curves in measurement.
+
+==== `title`
+
+[source,python]
+----
+title: str
+----
+
+Title for the measurement.
+
+==== `timestamp`
+
+[source,python]
+----
+timestamp: str
+----
+
+Date and time of the start of this measurement..
+
+==== `device`
+
+[source,python]
+----
+device: DeviceInfo
+----
+
+Return dataclass with measurement device information.
+
+==== `blank++_++curve`
+
+[source,python]
+----
+blank_curve: Curve | None
+----
+
+Blank curve.
+
+if Blank curve is present (not null) a new curve will be added after
+each measurement containing the result of the measured curve subtracted
+with the Blank curve.
+
+==== `contains++_++blank++_++subtracted++_++curves`
+
+[source,python]
+----
+contains_blank_subtracted_curves: bool
+----
+
+Return True if the curve collection contains a blank subtracted curve.
+
+==== `contains++_++eis++_++data`
+
+[source,python]
+----
+contains_eis_data: bool
+----
+
+Return True if EIS data are is available.
+
+==== `dataset`
+
+[source,python]
+----
+dataset: DataSet
+----
+
+Dataset containing multiple arrays of values.
+
+All values are related by means of their indices. Data arrays in a
+dataset should always have an equal amount of entries.
+
+==== `eis++_++data`
+
+[source,python]
+----
+eis_data: list[EISData]
+----
+
+EIS data in measurement.
+
+==== `method`
+
+[source,python]
+----
+method: Method
+----
+
+Method related with this Measurement.
+
+The information from the Method is used when saving Curves.
+
+==== `channel`
+
+[source,python]
+----
+channel: float
+----
+
+Get the channel that the measurement was measured on.
+
+==== `ocp++_++value`
+
+[source,python]
+----
+ocp_value: float
+----
+
+First OCP Value from either curves or EISData.
+
+==== `n++_++curves`
+
+[source,python]
+----
+n_curves: int
+----
+
+Number of curves that are part of the Measurement class.
+
+==== `n++_++eis++_++data`
+
+[source,python]
+----
+n_eis_data: int
+----
+
+Number of EISdata curves (channels) that are part of the Measurement
+class.
+
+==== `peaks`
+
+[source,python]
+----
+peaks: list[Peak]
+----
+
+Get peaks from all curves.
+
+*Returns:*
+
+* *peaks*
+(link:#list[list]++[++link:#pypalmsens._data.peak.Peak[Peak]++]++) –
+List of peaks
+
+==== `eis++_++fit`
+
+[source,python]
+----
+eis_fit: list[FitResult]
+----
+
+Get all EIS fits from measurement
+
+*Returns:*
+
+* *eis++_++fits*
+(link:#list[list]++[++link:#EISFitResults[EISFitResults]++]++) – Return
+list of EIS fits
+
+==== `curves`
+
+[source,python]
+----
+curves: list[Curve]
+----
+
+Get all curves in measurement.
+
+*Returns:*
+
+* *curves*
+(link:#list[list]++[++link:#pypalmsens._data.curve.Curve[Curve]++]++) –
+List of curves
+
+=== `DataSet`
+
+[source,python]
+----
+DataSet(*, psdataset)
+----
+
+Bases: link:#collections.abc.Mapping[Mapping]
+
+Python wrapper for .NET DataSet class.
+
+*Parameters:*
+
+* *psdataset* (link:#PalmSens.Data.DataSet[DataSet]) – Reference to .NET
+DataSet object.
+
+*Functions:*
+
+* link:#pypalmsens.data.DataSet.psarrays[*psarrays*] – Return underlying
+PalmSens SDK objects.
+* link:#pypalmsens.data.DataSet.arrays[*arrays*] – Return list of all
+arrays. Alias for `.to++_++list()`
+* link:#pypalmsens.data.DataSet.hidden_arrays[*hidden++_++arrays*] –
+Return '`hidden`' arrays used for debugging.
+* link:#pypalmsens.data.DataSet.arrays_by_name[*arrays++_++by++_++name*]
+– Get arrays by name.
+* link:#pypalmsens.data.DataSet.arrays_by_quantity[*arrays++_++by++_++quantity*]
+– Get arrays by quantity.
+* link:#pypalmsens.data.DataSet.arrays_by_type[*arrays++_++by++_++type*]
+– Get arrays by data type.
+* link:#pypalmsens.data.DataSet.current_range[*current++_++range*] –
+Return current range as list of strings.
+* link:#pypalmsens.data.DataSet.reading_status[*reading++_++status*] –
+Return reading status as list of strings.
+* link:#pypalmsens.data.DataSet.timing_status[*timing++_++status*] –
+Return timing status as list of strings.
+* link:#pypalmsens.data.DataSet.to_dataframe[*to++_++dataframe*] –
+Return dataset as pandas dataframe.
+
+*Attributes:*
+
+* link:#pypalmsens.data.DataSet.array_types[*array++_++types*]
+(link:#set[set]++[++link:#pypalmsens._data._shared.ArrayType[ArrayType]++]++)
+– Return unique set of array type (enum) for arrays in dataset.
+* link:#pypalmsens.data.DataSet.array_names[*array++_++names*]
+(link:#set[set]++[++link:#str[str]++]++) – Return unique set of names
+for arrays in dataset.
+* link:#pypalmsens.data.DataSet.array_quantities[*array++_++quantities*]
+(link:#set[set]++[++link:#str[str]++]++) – Return unique set of
+quantities for arrays in dataset.
+* link:#pypalmsens.data.DataSet.current_arrays[*current++_++arrays*]
+(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
+– Return all Current arrays.
+* link:#pypalmsens.data.DataSet.potential_arrays[*potential++_++arrays*]
+(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
+– Return all Potential arrays.
+* link:#pypalmsens.data.DataSet.time_arrays[*time++_++arrays*]
+(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
+– Return all Time arrays.
+* link:#pypalmsens.data.DataSet.freq_arrays[*freq++_++arrays*]
+(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
+– Return all Frequency arrays.
+* link:#pypalmsens.data.DataSet.zre_arrays[*zre++_++arrays*]
+(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
+– Return all ZRe arrays.
+* link:#pypalmsens.data.DataSet.zim_arrays[*zim++_++arrays*]
+(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
+– Return all ZIm arrays.
+* link:#pypalmsens.data.DataSet.aux_input_arrays[*aux++_++input++_++arrays*]
+(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
+– Return all AuxInput arrays.
+
+==== `array++_++types`
+
+[source,python]
+----
+array_types: set[ArrayType]
+----
+
+Return unique set of array type (enum) for arrays in dataset.
+
+==== `array++_++names`
+
+[source,python]
+----
+array_names: set[str]
+----
+
+Return unique set of names for arrays in dataset.
+
+==== `array++_++quantities`
+
+[source,python]
+----
+array_quantities: set[str]
+----
+
+Return unique set of quantities for arrays in dataset.
+
+==== `current++_++arrays`
+
+[source,python]
+----
+current_arrays: list[DataArray]
+----
+
+Return all Current arrays.
+
+==== `potential++_++arrays`
+
+[source,python]
+----
+potential_arrays: list[DataArray]
+----
+
+Return all Potential arrays.
+
+==== `time++_++arrays`
+
+[source,python]
+----
+time_arrays: list[DataArray]
+----
+
+Return all Time arrays.
+
+==== `freq++_++arrays`
+
+[source,python]
+----
+freq_arrays: list[DataArray]
+----
+
+Return all Frequency arrays.
+
+==== `zre++_++arrays`
+
+[source,python]
+----
+zre_arrays: list[DataArray]
+----
+
+Return all ZRe arrays.
+
+==== `zim++_++arrays`
+
+[source,python]
+----
+zim_arrays: list[DataArray]
+----
+
+Return all ZIm arrays.
+
+==== `aux++_++input++_++arrays`
+
+[source,python]
+----
+aux_input_arrays: list[DataArray]
+----
+
+Return all AuxInput arrays.
+
+==== `psarrays`
+
+[source,python]
+----
+psarrays()
+----
+
+Return underlying PalmSens SDK objects.
+
+==== `arrays`
+
+[source,python]
+----
+arrays()
+----
+
+Return list of all arrays. Alias for `.to++_++list()`
+
+==== `hidden++_++arrays`
+
+[source,python]
+----
+hidden_arrays()
+----
+
+Return '`hidden`' arrays used for debugging.
+
+==== `arrays++_++by++_++name`
+
+[source,python]
+----
+arrays_by_name(name)
+----
+
+Get arrays by name.
+
+*Parameters:*
+
+* *name* (link:#str[str]) – Name of the array.
+
+*Returns:*
+
+* *arrays*
+(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
+–
+
+==== `arrays++_++by++_++quantity`
+
+[source,python]
+----
+arrays_by_quantity(quantity)
+----
+
+Get arrays by quantity.
+
+*Parameters:*
+
+* *quantity* (link:#str[str]) – Quantity of the array.
+
+*Returns:*
+
+* *arrays*
+(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
+–
+
+==== `arrays++_++by++_++type`
+
+[source,python]
+----
+arrays_by_type(array_type)
+----
+
+Get arrays by data type.
+
+*Parameters:*
+
+* *array++_++type* (link:#str[str]) – Type of the array.
+
+*Returns:*
+
+* *arrays*
+(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
+–
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range()
+----
+
+Return current range as list of strings.
+
+==== `reading++_++status`
+
+[source,python]
+----
+reading_status()
+----
+
+Return reading status as list of strings.
+
+==== `timing++_++status`
+
+[source,python]
+----
+timing_status()
+----
+
+Return timing status as list of strings.
+
+==== `to++_++dataframe`
+
+[source,python]
+----
+to_dataframe()
+----
+
+Return dataset as pandas dataframe.
+
+=== `EISData`
+
+[source,python]
+----
+EISData(*, pseis)
+----
+
+Python wrapper for .NET EISdata class.
+
+*Parameters:*
+
+* *pseis* – Reference to .NET EISdata object.
+
+*Functions:*
+
+* link:#pypalmsens.data.EISData.get_data_for_frequency[*get++_++data++_++for++_++frequency*]
+– Returns dictionary with data per frequency.
+* link:#pypalmsens.data.EISData.arrays[*arrays*] – Complete list of data
+arrays.
+* link:#pypalmsens.data.EISData.current_range[*current++_++range*] –
+Current ranges for the measurement.
+
+*Attributes:*
+
+* link:#pypalmsens.data.EISData.title[*title*] (link:#str[str]) – Tite
+for EIS data.
+* link:#pypalmsens.data.EISData.frequency_type[*frequency++_++type*]
+(link:#str[str]) – Frequency type.
+* link:#pypalmsens.data.EISData.scan_type[*scan++_++type*]
+(link:#str[str]) – Scan type.
+* link:#pypalmsens.data.EISData.dataset[*dataset*]
+(link:#pypalmsens._data.dataset.DataSet[DataSet]) – Dataset which
+contains multiple arrays of values.
+* link:#pypalmsens.data.EISData.subscans[*subscans*]
+(link:#list[list]++[++link:#pypalmsens._data.eisdata.EISData[EISData]++]++)
+– Get list of subscans.
+* link:#pypalmsens.data.EISData.n_points[*n++_++points*]
+(link:#int[int]) – Number of points (including subscans).
+* link:#pypalmsens.data.EISData.n_frequencies[*n++_++frequencies*]
+(link:#int[int]) – Number of frequencies.
+* link:#pypalmsens.data.EISData.n_subscans[*n++_++subscans*]
+(link:#int[int]) – Number of subscans.
+* link:#pypalmsens.data.EISData.x_unit[*x++_++unit*] (link:#str[str]) –
+Unit for array.
+* link:#pypalmsens.data.EISData.x_quantity[*x++_++quantity*]
+(link:#str[str]) – Quantity for array.
+* link:#pypalmsens.data.EISData.ocp_value[*ocp++_++value*]
+(link:#float[float]) – OCP Value.
+* link:#pypalmsens.data.EISData.has_subscans[*has++_++subscans*]
+(link:#bool[bool]) – Return True if data contains subscans.
+* link:#pypalmsens.data.EISData.mux_channel[*mux++_++channel*]
+(link:#int[int]) – Mux channel.
+* link:#pypalmsens.data.EISData.cdc[*cdc*] (link:#str[str]) – Gets the
+CDC circuit for fitting.
+* link:#pypalmsens.data.EISData.cdc_values[*cdc++_++values*]
+(link:#list[list]++[++link:#float[float]++]++) – Return values for
+circuit description code (CDC).
+
+==== `title`
+
+[source,python]
+----
+title: str
+----
+
+Tite for EIS data.
+
+==== `frequency++_++type`
+
+[source,python]
+----
+frequency_type: str
+----
+
+Frequency type.
+
+==== `scan++_++type`
+
+[source,python]
+----
+scan_type: str
+----
+
+Scan type.
+
+==== `dataset`
+
+[source,python]
+----
+dataset: DataSet
+----
+
+Dataset which contains multiple arrays of values.
+
+==== `subscans`
+
+[source,python]
+----
+subscans: list[EISData]
+----
+
+Get list of subscans.
+
+==== `n++_++points`
+
+[source,python]
+----
+n_points: int
+----
+
+Number of points (including subscans).
+
+==== `n++_++frequencies`
+
+[source,python]
+----
+n_frequencies: int
+----
+
+Number of frequencies.
+
+==== `n++_++subscans`
+
+[source,python]
+----
+n_subscans: int
+----
+
+Number of subscans.
+
+==== `x++_++unit`
+
+[source,python]
+----
+x_unit: str
+----
+
+Unit for array.
+
+==== `x++_++quantity`
+
+[source,python]
+----
+x_quantity: str
+----
+
+Quantity for array.
+
+==== `ocp++_++value`
+
+[source,python]
+----
+ocp_value: float
+----
+
+OCP Value.
+
+==== `has++_++subscans`
+
+[source,python]
+----
+has_subscans: bool
+----
+
+Return True if data contains subscans.
+
+==== `mux++_++channel`
+
+[source,python]
+----
+mux_channel: int
+----
+
+Mux channel.
+
+==== `cdc`
+
+[source,python]
+----
+cdc: str
+----
+
+Gets the CDC circuit for fitting.
+
+==== `cdc++_++values`
+
+[source,python]
+----
+cdc_values: list[float]
+----
+
+Return values for circuit description code (CDC).
+
+==== `get++_++data++_++for++_++frequency`
+
+[source,python]
+----
+get_data_for_frequency(frequency)
+----
+
+Returns dictionary with data per frequency.
+
+*Parameters:*
+
+* *frequency* (link:#int[int]) – Index of the frequency to retrieve the
+data for.
+
+*Returns:*
+
+* link:#dict[dict]++[++link:#str[str],
+link:#pypalmsens._data.data_array.DataArray[DataArray]++]++ – Data are
+returned as a dictionary keyed by the data type.
+
+==== `arrays`
+
+[source,python]
+----
+arrays()
+----
+
+Complete list of data arrays.
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range()
+----
+
+Current ranges for the measurement.

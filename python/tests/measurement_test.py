@@ -4,7 +4,7 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from pypalmsens.data.curve import Curve
+from pypalmsens.data import Curve
 
 
 @pytest.fixture

@@ -49,7 +49,7 @@ changelog = "https://github.com/palmsens/palmsens_sdk/releases"
 [project.optional-dependencies]
 develop = [
     "coverage",
-    "pdoc",
+    "griffe2md",
     "pre-commit",
     "pytest",
     "pytest-asyncio",

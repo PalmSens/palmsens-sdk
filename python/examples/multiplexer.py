@@ -25,7 +25,7 @@ with pypalmsens.connect(available_instruments[0]) as manager:
         interval_time=0.5,  # seconds
         potential=1.0,  # volts
         run_time=5.0,  # seconds
-        multiplexer=pypalmsens.config.Multiplexer(
+        multiplexer=pypalmsens.settings.Multiplexer(
             mode='alternate',  # 'none', 'consecutive', 'alternate'
             # 8 channels, 1 and 2 are enabled
             channels=[1, 2, 8],
@@ -50,7 +50,7 @@ with pypalmsens.connect(available_instruments[0]) as manager:
         step_potential=0.01,  # volts
         amplitude=0.1,  # volts
         frequency=10,  # hertz
-        multiplexer=pypalmsens.config.Multiplexer(
+        multiplexer=pypalmsens.settings.Multiplexer(
             mode='consecutive',  # 'none', 'consecutive', 'alternate'
             # 8 channels, 1, 2, 7 and 8 are enabled
             channels=[1, 2, 7, 8],

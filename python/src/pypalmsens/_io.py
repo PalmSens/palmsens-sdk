@@ -10,11 +10,11 @@ from PalmSens.DataFiles import MethodFile, MethodFile2
 from System.IO import StreamReader, StreamWriter
 from System.Text import Encoding
 
-from .data.measurement import Measurement
-from .methods import BaseConfig, Method
+from ._data.measurement import Measurement
+from ._methods import Method, MethodSettings
 
 if TYPE_CHECKING:
-    from .methods.method import Method
+    from ._methods.method import Method
 
 
 @contextmanager
@@ -81,17 +81,19 @@ def save_session_file(path: Union[str, Path], measurements: list[Measurement]):
         raise ValueError('cannot save null measurement')
 
     session = SessionManager()
-    session.MethodForEditor = measurements[0].psmeasurement.Method
+    session.MethodForEditor = measurements[0]._psmeasurement.Method
     session.MethodForEditor.MethodFilename = str(path.absolute())
 
     for measurement in measurements:
-        session.AddMeasurement(measurement.psmeasurement)
+        session.AddMeasurement(measurement._psmeasurement)
 
     with stream_writer(str(path), False, Encoding.Unicode) as stream:
         session.Save(stream.BaseStream, str(path))
 
 
-def load_method_file(path: Union[str, Path], as_method: bool = False) -> BaseConfig | Method:
+def load_method_file(
+    path: Union[str, Path], as_method: bool = False
+) -> MethodSettings | Method:
     """Load a method file (.psmethod).
 
     Parameters
@@ -121,10 +123,10 @@ def load_method_file(path: Union[str, Path], as_method: bool = False) -> BaseCon
     if as_method:
         return method
     else:
-        return method.to_parameters()
+        return method.to_settings()
 
 
-def save_method_file(path: Union[str, Path], method: Union[Method, BaseConfig]):
+def save_method_file(path: Union[str, Path], method: Union[Method, MethodSettings]):
     """Load a method file (.psmethod).
 
     Parameters
@@ -136,7 +138,7 @@ def save_method_file(path: Union[str, Path], method: Union[Method, BaseConfig]):
     """
     from pypalmsens import __sdk_version__
 
-    if isinstance(method, BaseConfig):
+    if isinstance(method, MethodSettings):
         psmethod = method._to_psmethod()
     elif isinstance(method, Method):
         psmethod = method.psmethod

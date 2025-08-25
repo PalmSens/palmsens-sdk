@@ -70,3 +70,13 @@ To bypass the check, run:
 ```
 git commit --no-verify
 ```
+
+## Documentation
+
+The documentation uses [griffe2md](https://mkdocstrings.github.io/griffe2md/) and pandoc to build the API documentation.
+
+The build script defines which classes and modules to document.
+
+```bash
+python build_python_api_docs.py
+```

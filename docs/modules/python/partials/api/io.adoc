@@ -1,0 +1,85 @@
+== `pypalmsens`
+
+*Functions:*
+
+* link:#pypalmsens.load_method_file[*load++_++method++_++file*] – Load a
+method file (.psmethod).
+* link:#pypalmsens.load_session_file[*load++_++session++_++file*] – Load
+a session file (.pssession).
+* link:#pypalmsens.save_method_file[*save++_++method++_++file*] – Load a
+method file (.psmethod).
+* link:#pypalmsens.save_session_file[*save++_++session++_++file*] – Load
+a session file (.pssession).
+
+=== `load++_++method++_++file`
+
+[source,python]
+----
+load_method_file(path, as_method=False)
+----
+
+Load a method file (.psmethod).
+
+*Parameters:*
+
+* *path* (link:#pathlib.Path[Path] ++|++ link:#str[str]) – Path to
+method file
+* *as++_++method* (link:#bool[bool]) – If True, load as method wrapper
+object
+
+*Returns:*
+
+* *method* (link:#Parameters[Parameters]) – Return method parameters
+
+=== `load++_++session++_++file`
+
+[source,python]
+----
+load_session_file(path)
+----
+
+Load a session file (.pssession).
+
+*Parameters:*
+
+* *path* (link:#pathlib.Path[Path] ++|++ link:#str[str]) – Path to
+session file
+
+*Returns:*
+
+* *measurements*
+(link:#list[list]++[++link:#pypalmsens._data.measurement.Measurement[Measurement]++]++)
+– Return list of measurements
+
+=== `save++_++method++_++file`
+
+[source,python]
+----
+save_method_file(path, method)
+----
+
+Load a method file (.psmethod).
+
+*Parameters:*
+
+* *path* (link:#pathlib.Path[Path] ++|++ link:#str[str]) – Path to save
+the method file
+* *method* (link:#pypalmsens._methods.method.Method[Method]) – Method to
+save
+
+=== `save++_++session++_++file`
+
+[source,python]
+----
+save_session_file(path, measurements)
+----
+
+Load a session file (.pssession).
+
+*Parameters:*
+
+* *path* (link:#pathlib.Path[Path] ++|++ link:#str[str]) – Path to save
+the session file
+* *measurements*
+(link:#list[list]++[++link:#pypalmsens._data.measurement.Measurement[Measurement]++]++)
+– List of measurements to save

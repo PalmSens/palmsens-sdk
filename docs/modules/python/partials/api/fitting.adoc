@@ -1,0 +1,567 @@
+== `pypalmsens.fitting`
+
+This module contains the public api for circuit fitting.
+
+*Classes:*
+
+* link:#pypalmsens.fitting.Parameter[*Parameter*] – Set or update
+Parameter attributes.
+* link:#pypalmsens.fitting.Parameters[*Parameters*] – Tuple-like
+container class for parameters.
+* link:#pypalmsens.fitting.FitResult[*FitResult*] – Container for
+fitting results.
+* link:#pypalmsens.fitting.CircuitModel[*CircuitModel*] – Fit an
+equivalent circuit model.
+
+=== `Parameter`
+
+[source,python]
+----
+Parameter(symbol, value=None, min=None, max=None, fixed=None)
+----
+
+Set or update Parameter attributes.
+
+*Attributes:*
+
+* link:#pypalmsens.fitting.Parameter.symbol[*symbol*] (link:#str[str]) –
+Name of the parameter (not used in minimization).
+* link:#pypalmsens.fitting.Parameter.value[*value*]
+(link:#typing.Optional[Optional]++[++link:#float[float]++]++) – Initial
+value of the parameter.
+* link:#pypalmsens.fitting.Parameter.min[*min*]
+(link:#typing.Optional[Optional]++[++link:#float[float]++]++) – Minimum
+(lower bound) for the parameter.
+* link:#pypalmsens.fitting.Parameter.max[*max*]
+(link:#typing.Optional[Optional]++[++link:#float[float]++]++) – Maximum
+(upper bound) for the parameter.
+* link:#pypalmsens.fitting.Parameter.fixed[*fixed*]
+(link:#typing.Optional[Optional]++[++link:#bool[bool]++]++) – If True,
+fix the value for this parameter.
+
+==== `symbol`
+
+[source,python]
+----
+symbol: str
+----
+
+Name of the parameter (not used in minimization).
+
+==== `value`
+
+[source,python]
+----
+value: Optional[float] = None
+----
+
+Initial value of the parameter.
+
+==== `min`
+
+[source,python]
+----
+min: Optional[float] = None
+----
+
+Minimum (lower bound) for the parameter.
+
+==== `max`
+
+[source,python]
+----
+max: Optional[float] = None
+----
+
+Maximum (upper bound) for the parameter.
+
+==== `fixed`
+
+[source,python]
+----
+fixed: Optional[bool] = None
+----
+
+If True, fix the value for this parameter.
+
+=== `Parameters`
+
+[source,python]
+----
+Parameters(cdc)
+----
+
+Bases: link:#collections.abc.Sequence[Sequence]
+
+Tuple-like container class for parameters.
+
+This class is instantiated from the CDC code and contains default
+parameters. This ensures that the length and type of parameters match
+that of `CircuitModel`. Update the parameters in this class and pass to
+`CircuitModel.fit()`.
+
+*Parameters:*
+
+* *cdc* (link:#str[str]) – Genererate fitting parameters for this CDC.
+
+*Attributes:*
+
+* link:#pypalmsens.fitting.Parameters.cdc[*cdc*] – CDC code used to
+generate parameter listing.
+
+==== `cdc`
+
+[source,python]
+----
+cdc = cdc
+----
+
+CDC code used to generate parameter listing.
+
+=== `FitResult`
+
+[source,python]
+----
+FitResult(cdc, parameters, chisq, exit_code, n_iter, error)
+----
+
+Container for fitting results.
+
+*Functions:*
+
+* link:#pypalmsens.fitting.FitResult.from_psfitresult[*from++_++psfitresult*]
+– Construct fitresult from SDK FitResult.
+* link:#pypalmsens.fitting.FitResult.from_eisdata[*from++_++eisdata*] –
+Construct fitresulf from EISData.
+* link:#pypalmsens.fitting.FitResult.get_psmodel[*get++_++psmodel*] –
+Get SDK Circuit model object
+* link:#pypalmsens.fitting.FitResult.get_nyquist[*get++_++nyquist*] –
+Calculate observed and calculated nyquist curves.
+* link:#pypalmsens.fitting.FitResult.get_bode_z[*get++_++bode++_++z*] –
+Calculate observed and calculated Bode curve Z vs Frequency.
+* link:#pypalmsens.fitting.FitResult.get_bode_phase[*get++_++bode++_++phase*]
+– Calculate observed and calculated Bode curve phase vs Frequency.
+* link:#pypalmsens.fitting.FitResult.plot_nyquist[*plot++_++nyquist*] –
+Make nyquist plot.
+* link:#pypalmsens.fitting.FitResult.plot_bode[*plot++_++bode*] – Make
+bode plot.
+
+*Attributes:*
+
+* link:#pypalmsens.fitting.FitResult.cdc[*cdc*] (link:#str[str]) –
+Circuit model CDC values.
+* link:#pypalmsens.fitting.FitResult.parameters[*parameters*]
+(link:#list[list]++[++link:#float[float]++]++) – Optimized parameters
+for CDC.
+* link:#pypalmsens.fitting.FitResult.chisq[*chisq*] (link:#float[float])
+– Chi-squared goodness of fit statistic.
+* link:#pypalmsens.fitting.FitResult.exit_code[*exit++_++code*]
+(link:#str[str]) – Exit code for the minimization.
+* link:#pypalmsens.fitting.FitResult.n_iter[*n++_++iter*]
+(link:#int[int]) – Total number of iterations.
+* link:#pypalmsens.fitting.FitResult.error[*error*]
+(link:#list[list]++[++link:#float[float]++]++) – Error (%) on
+parameters.
+
+==== `cdc`
+
+[source,python]
+----
+cdc: str
+----
+
+Circuit model CDC values.
+
+==== `parameters`
+
+[source,python]
+----
+parameters: list[float]
+----
+
+Optimized parameters for CDC.
+
+==== `chisq`
+
+[source,python]
+----
+chisq: float
+----
+
+Chi-squared goodness of fit statistic.
+
+==== `exit++_++code`
+
+[source,python]
+----
+exit_code: str
+----
+
+Exit code for the minimization.
+
+==== `n++_++iter`
+
+[source,python]
+----
+n_iter: int
+----
+
+Total number of iterations.
+
+==== `error`
+
+[source,python]
+----
+error: list[float]
+----
+
+Error (%) on parameters.
+
+==== `from++_++psfitresult`
+
+[source,python]
+----
+from_psfitresult(result, cdc)
+----
+
+Construct fitresult from SDK FitResult.
+
+==== `from++_++eisdata`
+
+[source,python]
+----
+from_eisdata(data)
+----
+
+Construct fitresulf from EISData.
+
+==== `get++_++psmodel`
+
+[source,python]
+----
+get_psmodel(data)
+----
+
+Get SDK Circuit model object
+
+==== `get++_++nyquist`
+
+[source,python]
+----
+get_nyquist(data)
+----
+
+Calculate observed and calculated nyquist curves.
+
+*Parameters:*
+
+* *data* (link:#pypalmsens._data.eisdata.EISData[EISData]) – Input EIS
+data.
+
+*Returns:*
+
+* calc, meas : tuple++[++Curve, Curve++]++ – Returns the nyquist curve
+calculated from the model parameters and the measured curve from the EIS
+data.
+
+==== `get++_++bode++_++z`
+
+[source,python]
+----
+get_bode_z(data)
+----
+
+Calculate observed and calculated Bode curve Z vs Frequency.
+
+*Parameters:*
+
+* *data* (link:#pypalmsens._data.eisdata.EISData[EISData]) – Input EIS
+data.
+
+*Returns:*
+
+* calc, meas : tuple++[++Curve, Curve++]++ – Returns the nyquist curve
+calculated from the model parameters and the measured curve from the EIS
+data.
+
+==== `get++_++bode++_++phase`
+
+[source,python]
+----
+get_bode_phase(data)
+----
+
+Calculate observed and calculated Bode curve phase vs Frequency.
+
+*Parameters:*
+
+* *data* (link:#pypalmsens._data.eisdata.EISData[EISData]) – Input EIS
+data.
+
+*Returns:*
+
+* calc, meas : tuple++[++Curve, Curve++]++ – Returns the nyquist curve
+calculated from the model parameters and the measured curve from the EIS
+data.
+
+==== `plot++_++nyquist`
+
+[source,python]
+----
+plot_nyquist(data)
+----
+
+Make nyquist plot.
+
+*Parameters:*
+
+* *data* (link:#pypalmsens._data.eisdata.EISData[EISData]) – Input EIS
+data.
+
+*Returns:*
+
+* *fig* (link:#matplotlib.fig.Figure[Figure]) – Returns matplotlib
+figure object. use `fig.show()` to render plot.
+
+==== `plot++_++bode`
+
+[source,python]
+----
+plot_bode(data)
+----
+
+Make bode plot.
+
+*Parameters:*
+
+* *data* (link:#pypalmsens._data.eisdata.EISData[EISData]) – Input EIS
+data.
+
+*Returns:*
+
+* *fig* (link:#matplotlib.fig.Figure[Figure]) – Returns matplotlib
+figure object. use `fig.show()` to render plot.
+
+=== `CircuitModel`
+
+[source,python]
+----
+CircuitModel(cdc, algorithm='leastsq', max_iterations=500, min_delta_error=1e-09, min_delta_step=1e-12, min_freq=None, max_freq=None, tolerance=0.0001, lambda_start=0.01, lambda_factor=10.0, _last_result=None, _last_psfitter=None)
+----
+
+Fit an equivalent circuit model.
+
+The class takes a CDC string as a required argument to set up the model.
+
+The other parameters are optional and can be used to tweak the
+minimization. The model supports fitting over a specified frequency
+range and adjustment of exit conditions (i.e. max # iterations, min
+delta error, min parameter step size).
+
+Optionally you can change the initial values of the parameters, their
+min/max bounds or fix their value.
+
+Example:
+
+....
+model = CircuitModel('R(RC)')
+result = model.fit(eis_data)
+....
+
+*Functions:*
+
+* link:#pypalmsens.fitting.CircuitModel.default_parameters[*default++_++parameters*]
+– Get default parameters. Use this to modify parameter values.
+* link:#pypalmsens.fitting.CircuitModel.fit[*fit*] – Fit circuit model.
+
+*Attributes:*
+
+* link:#pypalmsens.fitting.CircuitModel.cdc[*cdc*] (link:#str[str]) –
+Sets the circuit specified in the CDC string.
+* link:#pypalmsens.fitting.CircuitModel.algorithm[*algorithm*]
+(link:#typing.Literal[Literal]++[++'`leastsq`', '`nelder-mead`'++]++) –
+Name of the fitting method to use.
+* link:#pypalmsens.fitting.CircuitModel.max_iterations[*max++_++iterations*]
+(link:#int[int]) – Maximum number of iterations.
+* link:#pypalmsens.fitting.CircuitModel.min_delta_error[*min++_++delta++_++error*]
+(link:#float[float]) – Minimum convergence error.
+* link:#pypalmsens.fitting.CircuitModel.min_delta_step[*min++_++delta++_++step*]
+(link:#float[float]) – Minimum convergence step.
+* link:#pypalmsens.fitting.CircuitModel.min_freq[*min++_++freq*]
+(link:#typing.Optional[Optional]++[++link:#float[float]++]++) – Minimum
+fitting frequency in Hz.
+* link:#pypalmsens.fitting.CircuitModel.max_freq[*max++_++freq*]
+(link:#typing.Optional[Optional]++[++link:#float[float]++]++) – Maximum
+fitting frequency in Hz.
+* link:#pypalmsens.fitting.CircuitModel.tolerance[*tolerance*]
+(link:#float[float]) – Convergence tolerance. Nelder-Mead only (default
+= 1e-4).
+* link:#pypalmsens.fitting.CircuitModel.lambda_start[*lambda++_++start*]
+(link:#float[float]) – Start lambda value. Levenberg-Marquardt only
+(default = 0.01).
+* link:#pypalmsens.fitting.CircuitModel.lambda_factor[*lambda++_++factor*]
+(link:#float[float]) – Lambda Scaling Factor. Levenberg-Marquardt only
+(default = 10).
+* link:#pypalmsens.fitting.CircuitModel.last_result[*last++_++result*] –
+Store last fit result.
+* link:#pypalmsens.fitting.CircuitModel.last_psfitter[*last++_++psfitter*]
+– Store reference to last SDK fitting object.
+
+==== `cdc`
+
+[source,python]
+----
+cdc: str
+----
+
+Sets the circuit specified in the CDC string.
+
+For more information, see:
+https://www.utwente.nl/en/tnw/ims/publications/downloads/cdc-explained.pdf
+
+==== `algorithm`
+
+[source,python]
+----
+algorithm: Literal['leastsq', 'nelder-mead'] = 'leastsq'
+----
+
+Name of the fitting method to use.
+
+Valid values are: `leastsq` (Levenberg-Marquardt), `nelder-mead`
+
+==== `max++_++iterations`
+
+[source,python]
+----
+max_iterations: int = 500
+----
+
+Maximum number of iterations.
+
+Minimization terminates once it reaches this number of steps (default =
+500).
+
+==== `min++_++delta++_++error`
+
+[source,python]
+----
+min_delta_error: float = 1e-09
+----
+
+Minimum convergence error.
+
+Minimization converges if the residual (squared difference) falls below
+this value (default = 1e-9).
+
+==== `min++_++delta++_++step`
+
+[source,python]
+----
+min_delta_step: float = 1e-12
+----
+
+Minimum convergence step.
+
+Minimization converges if the difference in parameter values falls below
+this value (default = 1e-12).
+
+==== `min++_++freq`
+
+[source,python]
+----
+min_freq: Optional[float] = None
+----
+
+Minimum fitting frequency in Hz.
+
+==== `max++_++freq`
+
+[source,python]
+----
+max_freq: Optional[float] = None
+----
+
+Maximum fitting frequency in Hz.
+
+==== `tolerance`
+
+[source,python]
+----
+tolerance: float = 0.0001
+----
+
+Convergence tolerance. Nelder-Mead only (default = 1e-4).
+
+==== `lambda++_++start`
+
+[source,python]
+----
+lambda_start: float = 0.01
+----
+
+Start lambda value. Levenberg-Marquardt only (default = 0.01).
+
+==== `lambda++_++factor`
+
+[source,python]
+----
+lambda_factor: float = 10.0
+----
+
+Lambda Scaling Factor. Levenberg-Marquardt only (default = 10).
+
+==== `last++_++result`
+
+[source,python]
+----
+last_result
+----
+
+Store last fit result.
+
+==== `last++_++psfitter`
+
+[source,python]
+----
+last_psfitter
+----
+
+Store reference to last SDK fitting object.
+
+==== `default++_++parameters`
+
+[source,python]
+----
+default_parameters()
+----
+
+Get default parameters. Use this to modify parameter values.
+
+*Returns:*
+
+* *parameters* (link:#pypalmsens._fitting.Parameters[Parameters]) –
+Default parameters for CDC.
+
+==== `fit`
+
+[source,python]
+----
+fit(data, *, parameters=None)
+----
+
+Fit circuit model.
+
+*Parameters:*
+
+* *data* (link:#pypalmsens._data.eisdata.EISData[EISData]) – Input data.
+* *parameters*
+(link:#typing.Optional[Optional]++[++link:#collections.abc.Sequence[Sequence]++[++link:#float[float]++]++
+++|++ link:#pypalmsens._fitting.Parameters[Parameters]++]++) – Optional
+initial parameters for fit. Can be passed as `Parameters` object or list
+of values.
+
+*Returns:*
+
+* *result* (link:#pypalmsens._fitting.FitResult[FitResult]) – Returns
+dataclass with fit results. Can also be accessed via `.last++_++result`.

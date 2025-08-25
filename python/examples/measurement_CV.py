@@ -18,10 +18,10 @@ with pypalmsens.connect(available_instruments[0]) as manager:
     print(serial)
 
     method = pypalmsens.CyclicVoltammetry(
-        current_ranges=pypalmsens.config.CurrentRanges(
-            max=pypalmsens.config.CURRENT_RANGE.cr_1_A,  # 1 A range
-            min=pypalmsens.config.CURRENT_RANGE.cr_1_uA,  # 1 µA range
-            start=pypalmsens.config.CURRENT_RANGE.cr_1_mA,  # 1 mA range
+        current_ranges=pypalmsens.settings.CurrentRanges(
+            max=pypalmsens.settings.CURRENT_RANGE.cr_1_A,  # 1 A range
+            min=pypalmsens.settings.CURRENT_RANGE.cr_1_uA,  # 1 µA range
+            start=pypalmsens.settings.CURRENT_RANGE.cr_1_mA,  # 1 mA range
         ),
         equilibration_time=2,  # seconds
         begin_potential=-2,  # V

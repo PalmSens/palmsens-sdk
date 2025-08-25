@@ -14,12 +14,12 @@ def new_data_callback(channel):
 async def run_steps(manager, channel, steps):
     # Create a new method, a separate method is required for each channel
     method = pypalmsens.ChronoPotentiometry(
-        potential_ranges=pypalmsens.config.PotentialRanges(
-            max=pypalmsens.config.POTENTIAL_RANGE.pr_1_V,  # 1V range
-            min=pypalmsens.config.POTENTIAL_RANGE.pr_10_mV,  # 10mV range
-            start=pypalmsens.config.POTENTIAL_RANGE.pr_1_V,  # 1V range
+        potential_ranges=pypalmsens.settings.PotentialRanges(
+            max=pypalmsens.settings.POTENTIAL_RANGE.pr_1_V,  # 1V range
+            min=pypalmsens.settings.POTENTIAL_RANGE.pr_10_mV,  # 10mV range
+            start=pypalmsens.settings.POTENTIAL_RANGE.pr_1_V,  # 1V range
         ),
-        applied_current_range=pypalmsens.config.CURRENT_RANGE.cr_10_uA,  # 10µA range
+        applied_current_range=pypalmsens.settings.CURRENT_RANGE.cr_10_uA,  # 10µA range
         current=0.5,  # applied current in range, i.e. 5µA when the 10µA range is set as the applied range
         interval_time=0.05,  # seconds
         run_time=5,  # seconds
@@ -38,19 +38,19 @@ async def main():
     steps = [
         {
             'current': 0.1,
-            'potential_limits': pypalmsens.config.PotentialLimits(
+            'potential_limits': pypalmsens.settings.PotentialLimits(
                 limit_max=2, use_limit_min=False
             ),
         },
         {
             'current': -0.2,
-            'potential_limits': pypalmsens.config.PotentialLimits(
+            'potential_limits': pypalmsens.settings.PotentialLimits(
                 limit_max=-0.5, use_limit_max=False
             ),
         },
         {
             'current': 2,
-            'potential_limits': pypalmsens.config.PotentialLimits(limit_min=2, limit_max=2),
+            'potential_limits': pypalmsens.settings.PotentialLimits(limit_min=2, limit_max=2),
         },
     ]
 

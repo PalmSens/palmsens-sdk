@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from pypalmsens.methods import techniques
+import pypalmsens
 
 
 @pytest.fixture
@@ -23,6 +23,6 @@ def test_to_dict(method):
     assert dct
 
 
-def test_to_parameters(method):
-    params = method.to_parameters()
-    assert isinstance(params, techniques.CyclicVoltammetry)
+def test_to_settings(method):
+    params = method.to_settings()
+    assert isinstance(params, pypalmsens.CyclicVoltammetry)

@@ -4,7 +4,7 @@ import pytest
 from PalmSens import AutoRanging, AutoRangingPotential
 
 import pypalmsens
-from pypalmsens.config import CURRENT_RANGE, POTENTIAL_RANGE
+from pypalmsens.settings import CURRENT_RANGE, POTENTIAL_RANGE
 
 
 def test_current_range():
@@ -33,7 +33,7 @@ def test_method_current_range():
     crstart = CURRENT_RANGE.cr_100_uA
 
     method = pypalmsens.CyclicVoltammetry(
-        current_ranges=pypalmsens.config.CurrentRanges(
+        current_ranges=pypalmsens.settings.CurrentRanges(
             min=crmin,
             max=crmax,
             start=crstart,
@@ -58,7 +58,7 @@ def test_method_potential_range():
     potstart = POTENTIAL_RANGE.pr_10_mV
 
     method = pypalmsens.ChronoPotentiometry(
-        potential_ranges=pypalmsens.config.PotentialRanges(
+        potential_ranges=pypalmsens.settings.PotentialRanges(
             min=potmin,
             max=potmax,
             start=potstart,

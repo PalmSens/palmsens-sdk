@@ -4,7 +4,7 @@ import pytest
 from numpy.testing import assert_allclose
 from PalmSens import Fitting as PSFitting
 
-from pypalmsens.models import CircuitModel, Parameter, Parameters
+from pypalmsens.fitting import CircuitModel, Parameter, Parameters
 
 
 def test_parameter_slots():
@@ -34,7 +34,7 @@ def test_parameters():
     params[1].min = 12
     params[1].max = 34
 
-    params.update_psmodel_parameters(psmodel)
+    params._update_psmodel_parameters(psmodel)
     psparams = psmodel.InitialParameters
 
     assert psparams[0].Value == 123

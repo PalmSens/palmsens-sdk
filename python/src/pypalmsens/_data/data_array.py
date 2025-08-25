@@ -8,8 +8,16 @@ from ._shared import ArrayType
 
 
 class DataArray(Sequence):
+    """Python wrapper for .NET DataArray class.
+
+    Parameters
+    ----------
+    psarray
+        Reference to .NET DataArray object.
+    """
+
     def __init__(self, *, psarray):
-        self.psarray = psarray
+        self._psarray = psarray
 
     def __repr__(self):
         return (
@@ -24,50 +32,50 @@ class DataArray(Sequence):
             if index >= len(self) or index < -len(self):
                 raise IndexError('list index out of range')
             index = index % len(self)
-            return self.psarray[index].Value
+            return self._psarray[index].Value
 
         return self.to_list()[index]
 
     def __len__(self):
-        return len(self.psarray)
+        return len(self._psarray)
 
     def min(self) -> float:
         """Return min value."""
-        return self.psarray.MinValue
+        return self._psarray.MinValue
 
     def max(self) -> float:
         """Return max value."""
-        return self.psarray.MaxValue
+        return self._psarray.MaxValue
 
     @property
     def name(self) -> str:
         """Name of the array."""
-        return self.psarray.Description
+        return self._psarray.Description
 
     def to_numpy(self) -> np.ndarray:
         """Export data array to numpy."""
-        return np.array(self.psarray.GetValues())
+        return np.array(self._psarray.GetValues())
 
     def to_list(self) -> list[float]:
         """Export data array to list."""
-        return list(self.psarray.GetValues())
+        return list(self._psarray.GetValues())
 
     @property
     def type(self) -> ArrayType:
         """ArrayType enum."""
-        return ArrayType(self.psarray.ArrayType)
+        return ArrayType(self._psarray.ArrayType)
 
     @property
     def unit(self) -> str:
         """Unit for array."""
-        return self.psarray.Unit.ToString()
+        return self._psarray.Unit.ToString()
 
     @property
     def quantity(self) -> str:
         """Quantity for array."""
-        return self.psarray.Unit.Quantity
+        return self._psarray.Unit.Quantity
 
     @property
     def ocp_value(self) -> float:
         """OCP Value."""
-        return self.psarray.OCPValue
+        return self._psarray.OCPValue

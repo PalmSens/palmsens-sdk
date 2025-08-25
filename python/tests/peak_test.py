@@ -31,7 +31,6 @@ def test_peak_properties(peak):
     assert peak.index == 37
     assert peak.type == 'AutoPeak'
     assert peak.value == pytest.approx(1.464524)
-    assert peak.peak_height == pytest.approx(1.464524)
     assert peak.x == -0.815
     assert peak.y == 4.1635
     assert peak.right_index == 51

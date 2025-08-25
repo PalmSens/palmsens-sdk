@@ -1,8 +1,13 @@
+"""This module contains the public api for classes for method configuration."""
+
 from __future__ import annotations
 
-from .methods._shared import CURRENT_RANGE, POTENTIAL_RANGE, ELevel
-from .methods.settings import (
-    BaseSettings,
+from ._methods._shared import (
+    CURRENT_RANGE,
+    POTENTIAL_RANGE,
+    ELevel,
+)
+from ._methods.settings import (
     BiPot,
     ChargeLimits,
     CurrentLimits,
@@ -38,6 +43,5 @@ __all__ = [
     'PotentialLimits',
     'PotentialRanges',
     'Pretreatment',
-    'BaseSettings',
     'VersusOCP',
 ]

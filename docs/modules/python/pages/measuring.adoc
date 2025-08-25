@@ -5,11 +5,10 @@ The following chapter details how to connect to a device, read data from the dev
 The `pypalmsens` top-level module contains all the relevant functions and classes for discovering and controlling instruments.
 The `InstrumentManager()` and `InstrumentManagerAsync()` class are wrappers around our .NET libraries which make it possible to connect to and control PalmSens instruments from Python.
 
-// TODO
 [CAUTION]
 .Mains Frequency
 ====
-To eliminate noise induced by other electrical appliances it is highly recommended to set your regional mains frequency (50/60 Hz) in the static property `PalmSens.Method.PowerFreq`.
+To eliminate noise induced by other electrical appliances it is highly recommended to set your regional mains frequency (50/60 Hz) in the general settings when performing a measurement `pypalmsens.settings.General.power_frequency`.
 ====
 
 == Connecting to a device

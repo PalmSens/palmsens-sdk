@@ -1,3 +1,64 @@
 = Equivalent Circuit Fitting
 
-Placeholder
+`+pypalmsens.fitting.CircuitModel+` fits the equivalent circuit
+specified with the CDC descriptor code. Optional settings are fixing the
+value of a parameter, setting the min/max bounds for a parameter,
+specifying the frequency range to fit, limitting the number of
+iterations, delta error term or delta parameter term.
+
+Example usage for fitting an equivalent circuit:
+
+[source,python]
+----
+>>> import pypalmsens
+
+>>> measurements = pypalmsens.load_save_data(eis_data.pssession)
+>>> eis_data = measurements[0].eis_data[0]
+
+>>> cdc = 'R(RC)'
+>>> model = pypalmsens.fitting.CircuitModel(cdc=cdc)
+>>> result = model.fit(eis_data)
+>>> result
+FitResult(cdc='R(RC)', parameters=[564.65, 10077.11, 3.327e-08], chisq=0.00040, exit_code='MinimumDeltaErrorTerm', n_iter=9, error=[1.47, 1.54, 1.92])
+----
+
+`+CircuitModel+` takes a single parameter, the circuit description code
+(CDC). Note that the code must be in all caps. For more information, see
+https://www.utwente.nl/en/tnw/ims/publications/downloads/cdc-explained.pdf[this
+link].
+
+`+result+` is an instance of `+FitResult+`, a dataclass with fit values,
+errors, and other fitting data. You can pass `+result.parameters+` back
+to `+CircuitModel.fit+` to redo the fit:
+
+[source,python]
+----
+>>> result = pypalmsens.fitting.CircuitModel(cdc=cdc, parameters=result.parameters)
+----
+
+If you want to tune the parameters, like fixing values or setting
+bounds, you can use set them using the `+pypalmsens.fitting.Parameters+`
+class. `+model.default_parameters+` grabs the default parameters for the
+CDC. These can be modified, for example:
+
+[source,python]
+----
+>>> parameters = model.default_parameters
+
+>>> parameters[0].value = 123  # set starting value to 123
+>>> parameters[0].fixed = True # fix this value
+>>> parameters[1].min = 12  # set lower bound
+>>> parameters[1].max = 34  # set upper bound
+
+>>> result = model.fit(eis_data, parameters=parameters)
+----
+
+If you have https://matplotlib.org[matplotlib] installed, you can
+generate the plots from the result:
+
+[source,python]
+----
+>>> result.get_bode_phase(eis_data)
+>>> result.plot_nyquist(eis_data)
+>>> result.plot_bode(eis_data)
+----

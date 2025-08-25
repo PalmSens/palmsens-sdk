@@ -38,8 +38,16 @@ def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, D
 
 
 class DataSet(Mapping):
+    """Python wrapper for .NET DataSet class.
+
+    Parameters
+    ----------
+    psdataset : PalmSens.Data.DataSet
+        Reference to .NET DataSet object.
+    """
+
     def __init__(self, *, psdataset: PSDataSet):
-        self.psdataset = psdataset
+        self._psdataset = psdataset
         self._mapping = _dataset_to_mapping_with_unique_keys(psdataset)
 
     def __repr__(self):
@@ -65,7 +73,7 @@ class DataSet(Mapping):
 
     def psarrays(self):
         """Return underlying PalmSens SDK objects."""
-        return self.psdataset.GetDataArrays()
+        return self._psdataset.GetDataArrays()
 
     def arrays(self) -> list[DataArray]:
         """Return list of all arrays. Alias for `.to_list()`"""
@@ -73,7 +81,7 @@ class DataSet(Mapping):
 
     def hidden_arrays(self) -> list[DataArray]:
         """Return 'hidden' arrays used for debugging."""
-        return [DataArray(psarray=psarray) for psarray in self.psdataset if psarray.Hidden]
+        return [DataArray(psarray=psarray) for psarray in self._psdataset if psarray.Hidden]
 
     def arrays_by_name(self, name: str) -> list[DataArray]:
         """Get arrays by name.
@@ -108,8 +116,8 @@ class DataSet(Mapping):
 
         Parameters
         ----------
-        description : str
-            Description of the array.
+        array_type : str
+            Type of the array.
 
         Returns
         -------
@@ -174,7 +182,7 @@ class DataSet(Mapping):
         clr_type = clr.GetClrType(CurrentReading)
         field_info = clr_type.GetField('CurrentRange')
 
-        return [field_info.GetValue(val).ToString() for val in array.psarray]
+        return [field_info.GetValue(val).ToString() for val in array._psarray]
 
     def reading_status(self) -> list[str]:
         """Return reading status as list of strings."""
@@ -183,7 +191,7 @@ class DataSet(Mapping):
         clr_type = clr.GetClrType(CurrentReading)
         field_info = clr_type.GetField('ReadingStatus')
 
-        return [field_info.GetValue(val).ToString() for val in array.psarray]
+        return [field_info.GetValue(val).ToString() for val in array._psarray]
 
     def timing_status(self) -> list[str]:
         """Return timing status as list of strings."""
@@ -192,7 +200,7 @@ class DataSet(Mapping):
         clr_type = clr.GetClrType(CurrentReading)
         field_info = clr_type.GetField('TimingStatus')
 
-        return [field_info.GetValue(val).ToString() for val in array.psarray]
+        return [field_info.GetValue(val).ToString() for val in array._psarray]
 
     def to_dataframe(self):
         """Return dataset as pandas dataframe."""

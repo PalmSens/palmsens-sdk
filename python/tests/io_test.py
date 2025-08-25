@@ -3,21 +3,15 @@ from __future__ import annotations
 from attrs import asdict
 from pytest import approx
 
-from pypalmsens import (
-    load_method_file,
-    load_session_file,
-    save_method_file,
-    save_session_file,
-)
-from pypalmsens.methods import techniques
+import pypalmsens
 
 
 def test_save_load_session(tmpdir, data_dpv):
     path = tmpdir / 'test.pssession'
 
-    save_session_file(path=path, measurements=data_dpv)
+    pypalmsens.save_session_file(path=path, measurements=data_dpv)
 
-    data_dpv2 = load_session_file(path=path)
+    data_dpv2 = pypalmsens.load_session_file(path=path)
 
     assert len(data_dpv2) == len(data_dpv)
 
@@ -35,14 +29,14 @@ def test_save_load_session(tmpdir, data_dpv):
 
 def test_save_load_method(tmpdir):
     path = tmpdir / 'test.psmethod'
-    cv = techniques.CyclicVoltammetry()
-    save_method_file(path=path, method=cv)
+    cv = pypalmsens.CyclicVoltammetry()
+    pypalmsens.save_method_file(path=path, method=cv)
 
-    method_cv2 = load_method_file(path=path, as_method=True)
+    method_cv2 = pypalmsens.load_method_file(path=path, as_method=True)
 
     assert method_cv2.filename == path
 
-    cv2 = method_cv2.to_parameters()
+    cv2 = method_cv2.to_settings()
 
     cv_dict = asdict(cv)
     cv2_dict = asdict(cv2)

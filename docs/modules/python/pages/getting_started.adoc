@@ -41,7 +41,7 @@ This returns a 'Method' dataclass with all the method parameters.
 ----
 >>> method = pypalmsens.load_method_file('PSDummyCell_LSV.psmethod')
 >>> method
-LinearSweepParameters(
+LinearSweepVoltammetry(
     'conditioning_time': 0.0,
     'begin_potential': -5.0,
     'end_potential': 5.0,
@@ -110,7 +110,7 @@ This example creates a method for a square-wave voltammetry measurement versus t
 [source,python]
 ----
 >>> import pypalmsens
->>> method = pypalmsens.methods.SquareWaveParameters(
+>>> method = pypalmsens.SquareWaveVoltammetry(
 ...    conditioning_potential = 2.0,  # V
 ...    conditioning_time = 2,  # seconds
 ...    versus_ocp_mode = 3,  # versus begin and end potential
@@ -146,7 +146,7 @@ It can be serialized to and from a dictionary:
  'frequency': 10,
  'amplitude': 0.08,
  ...}
->>> method2 == pypalmsens.methods.SquareWaveParameters(**d)
+>>> method2 == pypalmsens.SquareWaveVoltammetry(**d)
 >>> method == method2
 True
 ----

@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Literal, Optional
 from PalmSens import Fitting as PSFitting
 from System import Array
 
-from .data.curve import Curve
-from .data.eisdata import EISData
+from ._data.curve import Curve
+from ._data.eisdata import EISData
 
 if TYPE_CHECKING:
     from matplotlib import fig
@@ -16,30 +16,21 @@ if TYPE_CHECKING:
 
 @dataclass(slots=True)
 class Parameter:
-    """Set or update Parameter attributes.
-
-    Attributes
-    ----------
-    symbol: str
-        Name of the parameter (not used in minimization).
-    value: float
-        Initial value of the parameter."
-    min: float
-        Minimum (lower bound) for the parameter.
-    max:
-        Maximum (upper bound) for the parameter.
-    fixed:
-        If True, fix the value for this parameter.
-    """
+    """Set or update Parameter attributes."""
 
     symbol: str
+    """Name of the parameter (not used in minimization)."""
     value: Optional[float] = None
+    """Initial value of the parameter."""
     min: Optional[float] = None
+    """Minimum (lower bound) for the parameter."""
     max: Optional[float] = None
+    """Maximum (upper bound) for the parameter."""
     fixed: Optional[bool] = None
+    """If True, fix the value for this parameter."""
 
     @classmethod
-    def from_psparameter(cls, psparameter: PSFitting.Parameter):
+    def _from_psparameter(cls, psparameter: PSFitting.Parameter):
         """Create instance from SDK Parameter object."""
         return cls(
             symbol=psparameter.Symbol,
@@ -49,7 +40,7 @@ class Parameter:
             fixed=psparameter.Fixed,
         )
 
-    def update_psparameter(self, psparameter: PSFitting.Parameter):
+    def _update_psparameter(self, psparameter: PSFitting.Parameter):
         """Update PalmSens SDK object with values from dataclass."""
         if self.value:
             psparameter.Value = self.value
@@ -69,18 +60,20 @@ class Parameters(Sequence):
     parameters match that of `CircuitModel`. Update the parameters
     in this class and pass to `CircuitModel.fit()`.
 
-    Attributes
+    Parameters
     ----------
     cdc: str
-        CDC code/
+        Genererate fitting parameters for this CDC.
     """
 
     def __init__(self, cdc: str):
         self.cdc = cdc
+        """CDC code used to generate parameter listing."""
+
         model = PSFitting.Models.CircuitModel()
         model.SetCircuit(cdc)
         self._parameters = tuple(
-            Parameter.from_psparameter(psparam) for psparam in model.InitialParameters
+            Parameter._from_psparameter(psparam) for psparam in model.InitialParameters
         )
 
     def __len__(self):
@@ -95,7 +88,7 @@ class Parameters(Sequence):
     def __str__(self) -> str:
         return self._parameters.__str__()
 
-    def update_psmodel_parameters(self, psmodel: PSFitting.Models.CircuitModel) -> None:
+    def _update_psmodel_parameters(self, psmodel: PSFitting.Models.CircuitModel) -> None:
         """Update the initial parameters in the SDK model with parameters in this instance.
 
         Note that the length and type of parameters must match that of the SDK class.
@@ -104,35 +97,25 @@ class Parameters(Sequence):
             raise ValueError(f'Parameters must be of length {psmodel.NParameters}')
 
         for param, psparam in zip(self, psmodel.InitialParameters):
-            param.update_psparameter(psparam)
+            param._update_psparameter(psparam)
 
 
 @dataclass(frozen=True)
 class FitResult:
-    """Container for fitting results.
-
-    Attributes
-    ----------
-    cdc: str
-        Circuit model CDC values.
-    chisq: float
-        Chi-squared goodness of fit statistic.
-    exit_code: str
-        Exit code for the minimization.
-    n_iterations: int
-        Total number of iterations.
-    parameters: list[float]
-        Optimized parameters for CDC.
-    error: list[float]
-        Error (%) on parameters.
-    """
+    """Container for fitting results."""
 
     cdc: str
+    """Circuit model CDC values."""
     parameters: list[float]
+    """Optimized parameters for CDC."""
     chisq: float
+    """Chi-squared goodness of fit statistic."""
     exit_code: str
+    """Exit code for the minimization."""
     n_iter: int
+    """Total number of iterations."""
     error: list[float]
+    """Error (%) on parameters."""
 
     @classmethod
     def from_psfitresult(cls, result: PSFitting.FitResult, cdc: str):
@@ -161,7 +144,7 @@ class FitResult:
     def get_psmodel(self, data: EISData) -> PSFitting.Models.CircuitModel:
         """Get SDK Circuit model object"""
         psmodel = PSFitting.Models.CircuitModel()
-        psmodel.SetEISdata(data.pseis)
+        psmodel.SetEISdata(data._pseis)
         psmodel.SetCircuit(self.cdc)
         psmodel.SetInitialParameters(self.parameters)
         return psmodel
@@ -299,46 +282,54 @@ class CircuitModel:
     model = CircuitModel('R(RC)')
     result = model.fit(eis_data)
     ```
-
-    Attributes
-    ----------
-    cdc: str
-        Sets the circuit specified in the CDC string (equivalent Circuit Discriptor Code),
-        https://www.utwente.nl/en/tnw/ims/publications/downloads/cdc-explained.pdf
-    algorithm: str
-        Name of the fitting method to use. Valid values are:
-            'leastsq' (Levenberg-Marquardt), 'nelder-mead'
-    max_iterations: int
-        Maximum number of iterations. Minimization terminates once it reaches
-        this number of steps (default = 500).
-    min_delta_error: float
-        Minimization converges if the residual (squared difference)
-        falls below this value (default = 1e-9).
-    min_delta_step: float
-        Minimization converges if the difference in parameter values
-        falls below this value (default = 1e-12).
-    min_hz: float
-        Minimum fitting frequency in Hz (default = None).
-    max_hz: float
-        Maximum fitting frequency in Hz (default = None).
-    tolerance: float
-        Convergence tolerance. Nelder-Mead only (default = 1e-4).
-    lambda_start_value: float
-        Start lambda value. Levenberg-Marquardt only (default = 0.01).
-    lambda_scale_factor: float
-        Lambda Scaling Factor. Levenberg-Marquardt only (default = 10.00).
     """
 
     cdc: str
+    """Sets the circuit specified in the CDC string.
+
+    For more information, see:
+        https://www.utwente.nl/en/tnw/ims/publications/downloads/cdc-explained.pdf
+    """
+
     algorithm: Literal['leastsq', 'nelder-mead'] = 'leastsq'
+    """Name of the fitting method to use.
+
+    Valid values are: `leastsq` (Levenberg-Marquardt), `nelder-mead`
+    """
+
     max_iterations: int = 500
+    """Maximum number of iterations.
+
+    Minimization terminates once it reaches this number of steps (default = 500).
+    """
+
     min_delta_error: float = 1.0e-9
+    """Minimum convergence error.
+
+    Minimization converges if the residual (squared difference)
+        falls below this value (default = 1e-9).
+    """
+
     min_delta_step: float = 1.0e-12
+    """Minimum convergence step.
+
+    Minimization converges if the difference in parameter values
+        falls below this value (default = 1e-12)."""
+
     min_freq: Optional[float] = None
+    """Minimum fitting frequency in Hz."""
+
     max_freq: Optional[float] = None
+    """Maximum fitting frequency in Hz."""
+
     tolerance: float = 1e-4
+    """Convergence tolerance. Nelder-Mead only (default = 1e-4)."""
+
     lambda_start: float = 0.01
+    """Start lambda value. Levenberg-Marquardt only (default = 0.01)."""
+
     lambda_factor: float = 10.00
+    """Lambda Scaling Factor. Levenberg-Marquardt only (default = 10)."""
 
     _last_result: Optional[FitResult] = None
     _last_psfitter: Optional[PSFitting.FitAlgorithm] = None
@@ -353,7 +344,7 @@ class CircuitModel:
         """
         return Parameters(self.cdc)
 
-    def psfitoptions(
+    def _psfitoptions(
         self,
         data: EISData,
         *,
@@ -376,7 +367,7 @@ class CircuitModel:
         """
         model = PSFitting.Models.CircuitModel()
         model.SetCircuit(self.cdc)
-        model.SetEISdata(data.pseis)
+        model.SetEISdata(data._pseis)
 
         if parameters:
             if isinstance(parameters, Parameters):
@@ -384,7 +375,7 @@ class CircuitModel:
                     raise ValueError(
                         f'Parameters cdc ({self.cdc}) does not match Model ({parameters.cdc})'
                     )
-                parameters.update_psmodel_parameters(model)
+                parameters._update_psmodel_parameters(model)
             else:
                 if len(parameters) != model.NParameters:
                     raise ValueError(f'Parameters must be of length {model.NParameters}')
@@ -392,7 +383,7 @@ class CircuitModel:
 
         opts = PSFitting.FitOptionsCircuit()
         opts.Model = model
-        opts.RawData = data.pseis
+        opts.RawData = data._pseis
 
         opts.MaxIterations = self.max_iterations
         opts.MinimumDeltaErrorTerm = self.min_delta_error
@@ -446,7 +437,7 @@ class CircuitModel:
                 f'Fit only supports EIS scans at a fixed potential, got {data.scan_type=}.'
             )
 
-        opts = self.psfitoptions(data=data, parameters=parameters)
+        opts = self._psfitoptions(data=data, parameters=parameters)
 
         fitter = PSFitting.FitAlgorithm.FromAlgorithm(opts)
         fitter.ApplyFitCircuit()

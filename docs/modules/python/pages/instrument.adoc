@@ -1,0 +1,41 @@
+= Instrument management
+
+Use the `InstrumentManager()` to start experiments and control your
+PalmSens instrument.
+
+For example, to connect:
+
+[source,python]
+----
+import pypalmsens
+
+with pypalmsens.connect as manager:
+        method = pypalmsens.ChronoAmperometry()
+        measurement = await manager.measure(method)
+----
+
+or using `InstrumentManager()` directly as a context manager:
+
+[source,python]
+----
+instruments = discover()
+
+with pypalmsens.InstrumentManager(instruments[0]) as manager:
+    measurement = manager.measure(method)
+----
+
+or managing the instrument connection yourself:
+
+[source,python]
+----
+instruments = discover_async()
+
+manager = pypalmsens.InstrumentManager(instruments[0])
+manager.connect()
+...
+await manager.disconnect()
+----
+
+For more information, see xref:measuring.adoc
+
+include::partial$api/instrument.adoc[]

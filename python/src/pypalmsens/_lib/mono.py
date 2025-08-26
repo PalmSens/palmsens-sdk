@@ -22,6 +22,9 @@ RUNTIME_DIR = files('pypalmsens._runtimes')
 system = platform.system()  # Windows, Linux, Darwin
 machine = platform.machine()  # AMD64, x86_64, arm64
 
+# Select the correct version of the SerialPort library
+# To use serial devices the correct version of the libSystem.IO.Ports.Native.so
+# library must be loaded to into pythonnet.
 PLATFORMS = {
     ('Linux', 'x86_64'): 'linux-x64',
     ('Linux', 'arm'): 'linux-arm',

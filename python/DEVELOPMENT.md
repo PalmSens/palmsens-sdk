@@ -75,7 +75,11 @@ git commit --no-verify
 
 The documentation uses [griffe2md](https://mkdocstrings.github.io/griffe2md/) and pandoc to build the API documentation.
 
+The code uses the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) style for docstrings, and [PEP-257 style](https://peps.python.org/pep-0257/#what-is-a-docstring) attribute docstrings.
+
 The build script defines which classes and modules to document.
+
+
 
 ```bash
 python build_python_api_docs.py

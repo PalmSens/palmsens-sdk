@@ -26,7 +26,7 @@ config = griffe2md.ConfigDict(
     merge_init_into_class=True,
     preload_modules=None,
     separate_signature=True,
-    show_bases=True,
+    show_bases=False,
     show_category_heading=False,  # When grouped by categories, show a heading for each category.
     show_docstring_attributes=False,
     show_docstring_classes=True,
@@ -50,12 +50,7 @@ config = griffe2md.ConfigDict(
     show_signature_annotations=False,
     show_submodules=True,
     signature_crossrefs=True,
-    summary={
-        'attributes': True,
-        'functions': True,
-        'classes': True,
-        'modules': True,
-    },
+    summary=True,
 )
 
 

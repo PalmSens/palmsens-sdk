@@ -47,3 +47,9 @@ def test_properties(array):
     assert array.type is ArrayType.Charge
     assert array.quantity == 'Charge'
     assert isnan(array.ocp_value)
+
+
+def test_array_smooth(array):
+    new_array = array.savitsky_golay()
+    assert list(new_array) != list(array)
+    assert new_array is not array

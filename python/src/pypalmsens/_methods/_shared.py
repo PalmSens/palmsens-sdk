@@ -4,14 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Sequence
 
-from PalmSens import (
-    CurrentRange,
-    CurrentRanges,
-    ExtraValueMask,
-    PotentialRange,
-    PotentialRanges,
-    Techniques,
-)
+import PalmSens
 
 from .._shared import single_to_double
 
@@ -76,12 +69,12 @@ class CURRENT_RANGE(Enum):
 
     def _to_psobj(self):
         """Get equivalent PS object."""
-        return CurrentRange(CurrentRanges(self.value))
+        return PalmSens.CurrentRange(PalmSens.CurrentRanges(self.value))
 
     @classmethod
     def _from_psobj(cls, psobj):
         """Convert from PS object."""
-        return cls(int(CurrentRange.GetCRfromCRByte(psobj.CRbyte)))
+        return cls(int(PalmSens.CurrentRange.GetCRfromCRByte(psobj.CRbyte)))
 
 
 class POTENTIAL_RANGE(Enum):
@@ -108,12 +101,12 @@ class POTENTIAL_RANGE(Enum):
 
     def _to_psobj(self):
         """Get equivalent PS object."""
-        return PotentialRange(PotentialRanges(self.value))
+        return PalmSens.PotentialRange(PalmSens.PotentialRanges(self.value))
 
     @classmethod
     def _from_psobj(cls, psobj):
         """Convert from PS object."""
-        return cls(int(PotentialRange.get_PR(psobj)))
+        return cls(int(PalmSens.PotentialRange.get_PR(psobj)))
 
 
 def convert_bools_to_int(lst: Sequence[bool]) -> int:
@@ -142,29 +135,31 @@ def set_extra_value_mask(
     extra_values = 0
 
     for flag, enum in (
-        (enable_bipot_current, ExtraValueMask.BipotWE),
-        (record_auxiliary_input, ExtraValueMask.AuxInput),
-        (record_cell_potential, ExtraValueMask.CEPotential),
-        (record_we_potential, ExtraValueMask.PotentialExtraRE),
-        (record_forward_and_reverse_currents, ExtraValueMask.IForwardReverse),
-        (record_we_current, ExtraValueMask.CurrentExtraWE),
+        (enable_bipot_current, PalmSens.ExtraValueMask.BipotWE),
+        (record_auxiliary_input, PalmSens.ExtraValueMask.AuxInput),
+        (record_cell_potential, PalmSens.ExtraValueMask.CEPotential),
+        (record_we_potential, PalmSens.ExtraValueMask.PotentialExtraRE),
+        (record_forward_and_reverse_currents, PalmSens.ExtraValueMask.IForwardReverse),
+        (record_we_current, PalmSens.ExtraValueMask.CurrentExtraWE),
     ):
         if flag:
             extra_values = extra_values | int(enum)
 
-    obj.ExtraValueMsk = ExtraValueMask(extra_values)
+    obj.ExtraValueMsk = PalmSens.ExtraValueMask(extra_values)
 
 
 def get_extra_value_mask(obj) -> dict[str, Any]:
     mask = obj.ExtraValueMsk
 
     ret = {
-        'enable_bipot_current': mask.HasFlag(ExtraValueMask.BipotWE),
-        'record_auxiliary_input': mask.HasFlag(ExtraValueMask.AuxInput),
-        'record_cell_potential': mask.HasFlag(ExtraValueMask.CEPotential),
-        'record_we_potential': mask.HasFlag(ExtraValueMask.PotentialExtraRE),
-        'record_forward_and_reverse_currents': mask.HasFlag(ExtraValueMask.IForwardReverse),
-        'record_we_current': mask.HasFlag(ExtraValueMask.CurrentExtraWE),
+        'enable_bipot_current': mask.HasFlag(PalmSens.ExtraValueMask.BipotWE),
+        'record_auxiliary_input': mask.HasFlag(PalmSens.ExtraValueMask.AuxInput),
+        'record_cell_potential': mask.HasFlag(PalmSens.ExtraValueMask.CEPotential),
+        'record_we_potential': mask.HasFlag(PalmSens.ExtraValueMask.PotentialExtraRE),
+        'record_forward_and_reverse_currents': mask.HasFlag(
+            PalmSens.ExtraValueMask.IForwardReverse
+        ),
+        'record_we_current': mask.HasFlag(PalmSens.ExtraValueMask.CurrentExtraWE),
     }
 
     return ret
@@ -204,7 +199,7 @@ class ELevel:
     Line order : [d0 high, d1 high, d2 high, d3 high]"""
 
     def to_psobj(self):
-        obj = Techniques.ELevel()
+        obj = PalmSens.Techniques.ELevel()
 
         obj.Level = self.level
         obj.Duration = self.duration
@@ -221,7 +216,7 @@ class ELevel:
         return obj
 
     @classmethod
-    def from_psobj(cls, psobj: Techniques.ELevel):
+    def from_psobj(cls, psobj: PalmSens.Techniques.ELevel):
         """Construct ELevel dataclass from PalmSens.Techniques.ELevel object."""
         return cls(
             level=single_to_double(psobj.Level),

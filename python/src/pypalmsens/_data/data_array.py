@@ -39,6 +39,10 @@ class DataArray(Sequence):
     def __len__(self):
         return len(self._psarray)
 
+    def copy(self) -> DataArray:
+        """Return a copy of the array."""
+        return DataArray(psarray=self._psarray.Clone())
+
     def min(self) -> float:
         """Return min value."""
         return self._psarray.MinValue
@@ -46,6 +50,22 @@ class DataArray(Sequence):
     def max(self) -> float:
         """Return max value."""
         return self._psarray.MaxValue
+
+    def savitsky_golay(self, window_size: int = 3) -> DataArray:
+        """Smooth the array using a Savitsky-Golay filter with the window size.
+
+        (i.e. window size 2 will filter points based on the values of the next/previous 2 points)
+
+        Parameters
+        ----------
+        window_size : int
+            Size of the window
+        """
+        new = self.copy()
+        success = new._psarray.Smooth(window_size, False)
+        if not success:
+            raise ValueError('Something went wrong.')
+        return new
 
     @property
     def name(self) -> str:

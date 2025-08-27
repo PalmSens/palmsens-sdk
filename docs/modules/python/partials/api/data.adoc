@@ -446,8 +446,12 @@ Python wrapper for .NET DataArray class.
 
 *Functions:*
 
+* link:#pypalmsens.data.DataArray.copy[*copy*] – Return a copy of the
+array.
 * link:#pypalmsens.data.DataArray.min[*min*] – Return min value.
 * link:#pypalmsens.data.DataArray.max[*max*] – Return max value.
+* link:#pypalmsens.data.DataArray.savitsky_golay[*savitsky++_++golay*] –
+Smooth the array using a Savitsky-Golay filter with the window size.
 * link:#pypalmsens.data.DataArray.to_numpy[*to++_++numpy*] – Export data
 array to numpy.
 * link:#pypalmsens.data.DataArray.to_list[*to++_++list*] – Export data
@@ -511,6 +515,15 @@ ocp_value: float
 
 OCP Value.
 
+==== `copy`
+
+[source,python]
+----
+copy()
+----
+
+Return a copy of the array.
+
 ==== `min`
 
 [source,python]
@@ -528,6 +541,22 @@ max()
 ----
 
 Return max value.
+
+==== `savitsky++_++golay`
+
+[source,python]
+----
+savitsky_golay(window_size=3)
+----
+
+Smooth the array using a Savitsky-Golay filter with the window size.
+
+(i.e. window size 2 will filter points based on the values of the
+next/previous 2 points)
+
+*Parameters:*
+
+* *window++_++size* (link:#int[int]) – Size of the window
 
 ==== `to++_++numpy`
 

@@ -1,0 +1,169 @@
+= Methods
+
+== Supported methods
+
+The following methods are supported in PyPalmSens:
+
+Voltammetric Techniques::
+
+- xref:api/techniques.adoc#_linearsweepvoltammetry[Linear Sweep Voltammetry]
+- xref:api/techniques.adoc#_cyclicvoltammetry[Cyclic Voltammetry]
+// - xref:api/techniques.adoc#_fastcyclicvoltammetry[Fast Cyclic Voltammetry]
+// - xref:api/techniques.adoc#_acvoltammetry[AC Voltammetry]
+
+Pulsed Techniques::
+
+- xref:api/techniques.adoc#_differentialpulsevoltammetry[Differential Pulse Voltammetry]
+- xref:api/techniques.adoc#_squarewavevoltammetry[Square Wave Voltammetry]
+// - xref:api/techniques.adoc#_normalpulsevoltammetry[Normal Pulse Voltammetry]
+
+Amperometric Techniques::
+
+- xref:api/techniques.adoc#_chronoamperometry[Chronoamperometry]
+- xref:api/techniques.adoc#_multistepamperometry[Multistep Amperometry]
+// - xref:api/techniques.adoc#_fastamperometry[Fast Amperometry]
+// - xref:api/techniques.adoc#_pulsedamperometricdetection[Pulsed Amperometric Detection]
+// - xref:api/techniques.adoc#_multiplepulseamperometry[Multiple Pulse Amperometry]
+
+Potentiometric Techniques::
+
+- xref:api/techniques.adoc#_opencircuitpotentiometry[Open Circuit Potentiometry]
+- xref:api/techniques.adoc#_chronopotentiometry[Chronopotentiometry]
+// - xref:api/techniques.adoc#_linearsweeppotentiometry[Linear Sweep Potentiometry]
+// - xref:api/techniques.adoc#_multisteppotentiometry[Multistep Potentiometry]
+// - xref:api/techniques.adoc#_strippingchronopotentiometry[Stripping Chronopotentiometry]
+
+// Coulometric techniques::
+
+// - xref:api/techniques.adoc#_chronocoulometry[Chronocoulometry]
+
+Other::
+
+- xref:api/techniques.adoc#_impedancespectroscopy[Impedance Spectroscopy]
+// - xref:api/techniques.adoc#_fastimpedancespectroscopy[Fast Impedance Spectroscopy]
+- xref:api/techniques.adoc#_galvanostaticimpedancespectroscopy[Galvanostatic Impedance Spectroscopy]
+// - xref:api/techniques.adoc#_fastgalvanostaticimpedancespectroscopy[Fast Galvanostatic Impedance Spectroscopy]
+// - xref:api/techniques.adoc#_mixedmode[Mixed Mode]
+- xref:api/techniques.adoc#_methodscript[Method Script]
+
+== Setting up a method
+
+This example creates a method for a square-wave voltammetry measurement versus the open circuit potential:
+
+[source,python]
+----
+>>> import pypalmsens
+
+>>> method = pypalmsens.SquareWaveVoltammetry(
+...    conditioning_potential = 2.0,  # V
+...    conditioning_time = 2,  # seconds
+...    versus_ocp_mode = 3,  # versus begin and end potential
+...    versus_ocp_max_ocp_time = 1,  # seconds
+...    begin_potential = -0.5,  # V
+...    end_potential = 0.5,  # V
+...    step_potential = 0.01,  # V
+...    amplitude = 0.08,  # V
+...    frequency = 10,  # Hz
+...)
+----
+
+Because methods are https://www.attrs.org/[attrs dataclasses], all attributes can be modified afterwards:
+
+[source,python]
+----
+>>> method.begin_potential = -1.0
+>>> method.end_potential = 1.0
+>>> method.step_potential = 0.02
+----
+
+Dataclasses can be serialized to and from a dictionary:
+
+[source,python]
+----
+>>> from attrs import asdict
+>>> d = asdict(method)
+>>> d
+{'equilibration_time': 0.0,
+ 'begin_potential': -1.0,
+ 'end_potential': 1.0,
+ 'step_potential': 0.02,
+ 'frequency': 10,
+ 'amplitude': 0.08,
+ ...}
+>>> method2 == pypalmsens.SquareWaveVoltammetry(**d)
+>>> method == method2
+True
+----
+
+It can be updated like a dataclass:
+
+[source,python]
+----
+>>> from attrs import evolve
+>>> method2 = evolve(method, equilibration_time=10.0)
+>>> method == method2
+False
+----
+
+[TIP]
+====
+The VSCode Debug Console or another Python REPL environment like https://ipython.readthedocs.io[IPython] will auto complete on the properties and functions.
+
+image:ipython_autocomplete.png[Debug console in VSCode]
+====
+
+=== Common settings
+
+Many settings are shared between methods.
+For a full listing, see xref:api/method_settings.adoc[].
+
+If you don't specify any arguments, the default values are loaded.
+These are accessible via attributes on the methods.
+
+For example:
+
+[source,python]
+----
+>>> cv = pypalmsens.CyclicVoltammetry()
+>>> cv.current_ranges
+CurrentRanges(
+    max=<CURRENT_RANGE.cr_10_mA: 8>,
+    min=<CURRENT_RANGE.cr_1_uA: 4>,
+    start=<CURRENT_RANGE.cr_100_uA: 6>,
+)
+----
+
+There are two ways to modify the current ranges, for example, if we want so set the start current at 10 μA.
+
+1. By passing current ranges as an argument during initialization
++
+[source,python]
+----
+>>> cv = pypalmsens.CyclicVoltammetry(
+...     current_ranges=pypalmsens.settings.current_ranges(
+...         start=pypalmsens.settings.CURRENT_RANGE.cr_10_uA
+...     )
+... )
+>>> cv.current_ranges
+CurrentRanges(
+    max=<CURRENT_RANGE.cr_10_mA: 8>,
+    min=<CURRENT_RANGE.cr_1_uA: 4>,
+    start=<CURRENT_RANGE.cr_10_uA: 5>, # <1>
+)
+----
+<1> We only gave the start value, so the min/max are populated with the defaults.
+
+2. By updating the attributes (after initialization)
++
+[source,python]
+----
+>>> cv = pypalmsens.CyclicVoltammetry()
+>>> cv.current_ranges.start = pypalmsens.settings.CURRENT_RANGE.cr_10_uA
+----
+
+== Starting a measurement
+
+For further information on how to run a measurement:
+
+* xref:measuring.adoc[]
+* xref:examples.adoc[]

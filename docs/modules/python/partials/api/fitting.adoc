@@ -91,8 +91,6 @@ If True, fix the value for this parameter.
 Parameters(cdc)
 ----
 
-Bases: link:#collections.abc.Sequence[Sequence]
-
 Tuple-like container class for parameters.
 
 This class is instantiated from the CDC code and contains default
@@ -122,7 +120,7 @@ CDC code used to generate parameter listing.
 
 [source,python]
 ----
-FitResult(cdc, parameters, chisq, exit_code, n_iter, error)
+FitResult(cdc, parameters, error, chisq, n_iter, exit_code)
 ----
 
 Container for fitting results.
@@ -153,15 +151,15 @@ Circuit model CDC values.
 * link:#pypalmsens.fitting.FitResult.parameters[*parameters*]
 (link:#list[list]++[++link:#float[float]++]++) – Optimized parameters
 for CDC.
-* link:#pypalmsens.fitting.FitResult.chisq[*chisq*] (link:#float[float])
-– Chi-squared goodness of fit statistic.
-* link:#pypalmsens.fitting.FitResult.exit_code[*exit++_++code*]
-(link:#str[str]) – Exit code for the minimization.
-* link:#pypalmsens.fitting.FitResult.n_iter[*n++_++iter*]
-(link:#int[int]) – Total number of iterations.
 * link:#pypalmsens.fitting.FitResult.error[*error*]
 (link:#list[list]++[++link:#float[float]++]++) – Error (%) on
 parameters.
+* link:#pypalmsens.fitting.FitResult.chisq[*chisq*] (link:#float[float])
+– Chi-squared goodness of fit statistic.
+* link:#pypalmsens.fitting.FitResult.n_iter[*n++_++iter*]
+(link:#int[int]) – Total number of iterations.
+* link:#pypalmsens.fitting.FitResult.exit_code[*exit++_++code*]
+(link:#str[str]) – Exit code for the minimization.
 
 ==== `cdc`
 
@@ -181,6 +179,15 @@ parameters: list[float]
 
 Optimized parameters for CDC.
 
+==== `error`
+
+[source,python]
+----
+error: list[float]
+----
+
+Error (%) on parameters.
+
 ==== `chisq`
 
 [source,python]
@@ -189,15 +196,6 @@ chisq: float
 ----
 
 Chi-squared goodness of fit statistic.
-
-==== `exit++_++code`
-
-[source,python]
-----
-exit_code: str
-----
-
-Exit code for the minimization.
 
 ==== `n++_++iter`
 
@@ -208,14 +206,14 @@ n_iter: int
 
 Total number of iterations.
 
-==== `error`
+==== `exit++_++code`
 
 [source,python]
 ----
-error: list[float]
+exit_code: str
 ----
 
-Error (%) on parameters.
+Exit code for the minimization.
 
 ==== `from++_++psfitresult`
 

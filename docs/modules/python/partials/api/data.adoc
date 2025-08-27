@@ -5,6 +5,8 @@ data.
 
 *Classes:*
 
+* link:#pypalmsens.data.ArrayType[*ArrayType*] – Data array type for
+standard arrays.
 * link:#pypalmsens.data.DataArray[*DataArray*] – Python wrapper for .NET
 DataArray class.
 * link:#pypalmsens.data.Curve[*Curve*] – Python wrapper for .NET Curve
@@ -20,14 +22,421 @@ DataSet class.
 * link:#pypalmsens.data.EISData[*EISData*] – Python wrapper for .NET
 EISdata class.
 
+=== `ArrayType`
+
+Data array type for standard arrays.
+
+*Attributes:*
+
+* link:#pypalmsens.data.ArrayType.Unspecified[*Unspecified*] –
+Unspecified
+* link:#pypalmsens.data.ArrayType.Time[*Time*] – Time / s
+* link:#pypalmsens.data.ArrayType.Potential[*Potential*] – Potential / V
+* link:#pypalmsens.data.ArrayType.Current[*Current*] – Current / μA
+* link:#pypalmsens.data.ArrayType.Charge[*Charge*] – Charge
+* link:#pypalmsens.data.ArrayType.ExtraValue[*ExtraValue*] – ExtraValue
+* link:#pypalmsens.data.ArrayType.Frequency[*Frequency*] – Frequency
+* link:#pypalmsens.data.ArrayType.Phase[*Phase*] – Phase
+* link:#pypalmsens.data.ArrayType.ZRe[*ZRe*] – Z real
+* link:#pypalmsens.data.ArrayType.ZIm[*ZIm*] – Z imaginary
+* link:#pypalmsens.data.ArrayType.Iac[*Iac*] – I AC values
+* link:#pypalmsens.data.ArrayType.Z[*Z*] – Z
+* link:#pypalmsens.data.ArrayType.Y[*Y*] – Y
+* link:#pypalmsens.data.ArrayType.YRe[*YRe*] – Y real
+* link:#pypalmsens.data.ArrayType.YIm[*YIm*] – Y imaginary
+* link:#pypalmsens.data.ArrayType.Cs[*Cs*] – Cs
+* link:#pypalmsens.data.ArrayType.CsRe[*CsRe*] – Cs real
+* link:#pypalmsens.data.ArrayType.CsIm[*CsIm*] – Cs imaginary
+* link:#pypalmsens.data.ArrayType.Index[*Index*] – Index
+* link:#pypalmsens.data.ArrayType.Admittance[*Admittance*] – Admittance
+* link:#pypalmsens.data.ArrayType.Concentration[*Concentration*] –
+Concentration
+* link:#pypalmsens.data.ArrayType.Signal[*Signal*] – Signal
+* link:#pypalmsens.data.ArrayType.Func[*Func*] – Func
+* link:#pypalmsens.data.ArrayType.Integral[*Integral*] – Integral
+* link:#pypalmsens.data.ArrayType.AuxInput[*AuxInput*] – Auxillary input
+* link:#pypalmsens.data.ArrayType.BipotCurrent[*BipotCurrent*] – Bipot
+current
+* link:#pypalmsens.data.ArrayType.BipotPotential[*BipotPotential*] –
+Bipot potential
+* link:#pypalmsens.data.ArrayType.ReverseCurrent[*ReverseCurrent*] –
+Reverse current
+* link:#pypalmsens.data.ArrayType.CEPotential[*CEPotential*] – CE
+potential
+* link:#pypalmsens.data.ArrayType.DCCurrent[*DCCurrent*] – DC current
+* link:#pypalmsens.data.ArrayType.ForwardCurrent[*ForwardCurrent*] –
+Forward current
+* link:#pypalmsens.data.ArrayType.PotentialExtraRE[*PotentialExtraRE*] –
+Potential setpoint measured back on RE
+* link:#pypalmsens.data.ArrayType.CurrentExtraWE[*CurrentExtraWE*] –
+Current setpoint measured back on WE
+* link:#pypalmsens.data.ArrayType.InverseDerative_dtdE[*InverseDerative++_++dtdE*]
+– Inverse derivative dt/dE
+* link:#pypalmsens.data.ArrayType.mEdc[*mEdc*] – Measured applied DC
+* link:#pypalmsens.data.ArrayType.Eac[*Eac*] – E AC values
+* link:#pypalmsens.data.ArrayType.MeasuredStepStartIndex[*MeasuredStepStartIndex*]
+– MeasuredStepStartIndex
+* link:#pypalmsens.data.ArrayType.miDC[*miDC*] – Measured I DC values
+* link:#pypalmsens.data.ArrayType.SE2vsXPotential[*SE2vsXPotential*] –
+SE2 vs XPotential
+
+==== `Unspecified`
+
+[source,python]
+----
+Unspecified = -1
+----
+
+Unspecified
+
+==== `Time`
+
+[source,python]
+----
+Time = 0
+----
+
+Time / s
+
+==== `Potential`
+
+[source,python]
+----
+Potential = 1
+----
+
+Potential / V
+
+==== `Current`
+
+[source,python]
+----
+Current = 2
+----
+
+Current / μA
+
+==== `Charge`
+
+[source,python]
+----
+Charge = 3
+----
+
+Charge
+
+==== `ExtraValue`
+
+[source,python]
+----
+ExtraValue = 4
+----
+
+ExtraValue
+
+==== `Frequency`
+
+[source,python]
+----
+Frequency = 5
+----
+
+Frequency
+
+==== `Phase`
+
+[source,python]
+----
+Phase = 6
+----
+
+Phase
+
+==== `ZRe`
+
+[source,python]
+----
+ZRe = 7
+----
+
+Z real
+
+==== `ZIm`
+
+[source,python]
+----
+ZIm = 8
+----
+
+Z imaginary
+
+==== `Iac`
+
+[source,python]
+----
+Iac = 9
+----
+
+I AC values
+
+==== `Z`
+
+[source,python]
+----
+Z = 10
+----
+
+Z
+
+==== `Y`
+
+[source,python]
+----
+Y = 11
+----
+
+Y
+
+==== `YRe`
+
+[source,python]
+----
+YRe = 12
+----
+
+Y real
+
+==== `YIm`
+
+[source,python]
+----
+YIm = 13
+----
+
+Y imaginary
+
+==== `Cs`
+
+[source,python]
+----
+Cs = 14
+----
+
+Cs
+
+==== `CsRe`
+
+[source,python]
+----
+CsRe = 15
+----
+
+Cs real
+
+==== `CsIm`
+
+[source,python]
+----
+CsIm = 16
+----
+
+Cs imaginary
+
+==== `Index`
+
+[source,python]
+----
+Index = 17
+----
+
+Index
+
+==== `Admittance`
+
+[source,python]
+----
+Admittance = 18
+----
+
+Admittance
+
+==== `Concentration`
+
+[source,python]
+----
+Concentration = 19
+----
+
+Concentration
+
+==== `Signal`
+
+[source,python]
+----
+Signal = 20
+----
+
+Signal
+
+==== `Func`
+
+[source,python]
+----
+Func = 21
+----
+
+Func
+
+==== `Integral`
+
+[source,python]
+----
+Integral = 22
+----
+
+Integral
+
+==== `AuxInput`
+
+[source,python]
+----
+AuxInput = 23
+----
+
+Auxillary input
+
+==== `BipotCurrent`
+
+[source,python]
+----
+BipotCurrent = 24
+----
+
+Bipot current
+
+==== `BipotPotential`
+
+[source,python]
+----
+BipotPotential = 25
+----
+
+Bipot potential
+
+==== `ReverseCurrent`
+
+[source,python]
+----
+ReverseCurrent = 26
+----
+
+Reverse current
+
+==== `CEPotential`
+
+[source,python]
+----
+CEPotential = 27
+----
+
+CE potential
+
+==== `DCCurrent`
+
+[source,python]
+----
+DCCurrent = 28
+----
+
+DC current
+
+==== `ForwardCurrent`
+
+[source,python]
+----
+ForwardCurrent = 29
+----
+
+Forward current
+
+==== `PotentialExtraRE`
+
+[source,python]
+----
+PotentialExtraRE = 30
+----
+
+Potential setpoint measured back on RE
+
+==== `CurrentExtraWE`
+
+[source,python]
+----
+CurrentExtraWE = 31
+----
+
+Current setpoint measured back on WE
+
+==== `InverseDerative++_++dtdE`
+
+[source,python]
+----
+InverseDerative_dtdE = 32
+----
+
+Inverse derivative dt/dE
+
+==== `mEdc`
+
+[source,python]
+----
+mEdc = 33
+----
+
+Measured applied DC
+
+==== `Eac`
+
+[source,python]
+----
+Eac = 34
+----
+
+E AC values
+
+==== `MeasuredStepStartIndex`
+
+[source,python]
+----
+MeasuredStepStartIndex = 35
+----
+
+MeasuredStepStartIndex
+
+==== `miDC`
+
+[source,python]
+----
+miDC = 36
+----
+
+Measured I DC values
+
+==== `SE2vsXPotential`
+
+[source,python]
+----
+SE2vsXPotential = 37
+----
+
+SE2 vs XPotential
+
 === `DataArray`
 
 [source,python]
 ----
 DataArray(*, psarray)
 ----
-
-Bases: link:#collections.abc.Sequence[Sequence]
 
 Python wrapper for .NET DataArray class.
 
@@ -548,7 +957,7 @@ peak.
 and negative maximum derivative.
 * link:#pypalmsens.data.Peak.notes[*notes*] (link:#str[str]) – User
 notes stored on this peak.
-* link:#pypalmsens.data.Peak.offset_y[*offset++_++y*]
+* link:#pypalmsens.data.Peak.y_offset[*y++_++offset*]
 (link:#float[float]) – Offset of Y.
 * link:#pypalmsens.data.Peak.index[*index*] (link:#int[int]) – Location
 of the peak as index number of the curve.
@@ -697,11 +1106,11 @@ notes: str
 
 User notes stored on this peak.
 
-==== `offset++_++y`
+==== `y++_++offset`
 
 [source,python]
 ----
-offset_y: float
+y_offset: float
 ----
 
 Offset of Y.
@@ -868,10 +1277,10 @@ Title for the measurement.
 dataclass with measurement device information.
 * link:#pypalmsens.data.Measurement.blank_curve[*blank++_++curve*]
 (link:#pypalmsens._data.curve.Curve[Curve] ++|++ None) – Blank curve.
-* link:#pypalmsens.data.Measurement.contains_blank_subtracted_curves[*contains++_++blank++_++subtracted++_++curves*]
+* link:#pypalmsens.data.Measurement.has_blank_subtracted_curves[*has++_++blank++_++subtracted++_++curves*]
 (link:#bool[bool]) – Return True if the curve collection contains a
 blank subtracted curve.
-* link:#pypalmsens.data.Measurement.contains_eis_data[*contains++_++eis++_++data*]
+* link:#pypalmsens.data.Measurement.has_eis_data[*has++_++eis++_++data*]
 (link:#bool[bool]) – Return True if EIS data are is available.
 * link:#pypalmsens.data.Measurement.dataset[*dataset*]
 (link:#pypalmsens._data.dataset.DataSet[DataSet]) – Dataset containing
@@ -943,20 +1352,20 @@ if Blank curve is present (not null) a new curve will be added after
 each measurement containing the result of the measured curve subtracted
 with the Blank curve.
 
-==== `contains++_++blank++_++subtracted++_++curves`
+==== `has++_++blank++_++subtracted++_++curves`
 
 [source,python]
 ----
-contains_blank_subtracted_curves: bool
+has_blank_subtracted_curves: bool
 ----
 
 Return True if the curve collection contains a blank subtracted curve.
 
-==== `contains++_++eis++_++data`
+==== `has++_++eis++_++data`
 
 [source,python]
 ----
-contains_eis_data: bool
+has_eis_data: bool
 ----
 
 Return True if EIS data are is available.
@@ -1082,8 +1491,6 @@ List of curves
 DataSet(*, psdataset)
 ----
 
-Bases: link:#collections.abc.Mapping[Mapping]
-
 Python wrapper for .NET DataSet class.
 
 *Parameters:*
@@ -1093,8 +1500,6 @@ DataSet object.
 
 *Functions:*
 
-* link:#pypalmsens.data.DataSet.psarrays[*psarrays*] – Return underlying
-PalmSens SDK objects.
 * link:#pypalmsens.data.DataSet.arrays[*arrays*] – Return list of all
 arrays. Alias for `.to++_++list()`
 * link:#pypalmsens.data.DataSet.hidden_arrays[*hidden++_++arrays*] –
@@ -1105,6 +1510,20 @@ Return '`hidden`' arrays used for debugging.
 – Get arrays by quantity.
 * link:#pypalmsens.data.DataSet.arrays_by_type[*arrays++_++by++_++type*]
 – Get arrays by data type.
+* link:#pypalmsens.data.DataSet.current_arrays[*current++_++arrays*] –
+Return all Current arrays.
+* link:#pypalmsens.data.DataSet.potential_arrays[*potential++_++arrays*]
+– Return all Potential arrays.
+* link:#pypalmsens.data.DataSet.time_arrays[*time++_++arrays*] – Return
+all Time arrays.
+* link:#pypalmsens.data.DataSet.freq_arrays[*freq++_++arrays*] – Return
+all Frequency arrays.
+* link:#pypalmsens.data.DataSet.zre_arrays[*zre++_++arrays*] – Return
+all ZRe arrays.
+* link:#pypalmsens.data.DataSet.zim_arrays[*zim++_++arrays*] – Return
+all ZIm arrays.
+* link:#pypalmsens.data.DataSet.aux_input_arrays[*aux++_++input++_++arrays*]
+– Return all AuxInput arrays.
 * link:#pypalmsens.data.DataSet.current_range[*current++_++range*] –
 Return current range as list of strings.
 * link:#pypalmsens.data.DataSet.reading_status[*reading++_++status*] –
@@ -1125,27 +1544,6 @@ for arrays in dataset.
 * link:#pypalmsens.data.DataSet.array_quantities[*array++_++quantities*]
 (link:#set[set]++[++link:#str[str]++]++) – Return unique set of
 quantities for arrays in dataset.
-* link:#pypalmsens.data.DataSet.current_arrays[*current++_++arrays*]
-(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
-– Return all Current arrays.
-* link:#pypalmsens.data.DataSet.potential_arrays[*potential++_++arrays*]
-(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
-– Return all Potential arrays.
-* link:#pypalmsens.data.DataSet.time_arrays[*time++_++arrays*]
-(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
-– Return all Time arrays.
-* link:#pypalmsens.data.DataSet.freq_arrays[*freq++_++arrays*]
-(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
-– Return all Frequency arrays.
-* link:#pypalmsens.data.DataSet.zre_arrays[*zre++_++arrays*]
-(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
-– Return all ZRe arrays.
-* link:#pypalmsens.data.DataSet.zim_arrays[*zim++_++arrays*]
-(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
-– Return all ZIm arrays.
-* link:#pypalmsens.data.DataSet.aux_input_arrays[*aux++_++input++_++arrays*]
-(link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
-– Return all AuxInput arrays.
 
 ==== `array++_++types`
 
@@ -1173,78 +1571,6 @@ array_quantities: set[str]
 ----
 
 Return unique set of quantities for arrays in dataset.
-
-==== `current++_++arrays`
-
-[source,python]
-----
-current_arrays: list[DataArray]
-----
-
-Return all Current arrays.
-
-==== `potential++_++arrays`
-
-[source,python]
-----
-potential_arrays: list[DataArray]
-----
-
-Return all Potential arrays.
-
-==== `time++_++arrays`
-
-[source,python]
-----
-time_arrays: list[DataArray]
-----
-
-Return all Time arrays.
-
-==== `freq++_++arrays`
-
-[source,python]
-----
-freq_arrays: list[DataArray]
-----
-
-Return all Frequency arrays.
-
-==== `zre++_++arrays`
-
-[source,python]
-----
-zre_arrays: list[DataArray]
-----
-
-Return all ZRe arrays.
-
-==== `zim++_++arrays`
-
-[source,python]
-----
-zim_arrays: list[DataArray]
-----
-
-Return all ZIm arrays.
-
-==== `aux++_++input++_++arrays`
-
-[source,python]
-----
-aux_input_arrays: list[DataArray]
-----
-
-Return all AuxInput arrays.
-
-==== `psarrays`
-
-[source,python]
-----
-psarrays()
-----
-
-Return underlying PalmSens SDK objects.
 
 ==== `arrays`
 
@@ -1320,6 +1646,69 @@ Get arrays by data type.
 * *arrays*
 (link:#list[list]++[++link:#pypalmsens._data.data_array.DataArray[DataArray]++]++)
 –
+
+==== `current++_++arrays`
+
+[source,python]
+----
+current_arrays()
+----
+
+Return all Current arrays.
+
+==== `potential++_++arrays`
+
+[source,python]
+----
+potential_arrays()
+----
+
+Return all Potential arrays.
+
+==== `time++_++arrays`
+
+[source,python]
+----
+time_arrays()
+----
+
+Return all Time arrays.
+
+==== `freq++_++arrays`
+
+[source,python]
+----
+freq_arrays()
+----
+
+Return all Frequency arrays.
+
+==== `zre++_++arrays`
+
+[source,python]
+----
+zre_arrays()
+----
+
+Return all ZRe arrays.
+
+==== `zim++_++arrays`
+
+[source,python]
+----
+zim_arrays()
+----
+
+Return all ZIm arrays.
+
+==== `aux++_++input++_++arrays`
+
+[source,python]
+----
+aux_input_arrays()
+----
+
+Return all AuxInput arrays.
 
 ==== `current++_++range`
 

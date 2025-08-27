@@ -1,0 +1,89 @@
+= Working with files
+
+As of version 5 of the PalmSens SDK and PSTrace measurements, and their corresponding methods are stored in `.pssession` files.
+Methods can be stored separately in `.psmethod` files.
+
+The PalmSens SDK is backward compatible with following filetypes:
+
+|===
+| File | vs potential (scan method) | Measurement vs time
+
+|Method
+|`.psmethod`
+|`.psmethod`
+
+|Method (before 2012)
+|`.pms`
+|`.pmt`
+
+|Data (single curve)
+|`.pss`
+|`.pst`
+
+|Analysis curves
+|`.psd`
+|
+
+|Multiplexer curves
+|
+|`.mux`
+|===
+
+`pypalmsens` contains the functions needed to load and save methods and session files.
+The session file contains the measurement data, whereas the method file contains method information.
+
+== Loading and saving a method file (`.psmethod`)
+
+The `pypalmsens.load_method_file()` can be used to load method files.
+This returns a 'Method' dataclass with all the method parameters.
+
+[source,python]
+----
+>>> method = pypalmsens.load_method_file('PSDummyCell_LSV.psmethod')
+>>> method
+LinearSweepVoltammetry(
+    'conditioning_time': 0.0,
+    'begin_potential': -5.0,
+    'end_potential': 5.0,
+    'step_potential': 0.01,
+    'scanrate': 1.0,
+    ...
+)
+----
+
+Save the method using `pypalmsens.save_method_file()`.
+
+[source,python]
+----
+>>> pypalmsens.save_method_file(method, 'PSDummyCell_LSV.psmethod')
+----
+
+== Loading and saving data
+
+image:pssession.png[Data in pssession files]
+
+Data from measurements can be loaded from and stored to `.pssession` files.
+This contains a session with one or more measurements containing its respective method and curves.
+
+The `pypalmsens.load_session_file()` can be used to load session files.
+It returns a list of measurements, which contains the dataset and curves.
+The dataset is a list of raw data in array form, whereas the curves resemble the plots.
+In PSTrace or PSTrace Express these would be the 'Data' and the 'Plot' tab, respectively.
+
+The exceptions are (galvanostatic) electrochemical impedance spectroscopy measurements, which contain additional plots.
+
+The measurement and curve classes are defined in the `.curves` attribute, the raw data by the `.dataset` attribute, and the EIS data by the `.eis_data` attribute.
+
+The following example loads a collection of measurements from a session file and saves the first measurement to a different file.
+
+[source,python]
+----
+>>> from pypalmsens import load_session_file
+
+>>> measurements = load_session_file('my_measurement.pssession')
+
+>>> pypalmsens.save_session_file(
+...     'my_measurement_copy.pssession',
+...     [measurements[0]]
+... )
+----

@@ -8,3 +8,7 @@ ext:
   collector:
   - run: |
       python python/build_python_api_docs.py
+  - scan:
+      dir: python/examples/
+      into: modules/python/examples
+      files: '*.py'

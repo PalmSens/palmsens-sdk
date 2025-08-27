@@ -22,17 +22,17 @@ class Peak:
 
         self._curve: Curve | None = None
 
-    def __str__(self):
+    def __repr__(self):
         x_unit = self.x_unit
         y_unit = self.y_unit
 
         return (
             f'{self.__class__.__name__}('
-            f'Potential={self.x:g} {x_unit}, '
-            f'Height={self.y:g} {y_unit}, '
-            f'Y_Offset={self.offset_y:g} {y_unit}, '
-            f'Area={self.area:g} {x_unit}{y_unit}, '
-            f'Width={self.width:g} {x_unit})'
+            f'x={self.x:g} {x_unit}, '
+            f'y={self.y:g} {y_unit}, '
+            f'y_offset={self.y_offset:g} {y_unit}, '
+            f'area={self.area:g} {x_unit}{y_unit}, '
+            f'width={self.width:g} {x_unit})'
         )
 
     @property
@@ -115,7 +115,7 @@ class Peak:
         return self._pspeak.Notes
 
     @property
-    def offset_y(self) -> float:
+    def y_offset(self) -> float:
         """Offset of Y."""
         return self._pspeak.OffsetY
 

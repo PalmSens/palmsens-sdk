@@ -14,6 +14,7 @@ def eis_mux_subscans(data_eis_3ch_4scan_5freq):
 
 
 def test_eis_data(eis_simple):
+    assert len(eis_simple) == 1
     eis = eis_simple[0]
 
     assert str(eis)
@@ -45,6 +46,8 @@ def test_eis_dataset(eis_simple):
 
 
 def test_eis_data_mux_subscans(eis_mux_subscans):
+    assert len(eis_mux_subscans) == 3  # 3 mux channels
+
     eis = eis_mux_subscans[0]
 
     assert str(eis)
@@ -62,11 +65,15 @@ def test_eis_data_mux_subscans(eis_mux_subscans):
 
     assert set(eis.current_range()) == {'10 mA', '1 mA', '100 uA', '10 uA', '1 uA'}
 
+    assert len(eis.subscans) == 4
+
     lst = eis.arrays()
     assert len(lst) == 18
 
 
 def test_eis_data_mux_subscans_dataset(eis_mux_subscans):
+    assert len(eis_mux_subscans) == 3  # 3 mux channels
+
     dataset = eis_mux_subscans[0].dataset
 
     assert set(dataset.current_range()) == {'10 mA', '1 mA', '100 uA', '10 uA', '1 uA'}

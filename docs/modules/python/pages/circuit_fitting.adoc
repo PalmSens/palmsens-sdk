@@ -36,6 +36,8 @@ to `+CircuitModel.fit+` to redo the fit:
 >>> result = pypalmsens.fitting.CircuitModel(cdc=cdc, parameters=result.parameters)
 ----
 
+== Parameters
+
 If you want to tune the parameters, like fixing values or setting
 bounds, you can use set them using the `+pypalmsens.fitting.Parameters+`
 class. `+model.default_parameters+` grabs the default parameters for the
@@ -53,12 +55,23 @@ CDC. These can be modified, for example:
 >>> result = model.fit(eis_data, parameters=parameters)
 ----
 
+== Re-fit EIS data
+
+If you already fitted your data in PSTrace, you can redo the fit or use the values as a starting parameters:
+
+[source,python]
+----
+>>> model = pypalmsens.fitting.CircuitModel(cdc=eisdata.cdc)
+>>> result = model.fit(eisdata, parameters=eisdata.cdc_values)
+----
+
+== Plotting
+
 If you have https://matplotlib.org[matplotlib] installed, you can
 generate the plots from the result:
 
 [source,python]
 ----
->>> result.get_bode_phase(eis_data)
 >>> result.plot_nyquist(eis_data)
 >>> result.plot_bode(eis_data)
 ----

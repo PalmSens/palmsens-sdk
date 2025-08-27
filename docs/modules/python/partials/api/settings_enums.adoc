@@ -12,8 +12,6 @@ the id for a given current range.
 
 === `CURRENT++_++RANGE`
 
-Bases: link:#enum.Enum[Enum]
-
 Get the id for a given current range.
 
 Use these when defining a current range.
@@ -307,8 +305,6 @@ cr_1_A = 30
 1 A
 
 === `POTENTIAL++_++RANGE`
-
-Bases: link:#enum.Enum[Enum]
 
 Get the id for a given current range.
 

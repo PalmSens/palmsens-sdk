@@ -71,7 +71,7 @@ class DataSet(Mapping):
         """
         return [array for array in self._mapping.values() if key(array)]
 
-    def psarrays(self):
+    def _psarrays(self):
         """Return underlying PalmSens SDK objects."""
         return self._psdataset.GetDataArrays()
 
@@ -140,44 +140,37 @@ class DataSet(Mapping):
         """Return unique set of quantities for arrays in dataset."""
         return set(arr.quantity for arr in self.values())
 
-    @property
     def current_arrays(self) -> list[DataArray]:
         """Return all Current arrays."""
         return self.arrays_by_type(ArrayType.Current)
 
-    @property
     def potential_arrays(self) -> list[DataArray]:
         """Return all Potential arrays."""
         return self.arrays_by_type(ArrayType.Potential)
 
-    @property
     def time_arrays(self) -> list[DataArray]:
         """Return all Time arrays."""
         return self.arrays_by_type(ArrayType.Time)
 
-    @property
     def freq_arrays(self) -> list[DataArray]:
         """Return all Frequency arrays."""
         return self.arrays_by_type(ArrayType.Frequency)
 
-    @property
     def zre_arrays(self) -> list[DataArray]:
         """Return all ZRe arrays."""
         return self.arrays_by_type(ArrayType.ZRe)
 
-    @property
     def zim_arrays(self) -> list[DataArray]:
         """Return all ZIm arrays."""
         return self.arrays_by_type(ArrayType.ZIm)
 
-    @property
     def aux_input_arrays(self) -> list[DataArray]:
         """Return all AuxInput arrays."""
         return self.arrays_by_type(ArrayType.AuxInput)
 
     def current_range(self) -> list[str]:
         """Return current range as list of strings."""
-        array = self.current_arrays[-1]
+        array = self.current_arrays()[-1]
 
         clr_type = clr.GetClrType(CurrentReading)
         field_info = clr_type.GetField('CurrentRange')
@@ -186,7 +179,7 @@ class DataSet(Mapping):
 
     def reading_status(self) -> list[str]:
         """Return reading status as list of strings."""
-        array = self.current_arrays[-1]
+        array = self.current_arrays()[-1]
 
         clr_type = clr.GetClrType(CurrentReading)
         field_info = clr_type.GetField('ReadingStatus')
@@ -195,7 +188,7 @@ class DataSet(Mapping):
 
     def timing_status(self) -> list[str]:
         """Return timing status as list of strings."""
-        array = self.current_arrays[-1]
+        array = self.current_arrays()[-1]
 
         clr_type = clr.GetClrType(CurrentReading)
         field_info = clr_type.GetField('TimingStatus')

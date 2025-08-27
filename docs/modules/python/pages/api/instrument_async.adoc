@@ -5,9 +5,10 @@ https://docs.python.org/3/library/asyncio.html[asyncio] to
 provide a high-performance concurrent interface
 for instrument control.
 
-These functions and classes are largely the same as the xref:instrument.adoc[sequential versions].
+These api for these functions and classes remain largely the same as the xref:api/instrument.adoc[sequential versions].
 
-The main difference is to use the await/async expressions to manage the event loop.
+The main difference is that these are async enabled.
+This means you have to use the await/async expressions to manage the event loop.
 
 For example, to connect:
 
@@ -42,6 +43,6 @@ await manager.connect()
 await manager.disconnect()
 ----
 
-For more information, see xref:measuring.adoc
+For more information, see xref:api/measuring.adoc
 
 include::partial$api/instrument_async.adoc[]

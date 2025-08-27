@@ -80,12 +80,12 @@ class Measurement:
         return None
 
     @property
-    def contains_blank_subtracted_curves(self) -> bool:
+    def has_blank_subtracted_curves(self) -> bool:
         """Return True if the curve collection contains a blank subtracted curve."""
         return self._psmeasurement.ContainsBlankSubtractedCurves
 
     @property
-    def contains_eis_data(self) -> bool:
+    def has_eis_data(self) -> bool:
         """Return True if EIS data are is available."""
         return self._psmeasurement.ContainsEISData
 

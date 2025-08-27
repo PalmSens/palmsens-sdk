@@ -126,7 +126,6 @@ pages = (
         module='pypalmsens.settings',
         extra_config={
             'members': [
-                'CommonSettings',
                 'CurrentRanges',
                 'PotentialRanges',
                 'Pretreatment',

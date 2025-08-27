@@ -19,14 +19,41 @@ Python 3.13 contains https://github.com/python/cpython/issues/130522[a known iss
 * .NET Runtime 9.0 or newer, see this https://learn.microsoft.com/en-us/dotnet/core/install/linux[link] for more information.
   Typically this is called something like `dotnet-runtime-9.0` in your system's package manager.
 * Optional: FTDI d2xx drivers available on https://ftdichip.com/drivers/d2xx-drivers/[the ftdi website].
++
+If you do not use them it is recommended to disable scanning for FTDI devices.
++
+[source,python]
+----
+available_instruments = pypalmsens.discover(ftdi=False)
+----
 
-  If you do not use them it is recommended to disable scanning for FTDI devices.
+== Virtual environments
 
-  ```python
-  available_instruments = discover_instruments(ftdi=False)
-  ```
+Virtual enviroments are used to create isolated Python installations.
+Tools like https://docs.python.org/3/library/venv.html[venv] or https://docs.conda.io/projects/conda/[conda] help you create and update environment that have different versions of Python and/or packages installed in them. This makes them useful for software development.
 
-== (Optional) Create a virtual environment in Visual Studio Code
+This section shows how to set up and activate an environment.
 
-https://code.visualstudio.com/[VS Code] in combination with the Python, Python Debugger and Pylance extensions offer an easy command to create a virtual environment and load the python dependencies.
+Setting up a virtual environment using https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/[Python, pip and venv]:
+
+[source,powershell]
+----
+python -m venv .venv
+.venv/Scripts/activate.ps1
+python -m pip install -e .[develop]
+----
+
+Alternatively, setting up a https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html[virtual environment using Conda]:
+
+[source,powershell]
+----
+conda create -n pypalmsens python=3.13
+conda activate pypalmsens
+pip install pypalmsens
+----
+
+=== Visual Studio Code
+
+https://code.visualstudio.com/[VS Code] supports virtual environments. In combination with the Python, Python Debugger and Pylance extensions, VS code makes it easy to create virtual environments and load the python dependencies.
+
 See the https://code.visualstudio.com/docs/python/environments#_creating-environments[VSCode documentation] for how to set this up.

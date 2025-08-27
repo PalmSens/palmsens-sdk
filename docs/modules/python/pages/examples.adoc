@@ -1,0 +1,143 @@
+= Examples
+
+The following examples are also available in the https://github.com/PalmSens/PalmSens_SDK/tree/main/python[examples directory].
+
+== Load and save data
+
+Shows how to load/save methods and measurements and how to inspect the data.
+
+.load_save_data.py
+[,python]
+----
+include::example$load_save_data.py[]
+----
+
+== Manual control
+
+Shows how to discover devices, establish a connection and control an instrument manually.
+
+.manual_control.py
+[,python]
+----
+include::example$manual_control.py[]
+----
+
+== Manual control async
+
+Shows how to discover devices, establish a connection and control an instrument manually using the asynchronous instrument manager.
+
+.manual_control_async.py
+[,python]
+----
+include::example$manual_control_async.py[]
+----
+
+== Measure CA
+
+Shows how to set up and run a chronoamperometry measurement.
+
+.measurement_CA.py
+[,python]
+----
+include::example$measurement_CA.py[]
+----
+
+== Measure CA async
+
+Shows how to set up and run a chronoamperometry measurement using the asynchronous instrument manager.
+
+.measurement_CA_async.py
+[,python]
+----
+include::example$measurement_CA_async.py[]
+----
+
+== Measure CV
+
+Shows how to set up and run a cyclic voltammetry measurement.
+
+.measurement_CV.py
+[,python]
+----
+include::example$measurement_CV.py[]
+----
+
+== Measure EIS
+
+Shows how to set up and run a EIS measurement.
+
+.measurement_EIS.py
+[,python]
+----
+include::example$measurement_EIS.py[]
+----
+
+== MethodSCRIPT sandbox
+
+Shows how to set up and run a MethodSCRIPT Sandbox measurement.
+
+.measurement_MethodSCRIPT_sandbox.py
+[,python]
+----
+include::example$measurement_MethodSCRIPT_sandbox.py[]
+----
+
+== Stream data to CSV
+
+Shows how to set up and run a chronoamperometry measurement and write the results to a CSV file in real-time.
+
+.measurement_stream_to_csv.py
+[,python]
+----
+include::example$measurement_stream_to_csv.py[]
+----
+
+== SWV versus OCP
+
+Shows how to set up and run a square wave voltammetry measurement versus OCP.
+
+.measurement_SWV_vs_OCP.py
+[,python]
+----
+include::example$measurement_SWV_vs_OCP.py[]
+----
+
+== Multiplexer
+
+Shows how to set up and control a multiplexer and run consecutive and alternating multiplexer measurments.
+
+.multiplexer.py
+[,python]
+----
+include::example$multiplexer.py[]
+----
+
+== Multichannel
+
+Shows how to connect to a collection of instruments and run a chronoamperometry measurement on all channels simultaneously.
+
+.multichannel_measurement.py
+[,python]
+----
+include::example$multichannel_measurement.py[]
+----
+
+== Multichannel custom loop
+
+Shows how to run and set up a sequence of measurements on a collection of channels simultaneously.
+
+.multichannel_measurement_custom_loop.py
+[,python]
+----
+include::example$multichannel_measurement_custom_loop.py[]
+----
+
+== Multichannel HW sync
+
+Shows how to connect to a collection of instruments and run a chronopotentiometry measurement on all channels simultaneously using hardware synchronization.
+
+.multichannel_HW_sync.py
+[,python]
+----
+include::example$multichannel_HW_sync.py[]
+----

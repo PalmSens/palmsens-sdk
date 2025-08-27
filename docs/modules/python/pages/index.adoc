@@ -109,36 +109,3 @@ The following devices and firmwares are supported:
 |PalmSens4 |1.7
 |MultiPalmSens4 |1.7
 |===
-
-== Example programs
-
-The following examples are included in the https://github.com/PalmSens/PalmSens_SDK/tree/main/python[examples directory].
-
-`load_save_data.py`::
-Shows how to load/save methods and measurements and how to inspect the data.
-`manual_control.py`::
-Shows how to discover devices, establish a connection and control an instrument manually.
-`manual_control_async.py`::
-Shows how to discover devices, establish a connection and control an instrument manually using the asynchronous instrument manager.
-`measurement_CA.py`::
-Shows how to set up and run a chronoamperometry measurement.
-`measurement_CA_async.py`::
-Shows how to set up and run a chronoamperometry measurement using the asynchronous instrument manager.
-`measurement_CV.py`::
-Shows how to set up and run a cyclic voltammetry measurement.
-`measurement_EIS.py`::
-Shows how to set up and run a EIS measurement.
-`measurement_MethodSCRIPT_sandbox.py`::
-Shows how to set up and run a MethodSCRIPT Sandbox measurement.
-`measurement_stream_to_csv.py`::
-Shows how to set up and run a chronoamperometry measurement and write the results to a CSV file in real-time.
-`measurement_SWV_vs_OCP.py`::
-Shows how to set up and run a square wave voltammetry measurement versus OCP.
-`multiplexer.py`::
-Shows how to set up and control a multiplexer and run consecutive and alternating multiplexer measurments.
-`multichannel_measurement.py`::
-Shows how to connect to a collection of instruments and run a chronoamperometry measurement on all channels simultaneously.
-`multichannel_measurement_custom_loop.py`::
-Shows how to run and set up a sequence of measurements on a collection of channels simultaneously.
-`multichannel_HW_sync.py`::
-Shows how to connect to a collection of instruments and run a chronopotentiometry measurement on all channels simultaneously using hardware synchronization.

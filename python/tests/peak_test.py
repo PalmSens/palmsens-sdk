@@ -27,7 +27,7 @@ def test_peak_properties(peak):
     assert peak.maximum_of_derivative_pos == pytest.approx(23.90614)
     assert peak.maximum_of_derivative_sum == pytest.approx(68.8579)
     assert peak.notes is None
-    assert peak.offset_y == pytest.approx(2.698976)
+    assert peak.y_offset == pytest.approx(2.698976)
     assert peak.index == 37
     assert peak.type == 'AutoPeak'
     assert peak.value == pytest.approx(1.464524)

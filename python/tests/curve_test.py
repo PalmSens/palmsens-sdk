@@ -15,6 +15,11 @@ def curve_dpv(data_dpv):
     return data_dpv[0].curves[0]
 
 
+@pytest.fixture
+def curve_cv(data_cv):
+    return data_cv[0].curves[0]
+
+
 def test_curve_smooth(curve_noise):
     x = curve_noise.x_array
     y = curve_noise.y_array
@@ -53,6 +58,22 @@ def test_find_peaks(curve_dpv):
 
     curve_dpv.clear_peaks()
     assert not curve_dpv.peaks
+
+
+def test_find_peaks_semiderivative(curve_cv):
+    curve = curve_cv
+    peaks = curve.find_peaks_semiderivative(
+        min_peak_height=0,
+    )
+
+    assert len(peaks) == 2
+
+    assert [peak.x for peak in peaks] == [0.284884, -0.0223047]
+    assert [peak.y for peak in peaks] == [15.8404, -15.826]
+    assert peaks[0].curve_title == curve.title
+
+    curve.clear_peaks()
+    assert not curve.peaks
 
 
 def test_curve_properties(curve_dpv):

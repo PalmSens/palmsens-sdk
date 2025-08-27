@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional, Union
 
+import PalmSens.Analysis as PSAnalysis
+import System
+from PalmSens.Plottables import Curve as PSCurve
+
 from .peak import Peak
 
 if TYPE_CHECKING:
@@ -17,7 +21,7 @@ class Curve:
         Reference to .NET curve object.
     """
 
-    def __init__(self, *, pscurve):
+    def __init__(self, *, pscurve: PSCurve):
         self._pscurve = pscurve
 
     def __repr__(self):
@@ -57,8 +61,9 @@ class Curve:
         peak_shoulders: bool = False,
         merge_overlapping_peaks: bool = True,
     ) -> list[Peak]:
-        """
-        Find peaks in a curve in all directions; CV can have 1 or 2 direction changes
+        """Find peaks in a curve in all directions.
+
+        CV can have 1 or 2 direction changes.
 
         Parameters
         ----------
@@ -86,6 +91,37 @@ class Curve:
         peaks_list = [Peak(pspeak=peak) for peak in pspeaks]
 
         return peaks_list
+
+    def find_peaks_semiderivative(
+        self,
+        min_peak_height: float = 0.0,
+    ) -> list[Peak]:
+        """
+        Find peaks in a curve using the semi-derivative algorithm.
+
+        Used for detecting non-overlapping peaks in LSV and CV curves.
+        The peaks are also assigned to the curve, updating `Curve.peaks`.
+        Existing peaks are overwritten.
+
+        For more info, see this
+        [Wikipedia page](https://en.wikipedia.org/wiki/Neopolarogram).
+
+        Parameters
+        ----------
+        min_peak_height : float
+            Minimum height of the peak in uA
+
+        Returns
+        -------
+        peak_list : list[Peak]
+        """
+        dct = System.Collections.Generic.Dictionary[PSCurve, System.Double]()
+        dct[self._pscurve] = min_peak_height
+
+        pd = PSAnalysis.SemiDerivativePeakDetection()
+        pd.GetNonOverlappingPeaks(dct)
+
+        return self.peaks
 
     @property
     def max_x(self) -> float:

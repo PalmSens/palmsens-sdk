@@ -9,9 +9,9 @@ data.
 standard arrays.
 * link:#pypalmsens.data.DataArray[*DataArray*] – Python wrapper for .NET
 DataArray class.
-* link:#pypalmsens.data.Curve[*Curve*] – Python wrapper for .NET Curve
-class.
 * link:#pypalmsens.data.Peak[*Peak*] – Python wrapper for .NET Peak
+class.
+* link:#pypalmsens.data.Curve[*Curve*] – Python wrapper for .NET Curve
 class.
 * link:#pypalmsens.data.DeviceInfo[*DeviceInfo*] – Dataclass for device
 information.
@@ -547,367 +547,6 @@ to_list()
 
 Export data array to list.
 
-=== `Curve`
-
-[source,python]
-----
-Curve(*, pscurve)
-----
-
-Python wrapper for .NET Curve class.
-
-*Parameters:*
-
-* *pscurve* – Reference to .NET curve object.
-
-*Functions:*
-
-* link:#pypalmsens.data.Curve.smooth[*smooth*] – Smooth the .y++_++array
-using a Savitsky-Golay filter with the specified smooth
-* link:#pypalmsens.data.Curve.savitsky_golay[*savitsky++_++golay*] –
-Smooth the .y++_++array using a Savitsky-Golay filter with the specified
-window
-* link:#pypalmsens.data.Curve.find_peaks[*find++_++peaks*] – Find peaks
-in a curve in all directions; CV can have 1 or 2 direction changes
-* link:#pypalmsens.data.Curve.clear_peaks[*clear++_++peaks*] – Clear
-peaks stored on object.
-* link:#pypalmsens.data.Curve.linear_slope[*linear++_++slope*] –
-Calculate linear line parameters for this curve between two indexes.
-* link:#pypalmsens.data.Curve.plot[*plot*] – Generate simple plot for
-this curve using matplotlib.
-
-*Attributes:*
-
-* link:#pypalmsens.data.Curve.max_x[*max++_++x*] (link:#float[float]) –
-Maximum X value found in this curve.
-* link:#pypalmsens.data.Curve.max_y[*max++_++y*] (link:#float[float]) –
-Maximum Y value found in this curve.
-* link:#pypalmsens.data.Curve.min_x[*min++_++x*] (link:#float[float]) –
-Minimum X value found in this curve.
-* link:#pypalmsens.data.Curve.min_y[*min++_++y*] (link:#float[float]) –
-Minimum Y value found in this curve.
-* link:#pypalmsens.data.Curve.mux_channel[*mux++_++channel*]
-(link:#int[int]) – The corresponding MUX channel number with the curve
-starting at 0.
-* link:#pypalmsens.data.Curve.n_points[*n++_++points*] (link:#int[int])
-– Number of points for this curve.
-* link:#pypalmsens.data.Curve.ocp_value[*ocp++_++value*]
-(link:#float[float]) – OCP value for curve.
-* link:#pypalmsens.data.Curve.reference_electrode_name[*reference++_++electrode++_++name*]
-(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – The name of
-the reference electrode. Return None if not set.
-* link:#pypalmsens.data.Curve.reference_electrode_potential[*reference++_++electrode++_++potential*]
-(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – The
-reference electrode potential offset. Return None if not set.
-* link:#pypalmsens.data.Curve.x_unit[*x++_++unit*] (link:#str[str]) –
-Units for X dimension.
-* link:#pypalmsens.data.Curve.x_label[*x++_++label*] (link:#str[str]) –
-Label for X dimension.
-* link:#pypalmsens.data.Curve.y_unit[*y++_++unit*] (link:#str[str]) –
-Units for Y dimension.
-* link:#pypalmsens.data.Curve.y_label[*y++_++label*] (link:#str[str]) –
-Label for Y dimension.
-* link:#pypalmsens.data.Curve.z_unit[*z++_++unit*]
-(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – Units for Z
-dimension. Returns None if not set.
-* link:#pypalmsens.data.Curve.z_label[*z++_++label*]
-(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – Units for Z
-dimension. Returns None if not set.
-* link:#pypalmsens.data.Curve.title[*title*] (link:#str[str]) – Title
-for the curve.
-* link:#pypalmsens.data.Curve.peaks[*peaks*]
-(link:#list[list]++[++link:#pypalmsens._data.peak.Peak[Peak]++]++) –
-Return peaks stored on object.
-* link:#pypalmsens.data.Curve.x_array[*x++_++array*]
-(link:#list[list]++[++link:#float[float]++]++) – Y data for the curve
-* link:#pypalmsens.data.Curve.y_array[*y++_++array*]
-(link:#list[list]++[++link:#float[float]++]++) – Y data for the curve.
-
-==== `max++_++x`
-
-[source,python]
-----
-max_x: float
-----
-
-Maximum X value found in this curve.
-
-==== `max++_++y`
-
-[source,python]
-----
-max_y: float
-----
-
-Maximum Y value found in this curve.
-
-==== `min++_++x`
-
-[source,python]
-----
-min_x: float
-----
-
-Minimum X value found in this curve.
-
-==== `min++_++y`
-
-[source,python]
-----
-min_y: float
-----
-
-Minimum Y value found in this curve.
-
-==== `mux++_++channel`
-
-[source,python]
-----
-mux_channel: int
-----
-
-The corresponding MUX channel number with the curve starting at 0.
-Return -1 when no MUX channel used.
-
-==== `n++_++points`
-
-[source,python]
-----
-n_points: int
-----
-
-Number of points for this curve.
-
-==== `ocp++_++value`
-
-[source,python]
-----
-ocp_value: float
-----
-
-OCP value for curve.
-
-==== `reference++_++electrode++_++name`
-
-[source,python]
-----
-reference_electrode_name: Union[None, str]
-----
-
-The name of the reference electrode. Return None if not set.
-
-==== `reference++_++electrode++_++potential`
-
-[source,python]
-----
-reference_electrode_potential: Union[None, str]
-----
-
-The reference electrode potential offset. Return None if not set.
-
-==== `x++_++unit`
-
-[source,python]
-----
-x_unit: str
-----
-
-Units for X dimension.
-
-==== `x++_++label`
-
-[source,python]
-----
-x_label: str
-----
-
-Label for X dimension.
-
-==== `y++_++unit`
-
-[source,python]
-----
-y_unit: str
-----
-
-Units for Y dimension.
-
-==== `y++_++label`
-
-[source,python]
-----
-y_label: str
-----
-
-Label for Y dimension.
-
-==== `z++_++unit`
-
-[source,python]
-----
-z_unit: Union[None, str]
-----
-
-Units for Z dimension. Returns None if not set.
-
-==== `z++_++label`
-
-[source,python]
-----
-z_label: Union[None, str]
-----
-
-Units for Z dimension. Returns None if not set.
-
-==== `title`
-
-[source,python]
-----
-title: str
-----
-
-Title for the curve.
-
-==== `peaks`
-
-[source,python]
-----
-peaks: list[Peak]
-----
-
-Return peaks stored on object.
-
-==== `x++_++array`
-
-[source,python]
-----
-x_array: list[float]
-----
-
-Y data for the curve
-
-==== `y++_++array`
-
-[source,python]
-----
-y_array: list[float]
-----
-
-Y data for the curve.
-
-==== `smooth`
-
-[source,python]
-----
-smooth(smooth_level=0)
-----
-
-Smooth the .y++_++array using a Savitsky-Golay filter with the specified
-smooth level.
-
-*Parameters:*
-
-* *smooth++_++level* (link:#int[int]) – The smooth level to be used. -1
-= none, 0 = no smooth (spike rejection only), 1 = 5 points, 2 = 9
-points, 3 = 15 points, 4 = 25 points
-
-==== `savitsky++_++golay`
-
-[source,python]
-----
-savitsky_golay(window_size=3)
-----
-
-Smooth the .y++_++array using a Savitsky-Golay filter with the specified
-window size.
-
-(i.e. window size 2 will filter points based on the values of the
-next/previous 2 points)
-
-*Parameters:*
-
-* *window++_++size* (link:#int[int]) – Size of the window
-
-==== `find++_++peaks`
-
-[source,python]
-----
-find_peaks(min_peak_width=0.1, min_peak_height=0.0, peak_shoulders=False, merge_overlapping_peaks=True)
-----
-
-Find peaks in a curve in all directions; CV can have 1 or 2 direction
-changes
-
-*Parameters:*
-
-* *min++_++peak++_++width* (link:#float[float]) – Minimum width of the
-peak in V
-* *min++_++peak++_++height* (link:#float[float]) – Minimum height of the
-peak in uA
-* *peak++_++shoulders* (link:#bool[bool]) – Use alternative peak search
-algorithm optimized for finding peaks on slopes
-* *merge++_++overlapping++_++peaks* (link:#bool[bool]) – Two or more
-peaks that overlap will be identified as a single base peak and as
-shoulder peaks on the base peak.
-
-*Returns:*
-
-* *peak++_++list*
-(link:#list[list]++[++link:#pypalmsens._data.peak.Peak[Peak]++]++) –
-
-==== `clear++_++peaks`
-
-[source,python]
-----
-clear_peaks()
-----
-
-Clear peaks stored on object.
-
-==== `linear++_++slope`
-
-[source,python]
-----
-linear_slope(start=None, stop=None)
-----
-
-Calculate linear line parameters for this curve between two indexes.
-
-current = a {plus} b ++*++ x
-
-*Parameters:*
-
-* *start* (link:#int[int]) – begin index
-* *stop* (link:#int[int]) – end index
-
-*Returns:*
-
-* *a* (link:#float[float]) –
-* *b* (link:#float[float]) –
-* *coefdet* (link:#float[float]) – Coefficient of determination (R2)
-
-==== `plot`
-
-[source,python]
-----
-plot(ax=None, legend=True, **plot_kwargs)
-----
-
-Generate simple plot for this curve using matplotlib.
-
-*Parameters:*
-
-* *ax*
-(link:#typing.Optional[Optional]++[++link:#matplotlib.axes.Axes[Axes]++]++)
-– Add plot to this ax if specified.
-* *legend* (link:#bool[bool]) – If True, add legend.
-* *plot++_++kwargs* – These keyword arguments are passed to `ax.plot`.
-
-*Returns:*
-
-* *fig* (link:#matplotlib.fig.Figure[Figure]) – Matplotlib figure. Use
-`fig.show()` to render plot.
-
 === `Peak`
 
 [source,python]
@@ -1196,6 +835,397 @@ width: float
 ----
 
 Full width at half-height of the peak.
+
+=== `Curve`
+
+[source,python]
+----
+Curve(*, pscurve)
+----
+
+Python wrapper for .NET Curve class.
+
+*Parameters:*
+
+* *pscurve* (link:#PalmSens.Plottables.Curve[Curve]) – Reference to .NET
+curve object.
+
+*Functions:*
+
+* link:#pypalmsens.data.Curve.smooth[*smooth*] – Smooth the .y++_++array
+using a Savitsky-Golay filter with the specified smooth
+* link:#pypalmsens.data.Curve.savitsky_golay[*savitsky++_++golay*] –
+Smooth the .y++_++array using a Savitsky-Golay filter with the specified
+window
+* link:#pypalmsens.data.Curve.find_peaks[*find++_++peaks*] – Find peaks
+in a curve in all directions.
+* link:#pypalmsens.data.Curve.find_peaks_semiderivative[*find++_++peaks++_++semiderivative*]
+– Find peaks in a curve using the semi-derivative algorithm.
+* link:#pypalmsens.data.Curve.clear_peaks[*clear++_++peaks*] – Clear
+peaks stored on object.
+* link:#pypalmsens.data.Curve.linear_slope[*linear++_++slope*] –
+Calculate linear line parameters for this curve between two indexes.
+* link:#pypalmsens.data.Curve.plot[*plot*] – Generate simple plot for
+this curve using matplotlib.
+
+*Attributes:*
+
+* link:#pypalmsens.data.Curve.max_x[*max++_++x*] (link:#float[float]) –
+Maximum X value found in this curve.
+* link:#pypalmsens.data.Curve.max_y[*max++_++y*] (link:#float[float]) –
+Maximum Y value found in this curve.
+* link:#pypalmsens.data.Curve.min_x[*min++_++x*] (link:#float[float]) –
+Minimum X value found in this curve.
+* link:#pypalmsens.data.Curve.min_y[*min++_++y*] (link:#float[float]) –
+Minimum Y value found in this curve.
+* link:#pypalmsens.data.Curve.mux_channel[*mux++_++channel*]
+(link:#int[int]) – The corresponding MUX channel number with the curve
+starting at 0.
+* link:#pypalmsens.data.Curve.n_points[*n++_++points*] (link:#int[int])
+– Number of points for this curve.
+* link:#pypalmsens.data.Curve.ocp_value[*ocp++_++value*]
+(link:#float[float]) – OCP value for curve.
+* link:#pypalmsens.data.Curve.reference_electrode_name[*reference++_++electrode++_++name*]
+(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – The name of
+the reference electrode. Return None if not set.
+* link:#pypalmsens.data.Curve.reference_electrode_potential[*reference++_++electrode++_++potential*]
+(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – The
+reference electrode potential offset. Return None if not set.
+* link:#pypalmsens.data.Curve.x_unit[*x++_++unit*] (link:#str[str]) –
+Units for X dimension.
+* link:#pypalmsens.data.Curve.x_label[*x++_++label*] (link:#str[str]) –
+Label for X dimension.
+* link:#pypalmsens.data.Curve.y_unit[*y++_++unit*] (link:#str[str]) –
+Units for Y dimension.
+* link:#pypalmsens.data.Curve.y_label[*y++_++label*] (link:#str[str]) –
+Label for Y dimension.
+* link:#pypalmsens.data.Curve.z_unit[*z++_++unit*]
+(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – Units for Z
+dimension. Returns None if not set.
+* link:#pypalmsens.data.Curve.z_label[*z++_++label*]
+(link:#typing.Union[Union]++[++None, link:#str[str]++]++) – Units for Z
+dimension. Returns None if not set.
+* link:#pypalmsens.data.Curve.title[*title*] (link:#str[str]) – Title
+for the curve.
+* link:#pypalmsens.data.Curve.peaks[*peaks*]
+(link:#list[list]++[++link:#pypalmsens._data.peak.Peak[Peak]++]++) –
+Return peaks stored on object.
+* link:#pypalmsens.data.Curve.x_array[*x++_++array*]
+(link:#list[list]++[++link:#float[float]++]++) – Y data for the curve
+* link:#pypalmsens.data.Curve.y_array[*y++_++array*]
+(link:#list[list]++[++link:#float[float]++]++) – Y data for the curve.
+
+==== `max++_++x`
+
+[source,python]
+----
+max_x: float
+----
+
+Maximum X value found in this curve.
+
+==== `max++_++y`
+
+[source,python]
+----
+max_y: float
+----
+
+Maximum Y value found in this curve.
+
+==== `min++_++x`
+
+[source,python]
+----
+min_x: float
+----
+
+Minimum X value found in this curve.
+
+==== `min++_++y`
+
+[source,python]
+----
+min_y: float
+----
+
+Minimum Y value found in this curve.
+
+==== `mux++_++channel`
+
+[source,python]
+----
+mux_channel: int
+----
+
+The corresponding MUX channel number with the curve starting at 0.
+Return -1 when no MUX channel used.
+
+==== `n++_++points`
+
+[source,python]
+----
+n_points: int
+----
+
+Number of points for this curve.
+
+==== `ocp++_++value`
+
+[source,python]
+----
+ocp_value: float
+----
+
+OCP value for curve.
+
+==== `reference++_++electrode++_++name`
+
+[source,python]
+----
+reference_electrode_name: Union[None, str]
+----
+
+The name of the reference electrode. Return None if not set.
+
+==== `reference++_++electrode++_++potential`
+
+[source,python]
+----
+reference_electrode_potential: Union[None, str]
+----
+
+The reference electrode potential offset. Return None if not set.
+
+==== `x++_++unit`
+
+[source,python]
+----
+x_unit: str
+----
+
+Units for X dimension.
+
+==== `x++_++label`
+
+[source,python]
+----
+x_label: str
+----
+
+Label for X dimension.
+
+==== `y++_++unit`
+
+[source,python]
+----
+y_unit: str
+----
+
+Units for Y dimension.
+
+==== `y++_++label`
+
+[source,python]
+----
+y_label: str
+----
+
+Label for Y dimension.
+
+==== `z++_++unit`
+
+[source,python]
+----
+z_unit: Union[None, str]
+----
+
+Units for Z dimension. Returns None if not set.
+
+==== `z++_++label`
+
+[source,python]
+----
+z_label: Union[None, str]
+----
+
+Units for Z dimension. Returns None if not set.
+
+==== `title`
+
+[source,python]
+----
+title: str
+----
+
+Title for the curve.
+
+==== `peaks`
+
+[source,python]
+----
+peaks: list[Peak]
+----
+
+Return peaks stored on object.
+
+==== `x++_++array`
+
+[source,python]
+----
+x_array: list[float]
+----
+
+Y data for the curve
+
+==== `y++_++array`
+
+[source,python]
+----
+y_array: list[float]
+----
+
+Y data for the curve.
+
+==== `smooth`
+
+[source,python]
+----
+smooth(smooth_level=0)
+----
+
+Smooth the .y++_++array using a Savitsky-Golay filter with the specified
+smooth level.
+
+*Parameters:*
+
+* *smooth++_++level* (link:#int[int]) – The smooth level to be used. -1
+= none, 0 = no smooth (spike rejection only), 1 = 5 points, 2 = 9
+points, 3 = 15 points, 4 = 25 points
+
+==== `savitsky++_++golay`
+
+[source,python]
+----
+savitsky_golay(window_size=3)
+----
+
+Smooth the .y++_++array using a Savitsky-Golay filter with the specified
+window size.
+
+(i.e. window size 2 will filter points based on the values of the
+next/previous 2 points)
+
+*Parameters:*
+
+* *window++_++size* (link:#int[int]) – Size of the window
+
+==== `find++_++peaks`
+
+[source,python]
+----
+find_peaks(min_peak_width=0.1, min_peak_height=0.0, peak_shoulders=False, merge_overlapping_peaks=True)
+----
+
+Find peaks in a curve in all directions.
+
+CV can have 1 or 2 direction changes.
+
+*Parameters:*
+
+* *min++_++peak++_++width* (link:#float[float]) – Minimum width of the
+peak in V
+* *min++_++peak++_++height* (link:#float[float]) – Minimum height of the
+peak in uA
+* *peak++_++shoulders* (link:#bool[bool]) – Use alternative peak search
+algorithm optimized for finding peaks on slopes
+* *merge++_++overlapping++_++peaks* (link:#bool[bool]) – Two or more
+peaks that overlap will be identified as a single base peak and as
+shoulder peaks on the base peak.
+
+*Returns:*
+
+* *peak++_++list*
+(link:#list[list]++[++link:#pypalmsens._data.peak.Peak[Peak]++]++) –
+
+==== `find++_++peaks++_++semiderivative`
+
+[source,python]
+----
+find_peaks_semiderivative(min_peak_height=0.0)
+----
+
+Find peaks in a curve using the semi-derivative algorithm.
+
+Used for detecting non-overlapping peaks in LSV and CV curves. The peaks
+are also assigned to the curve, updating `Curve.peaks`. Existing peaks
+are overwritten.
+
+For more info, see this
+https://en.wikipedia.org/wiki/Neopolarogram[Wikipedia page].
+
+*Parameters:*
+
+* *min++_++peak++_++height* (link:#float[float]) – Minimum height of the
+peak in uA
+
+*Returns:*
+
+* *peak++_++list*
+(link:#list[list]++[++link:#pypalmsens._data.peak.Peak[Peak]++]++) –
+
+==== `clear++_++peaks`
+
+[source,python]
+----
+clear_peaks()
+----
+
+Clear peaks stored on object.
+
+==== `linear++_++slope`
+
+[source,python]
+----
+linear_slope(start=None, stop=None)
+----
+
+Calculate linear line parameters for this curve between two indexes.
+
+current = a {plus} b ++*++ x
+
+*Parameters:*
+
+* *start* (link:#int[int]) – begin index
+* *stop* (link:#int[int]) – end index
+
+*Returns:*
+
+* *a* (link:#float[float]) –
+* *b* (link:#float[float]) –
+* *coefdet* (link:#float[float]) – Coefficient of determination (R2)
+
+==== `plot`
+
+[source,python]
+----
+plot(ax=None, legend=True, **plot_kwargs)
+----
+
+Generate simple plot for this curve using matplotlib.
+
+*Parameters:*
+
+* *ax*
+(link:#typing.Optional[Optional]++[++link:#matplotlib.axes.Axes[Axes]++]++)
+– Add plot to this ax if specified.
+* *legend* (link:#bool[bool]) – If True, add legend.
+* *plot++_++kwargs* – These keyword arguments are passed to `ax.plot`.
+
+*Returns:*
+
+* *fig* (link:#matplotlib.fig.Figure[Figure]) – Matplotlib figure. Use
+`fig.show()` to render plot.
 
 === `DeviceInfo`
 

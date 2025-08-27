@@ -108,6 +108,9 @@ To find the peak ourselves, use `.find_peaks()`:
 [Peak(x=0.179102 V, y=3.42442 µA, y_offset=0.26371 µA, area=0.818265 VµA, width=0.221563 V)]
 ----
 
+An alternative method for CV and LSV is available under `curve.find_peaks_semiderivative()`.
+For more info on this algorithm, see https://en.wikipedia.org/wiki/Neopolarogram[this Wikipedia page].
+
 [NOTE]
 .Peak finding
 ====
@@ -386,7 +389,7 @@ If previously fitted a circuit model in PSTrace, we can retrieve the CDC values:
 [132.146, 11009.9, 3710.55, 3.77887, 0.971414, 6.23791e-07, 0.961612]
 ----
 
-And use these to xref:fitting.adoc[fit a circuit model]:
+And use these to xref:circuit_fitting.adoc[fit a circuit model]:
 
 [source,python]
 ----

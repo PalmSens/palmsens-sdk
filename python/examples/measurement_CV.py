@@ -18,7 +18,7 @@ with pypalmsens.connect(available_instruments[0]) as manager:
     print(serial)
 
     method = pypalmsens.CyclicVoltammetry(
-        current_ranges=pypalmsens.settings.CurrentRanges(
+        current_range=pypalmsens.settings.CurrentRange(
             max=pypalmsens.settings.CURRENT_RANGE.cr_1_A,  # 1 A range
             min=pypalmsens.settings.CURRENT_RANGE.cr_1_uA,  # 1 µA range
             start=pypalmsens.settings.CURRENT_RANGE.cr_1_mA,  # 1 mA range

@@ -26,7 +26,7 @@ class CommonSettings(Protocol):
 
 
 @attrs.define
-class CurrentRanges(CommonSettings):
+class CurrentRange(CommonSettings):
     """Set the autoranging current for a given method."""
 
     max: CURRENT_RANGE = CURRENT_RANGE.cr_10_mA
@@ -56,7 +56,7 @@ class CurrentRanges(CommonSettings):
 
 
 @attrs.define
-class PotentialRanges(CommonSettings):
+class PotentialRange(CommonSettings):
     """Set the autoranging potential for a given method."""
 
     max: POTENTIAL_RANGE = POTENTIAL_RANGE.pr_1_V

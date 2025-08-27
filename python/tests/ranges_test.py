@@ -33,7 +33,7 @@ def test_method_current_range():
     crstart = CURRENT_RANGE.cr_100_uA
 
     method = pypalmsens.CyclicVoltammetry(
-        current_ranges=pypalmsens.settings.CurrentRanges(
+        current_range=pypalmsens.settings.CurrentRange(
             min=crmin,
             max=crmax,
             start=crstart,
@@ -58,7 +58,7 @@ def test_method_potential_range():
     potstart = POTENTIAL_RANGE.pr_10_mV
 
     method = pypalmsens.ChronoPotentiometry(
-        potential_ranges=pypalmsens.settings.PotentialRanges(
+        potential_range=pypalmsens.settings.PotentialRange(
             min=potmin,
             max=potmax,
             start=potstart,
@@ -112,3 +112,25 @@ def test_method_potential_range_clipping():
     # Check that max range gets clipped to nearest supported range
     ranging.MaximumPotentialRange = pot_outside
     assert ranging.MaximumPotentialRange.Description == '1 V'
+
+
+def test_fixed_current_range():
+    cr = CURRENT_RANGE.cr_100_uA
+
+    method = pypalmsens.CyclicVoltammetry(current_range=cr)
+
+    assert isinstance(method.current_range, pypalmsens.settings.CurrentRange)
+    assert method.current_range.min == cr
+    assert method.current_range.max == cr
+    assert method.current_range.start == cr
+
+
+def test_fixed_potential_range():
+    pr = POTENTIAL_RANGE.pr_10_mV
+
+    method = pypalmsens.ChronoPotentiometry(potential_range=pr)
+
+    assert isinstance(method.potential_range, pypalmsens.settings.PotentialRange)
+    assert method.potential_range.min == pr
+    assert method.potential_range.max == pr
+    assert method.potential_range.start == pr

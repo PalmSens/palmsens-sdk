@@ -126,8 +126,8 @@ pages = (
         module='pypalmsens.settings',
         extra_config={
             'members': [
-                'CurrentRanges',
-                'PotentialRanges',
+                'CurrentRange',
+                'PotentialRange',
                 'Pretreatment',
                 'VersusOCP',
                 'BiPot',

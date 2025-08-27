@@ -60,14 +60,14 @@ def test_AutorangingCurrentSettings():
 
     obj = Techniques.CyclicVoltammetry()
 
-    params = pypalmsens.settings.CurrentRanges(**kwargs)
+    params = pypalmsens.settings.CurrentRange(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.Ranging.MaximumCurrentRange.Description == '100 uA'
     assert obj.Ranging.MinimumCurrentRange.Description == '100 nA'
     assert obj.Ranging.StartCurrentRange.Description == '10 uA'
 
-    new_params = pypalmsens.settings.CurrentRanges()
+    new_params = pypalmsens.settings.CurrentRange()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -82,14 +82,14 @@ def test_AutorangingPotentialSettings():
 
     obj = Techniques.Potentiometry()
 
-    params = pypalmsens.settings.PotentialRanges(**kwargs)
+    params = pypalmsens.settings.PotentialRange(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.RangingPotential.MaximumPotentialRange.Description == '100 mV'
     assert obj.RangingPotential.MinimumPotentialRange.Description == '1 mV'
     assert obj.RangingPotential.StartPotentialRange.Description == '10 mV'
 
-    new_params = pypalmsens.settings.PotentialRanges()
+    new_params = pypalmsens.settings.PotentialRange()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs

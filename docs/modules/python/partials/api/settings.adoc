@@ -5,9 +5,9 @@ configuration.
 
 *Classes:*
 
-* link:#pypalmsens.settings.CurrentRanges[*CurrentRanges*] – Set the
+* link:#pypalmsens.settings.CurrentRange[*CurrentRange*] – Set the
 autoranging current for a given method.
-* link:#pypalmsens.settings.PotentialRanges[*PotentialRanges*] – Set the
+* link:#pypalmsens.settings.PotentialRange[*PotentialRange*] – Set the
 autoranging potential for a given method.
 * link:#pypalmsens.settings.Pretreatment[*Pretreatment*] – Set the
 pretreatment settings for a given method.
@@ -38,19 +38,19 @@ data processing settings for a given method.
 * link:#pypalmsens.settings.General[*General*] – Sets general/other
 settings for a given method.
 
-=== `CurrentRanges`
+=== `CurrentRange`
 
 Set the autoranging current for a given method.
 
 *Attributes:*
 
-* link:#pypalmsens.settings.CurrentRanges.max[*max*]
+* link:#pypalmsens.settings.CurrentRange.max[*max*]
 (link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT++_++RANGE]) –
 Maximum current range.
-* link:#pypalmsens.settings.CurrentRanges.min[*min*]
+* link:#pypalmsens.settings.CurrentRange.min[*min*]
 (link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT++_++RANGE]) –
 Minimum current range.
-* link:#pypalmsens.settings.CurrentRanges.start[*start*]
+* link:#pypalmsens.settings.CurrentRange.start[*start*]
 (link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT++_++RANGE]) –
 Start current range.
 
@@ -87,19 +87,19 @@ Start current range.
 
 Use `CURRENT++_++RANGE` to define the range.
 
-=== `PotentialRanges`
+=== `PotentialRange`
 
 Set the autoranging potential for a given method.
 
 *Attributes:*
 
-* link:#pypalmsens.settings.PotentialRanges.max[*max*]
+* link:#pypalmsens.settings.PotentialRange.max[*max*]
 (link:#pypalmsens._methods._shared.POTENTIAL_RANGE[POTENTIAL++_++RANGE])
 – Maximum potential range.
-* link:#pypalmsens.settings.PotentialRanges.min[*min*]
+* link:#pypalmsens.settings.PotentialRange.min[*min*]
 (link:#pypalmsens._methods._shared.POTENTIAL_RANGE[POTENTIAL++_++RANGE])
 – Minimum potential range.
-* link:#pypalmsens.settings.PotentialRanges.start[*start*]
+* link:#pypalmsens.settings.PotentialRange.start[*start*]
 (link:#pypalmsens._methods._shared.POTENTIAL_RANGE[POTENTIAL++_++RANGE])
 – Start potential range.
 

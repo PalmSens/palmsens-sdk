@@ -14,7 +14,7 @@ def new_data_callback(channel):
 async def run_steps(manager, channel, steps):
     # Create a new method, a separate method is required for each channel
     method = pypalmsens.ChronoPotentiometry(
-        potential_ranges=pypalmsens.settings.PotentialRanges(
+        potential_range=pypalmsens.settings.PotentialRange(
             max=pypalmsens.settings.POTENTIAL_RANGE.pr_1_V,  # 1V range
             min=pypalmsens.settings.POTENTIAL_RANGE.pr_10_mV,  # 10mV range
             start=pypalmsens.settings.POTENTIAL_RANGE.pr_1_V,  # 1V range

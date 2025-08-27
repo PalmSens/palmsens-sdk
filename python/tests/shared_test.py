@@ -22,7 +22,7 @@ def test_convert_int_to_bool_list():
     assert convert_int_to_bools(15) == (True, True, True, True)
 
 
-def test_current_ranges_enum():
+def test_current_range_enum():
     cr = CURRENT_RANGE.cr_1_A
 
     psobj = cr._to_psobj()

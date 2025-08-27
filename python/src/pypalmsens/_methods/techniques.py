@@ -9,6 +9,7 @@ from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 
 from ._shared import (
     CURRENT_RANGE,
+    POTENTIAL_RANGE,
     ELevel,
     get_extra_value_mask,
     set_extra_value_mask,
@@ -17,7 +18,7 @@ from .settings import (
     BiPot,
     ChargeLimits,
     CurrentLimits,
-    CurrentRanges,
+    CurrentRange,
     DataProcessing,
     EquilibrationTriggers,
     General,
@@ -26,7 +27,7 @@ from .settings import (
     Multiplexer,
     PostMeasurement,
     PotentialLimits,
-    PotentialRanges,
+    PotentialRange,
     Pretreatment,
     VersusOCP,
 )
@@ -84,15 +85,29 @@ class MethodSettings(Protocol):
     def _update_params(self, *, obj: PSMethod) -> None: ...
 
 
+def current_converter(value: CURRENT_RANGE | CurrentRange) -> CurrentRange:
+    if isinstance(value, CURRENT_RANGE):
+        return CurrentRange(min=value, max=value, start=value)
+    return value
+
+
 @attrs.define(slots=False)
-class CurrentRangesMixin:
-    current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+class CurrentRangeMixin:
+    current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
     """Set the autoranging current."""
 
 
+def potential_converter(value: POTENTIAL_RANGE | PotentialRange) -> PotentialRange:
+    if isinstance(value, POTENTIAL_RANGE):
+        return PotentialRange(min=value, max=value, start=value)
+    return value
+
+
 @attrs.define(slots=False)
-class PotentialRangesMixin:
-    potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
+class PotentialRangeMixin:
+    potential_range: PotentialRange = attrs.field(
+        factory=PotentialRange, converter=potential_converter
+    )
     """Set the autoranging potential."""
 
 
@@ -177,7 +192,7 @@ class GeneralMixin:
 @attrs.define
 class CyclicVoltammetry(
     MethodSettings,
-    CurrentRangesMixin,
+    CurrentRangeMixin,
     PretreatmentMixin,
     VersusOCPMixin,
     PostMeasurementMixin,
@@ -270,7 +285,7 @@ class CyclicVoltammetry(
 @attrs.define
 class LinearSweepVoltammetry(
     MethodSettings,
-    CurrentRangesMixin,
+    CurrentRangeMixin,
     PretreatmentMixin,
     VersusOCPMixin,
     BiPotMixin,
@@ -350,7 +365,7 @@ class LinearSweepVoltammetry(
 @attrs.define
 class SquareWaveVoltammetry(
     MethodSettings,
-    CurrentRangesMixin,
+    CurrentRangeMixin,
     PretreatmentMixin,
     VersusOCPMixin,
     BiPotMixin,
@@ -444,7 +459,7 @@ class SquareWaveVoltammetry(
 @attrs.define
 class DifferentialPulseVoltammetry(
     MethodSettings,
-    CurrentRangesMixin,
+    CurrentRangeMixin,
     PretreatmentMixin,
     VersusOCPMixin,
     BiPotMixin,
@@ -538,7 +553,7 @@ class DifferentialPulseVoltammetry(
 @attrs.define
 class ChronoAmperometry(
     MethodSettings,
-    CurrentRangesMixin,
+    CurrentRangeMixin,
     PretreatmentMixin,
     VersusOCPMixin,
     BiPotMixin,
@@ -619,7 +634,7 @@ class ChronoAmperometry(
 @attrs.define
 class MultiStepAmperometry(
     MethodSettings,
-    CurrentRangesMixin,
+    CurrentRangeMixin,
     PretreatmentMixin,
     BiPotMixin,
     PostMeasurementMixin,
@@ -712,8 +727,8 @@ class MultiStepAmperometry(
 @attrs.define
 class OpenCircuitPotentiometry(
     MethodSettings,
-    CurrentRangesMixin,
-    PotentialRangesMixin,
+    CurrentRangeMixin,
+    PotentialRangeMixin,
     PretreatmentMixin,
     PostMeasurementMixin,
     PotentialLimitsMixin,
@@ -772,8 +787,8 @@ class OpenCircuitPotentiometry(
 @attrs.define
 class ChronoPotentiometry(
     MethodSettings,
-    CurrentRangesMixin,
-    PotentialRangesMixin,
+    CurrentRangeMixin,
+    PotentialRangeMixin,
     PretreatmentMixin,
     PostMeasurementMixin,
     PotentialLimitsMixin,
@@ -851,8 +866,8 @@ class ChronoPotentiometry(
 @attrs.define
 class ElectrochemicalImpedanceSpectroscopy(
     MethodSettings,
-    CurrentRangesMixin,
-    PotentialRangesMixin,
+    CurrentRangeMixin,
+    PotentialRangeMixin,
     PretreatmentMixin,
     VersusOCPMixin,
     PostMeasurementMixin,
@@ -906,8 +921,8 @@ class ElectrochemicalImpedanceSpectroscopy(
 @attrs.define
 class GalvanostaticImpedanceSpectroscopy(
     MethodSettings,
-    CurrentRangesMixin,
-    PotentialRangesMixin,
+    CurrentRangeMixin,
+    PotentialRangeMixin,
     PretreatmentMixin,
     PostMeasurementMixin,
     EquilibrationTriggersMixin,

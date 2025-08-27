@@ -88,7 +88,7 @@ class TestCV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_ranges=pypalmsens.settings.CurrentRanges(
+            current_range=pypalmsens.settings.CurrentRange(
                 max=CURRENT_RANGE.cr_1_mA,
                 min=CURRENT_RANGE.cr_100_nA,
                 start=CURRENT_RANGE.cr_100_uA,
@@ -136,7 +136,7 @@ class TestLSV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_ranges=pypalmsens.settings.CurrentRanges(
+            current_range=pypalmsens.settings.CurrentRange(
                 max=CURRENT_RANGE.cr_1_mA,
                 min=CURRENT_RANGE.cr_100_nA,
                 start=CURRENT_RANGE.cr_100_uA,
@@ -179,7 +179,7 @@ class TestSWV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_ranges=pypalmsens.settings.CurrentRanges(
+            current_range=pypalmsens.settings.CurrentRange(
                 max=CURRENT_RANGE.cr_1_mA,
                 min=CURRENT_RANGE.cr_100_nA,
                 start=CURRENT_RANGE.cr_100_uA,
@@ -219,7 +219,7 @@ class TestCP:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            potential_ranges=pypalmsens.settings.PotentialRanges(
+            potential_range=pypalmsens.settings.PotentialRange(
                 max=POTENTIAL_RANGE.pr_1_V,
                 min=POTENTIAL_RANGE.pr_10_mV,
                 start=POTENTIAL_RANGE.pr_1_V,
@@ -256,7 +256,7 @@ class TestOCP:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            potential_ranges=pypalmsens.settings.PotentialRanges(
+            potential_range=pypalmsens.settings.PotentialRange(
                 max=POTENTIAL_RANGE.pr_1_V,
                 min=POTENTIAL_RANGE.pr_10_mV,
                 start=POTENTIAL_RANGE.pr_1_V,

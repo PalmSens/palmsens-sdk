@@ -31,8 +31,8 @@ Create chrono amperometry method parameters.
 
 *Attributes:*
 
-* link:#pypalmsens.ChronoAmperometry.current_ranges[*current++_++ranges*]
-(link:#pypalmsens._methods.settings.CurrentRanges[CurrentRanges]) – Set
+* link:#pypalmsens.ChronoAmperometry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
 * link:#pypalmsens.ChronoAmperometry.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
@@ -87,11 +87,11 @@ general/other settings.
 * link:#pypalmsens.ChronoAmperometry.record_we_potential[*record++_++we++_++potential*]
 (link:#bool[bool]) – Record applied working electrode potential.
 
-==== `current++_++ranges`
+==== `current++_++range`
 
 [source,python]
 ----
-current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -286,11 +286,11 @@ Create potentiometry method parameters.
 
 *Attributes:*
 
-* link:#pypalmsens.ChronoPotentiometry.current_ranges[*current++_++ranges*]
-(link:#pypalmsens._methods.settings.CurrentRanges[CurrentRanges]) – Set
+* link:#pypalmsens.ChronoPotentiometry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
-* link:#pypalmsens.ChronoPotentiometry.potential_ranges[*potential++_++ranges*]
-(link:#pypalmsens._methods.settings.PotentialRanges[PotentialRanges]) –
+* link:#pypalmsens.ChronoPotentiometry.potential_range[*potential++_++range*]
+(link:#pypalmsens._methods.settings.PotentialRange[PotentialRange]) –
 Set the autoranging potential.
 * link:#pypalmsens.ChronoPotentiometry.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
@@ -329,20 +329,20 @@ Applied current range.
 * link:#pypalmsens.ChronoPotentiometry.record_we_current[*record++_++we++_++current*]
 (link:#bool[bool]) – Record working electrode current.
 
-==== `current++_++ranges`
+==== `current++_++range`
 
 [source,python]
 ----
-current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
 ----
 
 Set the autoranging current.
 
-==== `potential++_++ranges`
+==== `potential++_++range`
 
 [source,python]
 ----
-potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
+potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -488,8 +488,8 @@ Create cyclic voltammetry method parameters.
 
 *Attributes:*
 
-* link:#pypalmsens.CyclicVoltammetry.current_ranges[*current++_++ranges*]
-(link:#pypalmsens._methods.settings.CurrentRanges[CurrentRanges]) – Set
+* link:#pypalmsens.CyclicVoltammetry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
 * link:#pypalmsens.CyclicVoltammetry.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
@@ -541,11 +541,11 @@ general/other settings.
 * link:#pypalmsens.CyclicVoltammetry.record_we_potential[*record++_++we++_++potential*]
 (link:#bool[bool]) – Record applied working electrode potential.
 
-==== `current++_++ranges`
+==== `current++_++range`
 
 [source,python]
 ----
-current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -740,8 +740,8 @@ Create square wave method parameters.
 
 *Attributes:*
 
-* link:#pypalmsens.DifferentialPulseVoltammetry.current_ranges[*current++_++ranges*]
-(link:#pypalmsens._methods.settings.CurrentRanges[CurrentRanges]) – Set
+* link:#pypalmsens.DifferentialPulseVoltammetry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
 * link:#pypalmsens.DifferentialPulseVoltammetry.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
@@ -796,11 +796,11 @@ general/other settings.
 * link:#pypalmsens.DifferentialPulseVoltammetry.record_we_potential[*record++_++we++_++potential*]
 (link:#bool[bool]) – Record applied working electrode potential.
 
-==== `current++_++ranges`
+==== `current++_++range`
 
 [source,python]
 ----
-current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -1004,11 +1004,11 @@ Create potentiometry method parameters.
 
 *Attributes:*
 
-* link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy.current_ranges[*current++_++ranges*]
-(link:#pypalmsens._methods.settings.CurrentRanges[CurrentRanges]) – Set
+* link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
-* link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy.potential_ranges[*potential++_++ranges*]
-(link:#pypalmsens._methods.settings.PotentialRanges[PotentialRanges]) –
+* link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy.potential_range[*potential++_++range*]
+(link:#pypalmsens._methods.settings.PotentialRange[PotentialRange]) –
 Set the autoranging potential.
 * link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
@@ -1044,20 +1044,20 @@ general/other settings.
 * link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy.min_frequency[*min++_++frequency*]
 (link:#float[float]) – Minimum frequency in Hz.
 
-==== `current++_++ranges`
+==== `current++_++range`
 
 [source,python]
 ----
-current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
 ----
 
 Set the autoranging current.
 
-==== `potential++_++ranges`
+==== `potential++_++range`
 
 [source,python]
 ----
-potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
+potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -1185,11 +1185,11 @@ Create potentiometry method parameters.
 
 *Attributes:*
 
-* link:#pypalmsens.GalvanostaticImpedanceSpectroscopy.current_ranges[*current++_++ranges*]
-(link:#pypalmsens._methods.settings.CurrentRanges[CurrentRanges]) – Set
+* link:#pypalmsens.GalvanostaticImpedanceSpectroscopy.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
-* link:#pypalmsens.GalvanostaticImpedanceSpectroscopy.potential_ranges[*potential++_++ranges*]
-(link:#pypalmsens._methods.settings.PotentialRanges[PotentialRanges]) –
+* link:#pypalmsens.GalvanostaticImpedanceSpectroscopy.potential_range[*potential++_++range*]
+(link:#pypalmsens._methods.settings.PotentialRange[PotentialRange]) –
 Set the autoranging potential.
 * link:#pypalmsens.GalvanostaticImpedanceSpectroscopy.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
@@ -1225,20 +1225,20 @@ Applied current range.
 * link:#pypalmsens.GalvanostaticImpedanceSpectroscopy.min_frequency[*min++_++frequency*]
 (link:#float[float]) – Minimum frequency in Hz.
 
-==== `current++_++ranges`
+==== `current++_++range`
 
 [source,python]
 ----
-current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
 ----
 
 Set the autoranging current.
 
-==== `potential++_++ranges`
+==== `potential++_++range`
 
 [source,python]
 ----
-potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
+potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -1368,8 +1368,8 @@ Create linear sweep method parameters.
 
 *Attributes:*
 
-* link:#pypalmsens.LinearSweepVoltammetry.current_ranges[*current++_++ranges*]
-(link:#pypalmsens._methods.settings.CurrentRanges[CurrentRanges]) – Set
+* link:#pypalmsens.LinearSweepVoltammetry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
 * link:#pypalmsens.LinearSweepVoltammetry.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
@@ -1421,11 +1421,11 @@ general/other settings.
 * link:#pypalmsens.LinearSweepVoltammetry.record_we_potential[*record++_++we++_++potential*]
 (link:#bool[bool]) – Record applied working electrode potential.
 
-==== `current++_++ranges`
+==== `current++_++range`
 
 [source,python]
 ----
-current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -1632,8 +1632,8 @@ Create multi-step amperometry method parameters.
 
 *Attributes:*
 
-* link:#pypalmsens.MultiStepAmperometry.current_ranges[*current++_++ranges*]
-(link:#pypalmsens._methods.settings.CurrentRanges[CurrentRanges]) – Set
+* link:#pypalmsens.MultiStepAmperometry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
 * link:#pypalmsens.MultiStepAmperometry.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
@@ -1677,11 +1677,11 @@ general/other settings.
 * link:#pypalmsens.MultiStepAmperometry.record_we_potential[*record++_++we++_++potential*]
 (link:#bool[bool]) – Record applied working electrode potential.
 
-==== `current++_++ranges`
+==== `current++_++range`
 
 [source,python]
 ----
-current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -1842,11 +1842,11 @@ Create open circuit potentiometry method parameters.
 
 *Attributes:*
 
-* link:#pypalmsens.OpenCircuitPotentiometry.current_ranges[*current++_++ranges*]
-(link:#pypalmsens._methods.settings.CurrentRanges[CurrentRanges]) – Set
+* link:#pypalmsens.OpenCircuitPotentiometry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
-* link:#pypalmsens.OpenCircuitPotentiometry.potential_ranges[*potential++_++ranges*]
-(link:#pypalmsens._methods.settings.PotentialRanges[PotentialRanges]) –
+* link:#pypalmsens.OpenCircuitPotentiometry.potential_range[*potential++_++range*]
+(link:#pypalmsens._methods.settings.PotentialRange[PotentialRange]) –
 Set the autoranging potential.
 * link:#pypalmsens.OpenCircuitPotentiometry.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
@@ -1881,20 +1881,20 @@ general/other settings.
 (link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT++_++RANGE]) –
 Record working electrode current range.
 
-==== `current++_++ranges`
+==== `current++_++range`
 
 [source,python]
 ----
-current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
 ----
 
 Set the autoranging current.
 
-==== `potential++_++ranges`
+==== `potential++_++range`
 
 [source,python]
 ----
-potential_ranges: PotentialRanges = attrs.field(factory=PotentialRanges)
+potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -2015,8 +2015,8 @@ Create square wave method parameters.
 
 *Attributes:*
 
-* link:#pypalmsens.SquareWaveVoltammetry.current_ranges[*current++_++ranges*]
-(link:#pypalmsens._methods.settings.CurrentRanges[CurrentRanges]) – Set
+* link:#pypalmsens.SquareWaveVoltammetry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
 * link:#pypalmsens.SquareWaveVoltammetry.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
@@ -2071,11 +2071,11 @@ general/other settings.
 * link:#pypalmsens.SquareWaveVoltammetry.record_forward_and_reverse_currents[*record++_++forward++_++and++_++reverse++_++currents*]
 (link:#bool[bool]) – Record forward and reverse currents
 
-==== `current++_++ranges`
+==== `current++_++range`
 
 [source,python]
 ----
-current_ranges: CurrentRanges = attrs.field(factory=CurrentRanges)
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
 ----
 
 Set the autoranging current.

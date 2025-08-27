@@ -11,10 +11,10 @@ standard arrays.
 DataArray class.
 * link:#pypalmsens.data.Peak[*Peak*] – Python wrapper for .NET Peak
 class.
-* link:#pypalmsens.data.Curve[*Curve*] – Python wrapper for .NET Curve
-class.
 * link:#pypalmsens.data.DeviceInfo[*DeviceInfo*] – Dataclass for device
 information.
+* link:#pypalmsens.data.Curve[*Curve*] – Python wrapper for .NET Curve
+class.
 * link:#pypalmsens.data.Measurement[*Measurement*] – Python wrapper for
 .NET Measurement class.
 * link:#pypalmsens.data.DataSet[*DataSet*] – Python wrapper for .NET
@@ -865,6 +865,61 @@ width: float
 
 Full width at half-height of the peak.
 
+=== `DeviceInfo`
+
+[source,python]
+----
+DeviceInfo(type, firmware, serial, id)
+----
+
+Dataclass for device information.
+
+*Attributes:*
+
+* link:#pypalmsens.data.DeviceInfo.type[*type*] (link:#str[str]) –
+Device type
+* link:#pypalmsens.data.DeviceInfo.firmware[*firmware*] (link:#str[str])
+– Firmware version
+* link:#pypalmsens.data.DeviceInfo.serial[*serial*] (link:#str[str]) –
+Serial number
+* link:#pypalmsens.data.DeviceInfo.id[*id*] (link:#int[int]) – Device ID
+
+==== `type`
+
+[source,python]
+----
+type: str
+----
+
+Device type
+
+==== `firmware`
+
+[source,python]
+----
+firmware: str
+----
+
+Firmware version
+
+==== `serial`
+
+[source,python]
+----
+serial: str
+----
+
+Serial number
+
+==== `id`
+
+[source,python]
+----
+id: int
+----
+
+Device ID
+
 === `Curve`
 
 [source,python]
@@ -881,6 +936,8 @@ curve object.
 
 *Functions:*
 
+* link:#pypalmsens.data.Curve.copy[*copy*] – Return a copy of this
+curve.
 * link:#pypalmsens.data.Curve.smooth[*smooth*] – Smooth the .y++_++array
 using a Savitsky-Golay filter with the specified smooth
 * link:#pypalmsens.data.Curve.savitsky_golay[*savitsky++_++golay*] –
@@ -940,9 +997,11 @@ for the curve.
 (link:#list[list]++[++link:#pypalmsens._data.peak.Peak[Peak]++]++) –
 Return peaks stored on object.
 * link:#pypalmsens.data.Curve.x_array[*x++_++array*]
-(link:#list[list]++[++link:#float[float]++]++) – Y data for the curve
+(link:#pypalmsens._data.data_array.DataArray[DataArray]) – Y data for
+the curve.
 * link:#pypalmsens.data.Curve.y_array[*y++_++array*]
-(link:#list[list]++[++link:#float[float]++]++) – Y data for the curve.
+(link:#pypalmsens._data.data_array.DataArray[DataArray]) – Y data for
+the curve.
 
 ==== `max++_++x`
 
@@ -1102,19 +1161,28 @@ Return peaks stored on object.
 
 [source,python]
 ----
-x_array: list[float]
+x_array: DataArray
 ----
 
-Y data for the curve
+Y data for the curve.
 
 ==== `y++_++array`
 
 [source,python]
 ----
-y_array: list[float]
+y_array: DataArray
 ----
 
 Y data for the curve.
+
+==== `copy`
+
+[source,python]
+----
+copy()
+----
+
+Return a copy of this curve.
 
 ==== `smooth`
 
@@ -1255,61 +1323,6 @@ Generate simple plot for this curve using matplotlib.
 
 * *fig* (link:#matplotlib.fig.Figure[Figure]) – Matplotlib figure. Use
 `fig.show()` to render plot.
-
-=== `DeviceInfo`
-
-[source,python]
-----
-DeviceInfo(type, firmware, serial, id)
-----
-
-Dataclass for device information.
-
-*Attributes:*
-
-* link:#pypalmsens.data.DeviceInfo.type[*type*] (link:#str[str]) –
-Device type
-* link:#pypalmsens.data.DeviceInfo.firmware[*firmware*] (link:#str[str])
-– Firmware version
-* link:#pypalmsens.data.DeviceInfo.serial[*serial*] (link:#str[str]) –
-Serial number
-* link:#pypalmsens.data.DeviceInfo.id[*id*] (link:#int[int]) – Device ID
-
-==== `type`
-
-[source,python]
-----
-type: str
-----
-
-Device type
-
-==== `firmware`
-
-[source,python]
-----
-firmware: str
-----
-
-Firmware version
-
-==== `serial`
-
-[source,python]
-----
-serial: str
-----
-
-Serial number
-
-==== `id`
-
-[source,python]
-----
-id: int
-----
-
-Device ID
 
 === `Measurement`
 
@@ -1559,6 +1572,8 @@ DataSet object.
 
 *Functions:*
 
+* link:#pypalmsens.data.DataSet.curve[*curve*] – Construct a custom
+curve from x and y keys.
 * link:#pypalmsens.data.DataSet.arrays[*arrays*] – Return list of all
 arrays. Alias for `.to++_++list()`
 * link:#pypalmsens.data.DataSet.hidden_arrays[*hidden++_++arrays*] –
@@ -1630,6 +1645,27 @@ array_quantities: set[str]
 ----
 
 Return unique set of quantities for arrays in dataset.
+
+==== `curve`
+
+[source,python]
+----
+curve(x, y, title=None)
+----
+
+Construct a custom curve from x and y keys.
+
+*Parameters:*
+
+* *x* (link:#str[str]) – Key identifying the x array
+* *y* (link:#str[str]) – Key identifying the y array
+* *title* (link:#str[str]) – Set the title. If None, use the
+latexmath:[x-]y as title
+
+*Returns:*
+
+* *curve* (link:#pypalmsens._data.curve.Curve[Curve]) – New Curve with
+plotting x against y
 
 ==== `arrays`
 

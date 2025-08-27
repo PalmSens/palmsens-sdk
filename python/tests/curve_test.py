@@ -21,23 +21,23 @@ def curve_cv(data_cv):
 
 
 def test_curve_smooth(curve_noise):
-    x = curve_noise.x_array
-    y = curve_noise.y_array
+    x = list(curve_noise.x_array)
+    y = list(curve_noise.y_array)
 
     curve_noise.smooth(smooth_level=1)
 
-    assert x == curve_noise.x_array
-    assert y != curve_noise.y_array
+    assert x == list(curve_noise.x_array)
+    assert y != list(curve_noise.y_array)
 
 
 def test_savitsky_golay(curve_noise):
-    x = curve_noise.x_array
-    y = curve_noise.y_array
+    x = list(curve_noise.x_array)
+    y = list(curve_noise.y_array)
 
     curve_noise.savitsky_golay(window_size=2)
 
-    assert x == curve_noise.x_array
-    assert y != curve_noise.y_array
+    assert x == list(curve_noise.x_array)
+    assert y != list(curve_noise.y_array)
 
 
 def test_find_peaks(curve_dpv):
@@ -106,3 +106,11 @@ def test_curve_properties(curve_dpv):
     assert curve_dpv.max_x == max(x_arr)
     assert curve_dpv.min_y == min(y_arr)
     assert curve_dpv.max_y == max(y_arr)
+
+
+def test_curve_copy(curve_dpv):
+    new_curve = curve_dpv.copy()
+    assert curve_dpv is not new_curve
+    assert curve_dpv._pscurve is not new_curve._pscurve
+    assert curve_dpv._pscurve.XAxisDataArray is not new_curve._pscurve.XAxisDataArray
+    assert curve_dpv._pscurve.YAxisDataArray is not new_curve._pscurve.YAxisDataArray

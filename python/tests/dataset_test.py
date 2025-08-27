@@ -83,6 +83,13 @@ def test_array_names(dataset):
     assert names == {'time', 'scan1channel1'}
 
 
+def test_new_curve(dataset):
+    curve = dataset.curve(x='Time', y='Current')
+
+    assert curve.title == 'Time-Current'
+    assert len(curve) == 41
+
+
 def test_array_quantities(dataset):
     quantities = dataset.array_quantities
     assert len(quantities) == 4

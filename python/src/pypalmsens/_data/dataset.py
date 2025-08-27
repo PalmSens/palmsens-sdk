@@ -5,8 +5,10 @@ from typing import TYPE_CHECKING, Callable, Generator
 
 import clr
 from PalmSens.Data import CurrentReading
+from PalmSens.Plottables import Curve as PSCurve
 
 from ._shared import ArrayType
+from .curve import Curve
 from .data_array import DataArray
 
 if TYPE_CHECKING:
@@ -74,6 +76,33 @@ class DataSet(Mapping):
     def _psarrays(self):
         """Return underlying PalmSens SDK objects."""
         return self._psdataset.GetDataArrays()
+
+    def curve(self, x: str, y: str, title: str | None = None) -> Curve:
+        """Construct a custom curve from x and y keys.
+
+        Parameters
+        ----------
+        x : str
+            Key identifying the x array
+        y : str
+            Key identifying the y array
+        title : str
+            Set the title. If None, use the $x-$y as title
+
+        Returns
+        -------
+        curve : Curve
+            New Curve with plotting x against y
+        """
+        xarray = self[x]
+        yarray = self[y]
+
+        if not title:
+            title = f'{x}-{y}'
+
+        pscurve = PSCurve(xarray._psarray, yarray._psarray, title=title)
+
+        return Curve(pscurve=pscurve)
 
     def arrays(self) -> list[DataArray]:
         """Return list of all arrays. Alias for `.to_list()`"""

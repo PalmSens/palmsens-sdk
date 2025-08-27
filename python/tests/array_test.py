@@ -53,3 +53,10 @@ def test_array_smooth(array):
     new_array = array.savitsky_golay()
     assert list(new_array) != list(array)
     assert new_array is not array
+
+
+def test_array_copy(array):
+    new_array = array.copy()
+    assert list(array) == list(new_array)  # data must match
+    assert array is not new_array
+    assert array._psarray is not new_array._psarray

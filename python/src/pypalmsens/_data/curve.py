@@ -6,6 +6,7 @@ import PalmSens.Analysis as PSAnalysis
 import System
 from PalmSens.Plottables import Curve as PSCurve
 
+from .data_array import DataArray
 from .peak import Peak
 
 if TYPE_CHECKING:
@@ -26,6 +27,10 @@ class Curve:
 
     def __repr__(self):
         return f'{self.__class__.__name__}(title={self.title}, n_points={self.n_points})'
+
+    def copy(self) -> Curve:
+        """Return a copy of this curve."""
+        return Curve(pscurve=PSCurve(self._pscurve, cloneData=True))
 
     def smooth(self, smooth_level: int = 0):
         """Smooth the .y_array using a Savitsky-Golay filter with the specified smooth
@@ -234,14 +239,14 @@ class Curve:
         self._pscurve.ClearPeaks()
 
     @property
-    def x_array(self) -> list[float]:
-        """Y data for the curve"""
-        return list(self._pscurve.GetXValues())
+    def x_array(self) -> DataArray:
+        """Y data for the curve."""
+        return DataArray(psarray=self._pscurve.XAxisDataArray)
 
     @property
-    def y_array(self) -> list[float]:
+    def y_array(self) -> DataArray:
         """Y data for the curve."""
-        return list(self._pscurve.GetYValues())
+        return DataArray(psarray=self._pscurve.YAxisDataArray)
 
     def linear_slope(
         self, start: Optional[int] = None, stop: Optional[int] = None

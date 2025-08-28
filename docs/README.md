@@ -10,19 +10,11 @@ The docs are written in the [asciidoc](https://asciidoc.org/) ([docs](https://do
 npx antora antora-playbook.yml
 ```
 
-Building the Python docs is automated through the [collector extension](https://docs.antora.org/collector-extension/latest/).
+Building the Python api docs is automated through the [collector extension](https://docs.antora.org/collector-extension/latest/).
 
 To build the Python docs manually, run:
 
 ```bash
 cd python
-pip install -e .[develop]
-pdoc pypalmsens !pypalmsens._lib -o pdocs-html -d numpy
-```
-
-or:
-
-```bash
-cd python
-uvx --with-editable . pdoc pypalmsens !pypalmsens._lib -o pdocs-html -d numpy
+python build_python_api_docs.py
 ```

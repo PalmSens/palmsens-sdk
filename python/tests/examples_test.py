@@ -8,7 +8,7 @@ import pytest
 
 ROOT_DIR = Path(__file__).parents[1]
 EXAMPLES_DIR = ROOT_DIR / 'examples'
-EXAMPLES = list(EXAMPLES_DIR.glob('*.py'))
+EXAMPLES = [pytest.param(path, id=path.stem) for path in EXAMPLES_DIR.glob('*.py')]
 
 
 @pytest.mark.parametrize('path', EXAMPLES)

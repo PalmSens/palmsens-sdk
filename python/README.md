@@ -15,7 +15,7 @@ With PyPalmSens, you can:
 - Analyze and manipulate data
 - Perform peak detection
 - Do Equivalent Circuit Fitting on impedance data
-- Manually control of the cell
+- Take manual control of the cell
 - Read and write method and data files
 
 To install:

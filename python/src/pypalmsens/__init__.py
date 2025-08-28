@@ -8,7 +8,7 @@ if sys.platform == 'win32':
 else:
     from ._lib.mono import sdk_version
 
-__version__ = '0.0.1'
+__version__ = '1.0.0'
 __sdk_version__ = sdk_version
 
 from . import data, fitting, settings

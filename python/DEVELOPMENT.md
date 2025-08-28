@@ -79,8 +79,28 @@ The code uses the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.ht
 
 The build script defines which classes and modules to document.
 
-
-
 ```bash
 python build_python_api_docs.py
+```
+
+## Making a release
+
+PyPalmSens uses [SemVer](http://semver.org/) versioning scheme.
+
+1. Bump the version (`major`/`minor`/`patch` as needed), see [bump-my-version](https://github.com/callowayproject/bump-my-version).
+
+```console
+bump-my-version minor
+```
+
+2. Make a release on [GitHub](https://github.com/PalmSens/PalmSens_SDK/releases).
+
+The **release tag must start with `'python-'`**. This triggers the automated publish to [PyPi](https://pypi.org/project/pypalmsens).
+
+To manually publish:
+
+```python
+pip install twine build
+python -m build
+twine upload dist/*
 ```

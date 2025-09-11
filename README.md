@@ -10,6 +10,6 @@ Take full control of your PalmSens instruments and modules with the PalmSens Sof
 SDKs are available for the ecosystems below. See the links for installation instructions, code documentation, and examples.
 
 - [Python](./python) - [documentation](https://palmsens.github.io/PalmSens_SDK/palmsens-sdk/python/)
-- [Matlab](./matlab) (WIP)
+- [Matlab](./matlab) - [documentation](https://palmsens.github.io/PalmSens_SDK/palmsens-sdk/matlab/)
 - [Dotnet](./dotnet) (WIP)
 - [Labview](./labview) (WIP)

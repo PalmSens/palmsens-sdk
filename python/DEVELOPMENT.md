@@ -99,7 +99,7 @@ The **release tag must start with `'python-'`**. This triggers the automated pub
 
 To manually publish:
 
-```python
+```bash
 pip install twine build
 python -m build
 twine upload dist/*

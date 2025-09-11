@@ -1,0 +1,130 @@
+= Matlab SDK for PalmSens devices
+
+With this SDK, you can control your PalmSens instrument and process the data in MATLAB.
+Connect, control and process data from your PalmSens instrument using MATLAB.
+
+[cols="1,1"]
+|===
+| image:measurement-gui.webp[Measurement gui,link="_images/measurement-gui.webp"]
+| **Control your PalmSens instrument using MATLAB**
+
+Connect to your PalmSens instrument, receive data and plot the results, with a graphical user interface in MATLAB.
+After selecting the electrochemical technique to use, you can adjust the parameters and start a measurement.
+
+| **Import experimental results from PSTrace directly into MATLAB**
+
+You can import your saved data from PSTrace in MATLAB directly.
+Use the PSTrace software to set-up and run your experiments with PalmSens instruments and use MATLAB for your advanced data analyses.
+| image:equivalent-circuit-fitting.webp[Equivalent circuit fitting,link="_images/equivalent-circuit-fitting.webp"]
+
+| image:import-measurement.webp[Import measurement,link="_images/import-measurement.webp.webp"]
+| **Plot results in Nyquist and Bode plot**
+
+You can plot the results of your electrochemical experiment in a Nyquist and Bode plot to analyze the impedance of your electrochemical setup
+|===
+
+== Installation
+
+To use the matlab SDK, download the latest https://github.com/palmsens/palmsens_sdk/releases[release here].
+Unzip and load the directory in Matlab.
+
+== Examples
+
+The SDK contains the following examples and functions aimed to help you with using PalmSens and Emstat devices in Matlab.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/ConnectionExample.m[`ConnectionExample.m`]::
+Detailed explanation on how to detect and conect to your device.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/EquivalentCircuitFitExample.m[`EquivalentCircuitFitExample.m`]::
+An example of equivalent circuit fitting
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/GUIExample.m[`GUIExample.m`]::
+An example of a Matlab user interface for performing measurements with your device.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/ImportSessionExample.m[`ImportSessionExample.m`]::
+Detailed explanation on how to import and view measurements from a `.pssession` file created with PSTrace 5.x or MultiTrace 4.x.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/ManualControlExample.m[`ManualControlExample.m`]::
+An example of a Maltab user interface for manual control of your device.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MeasurementExample.m[`MeasurementExample.m`]::
+Detailed explanation on how to perform a measurement, specified in a method, with a connected PalmSens or Emstat device.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MethodExample.m[`MethodExample.m`]::
+Detailed explanation on how to load, edit and create new methods (methods are used to specify technique and the settings for a measurment).
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MultiChannelMeasurementLoopExample.m[`MultiChannelMeasurementLoopExample.m`]::
+An example of connecting to and running measurements on multiple instruments/channels.
+
+== Functions
+
+This is a list of the functions that are available in the Matlab SDK.
+These wrap some of the classes and functions in the xref:ROOT:api.adoc[.NET SDK] and make them accessible through Matlab.
+Look at the function docstrings for usage and parameter descriptions.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/GetConnectedDevices.m[`GetConnectedDevices.m`]::
+Returns a list of connected PalmSens and Emstat devices.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/LoadMethod.m[`LoadMethod.m`]::
+Loads a method from a *.psmethod file.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/LoadPSSDK.m[`LoadPSSDK.m`]::
+Loads the PalmSens Matlab SDK.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/LoadSession.m[`LoadSession.m`]::
+Load (a) measurement(s) from a *.pssession file.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MultiChannelMeasurementLoopHelper.m[`MultiChannelMeasurementLoopHelper.m`]::
+Waits for multiple instruments to finish their measurements
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/NewMethod.m[`NewMethod.m`]::
+Creates a new method.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/OpenConnection.m[`OpenConnection.m`]::
+Opens a connection to a device.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/SaveMethod.m[`SaveMethod.m`]::
+Saves a method.
+
+== Classes
+
+This is a list of the classes that are available through the Matlab SDK.
+These wrap some of the Palmsens xref:ROOT:api.adoc[.NET internal data structures] to make them more accessible in Matlab.
+Look at the class and method docstrings for further information on the interfaces.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/EquivalentCircuitFit.m[`EquivalentCircuitFit.m`]::
+Handles the equivalent circuit fitting using the PalmSens.Core.Matlab.dll
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/Measurement.m[`Measurement.m`]::
+Returns data measured by a device as a variable, message in the command window and/or a plot in a figure.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MeasurementGUI.m[`MeasurementGUI.m`]::
+Version of the Measurement.m class that can be used with a Matlab GUIDE user interface.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MultiChannelMeasurement.m[`MultiChannelMeasurement.m`]::
+Used for running when connected to multiple instruments simultaneaously, please refer to the `MultiChannelMeasurementLoopExample`
+
+== Compatible devices and firmware
+
+The PalmSens Matlab SDK is based on PalmSens core version 5.12 which is compatible with:
+
+[cols=",",options="header",]
+|===
+|Device |Minimum required firmware version
+|EmStat |3.7
+|EmStat2 |7.7
+|EmStat3 |7.7
+|EmStat3{plus} |7.7
+|EmStat4 |1.3
+|EmStat4T |1.4
+|EmStat Go |7.7
+|EmStat Pico |1.5
+|Sensit Smart |1.5
+|Sensit BT |1.5
+|Sensit Wearable |1.5
+|MultiEmStat3 |7.7
+|MultiEmStat4 |1.3
+|PalmSens3 |2.8
+|PalmSens4 |1.7
+|MultiPalmSens4 |1.7
+|===

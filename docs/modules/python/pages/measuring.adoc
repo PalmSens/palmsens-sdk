@@ -15,7 +15,7 @@ To eliminate noise induced by other electrical appliances it is highly recommend
 
 The recommended way to connect to a device for most workflows is to use the `pypalmsens.connect()` https://docs.python.org/3/library/stdtypes.html#typecontextmanager[context manager]. The contextmanager manages the connection, and closes the connection to the device if it is no longer needed. It returns an instance of `InstrumentManager()`, which can be used to control the instrument and start a measurement:
 
-[source,python]
+[,python]
 ----
 >>> import pypalmsens
 
@@ -25,11 +25,11 @@ The recommended way to connect to a device for most workflows is to use the `pyp
 
 By default, `connect()` connects to the first instrument it discovers. With only one device connected, this is fine. With more than one instrument connected, you can use `pypalmsens.discover()` to find all devices and manage them yourself. For example, this is how to get a list of all available devices, and how to connect to the first one.
 
-[source,python]
+[,python]
 ----
 >>> available_instruments = pypalmsens.discover()
 >>> available_instruments
-[Instrument(name='EmStat4 HR [1]', connection='usbcdc', device=<PalmSens.Windows.Devices.USBCDCDevice object>)]
+[Instrument(name='EmStat4 HR [1]', interface='usbcdc')]
 
 >>> first_instrument = available_instruments[0]
 
@@ -39,7 +39,7 @@ By default, `connect()` connects to the first instrument it discovers. With only
 
 Finally, you can set up the `InstrumentManager()` yourself.
 
-[source,python]
+[,python]
 ----
 >>> import pypalmsens
 >>> available_instruments = pypalmsens.discover()
@@ -49,7 +49,7 @@ Finally, you can set up the `InstrumentManager()` yourself.
 
 The `InstrumentManager.disconnect()` function disconnects from the device freeing it up for other things to connect to it.
 
-[source,python]
+[,python]
 ----
 >>> manager.disconnect()
 ----
@@ -58,7 +58,7 @@ Currently PyPalmSens supports discovering instruments connected via FTDI, serial
 
 You can enable scanning with Bluetooth by setting:
 
-[source,python]
+[,python]
 ----
 >>> pypalmsens.discover(bluetooth=True)
 ----
@@ -69,7 +69,7 @@ Depending on your device’s capabilities it can be used to set a potential/curr
 The potential can be set manually in potentiostatic mode and the current can be set in galvanostatic mode.
 The following example show how to manually set a potential, for more examples refer to the `ManualControlExample` and `ManualControlExampleAsync` scripts included with the SDK.
 
-[source,python]
+[,python]
 ----
 >>> manager.set_potential(1)
 ----
@@ -82,9 +82,9 @@ For more information please refer to xref:ROOT:core_dll.adoc[].
 
 The following example runs a chronoamperometry measurement on an instrument.
 
-[source,python]
+[,python]
 ----
->>> method = methods.chronoamperometry(
+>>> method = pypalmsens.ChronoAmperometry(
 ...     interval_time=0.01,
 ...     e=1.0,
 ...     run_time=10.0
@@ -96,7 +96,7 @@ The following example runs a chronoamperometry measurement on an instrument.
 
 It is possible to process measurement results in real-time by specifying a callback on the `InstrumentManager`/`InstrumentManagerAsync` either by providing it as an override when it is created using the `new_data_callback` argument:
 
-[source,python]
+[,python]
 ----
 >>> def new_data_callback(new_data):
 ...     for point in new_data:
@@ -109,7 +109,7 @@ It is possible to process measurement results in real-time by specifying a callb
 
 or by setting it on the `InstrumentManager`’s callback field.
 
-[source,python]
+[,python]
 ----
 >>> with pypalmsens.connect() as manager:
 ...     manager.callback = stream_to_csv_callback(csv_writer)
@@ -171,3 +171,120 @@ This is a great place to test MethodSCRIPT™ measurements to see what the resul
 That script can then be used in the MethodScriptSandbox technique in the SDK as demonstrated below.
 
 image:method_script_editor.png[Graphical editor for MethodSCRIPT™]
+
+== Multichannel measurements
+
+PyPalmSens supports multichannel experiments via `InstrumentPool` and `InstrumentPoolAsync`.
+
+This class manages a pool of instruments (`InstrumentManagerAsync`), so that one method can be executed on all instruments at the same time.
+
+A basic multichannel measurement can be set up by passing a list of instruments, either from a multichannel device, or otherwise connected:
+
+[,python]
+----
+>>> instruments = pypalmsens.discover()
+>>> instruments
+[Instrument(name='EmStat4 HR [1]', interface='usbcdc'), Instrument(name='EmStat4 HR [1]', interface='usbcdc')]
+
+>>> method = pypalmsens.CyclicVoltammetry()
+
+>>> with pypalmsens.InstrumentPool(instruments) as pool:  # <1>
+...    measurements = pool.measure(method)
+
+>>> measurements
+[Measurment(...), Measurement(...)]
+----
+<1> `InstrumentPool` is a context manager, so all instruments are disconnected after use.
+
+The above example uses blocking calls for the instrument pool.
+While this works well for many straightforward use-cases, the backend for multichannel measurements is asynchronous by necessity.
+The rest of the documentation here focuses on the async version of the instrument pool, `InstrumentPoolAsync`.
+This is more powerful and more flexible for more demanding use cases.
+Note that most of the functionality and method names are shared between `InstrumentPool` and `InstrumentPoolAsync`.
+
+[,python]
+----
+>>> instruments = await pypalmsens.discover_async()
+
+>>> method = pypalmsens.CyclicVoltammetry()
+
+>>> async with pypalmsens.InstrumentPoolAsync(instruments) as pool:
+...    results = await pool.measure(method)
+
+>>> measurements
+[Measurment(...), Measurement(...)]
+----
+
+The pool takes a <<Callback>>, just like a regular `InstrumentManager`.
+
+[,python]
+----
+>>> async with pypalmsens.InstrumentPoolAsync(
+...     instruments, callback=new_data_dallback
+... ) as pool:
+...    results = await pool.measure(method)
+----
+
+You can add (`pool.add()`) and remove (`pool.remove()`) managers frem the pool:
+
+[,python]
+----
+>>> serial_numbers = ['ES4HR20B0008', ...]
+
+>>> async with pypalmsens.InstrumentPoolAsync(instruments) as pool:
+...     for manager in pool:
+...        if await manager.get_instrument_serial() not in [serial_numbers]:
+...             await pool.remove(manager)
+----
+
+You can also manage the pool yourself by passing the `InstrumentManagers` directly:
+
+[,python]
+----
+>>> instruments = await pypalmsens.discover_async()
+
+>>> managers = [
+...     pypalmsens.InstrumentManagerAsync(instrument) for instrument in instruments
+... ]
+
+>>> async with pypalmsens.InstrumentPoolAsync(managers) as pool:
+    ...
+----
+
+To define your own measurement functions, you can use the `submit()` method.
+Pass a function that must take `InstrumentManagerAsync` as the first argument.
+Any other keyword arguments will be passed on.
+
+For example to run two methods in sequence:
+
+[,python]
+----
+>>> async def my_custom_function(manager, *, method1, method2):
+...     measurement1 = await manager.measure(method1)
+...     measurement2 = await manager.measure(method2)
+...     return measurement1, measurement2
+
+>>> async with pypalmsens.InstrumentPoolAsync(instruments) as pool:
+...     results = await pool.submit(my_task, method=method)
+----
+
+See xref:examples.adoc#multichannel_csv_writer[] and xref:examples.adoc#multichannel_custom_loop[] for a practical example of setting a custom function.
+
+To use hardware synchronization, use the same `measure` method. See also xref:examples.adoc#multichannel_hw_sync[].
+Make sure the method has the `general.use_hardware_sync` flag set.
+
+In addition, the pool must contain:
+- channels from a single multi-channel instrument only
+- the first channel of the multi-channel instrument
+- at least two channels
+
+All instruments are prepared and put in a waiting state.
+The measurements are started via a hardware sync trigger on channel 1.
+
+[,python]
+----
+>>> method.general.use_hardware_sync = True
+
+>>> async with pypalmsens.InstrumentPoolAsync(instruments) as pool:
+...      results = await pool.measure_hw_sync(method)
+----

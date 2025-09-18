@@ -105,6 +105,7 @@ pages = (
                 'connect',
                 'discover',
                 'InstrumentManager',
+                'InstrumentPool',
             ]
         },
     ),
@@ -117,6 +118,7 @@ pages = (
                 'connect_async',
                 'discover_async',
                 'InstrumentManagerAsync',
+                'InstrumentPoolAsync',
             ]
         },
     ),

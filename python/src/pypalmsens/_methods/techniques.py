@@ -302,6 +302,9 @@ class LinearSweepVoltammetry(
 
     _id = 'lsv'
 
+    equilibration_time: float = 0.0
+    """Equilibration time in s."""
+
     begin_potential: float = -0.5
     """Begin potential in V."""
 
@@ -332,6 +335,7 @@ class LinearSweepVoltammetry(
 
     def _update_psmethod(self, *, obj):
         """Update method with linear sweep settings."""
+        obj.EquilibrationTime = self.equilibration_time
         obj.BeginPotential = self.begin_potential
         obj.EndPotential = self.end_potential
         obj.StepPotential = self.step_potential
@@ -346,6 +350,7 @@ class LinearSweepVoltammetry(
         )
 
     def _update_params(self, *, obj):
+        self.equilibration_time = obj.EquilibrationTime
         self.begin_potential = obj.BeginPotential
         self.end_potential = obj.EndPotential
         self.step_potential = obj.StepPotential

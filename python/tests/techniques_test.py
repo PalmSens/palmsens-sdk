@@ -41,7 +41,7 @@ def assert_params_round_trip_equal(*, pscls, pycls, kwargs):
 @pytest.fixture(scope='module')
 def manager():
     with pypalmsens.connect() as mgr:
-        logger.warning('Connected to %s' % mgr.instrument.name)
+        logger.warning('Connected to %s' % mgr.instrument.id)
         yield mgr
 
 

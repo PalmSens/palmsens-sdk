@@ -9,8 +9,6 @@ def new_data_callback(new_data):
 available_instruments = pypalmsens.discover()
 
 with pypalmsens.connect(available_instruments[0]) as manager:
-    print('connection established')
-
     manager.callback = new_data_callback
 
     method = pypalmsens.SquareWaveVoltammetry(
@@ -26,11 +24,9 @@ with pypalmsens.connect(available_instruments[0]) as manager:
         end_potential=0.5,  # V
         step_potential=0.01,  # V
         amplitude=0.08,  # V
-        frequency=10,  # Hz
+        frequency=50,  # Hz
     )
-
-    method.frequency = 50
 
     measurement = manager.measure(method)
 
-    print(f'ocp: {measurement.curves[0]._pscurve.OCPValue}')
+    print(f'ocp: {measurement.ocp_value}')

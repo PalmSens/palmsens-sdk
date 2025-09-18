@@ -1404,6 +1404,8 @@ Set the data processing settings.
 * link:#pypalmsens.LinearSweepVoltammetry.general[*general*]
 (link:#pypalmsens._methods.settings.General[General]) – Sets
 general/other settings.
+* link:#pypalmsens.LinearSweepVoltammetry.equilibration_time[*equilibration++_++time*]
+(link:#float[float]) – Equilibration time in s.
 * link:#pypalmsens.LinearSweepVoltammetry.begin_potential[*begin++_++potential*]
 (link:#float[float]) – Begin potential in V.
 * link:#pypalmsens.LinearSweepVoltammetry.end_potential[*end++_++potential*]
@@ -1528,6 +1530,15 @@ general: General = attrs.field(factory=General)
 ----
 
 Sets general/other settings.
+
+==== `equilibration++_++time`
+
+[source,python]
+----
+equilibration_time: float = 0.0
+----
+
+Equilibration time in s.
 
 ==== `begin++_++potential`
 

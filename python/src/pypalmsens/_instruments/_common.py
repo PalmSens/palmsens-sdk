@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from math import floor
 from typing import Any, Protocol, Sequence
 
@@ -81,9 +81,36 @@ def firmware_warning(capabilities, /) -> None:
 class Instrument:
     """Dataclass holding instrument info."""
 
-    name: str
+    id: str = field(repr=False)
+    """Device ID of the instrument."""
+    name: str = field(init=False)
     """Name of the instrument."""
-    connection: str
+    channel: int = field(init=False, default=-1)
+    """Channel index if part of a multichannel device.
+
+    Returns -1 if instrument is not part of a multi-channel device."""
+    interface: str
     """Type of the connection."""
-    device: Any
+    device: Any = field(repr=False)
     """Device connection class."""
+
+    def __post_init__(self):
+        try:
+            idx = self.id.index('CH')
+        except ValueError:
+            self.name = self.id
+        else:
+            ch_str = self.id[idx : idx + 5]
+            self.channel = int(ch_str[2:])
+            self.name = self.id[:idx]
+
+    def __repr__(self):
+        args = ''.join(
+            (
+                f'name={self.name!r}, ',
+                f'channel={self.channel}, ' if self.channel > 0 else '',
+                f'interface={self.interface!r}',
+            )
+        )
+
+        return f'{self.__class__.__name__}({args})'

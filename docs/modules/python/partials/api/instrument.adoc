@@ -4,6 +4,8 @@
 
 * link:#pypalmsens.InstrumentManager[*InstrumentManager*] – Instrument
 manager for PalmSens instruments.
+* link:#pypalmsens.InstrumentPool[*InstrumentPool*] – Manages a set of
+instrument.
 
 *Functions:*
 
@@ -301,6 +303,151 @@ disconnect()
 ----
 
 Disconnect from the instrument.
+
+=== `InstrumentPool`
+
+[source,python]
+----
+InstrumentPool(devices_or_managers, *, callback=None)
+----
+
+Manages a set of instrument.
+
+Most calls are run asynchronously in the background, which means that
+measurements are running in parallel.
+
+This is a thin wrapper around the `InstrumentManagerAsync`.
+
+*Parameters:*
+
+* *devices++_++or++_++managers*
+(link:#list[list]++[++link:#pypalmsens._instruments._common.Instrument[Instrument]
+++|++
+link:#pypalmsens._instruments.instrument_manager_async.InstrumentManagerAsync[InstrumentManagerAsync]++]++)
+– List of devices or managers.
+* *callback* (link:#typing.Callable[Callable]) – Optional callable to
+set on instrument managers
+
+*Functions:*
+
+* link:#pypalmsens.InstrumentPool.connect[*connect*] – Connect all
+instrument managers in the pool.
+* link:#pypalmsens.InstrumentPool.disconnect[*disconnect*] – Disconnect
+all instrument managers in the pool.
+* link:#pypalmsens.InstrumentPool.is_connected[*is++_++connected*] –
+Return true if all managers in the pool are connected.
+* link:#pypalmsens.InstrumentPool.is_disconnected[*is++_++disconnected*]
+– Return true if all managers in the pool are disconnected.
+* link:#pypalmsens.InstrumentPool.remove[*remove*] – Close and remove
+manager from pool.
+* link:#pypalmsens.InstrumentPool.add[*add*] – Open and add manager to
+the pool.
+* link:#pypalmsens.InstrumentPool.measure[*measure*] – Concurrently run
+measurement on all managers in the pool.
+
+*Attributes:*
+
+* link:#pypalmsens.InstrumentPool.managers[*managers*] – List of
+instruments managers in the pool.
+
+==== `managers`
+
+[source,python]
+----
+managers = self._async.managers
+----
+
+List of instruments managers in the pool.
+
+==== `connect`
+
+[source,python]
+----
+connect()
+----
+
+Connect all instrument managers in the pool.
+
+==== `disconnect`
+
+[source,python]
+----
+disconnect()
+----
+
+Disconnect all instrument managers in the pool.
+
+==== `is++_++connected`
+
+[source,python]
+----
+is_connected()
+----
+
+Return true if all managers in the pool are connected.
+
+==== `is++_++disconnected`
+
+[source,python]
+----
+is_disconnected()
+----
+
+Return true if all managers in the pool are disconnected.
+
+==== `remove`
+
+[source,python]
+----
+remove(manager)
+----
+
+Close and remove manager from pool.
+
+*Parameters:*
+
+* *manager*
+(link:#pypalmsens._instruments.instrument_manager_async.InstrumentManagerAsync[InstrumentManagerAsync])
+– Instance of an instrument manager.
+
+==== `add`
+
+[source,python]
+----
+add(manager)
+----
+
+Open and add manager to the pool.
+
+*Parameters:*
+
+* *manager*
+(link:#pypalmsens._instruments.instrument_manager_async.InstrumentManagerAsync[InstrumentManagerAsync])
+– Instance of an instrument manager.
+
+==== `measure`
+
+[source,python]
+----
+measure(method)
+----
+
+Concurrently run measurement on all managers in the pool.
+
+For hardware synchronization, set `use++_++hardware++_++sync` on the
+method. In addition, the pool must contain:
+
+* channels from a single multi-channel instrument only
+* the first channel of the multi-channel instrument
+* at least two channels
+
+All instruments are prepared and put in a waiting state. The
+measurements are started via a hardware sync trigger on channel 1.
+
+*Parameters:*
+
+* *method* (link:#pypalmsens._methods.MethodSettings[MethodSettings]) –
+Method parameters for measurement.
 
 === `connect`
 

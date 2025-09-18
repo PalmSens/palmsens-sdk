@@ -57,40 +57,64 @@ def discover(
         If True, discover serial devices
     """
     available_instruments = []
-
     args = [''] if WINDOWS else []
 
     if ftdi:
         ftdi_instruments = FTDIDevice.DiscoverDevices(*args)
         for ftdi_instrument in ftdi_instruments[0]:
-            instrument = Instrument(ftdi_instrument.ToString(), 'ftdi', ftdi_instrument)
-            available_instruments.append(instrument)
+            available_instruments.append(
+                Instrument(
+                    id=ftdi_instrument.ToString(),
+                    interface='ftdi',
+                    device=ftdi_instrument,
+                )
+            )
 
     if WINDOWS and usbcdc:
         usbcdc_instruments = USBCDCDevice.DiscoverDevices(*args)
         for usbcdc_instrument in usbcdc_instruments[0]:
-            instrument = Instrument(usbcdc_instrument.ToString(), 'usbcdc', usbcdc_instrument)
-            available_instruments.append(instrument)
+            available_instruments.append(
+                Instrument(
+                    id=usbcdc_instrument.ToString(),
+                    interface='usbcdc',
+                    device=usbcdc_instrument,
+                )
+            )
 
     if WINDOWS and bluetooth:
         ble_instruments = BLEDevice.DiscoverDevices(*args)
         for ble_instrument in ble_instruments[0]:
-            instrument = Instrument(ble_instrument.ToString(), 'ble', ble_instrument)
-            available_instruments.append(instrument)
+            available_instruments.append(
+                Instrument(
+                    id=ble_instrument.ToString(),
+                    interface='ble',
+                    device=ble_instrument,
+                )
+            )
+
         bluetooth_instruments = BluetoothDevice.DiscoverDevices(*args)
         for bluetooth_instrument in bluetooth_instruments[0]:
-            instrument = Instrument(
-                bluetooth_instrument.ToString(), 'bluetooth', bluetooth_instrument
+            available_instruments.append(
+                Instrument(
+                    id=bluetooth_instrument.ToString(),
+                    interface='bluetooth',
+                    device=bluetooth_instrument,
+                )
             )
-            available_instruments.append(instrument)
 
     if LINUX and serial:
         serial_instruments = SerialPortDevice.DiscoverDevices(*args)
         for serial_instrument in serial_instruments:
-            instrument = Instrument(serial_instrument.ToString(), 'serial', serial_instrument)
-            available_instruments.append(instrument)
+            available_instruments.append(
+                Instrument(
+                    id=serial_instrument.ToString(),
+                    interface='serial',
+                    device=serial_instrument,
+                )
+            )
 
-    available_instruments.sort(key=lambda instrument: instrument.name)
+    available_instruments.sort(key=lambda instrument: instrument.id)
+
     return available_instruments
 
 
@@ -155,7 +179,9 @@ class InstrumentManager:
         self.__active_measurement_error = None
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({self.instrument.name})'
+        return (
+            f'{self.__class__.__name__}({self.instrument.id}, connected={self.is_connected()})'
+        )
 
     def __enter__(self):
         if not self.is_connected():

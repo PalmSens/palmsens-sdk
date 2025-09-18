@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import sys
 import traceback
-from typing import Optional
+from typing import Awaitable, Optional
 
 import clr
 import PalmSens
@@ -60,40 +60,59 @@ async def discover_async(
     if ftdi:
         ftdi_instruments = await create_future(FTDIDevice.DiscoverDevicesAsync())
         for ftdi_instrument in ftdi_instruments:
-            instrument = Instrument(ftdi_instrument.ToString(), 'ftdi', ftdi_instrument)
-            available_instruments.append(instrument)
-
-    if LINUX:
-        if serial:
-            serial_instruments = await create_future(SerialPortDevice.DiscoverDevicesAsync())
-            for serial_instrument in serial_instruments:
-                instrument = Instrument(
-                    serial_instrument.ToString(), 'serial', serial_instrument
+            available_instruments.append(
+                Instrument(
+                    id=ftdi_instrument.ToString(),
+                    interface='ftdi',
+                    device=ftdi_instrument,
                 )
-                available_instruments.append(instrument)
+            )
 
-    if WINDOWS:
-        if usbcdc:
-            usbcdc_instruments = await create_future(USBCDCDevice.DiscoverDevicesAsync())
-            for usbcdc_instrument in usbcdc_instruments:
-                instrument = Instrument(
-                    usbcdc_instrument.ToString(), 'usbcdc', usbcdc_instrument
+    if LINUX and serial:
+        serial_instruments = await create_future(SerialPortDevice.DiscoverDevicesAsync())
+        for serial_instrument in serial_instruments:
+            available_instruments.append(
+                Instrument(
+                    id=serial_instrument.ToString(),
+                    interface='serial',
+                    device=serial_instrument,
                 )
-                available_instruments.append(instrument)
+            )
 
-        if bluetooth:
-            ble_instruments = await create_future(BLEDevice.DiscoverDevicesAsync())
-            for ble_instrument in ble_instruments:
-                instrument = Instrument(ble_instrument.ToString(), 'ble', ble_instrument)
-                available_instruments.append(instrument)
-            bluetooth_instruments = await create_future(BluetoothDevice.DiscoverDevicesAsync())
-            for bluetooth_instrument in bluetooth_instruments[0]:
-                instrument = Instrument(
-                    bluetooth_instrument.ToString(), 'bluetooth', bluetooth_instrument
+    if WINDOWS and usbcdc:
+        usbcdc_instruments = await create_future(USBCDCDevice.DiscoverDevicesAsync())
+        for usbcdc_instrument in usbcdc_instruments:
+            available_instruments.append(
+                Instrument(
+                    id=usbcdc_instrument.ToString(),
+                    interface='usbcdc',
+                    device=usbcdc_instrument,
                 )
-                available_instruments.append(instrument)
+            )
 
-    available_instruments.sort(key=lambda instrument: instrument.name)
+    if WINDOWS and bluetooth:
+        ble_instruments = await create_future(BLEDevice.DiscoverDevicesAsync())
+        for ble_instrument in ble_instruments:
+            available_instruments.append(
+                Instrument(
+                    id=ble_instrument.ToString(),
+                    interface='ble',
+                    device=ble_instrument,
+                )
+            )
+
+        bluetooth_instruments = await create_future(BluetoothDevice.DiscoverDevicesAsync())
+        for bluetooth_instrument in bluetooth_instruments:
+            available_instruments.append(
+                Instrument(
+                    id=bluetooth_instrument.ToString(),
+                    interface='bluetooth',
+                    device=bluetooth_instrument,
+                )
+            )
+
+    available_instruments.sort(key=lambda instrument: instrument.id)
+
     return available_instruments
 
 
@@ -158,7 +177,7 @@ class InstrumentManagerAsync:
         self.__active_measurement_error = None
 
     def __repr__(self):
-        return f'{self.__class__.__name__}({self.instrument.name})'
+        return f'{self.__class__.__name__}({self.instrument.name}, connected={self.is_connected()})'
 
     async def __aenter__(self):
         if not self.is_connected():
@@ -318,7 +337,7 @@ class InstrumentManagerAsync:
                 # release lock on library (required when communicating with instrument)
                 self.__comm.ClientConnection.Semaphore.Release()
 
-    async def get_instrument_serial(self) -> str:
+    async def get_instrument_serial(self) -> Awaitable[str]:
         """Return instrument serial number.
 
         Returns
@@ -564,30 +583,37 @@ class InstrumentManagerAsync:
         ----------
         method : MethodParameters
             Method parameters
+
+
+        Returns
+        -------
+        tuple[event, future]
+            Activate the event to start the measurement.
+            The second item is a future that contains the data once the measurement is finished.
         """
         if self.__comm is None:
             print('Not connected to an instrument')
             return 0
 
         hardware_sync_channel_initiated_event = asyncio.Event()
-        meaurement_finished_future = asyncio.Future()
+        measurement_finished_future = asyncio.Future()
 
         async def start_measurement(
-            self, method, hardware_sync_channel_initiated_event, meaurement_finished_future
+            self, method, hardware_sync_channel_initiated_event, measurement_finished_future
         ):
             measurement = await self.measure(
                 method, hardware_sync_initiated_event=hardware_sync_channel_initiated_event
             )
-            meaurement_finished_future.set_result(measurement)
+            measurement_finished_future.set_result(measurement)
 
         asyncio.run_coroutine_threadsafe(
             start_measurement(
-                self, method, hardware_sync_channel_initiated_event, meaurement_finished_future
+                self, method, hardware_sync_channel_initiated_event, measurement_finished_future
             ),
             asyncio.get_running_loop(),
         )
 
-        return hardware_sync_channel_initiated_event.wait(), meaurement_finished_future
+        return hardware_sync_channel_initiated_event.wait(), measurement_finished_future
 
     async def wait_digital_trigger(self, wait_for_high):
         """Wait for digital trigger.

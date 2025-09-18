@@ -1,69 +1,23 @@
-import asyncio
-import csv
-
 import pypalmsens
 
 
-def stream_to_csv_callback(csv_writer):
-    def stream_to_csv_callback_channel(new_data):
-        for point in new_data:
-            csv_writer.writerow([point['index'], point['x'], point['y']])
-
-    return lambda data: stream_to_csv_callback_channel(data)
+def new_data_callback(new_data):
+    for point in new_data:
+        print(point)
 
 
-async def main():
-    available_instruments = await pypalmsens.discover_async()
-    managers = {}
+method = pypalmsens.ChronoAmperometry(
+    interval_time=0.004,
+    potential=1.0,
+    run_time=5.0,
+)
 
-    # create an instance of the instrumentmanager per channel
-    async def connect(instrument, index):
-        managers[index] = pypalmsens.InstrumentManagerAsync(
-            instrument,
-            # callback=new_data_callback(index)
-        )
+instruments = pypalmsens.discover()
 
-        success = await managers[index].connect()
-        if success:
-            print(f'{index + 1}: connected to {instrument.name}')
-        else:
-            print(f'{index + 1}: error while connecting to {instrument.name}')
-        return success
+print(instruments)
 
-    tasks = [connect(instrument, i) for (i, instrument) in enumerate(available_instruments)]
-    connected = await asyncio.gather(*tasks)
+# run multichannel experiment with callback
+with pypalmsens.InstrumentPool(instruments, callback=new_data_callback) as pool:
+    results = pool.measure(method=method)
 
-    method = pypalmsens.ChronoAmperometry(
-        interval_time=0.0004,
-        potential=1.0,
-        run_time=5.0,
-    )
-
-    if all(connected):
-
-        async def measure(manager, channel):
-            csv_file = open(f'test{channel + 1}.csv', 'w', newline='')
-            csv_writer = csv.writer(csv_file, delimiter=' ')
-            manager.callback = stream_to_csv_callback(csv_writer)
-            measurement = await manager.measure(method)
-            csv_file.close()
-            return measurement
-
-        # start measurements asynchronously
-        tasks = [measure(manager, channel) for (channel, manager) in managers.items()]
-        _ = await asyncio.gather(*tasks)  # use gather to await results
-        print('measurement(s) finished')
-
-        async def disconnect(instrument_manager, channel):
-            success = await instrument_manager.disconnect()
-            if success:
-                print(f'channel {channel + 1}: disconnected')
-            else:
-                print(f'channel {channel + 1}: error while disconnecting')
-            return success
-
-        tasks = [disconnect(manager, channel) for (channel, manager) in managers.items()]
-        await asyncio.gather(*tasks)
-
-
-asyncio.run(main())
+print(results)

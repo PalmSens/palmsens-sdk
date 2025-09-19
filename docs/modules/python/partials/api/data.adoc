@@ -1321,8 +1321,8 @@ Generate simple plot for this curve using matplotlib.
 
 *Returns:*
 
-* *fig* (link:#matplotlib.fig.Figure[Figure]) – Matplotlib figure. Use
-`fig.show()` to render plot.
+* *fig* (link:#fig.Figure[Figure]) – Matplotlib figure. Use `fig.show()`
+to render plot.
 
 === `Measurement`
 
@@ -1840,6 +1840,13 @@ to_dataframe()
 ----
 
 Return dataset as pandas dataframe.
+
+Requires pandas.
+
+*Returns:*
+
+* *df* (link:#pandas.DataFrame[DataFrame]) – pandas dataframe with all
+arrays in dataset
 
 === `EISData`
 

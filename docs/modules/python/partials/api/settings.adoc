@@ -319,7 +319,7 @@ Use `CURRENT++_++RANGE` to define the range.
 
 [source,python]
 ----
-ELevel(level=0.0, duration=1.0, record=True, use_limit_current_max=False, limit_current_max=0.0, use_limit_current_min=False, limit_current_min=0.0, trigger_at_level=False, trigger_at_level_lines=(False, False, False, False))
+ELevel(level=0.0, duration=1.0, record=True, limit_current_max=None, limit_current_min=None, trigger_lines=list())
 ----
 
 Create a multi-step amperometry level method object.
@@ -338,19 +338,17 @@ Level in V.
 (link:#float[float]) – Duration in s.
 * link:#pypalmsens.settings.ELevel.record[*record*] (link:#bool[bool]) –
 Record the current.
-* link:#pypalmsens.settings.ELevel.use_limit_current_max[*use++_++limit++_++current++_++max*]
-(link:#bool[bool]) – Use limit current max.
 * link:#pypalmsens.settings.ELevel.limit_current_max[*limit++_++current++_++max*]
-(link:#float[float]) – Limit current max in µA.
-* link:#pypalmsens.settings.ELevel.use_limit_current_min[*use++_++limit++_++current++_++min*]
-(link:#bool[bool]) – Use limit current min.
+(link:#float[float] ++|++ None) – Limit current max in µA. Set to None
+to disable.
 * link:#pypalmsens.settings.ELevel.limit_current_min[*limit++_++current++_++min*]
-(link:#float[float]) – Limit current min in µA.
-* link:#pypalmsens.settings.ELevel.trigger_at_level[*trigger++_++at++_++level*]
-(link:#bool[bool]) – Use trigger at level.
-* link:#pypalmsens.settings.ELevel.trigger_at_level_lines[*trigger++_++at++_++level++_++lines*]
-(link:#tuple[tuple]++[++link:#bool[bool], link:#bool[bool],
-link:#bool[bool], link:#bool[bool]++]++) – Trigger at level lines.
+(link:#float[float] ++|++ None) – Limit current min in µA. Set to None
+to disable.
+* link:#pypalmsens.settings.ELevel.trigger_lines[*trigger++_++lines*]
+(link:#typing.Sequence[Sequence]++[++link:#typing.Literal[Literal]++[++0,
+1, 2, 3++]]++) – Trigger at level lines.
+* link:#pypalmsens.settings.ELevel.use_limits[*use++_++limits*]
+(link:#bool[bool]) – Return True if instance sets current limits.
 
 ==== `level`
 
@@ -379,61 +377,44 @@ record: bool = True
 
 Record the current.
 
-==== `use++_++limit++_++current++_++max`
-
-[source,python]
-----
-use_limit_current_max: bool = False
-----
-
-Use limit current max.
-
 ==== `limit++_++current++_++max`
 
 [source,python]
 ----
-limit_current_max: float = 0.0
+limit_current_max: float | None = None
 ----
 
-Limit current max in µA.
-
-==== `use++_++limit++_++current++_++min`
-
-[source,python]
-----
-use_limit_current_min: bool = False
-----
-
-Use limit current min.
+Limit current max in µA. Set to None to disable.
 
 ==== `limit++_++current++_++min`
 
 [source,python]
 ----
-limit_current_min: float = 0.0
+limit_current_min: float | None = None
 ----
 
-Limit current min in µA.
+Limit current min in µA. Set to None to disable.
 
-==== `trigger++_++at++_++level`
+==== `trigger++_++lines`
 
 [source,python]
 ----
-trigger_at_level: bool = False
-----
-
-Use trigger at level.
-
-==== `trigger++_++at++_++level++_++lines`
-
-[source,python]
-----
-trigger_at_level_lines: tuple[bool, bool, bool, bool] = (False, False, False, False)
+trigger_lines: Sequence[Literal[0, 1, 2, 3]] = field(default_factory=list)
 ----
 
 Trigger at level lines.
 
-Line order : ++[++d0 high, d1 high, d2 high, d3 high++]++
+Set digital output lines at start of measurement, end of equilibration.
+Accepted values: 0 for d0, 1 for d1, 2 for d2, 3 for d3.
+
+==== `use++_++limits`
+
+[source,python]
+----
+use_limits: bool
+----
+
+Return True if instance sets current limits.
 
 ==== `to++_++psobj`
 

@@ -140,9 +140,9 @@ Calculate observed and calculated Bode curve Z vs Frequency.
 * link:#pypalmsens.fitting.FitResult.get_bode_phase[*get++_++bode++_++phase*]
 – Calculate observed and calculated Bode curve phase vs Frequency.
 * link:#pypalmsens.fitting.FitResult.plot_nyquist[*plot++_++nyquist*] –
-Make nyquist plot.
+Make nyquist plot using matplotlib.
 * link:#pypalmsens.fitting.FitResult.plot_bode[*plot++_++bode*] – Make
-bode plot.
+bode plot using matplotlib.
 
 *Attributes:*
 
@@ -309,7 +309,7 @@ data.
 plot_nyquist(data)
 ----
 
-Make nyquist plot.
+Make nyquist plot using matplotlib.
 
 *Parameters:*
 
@@ -318,8 +318,8 @@ data.
 
 *Returns:*
 
-* *fig* (link:#matplotlib.fig.Figure[Figure]) – Returns matplotlib
-figure object. use `fig.show()` to render plot.
+* *fig* (link:#fig.Figure[Figure]) – Returns matplotlib figure object.
+use `fig.show()` to render plot.
 
 ==== `plot++_++bode`
 
@@ -328,7 +328,7 @@ figure object. use `fig.show()` to render plot.
 plot_bode(data)
 ----
 
-Make bode plot.
+Make bode plot using matplotlib.
 
 *Parameters:*
 
@@ -337,8 +337,8 @@ data.
 
 *Returns:*
 
-* *fig* (link:#matplotlib.fig.Figure[Figure]) – Returns matplotlib
-figure object. use `fig.show()` to render plot.
+* *fig* (link:#fig.Figure[Figure]) – Returns matplotlib figure object.
+use `fig.show()` to render plot.
 
 === `CircuitModel`
 

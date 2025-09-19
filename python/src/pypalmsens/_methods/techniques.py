@@ -698,10 +698,7 @@ class MultiStepAmperometry(
             obj.Levels.Add(level.to_psobj())
 
         obj.UseSelectiveRecord = any(level.record for level in self.levels)
-        obj.UseLimits = any(
-            (level.use_limit_current_min or level.use_limit_current_max)
-            for level in self.levels
-        )
+        obj.UseLimits = any(level.use_limits for level in self.levels)
 
         set_extra_value_mask(
             obj=obj,

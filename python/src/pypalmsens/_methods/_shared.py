@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Sequence
+from typing import Any, Literal, Sequence
 
 import PalmSens
 
@@ -178,25 +178,26 @@ class ELevel:
     record: bool = True
     """Record the current."""
 
-    use_limit_current_max: bool = False
-    """Use limit current max."""
+    limit_current_max: float | None = None
+    """Limit current max in µA. Set to None to disable."""
 
-    limit_current_max: float = 0.0
-    """Limit current max in µA."""
+    limit_current_min: float | None = None
+    """Limit current min in µA. Set to None to disable."""
 
-    use_limit_current_min: bool = False
-    """Use limit current min."""
-
-    limit_current_min: float = 0.0
-    """Limit current min in µA."""
-
-    trigger_at_level: bool = False
-    """Use trigger at level."""
-
-    trigger_at_level_lines: tuple[bool, bool, bool, bool] = (False, False, False, False)
+    trigger_lines: Sequence[Literal[0, 1, 2, 3]] = field(default_factory=list)
     """Trigger at level lines.
 
-    Line order : [d0 high, d1 high, d2 high, d3 high]"""
+    Set digital output lines at start of measurement, end of equilibration.
+    Accepted values: 0 for d0, 1 for d1, 2 for d2, 3 for d3.
+    """
+
+    @property
+    def use_limits(self) -> bool:
+        """Return True if instance sets current limits."""
+        use_limit_current_min = self.limit_current_min is not None
+        use_limit_current_max = self.limit_current_max is not None
+
+        return use_limit_current_min or use_limit_current_max
 
     def to_psobj(self):
         obj = PalmSens.Techniques.ELevel()
@@ -205,27 +206,35 @@ class ELevel:
         obj.Duration = self.duration
         obj.Record = self.record
 
-        obj.UseMaxLimit = self.use_limit_current_max
-        obj.MaxLimit = self.limit_current_max
-        obj.UseMinLimit = self.use_limit_current_min
-        obj.MinLimit = self.limit_current_min
+        obj.UseMaxLimit = self.limit_current_max is not None
+        obj.MaxLimit = self.limit_current_max or 0.0
+        obj.UseMinLimit = self.limit_current_min is not None
+        obj.MinLimit = self.limit_current_min or 0.0
 
-        obj.UseTriggerOnStart = self.trigger_at_level
-        obj.TriggerValueOnStart = convert_bools_to_int(self.trigger_at_level_lines)
+        obj.UseTriggerOnStart = bool(self.trigger_lines)
+
+        trigger_bools = [(val in self.trigger_lines) for val in (0, 1, 2, 3)]
+
+        obj.TriggerValueOnStart = convert_bools_to_int(trigger_bools)
 
         return obj
 
     @classmethod
     def from_psobj(cls, psobj: PalmSens.Techniques.ELevel):
         """Construct ELevel dataclass from PalmSens.Techniques.ELevel object."""
+        trigger_lines: list[Literal[0, 1, 2, 3]] = []
+
+        if psobj.UseTriggerOnStart:
+            trigger_bools = convert_int_to_bools(psobj.TriggerValueOnStart)
+            for i in (0, 1, 2, 3):
+                if trigger_bools[i]:
+                    trigger_lines.append(i)
+
         return cls(
             level=single_to_double(psobj.Level),
             duration=single_to_double(psobj.Duration),
             record=psobj.Record,
-            use_limit_current_max=psobj.UseMaxLimit,
-            limit_current_max=single_to_double(psobj.MaxLimit),
-            use_limit_current_min=psobj.UseMinLimit,
-            limit_current_min=single_to_double(psobj.MinLimit),
-            trigger_at_level=psobj.UseTriggerOnStart,
-            trigger_at_level_lines=convert_int_to_bools(psobj.TriggerValueOnStart),
+            limit_current_max=single_to_double(psobj.MaxLimit) if psobj.MaxLimit else None,
+            limit_current_min=single_to_double(psobj.MinLimit) if psobj.MinLimit else None,
+            trigger_lines=trigger_lines,
         )

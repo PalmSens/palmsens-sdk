@@ -19,7 +19,7 @@ jobs:
     - name: Zip labview directory
       run: |
         cd labview
-        zip ../${{ github.ref_name }}.zip *
+        zip -r ../${{ github.ref_name }}.zip *
         cd ..
 
     - name: Upload zip

@@ -19,7 +19,7 @@ jobs:
     - name: Zip matlab directory
       run: |
         cd matlab
-        zip ../matlab-${{ github.ref_name }}.zip *
+        zip -r ../matlab-${{ github.ref_name }}.zip *
         cd ..
 
     - name: Upload zip

@@ -12,6 +12,7 @@ from .curve import Curve
 from .data_array import DataArray
 
 if TYPE_CHECKING:
+    import pandas as pd
     from PalmSens.Data import DataSet as PSDataSet
 
 
@@ -224,20 +225,28 @@ class DataSet(Mapping):
 
         return [field_info.GetValue(val).ToString() for val in array._psarray]
 
-    def to_dataframe(self):
-        """Return dataset as pandas dataframe."""
+    def to_dataframe(self) -> pd.DataFrame:
+        """Return dataset as pandas dataframe.
+
+        Requires pandas.
+
+        Returns
+        -------
+        df : pd.DataFrame
+            pandas dataframe with all arrays in dataset
+        """
         import pandas as pd
 
         cols, arrays = zip(*[(key, arr.to_list()) for key, arr in self.items() if len(arr)])
 
-        arrays = list(arrays)
-        arrays.append(self.current_range())
-        arrays.append(self.reading_status())
+        arrays_list = list(arrays)
+        arrays_list.append(self.current_range())
+        arrays_list.append(self.reading_status())
 
-        cols = list(cols)
-        cols.append('CR')
-        cols.append('ReadingStatus')
+        cols_list = list(cols)
+        cols_list.append('CR')
+        cols_list.append('ReadingStatus')
 
-        df = pd.DataFrame(arrays, index=cols).T
+        df = pd.DataFrame(arrays_list, index=cols_list).T
 
         return df

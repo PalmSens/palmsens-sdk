@@ -11,7 +11,7 @@ from ._data.curve import Curve
 from ._data.eisdata import EISData
 
 if TYPE_CHECKING:
-    from matplotlib import fig
+    from matplotlib import figure
 
 
 @dataclass(slots=True)
@@ -206,8 +206,8 @@ class FitResult:
         calc, meas = (Curve(pscurve=pscurve) for pscurve in curves)
         return calc, meas
 
-    def plot_nyquist(self, data: EISData) -> fig.Figure:
-        """Make nyquist plot.
+    def plot_nyquist(self, data: EISData) -> figure.Figure:
+        """Make nyquist plot using matplotlib.
 
         Parameters
         ----------
@@ -230,8 +230,8 @@ class FitResult:
 
         return fig
 
-    def plot_bode(self, data: EISData) -> fig.Figure:
-        """Make bode plot.
+    def plot_bode(self, data: EISData) -> figure.Figure:
+        """Make bode plot using matplotlib.
 
         Parameters
         ----------

@@ -10,7 +10,7 @@ from .data_array import DataArray
 from .peak import Peak
 
 if TYPE_CHECKING:
-    from matplotlib import axes, fig
+    from matplotlib import axes, figure
 
 
 class Curve:
@@ -279,7 +279,7 @@ class Curve:
         ax: Optional[axes.Axes] = None,
         legend: bool = True,
         **plot_kwargs,
-    ) -> fig.Figure:
+    ) -> figure.Figure:
         """Generate simple plot for this curve using matplotlib.
 
         Parameters

@@ -19,18 +19,18 @@ jobs:
     - name: Zip matlab directory
       run: |
         cd matlab
-        zip -r ../matlab-${{ github.ref_name }}.zip *
+        zip -r ../${{ github.ref_name }}.zip *
         cd ..
 
     - name: Upload zip
       uses: actions/upload-artifact@v4
       with:
-        name: matlab-${{ github.ref_name }}.zip
-        path: matlab-${{ github.ref_name }}.zip
+        name: ${{ github.ref_name }}.zip
+        path: ${{ github.ref_name }}.zip
 
     # https://github.com/softprops/action-gh-release
     - name: Add zip to tagged release
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/matlab-')
       with:
-        files: matlab-${{ github.ref_name }}.zip
+        files: ${{ github.ref_name }}.zip

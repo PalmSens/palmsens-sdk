@@ -1,0 +1,84 @@
+= Connecting
+:experimental: true
+
+== Getting started with the PalmSens Class
+
+To create an instance of the PalmSens class select it in the Project Explorer and drag it to your VI.
+
+image::getting_started_1.png[Create intance fo PalmSens class]
+
+Switch to the block diagram and drag and drop the menu:Initialise[] function and connect it to the PalmSens.lvclass block.
+
+image::getting_started_2.png[Initialize PalmSens class]
+
+Finally, a reference to a Boolean indicator needs to provided to the _Initialise_ block.
+This indicator will signal when the instrument is running a measurement and when the measurement is finished.
+Switch back to the front Panel and add a Boolean indicator.
+Then switch back to the block diagram menu:right click on the indicator[Create > Reference].
+
+[cols=".^a,.^a", frame=none, grid=none]
+|===
+| image::getting_started_3.png[Add boolean indicator]
+| image::getting_started_4.png[Create reference to boolean]
+|===
+
+Finally, connect the _Boolean_ reference to the _Init_ block terminal to complete the setup of the PalmSens LabVIEW class.
+
+image::getting_started_5.png[Connect a boolean reference]
+
+== Connecting
+
+This section details how to discover all available instruments, connect to an instrument, run measurements on the device and finally how to properly close a connection to a device.
+If you have not done so already follow the steps in xref:installation.adoc[] to set up the LabVIEW class in your VI.
+For reference the final result of the following steps are available in the xref:index.adoc#example_basic[BasicExample VI].
+
+=== Discovering available instruments
+
+To get a list of all available/connected instruments drag and drop the menu:ListInstruments[] function VI from the PalmSens lvclass into your block diagram and connect it to the initialized instance of the PalmSens class.
+
+image::list_instruments_1.png[Discover instruments]
+
+The result of the `ListInstruments` function is an array of strings.
+For this example, we have added an indicator to show the results.
+
+[cols=".^a,.^a", frame=none, grid=none]
+|===
+| image::list_instruments_2.png[Connect array]
+| image::list_instruments_3.png[The front panel showing the discovered instruments]
+|===
+
+[[connect_instrument]]
+=== Connecting and disconnecting
+
+Each instance of the PalmSens class can be connected to a single instrument.
+To connect to an instrument drag and drop the menu:Connect[] function VI from the PalmSens lvclass into your block diagram and connect it to the initialized instance of the PalmSens class.
+To specify which instrument to connect to an integer value must be provided, this value is the index of the instrument in the array obtained from the `ListInstruments` block.
+
+image::connecting_1.png[Connecting to an instrument]
+
+This diagram assumes there is an instrument connected. To disconnect
+from an instrument add the `Disconnect` function VI from the PalmSens
+lvclass into your block diagram and connect it after the Connect
+function.
+
+image::connecting_2.png[Disconnecting from an instrument]
+
+[TIP]
+.Memory usage
+====
+Stopping a running VI with the abort button can result in memory leaks
+in the .NET libraries which can eventually cause the LabVIEW VI to
+crash.
+
+Therefore it is highly recommended to always dispose the PalmSens
+class using the Dispose function. This function will abort any running
+measurements, disconnect the instruments and properly clean up the
+objects in the .NET libraries.
+
+[cols=".^a,.^a", frame=none, grid=none]
+|===
+| image::memory_dispose_1.png[Abort button can result in memory leaks]
+| image::memory_dispose_2.png[Dispose function]
+|===
+
+====

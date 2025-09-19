@@ -1,0 +1,200 @@
+= Measuring
+:experimental: true
+
+Start a measurement by sending method parameters to a PalmSens/EmStat device.
+
+[[create_method]]
+== Creating a method
+
+To run a measurement on your instrument, create an instance of a method that defines the parameters for the technique to run.
+See the xref:ROOT:api.adoc[.NET api reference] for an overview of all techniques and their respective parameters.
+
+To create an instance of a method in LabVIEW add a .NET constructor node
+to your block diagram.
+
+image::create_method_1.png[Add a .NET constructor node]
+
+This will open Select .NET Constructor window. Drag the node to your block diagram.
+
+1. Open the node and click btn:[Browse..].
+2. Navigate to the PalmSens/Libraries folder included with the SDK and select the `PalmSens.Core.dll`
+3. Click on btn:[OK].
+
+image::create_method_2.png[Browse for `PalmSens.Core.dll`]
+
+Alternatively you can select the `PalmSens.Core` Assembly from the dropdown list in the .NET Constructor Window.
+
+image::create_method_3.png[Select `PalmSens.Core` Assembly]
+
+Then double-click on the menu:PalmSens.Techniques[] near the bottom of the list to expand it.
+
+image::create_method_4.png[Select `PalmSens.Techniques` item]
+
+Select the technique you want to run and click on btn:[OK].
+See the xref:ROOT:api.adoc[.NET API reference] and the PSTrace help documentation for more information.
+For this example we will use the _Linear Sweep Voltammetry_ technique.
+
+image::create_method_5.png[Select LinearSweep technique]
+
+To define the parameters for a technique right-click on the constructor node, go to menu:Create[Property for PalmSens.Techniques Class > EquilibrationTime] or any other parameter you want to set.
+The xref:ROOT:api.adoc[.NET API reference] lists the relevant parameters for each technique.
+
+image::create_method_6.png[Select EquilibrationTime property]
+
+Connect the property to the constructor node and change it to write by menu:right click[Change All To Write].
+
+image::create_method_7.png[Change all to write]
+
+Then create a constant by menu:right-clicking on the node[Create Constant] and update the value.
+
+[cols=".^a,.^a", frame=none, grid=none]
+|===
+| image::create_method_8.png[Create constant in context menu]
+| image::create_method_9.png[Set value in constant entry]
+|===
+
+An example of what a configured method looks like.
+
+image::create_method_10.png[Example diagram of configured method]
+
+== Current/Potential Ranges
+
+Current and potential ranges are respectively stored in the `Ranging` and `RangingPotential` parameters. To set the minimum, maximum, and starting range you will need to create an instances of the current/potential ranges by adding .NET constructor nodes.
+
+image::current_ranges_1.png[Select .NET constructor]
+
+1. Select the menu:PalmSens.Core(...)[] assembly in the _Select .NET Constructor_ window
+2. List the current and potential objects by double-clicking on menu:PalmSens[].
+
+image::current_ranges_2.png[Select CurrentRange constructor]
+
+1. Select menu:CurrentRange[CurrentRange(CurrentRanges cr)]
+2. Click btn:[OK]
+
+To define a potential range, press menu:PotentialRange[PotentialRange(PotentialRanges pr)] instead.
+
+image::current_ranges_3.png[Set the current range to cr1uA]
+
+Add a constant value to the `cr`/`pr` node and select the range from the list.
+These current ranges can then be set to the `Ranging`/`RangingPotential` `Maximum`, `Minimum`, and `Start` parameters.
+
+image::current_ranges_4.png[Example diagram after setting current range]
+
+== Mains Frequency
+
+To eliminate noise induced by other electrical appliances it is highly recommended to set your regional mains frequency (50/60 Hz) in the static property `PalmSens.Method.PowerFreq`.
+Add a .NET property node to your Block Diagram.
+
+[cols=".^a,.^a", frame=none, grid=none]
+|===
+| image::mains_frequency_1.png[Select PalmSens.Core in the Select Object From Assembly window]
+| image::mains_frequency_2.png[Select Method in the Select Object From Assembly window]
+|===
+
+1. Select the menu:PalmSens.Core(...)[] assembly in the _Select .NET Constructor_ window
+2. List the current and potential objects by double-clicking on menu:PalmSens[].
+3. Select menu:Method[]
+4. In the Block Diagram, click on the property and select menu:PowerFreq[].
+5. Set the value to integer 50 or 60
+
+[cols=".^a,.^a", frame=none, grid=none]
+|===
+| image::mains_frequency_3.png[Select PowerFreq in the method Property context window]
+| image::mains_frequency_4.png[Set the value to 50]
+|===
+
+== Running a measurement
+
+To run a measurement you must be xref:connecting.adoc#connect_instrument[connected to an instrument], and need an xref:create_method[instance of a method]
+To run a measurent drag and drop the menu:Measure[] function VI from the PalmSens lvclass into your block diagram and connect it to the PalmSens class.
+
+image::measuring_1.png[Add measure function to block diagram]
+
+Make sure to connect the method to the input.
+The output can be stored in an indicator, the easiest way to view the results is to right click on the ouput node and select create indicator.
+The type of the output is defined in `MeasurementResults.ctl`, it is a set of x and y values with strings for the name and units.
+
+Similar to PSTrace, a linear sweep voltammetry measurement will give you one set of current and potential values.
+A cyclic voltammetry measurement will give you multiple sets of current and potential values corresponding to the amount of scans.
+And, a chronopotentiometry / amperometric detection measurement will give you a set of current and time values.
+When extra values are also recorded these will return as additional sets of x and y values and the same applies to multiplexer scan results.
+
+The final diagram and front panel of the xref:index.adoc#example_basic[BasicExample VI].
+
+[cols=".^3a,.^1a", frame=none, grid=none]
+|===
+| image::measuring_2.png[The final diagram for the example]
+| image::measuring_3.png[The front panel for the VI]
+|===
+
+[TIP]
+.Blocking behavior of Measure function
+====
+The menu:Measure[] function will block the VI until the measurement is complete, for more information on this refer to xref:ROOT:api.adoc[] and the xref:index.adoc#example_basicui[BasicUIExample VI]`.
+====
+
+== Live interaction
+
+When a measurement is running the VI or measurement loop will be blocked until the measurement is done.
+This section and the xref:index.adoc#example_basicui[BasicUIExample VI] show how to work around this to plot/process results in real-time and abort a running measurement.
+
+=== Visualization
+
+The menu:Measure[] function VI has an input terminal to which you can connect a reference to an indicator of the cluster defined in the `LiveCurveResult.ctl` type definition.
+You can add this by dragging and dropping the menu:LiveCurveResult.ctl[] on to your front panel.
+
+[cols=".^a,.^a", frame=none, grid=none]
+|===
+| image::live_curve_1.png[Live curve result front panel]
+| image::live_curve_2.png[Create and select reference]
+|===
+
+1. Go to the indicator for the `LiveCurveResult` in the block diagram.
+2. menu:Right click on it[Create > `Reference`]. The resulting reference can then be connected to the `Measure` function VI.
+
+image::live_curve_3.png[Connect reference to Measure function]
+
+The values of the `LiveCurveResult` will be updated during while the measurement is running and LabVIEW receives a signal for each of these updates.
+The event block allows you to execute something each time a signal is received.
+To receive measurement data in real-time the _Event Structure_ should be placed inside a loop.
+
+[cols=".^a,.^a", frame=none, grid=none]
+|===
+| image::live_curve_4.png[Select Event Structure]
+| image::live_curve_5.png[Place event structure inside a loop]
+|===
+
+The _Event Structure_ has a timeout event setup by default.
+If you want to use the loop containing the _Event Structure_ for other things, we highly recommended to define the timeout of the _Event Structure_ in the top left corner.
+
+[cols=".^a,.^a", frame=none, grid=none]
+|===
+| image::live_curve_6.png[Add event case]
+| image::live_curve_7.png[Add event on value change]
+|===
+
+1. Next you will need to add an _Event Case_ to the _Event Structure_.
+2. In the _Edit Event_ window, select menu:Event Sources[LiveCurveResult > All Elements]
+3. Select menu:Events[Value Change]
+4. Click on btn:[OK].
+
+image::live_curve_8.png[Example live curve result loop]
+
+The xref:index.adoc#example_basicui[BasicUIExample VI] uses this _Event Structure_ to update the plot.
+
+image::live_curve_9.png[Visualization and Measure functions in different loops]
+
+To be able to visualize/process these results the _Measure_ function VI
+and event structure cannot be in the same loop.
+
+=== Abort a measurement
+
+To add the functionality of aborting a running measurement, drag and drop
+the menu:AbortMeasurement[] function VI from the PalmSens lvclass into your
+block diagram.
+
+image::measurement_abort.png[Two different loops for measure and abort]
+
+Make sure that the menu:AbortMeasurement[] function VI and the `Measure` function VI are placed in separate loops.
+Otherwise, the most likely scenario will be that LabVIEW will postpone executing the abort command until after the measurement is finished.
+This also applies applies to the `Disconnect` and `Dispose` function VI commands and any other UI or blocks that you want to be able to execute in parallel to a measurement.

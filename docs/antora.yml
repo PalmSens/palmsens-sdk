@@ -5,6 +5,7 @@ nav:
 - modules/ROOT/nav.adoc
 - modules/python/nav.adoc
 - modules/matlab/nav.adoc
+- modules/labview/nav.adoc
 ext:
   collector:
   # - run: |

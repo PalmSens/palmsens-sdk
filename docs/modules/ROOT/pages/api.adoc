@@ -566,7 +566,7 @@ The default value for `PalmSens.Method.ExtraValueMsk` is `PalmSens.ExtraValueMas
 `EnumPalmSensBipotMode.Constant` sets it to a fixed potential and `EnumPalmSensBipotMode.Offset` sets it to an offset of the primary working electrode. The value in Volt of the fixed or offset potential is defined with the method’s `BiPotPotential` property.)
 * AuxInput, similar to PSTrace it is possible to configure the readings of the auxilliary input. Using the `PalmSens.AuxInput.AuxiliaryInput` class you can assign a name, offset, gain and unit to the auxilliary input. The following example demonstrates how to set up the Pt1000 temperature sensor from PSTrace.
 
-image:auxilary_input.png[Change auxilary input]
+image::auxilary_input.png[Change auxilary input]
 
 [source,csharp]
 ----

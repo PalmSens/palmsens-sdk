@@ -1,0 +1,37 @@
+= MethodSCRIPT™
+:experimental: true
+
+The MethodSCRIPT™ scripting language is designed to integrate PalmSens OEM potentiostat (modules) effortlessly in your hardware setup or product.
+
+MethodSCRIPT™ allows developers to program a human-readable script directly into the potentiostat module by means of a serial (TTL) connection.
+The simple script language allows for running all supported electrochemical techniques and makes it easy to combine different measurements and other tasks.
+
+More script features include:
+
+* Use of variables
+* (Nested) loops
+* Logging results to an SD card
+* Digital I/O for example for waiting for an external trigger
+* Reading auxiliary values like pH or temperature
+* Going to sleep or hibernate mode
+
+See for more information on MethodSCRIPT™, see https://www.palmsens.com/methodscript[palmsens.com/methodscript]
+
+== Sandbox Measurements
+
+PSTrace includes an option to make use MethodSCRIPT™ Sandbox to write and run scripts.
+This is a great place to test MethodSCRIPT™ measurements to see what the result would be.
+That script can then be used in the _MethodScriptSandbox_ technique in the SDK as demonstrated below.
+
+image::sandbox_1.png[MethodSCRIPT editor in PSTrace]
+
+The xref:index.adoc#example_methodscript[MethodSCRIPTExample VI] demonstrates how to run this measurement on a compatible instrument, _i.e._ the Sensit, EmStat Pico and EmStat4 series instruments.
+
+image::sandbox_2.png[Diagram for the MethodSCRIPT example]
+
+`SandboxMeasurements` parse and store the variables sent in `pcks`.
+Sets of x and y values are generated automatically for each `meas_loop` that defines a `pck` with two or more variables, scripts with multiple `meas_loop` will generate sets.
+The first variable in the pck will be set as the x-axis and a set is created for each subsequent variable in the `pck`.
+Please note that to plot data versus time you will need to add a variable with the time to the pck.
+
+In the example above two sets of x and y values will be generated.

@@ -1,0 +1,111 @@
+= Labview SDK for PalmSens devices
+
+With this SDK, you can control your PalmSens instrument and process the data in Labview.
+Connect, control and process data from your PalmSens instrument using Labview.
+
+image::measuring_1.png[Control your PalmSens device from Labview]
+
+Download the latest https://github.com/palmsens/palmsens_sdk/releases[release here].
+
+See xref:installation.adoc[the installation guidelines] for more information.
+
+== SDK overview
+
+The PalmSens SDK contains the following .NET libraries and LabVIEW
+classes, controls and Vis in the PalmSens folder:
+
+Libraries Folder::
+Contains all the necessary .NET libraries.
+Labview directly interfaces with the classes and functions defined in these libraries.
+
+PalmSens LabVIEW class::
+
+    Class that implements the basic features required to use our instruments
+    in LabVIEW.
+
+    * `Initialise`: Initialises the class and .NET libraries.
+    * `Dispose`: Frees up memory used by .NET libraries.
+    * `ListInstruments`: Returns an array of the available instruments.
+    * `Connect`: Connects to the specified instrument.
+    * `Disconnect`: Disconnects from the connected instrument.
+    * `Measure`: Performs a measurement.
+    * `AbortMeasurement`: Aborts the current measurement
+
+`MeasurementResults` and `LiveCurveResults` controls::
+Type definitions for the in and outputs of the Measure function.
+
+Event Callback Vis::
+VIs used by the Measure function to receive data from .NET events.
+
+== Example programs
+
+The following examples are included.
+
+[[example_basic]]
+=== Getting started
+
+`BasicExample.vi` demonstrates how to use the PalmSens class to run a measurement.
+
+image::examples/basic_example.png[BasicExample, width=50%, role=half-view-width]
+
+[[example_methodscript]]
+=== MethodSCRIPT
+
+`MethodSCRIPTExample.vi` demonstrates how to use the PalmSens class to run a MethodSCRIPT™ measurement.
+
+image::examples/methodscript_example.png[MethodSCRIPTExample, width=50%, role=half-view-width]
+
+[[example_basicui]]
+=== Interactive UI
+
+`BasicUIExample.vi` demonstrates how to use the PalmSens class to run and plot a measurement in real-time and the recommended method to abort, disconnect, or terminate the app during an active measurement.
+
+image::examples/basic_ui_example.png[BasicUIExample, width=50%, role=half-view-width]
+
+[[example_exportcsv]]
+=== Export to CSV
+
+`BasicExampleExportCSV.vi` demonstrates how to set up a method with a callback to export to CSV.
+
+image::examples/exportcsv_example.png[BasicExampleExportCSV, width=50%, role=half-view-width]
+
+[[example_ocp]]
+=== OCP
+
+`BasicExampleOCP.vi` demonstrates how to set up a vs OCP measurement.
+
+image::examples/ocp_example.png[BasicExampleOCP, width=50%, role=half-view-width]
+
+[[example_multichannel]]
+=== Multichannel
+
+`MultiChannelExample.vi` demonstrates how to set up a multichannel experiment.
+
+image::examples/multichannel_example.png[MultiChannelExample, width=50%, role=half-view-width]
+
+[[example_hwsync]]
+=== Multichannel with hardware sync
+
+`MultiChannelMES4HWSyncExample.vi` demonstrates how to set up a multichannel experiment with hardware sync on a MultiEmStat 4.
+
+image::examples/multichannel_mes4_example.png[MultiChannelMES4HWSyncExample, width=50%, role=half-view-width]
+
+== Compatible devices and firmware
+
+[cols="1,1",options="header",]
+|===
+| Device | Minimum required firmware version
+| EmStat | 3.7
+| EmStat2 | 7.7
+| EmStat3 | 7.7
+| EmStat3+ | 7.7
+| EmStat4 | 1.2
+| EmStat Go | 7.7
+| EmStat Pico | 1.3
+| Sensit Smart | 1.3
+| Sensit BT | 1.3
+| MultiEmStat | 7.7
+| PalmSens3 | 2.8
+| PalmSens4 | 1.7
+| MultiPalmSens4 | 1.7
+|===

@@ -109,7 +109,7 @@ False
 ====
 The VSCode Debug Console or another Python REPL environment like https://ipython.readthedocs.io[IPython] will auto complete on the properties and functions.
 
-image:ipython_autocomplete.png[Debug console in VSCode]
+image::ipython_autocomplete.png[Debug console in VSCode]
 ====
 
 === Common settings

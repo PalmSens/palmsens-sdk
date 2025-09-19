@@ -1,0 +1,36 @@
+= Installation
+:experimental: true
+
+This page takes you through setting up the SDK for your LabVIEW project.
+
+== Requirements
+
+To discover our instruments and use our SDK libraries our drivers and the .NET/C++ runtimes need to be installed.
+We highly recommend installing PSTrace or MultiTrace as this installs all the required dependencies.
+
+== Adding the PalmSens folder
+
+To add the SDK to a new or existing LabVIEW project add the PalmSens folder.
+In the _Project Explorer_, right click on the menu:My Computer[Add > Folder (...)].
+Both the menu:Folder (Snapshot)[] and menu:Folder (Auto-populating)[] options will work.
+
+image::installation_palmsens_folder.png[Adding the PalmSens folder]
+
+== Broken dependency error when using the SDK
+
+When you download the SDK and extract its contents Windows blocks the required .NET library .dll files.
+Executing anything in the SDK that uses these libraries produces an error like this.
+
+image::broken_dependency_1.png[Broken dependency error, width=49%]
+
+To prevent this error you will need to manually unblock the PalmSens SDK for LabVIEW.zip file before unpacking its contents.
+To do this go to menu:right click on the zip file[Properties].
+Then click on the btn:[Unblock] checkbox and click on btn:[OK].
+
+[cols=".^a,.^a", frame=none, grid=none]
+|===
+| image::broken_dependency_2.png[Open Properties from right click menu]
+| image::broken_dependency_3.png[Unblock dll check]
+|===
+
+If this does not resolve the issue you may need to do this for each file in the `PalmSens\Libraries` subfolder.

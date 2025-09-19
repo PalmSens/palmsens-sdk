@@ -3,9 +3,9 @@
 With this SDK, you can control your PalmSens instrument and process the data in MATLAB.
 Connect, control and process data from your PalmSens instrument using MATLAB.
 
-[cols="1,1"]
+[cols="a,a", frame=none, grid=none]
 |===
-| image:measurement-gui.webp[Measurement gui,link="_images/measurement-gui.webp"]
+| image::measurement-gui.webp[Measurement gui,link="_images/measurement-gui.webp"]
 | **Control your PalmSens instrument using MATLAB**
 
 Connect to your PalmSens instrument, receive data and plot the results, with a graphical user interface in MATLAB.
@@ -15,9 +15,9 @@ After selecting the electrochemical technique to use, you can adjust the paramet
 
 You can import your saved data from PSTrace in MATLAB directly.
 Use the PSTrace software to set-up and run your experiments with PalmSens instruments and use MATLAB for your advanced data analyses.
-| image:equivalent-circuit-fitting.webp[Equivalent circuit fitting,link="_images/equivalent-circuit-fitting.webp"]
+| image::equivalent-circuit-fitting.webp[Equivalent circuit fitting,link="_images/equivalent-circuit-fitting.webp"]
 
-| image:import-measurement.webp[Import measurement,link="_images/import-measurement.webp.webp"]
+| image::import-measurement.webp[Import measurement,link="_images/import-measurement.webp.webp"]
 | **Plot results in Nyquist and Bode plot**
 
 You can plot the results of your electrochemical experiment in a Nyquist and Bode plot to analyze the impedance of your electrochemical setup

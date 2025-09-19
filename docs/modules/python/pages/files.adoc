@@ -60,7 +60,7 @@ Save the method using `pypalmsens.save_method_file()`.
 
 == Loading and saving data
 
-image:pssession.png[Data in pssession files]
+image::pssession.png[Data in pssession files]
 
 Data from measurements can be loaded from and stored to `.pssession` files.
 This contains a session with one or more measurements containing its respective method and curves.

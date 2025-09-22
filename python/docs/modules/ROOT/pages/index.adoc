@@ -21,7 +21,7 @@ To install:
 pip install pypalmsens
 ----
 
-PyPalmSens is built on top of the xref:ROOT:core_dll.adoc[PalmSens .NET libraries],
+PyPalmSens is built on top of the xref:start:ROOT:core_dll.adoc[PalmSens .NET libraries],
 and therefore requires the .NET runtime to be installed.
 For specific installation instructions for your platform, see xref:installation.adoc[]
 

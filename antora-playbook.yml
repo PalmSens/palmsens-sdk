@@ -1,11 +1,25 @@
 site:
   title: PalmSens SDK docs
-  start_page: palmsens-sdk::index.adoc
+  start_page: start::index.adoc
 content:
   sources:
-  - url: .
-    branches: HEAD
-    start_path: docs
+    - url: .
+      branches: HEAD
+      start_path: docs/start
+    - url: .
+      branches: HEAD
+      # tags: ['python-*']
+      start_path: python/docs
+    - url: .
+      branches: HEAD
+      # tags: ['matlab-*']
+      start_path: matlab/docs
+    - url: .
+      branches: HEAD
+      # tags: ['labview-*']
+      start_path: labview/docs
+urls:
+  latest_version_segment: latest
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable

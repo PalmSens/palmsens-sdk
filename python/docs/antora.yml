@@ -1,16 +1,13 @@
-name: palmsens-sdk
-version: ~
-title: PalmSens SDK
+name: python
+version: '1.0.0'
+title: PyPalmSens
 nav:
 - modules/ROOT/nav.adoc
-- modules/python/nav.adoc
-- modules/matlab/nav.adoc
-- modules/labview/nav.adoc
 ext:
   collector:
   # - run: |
   #     python python/build_python_api_docs.py
   - scan:
       dir: python/examples/
-      into: modules/python/examples
+      into: modules/ROOT/examples
       files: '*.py'

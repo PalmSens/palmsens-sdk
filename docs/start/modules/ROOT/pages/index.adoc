@@ -6,7 +6,7 @@ Take full control of your PalmSens instruments and modules with the PalmSens Sof
 
 SDKs are available for the ecosystems below. See the links for installation instructions, code documentation, and examples.
 
-- xref:python:index.adoc[]
-- xref:matlab:index.adoc[]
-- xref:labview:index.adoc[]
+- xref:python:ROOT:index.adoc[]
+- xref:matlab:ROOT:index.adoc[]
+- xref:labview:ROOT:index.adoc[]
 - xref:dotnet[] (WIP)

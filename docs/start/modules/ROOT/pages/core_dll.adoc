@@ -24,9 +24,9 @@ It has one method and can contain multiple curves.
 Curves are a representation of the data in the measurement used for plotting
 and analysis.
 
-image::sdk_measurement_class.png[Inheritance structure for Method classes]
+image::sdk_measurement_class.png[Inheritance structure for Method classes, width=50%, role=half-view-width]
 
 The following diagram shows the inheritance structure of the `Method`
 classes:
 
-image::sdk_method_inheritance.png[Inheritance structure for Method classes]
+image::sdk_method_inheritance.png[Inheritance structure for Method classes, role=half-view-width]

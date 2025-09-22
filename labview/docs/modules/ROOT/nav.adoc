@@ -1,4 +1,3 @@
-* xref:index.adoc[Labview]
 ** xref:installation.adoc[]
 ** xref:connecting.adoc[]
 ** xref:measuring.adoc[]

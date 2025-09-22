@@ -5,9 +5,9 @@ Connect, control and process data from your PalmSens instrument using Labview.
 
 ![Control your PalmSens device from Labview](../docs/modules/labview/images/measuring_1.png)
 
-Download the latest [release here](https://github.com/palmsens/palmsens_sdk/releases).
+Download the latest [release here](https://github.com/palmsens/PalmSens_SDK/releases).
 
-See [the installation guidelines](https://palmsens.github.io/PalmSens_SDK/palmsens-sdk/labview/installation.html) for more information.
+See [the installation guidelines](https://palmsens.github.io/PalmSens_SDK/labview/latest/installation.html) for more information.
 
 ## SDK overview
 
@@ -41,4 +41,4 @@ The following examples are included.
 | - | - | - |
 | **Getting started example**: Demonstrates how to use the PalmSens class to run a measurement. | **UI example**: Demonstrates how to use the PalmSens class to run and plot a measurement in real-time and the recommended method to abort, disconnect, or terminate the app during an active measurement. | **MethodSCRIPT example**: Demonstrates how to use the PalmSens class to run a MethodSCRIPT™ measurement. |
 
-For more information, see the [documentation](https://palmsens.github.io/PalmSens_SDK/palmsens-sdk/labview/index.html)
+For more information, see the [documentation](https://palmsens.github.io/PalmSens_SDK/labview/latest/index.html)

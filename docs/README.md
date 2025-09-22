@@ -16,5 +16,5 @@ To build the Python docs manually, run:
 
 ```bash
 cd python
-python build_python_api_docs.py
+python python/build_python_api_docs.py
 ```

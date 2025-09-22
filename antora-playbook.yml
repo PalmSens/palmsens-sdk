@@ -1,6 +1,7 @@
 site:
   title: PalmSens SDK docs
   start_page: start::index.adoc
+  url: https://palmsens.github.io/PalmSens_SDK
 content:
   sources:
     - url: .

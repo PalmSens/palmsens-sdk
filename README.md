@@ -3,7 +3,7 @@
 
 # PalmSens SDK
 
-![PalmSens Banner](./docs/modules/ROOT/images/banner.png)
+![PalmSens Banner](./docs/start/modules/ROOT/images/banner.png)
 
 Take full control of your PalmSens instruments and modules with the PalmSens Software Development Kits (SDKs) and code examples.
 
@@ -13,3 +13,4 @@ SDKs are available for the ecosystems below. See the links for installation inst
 - [Matlab](./matlab) - [documentation](https://palmsens.github.io/PalmSens_SDK/matlab/latest/intex.html)
 - [Labview](./labview) - [documentation](https://palmsens.github.io/PalmSens_SDK/labview/latest/intex.html)
 - [Dotnet](./dotnet) (WIP)
+

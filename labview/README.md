@@ -3,7 +3,7 @@
 With this SDK, you can control your PalmSens instrument and process the data in Labview.
 Connect, control and process data from your PalmSens instrument using Labview.
 
-![Control your PalmSens device from Labview](../docs/modules/labview/images/measuring_1.png)
+![Control your PalmSens device from Labview](./docs/modules/ROOT/images/measuring_1.png)
 
 Download the latest [release here](https://github.com/palmsens/PalmSens_SDK/releases).
 
@@ -37,7 +37,7 @@ classes, controls and Vis in the PalmSens folder:
 
 The following examples are included.
 
-| ![Basic example](../docs/modules/labview/images/examples/basic_example.png) | ![Basic UI example](../docs/modules/labview/images/examples/basic_ui_example.png) | ![MethodSCRIPT example](../docs/modules/labview/images/examples/methodscript_example.png) |
+| ![Basic example](./docs/modules/ROOT/images/examples/basic_example.png) | ![Basic UI example](./docs/modules/ROOT/images/examples/basic_ui_example.png) | ![MethodSCRIPT example](./docs/modules/ROOT/images/examples/methodscript_example.png) |
 | - | - | - |
 | **Getting started example**: Demonstrates how to use the PalmSens class to run a measurement. | **UI example**: Demonstrates how to use the PalmSens class to run and plot a measurement in real-time and the recommended method to abort, disconnect, or terminate the app during an active measurement. | **MethodSCRIPT example**: Demonstrates how to use the PalmSens class to run a MethodSCRIPT™ measurement. |
 

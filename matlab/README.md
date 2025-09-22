@@ -3,7 +3,7 @@
 With this SDK, you can control your PalmSens instrument and process the data in MATLAB.
 Connect, control and process data from your PalmSens instrument using MATLAB.
 
-| ![Measurement](../docs/modules/matlab/images/measurement-gui.webp)| ![Import measurement](../docs/modules/matlab/images/import-measurement.webp) | ![Equivalent circuit fitting](../docs/modules/matlab/images/equivalent-circuit-fitting.webp) |
+| ![Measurement](./docs/modules/ROOT/images/measurement-gui.webp)| ![Import measurement](./docs/modules/ROOT/images/import-measurement.webp) | ![Equivalent circuit fitting](./docs/modules/ROOT/images/equivalent-circuit-fitting.webp) |
 | - | - | - |
 | **Control your instrument using MATLAB** | **Import experimental results from PSTrace** | **Generate Nyquist and Bode plots** |
 

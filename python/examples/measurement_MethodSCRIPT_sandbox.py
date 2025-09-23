@@ -1,4 +1,4 @@
-import pypalmsens
+import pypalmsens as ps
 
 
 def new_data_callback(new_data):
@@ -35,14 +35,14 @@ set_range ba 2100u
 set_autoranging ba 2100n 2100u
 set_range ab 4200m
 set_autoranging ab 4200m 4200m
-store_var d -500m ab
+store_var d -200m ab
 add_var d o
-store_var n 500m ab
+store_var n 200m ab
 add_var n o
 set_e d
 cell_on
 set_gpio 10i
-meas_loop_acv p c e l r j d n 10m 50m 10m 100
+meas_loop_acv p c e l r j d n 10m 200m 10m 100
 pck_start
     pck_add p
     pck_add c
@@ -54,24 +54,20 @@ pck_end
 endloop
 on_finished:
 cell_off
+
 """
 
-available_instruments = pypalmsens.discover()
-print('connecting to ' + available_instruments[0].name)
+instruments = ps.discover()
+print(instruments)
 
-with pypalmsens.connect(available_instruments[0]) as manager:
-    print('connection established')
-
+with ps.connect(instruments[0]) as manager:
     manager.callback = new_data_callback
 
     serial = manager.get_instrument_serial()
     print(serial)
 
-    method = pypalmsens.MethodScript(script=script)
+    method = ps.MethodScript(script=script)
 
     measurement = manager.measure(method)
 
-    if measurement is not None:
-        print('measurement finished')
-    else:
-        print('failed to start measurement')
+print(measurement)

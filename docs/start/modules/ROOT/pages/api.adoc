@@ -8,7 +8,7 @@ Each technique is identified by a specific integer value.
 This integer value can be used to create a class derived from the corresponding
 technique, as follows:
 
-[source,python]
+[,python]
 ----
 PalmSens.Method.FromTechniqueNumber(integervalue)
 ----

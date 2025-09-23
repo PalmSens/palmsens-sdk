@@ -5,32 +5,32 @@ PalmSens instrument.
 
 For example, to connect:
 
-[source,python]
+[,python]
 ----
-import pypalmsens
+import pypalmsens as ps
 
-with pypalmsens.connect as manager:
-        method = pypalmsens.ChronoAmperometry()
+with ps.connect as manager:
+        method = ps.ChronoAmperometry()
         measurement = await manager.measure(method)
 ----
 
 or using `InstrumentManager()` directly as a context manager:
 
-[source,python]
+[,python]
 ----
 instruments = discover()
 
-with pypalmsens.InstrumentManager(instruments[0]) as manager:
+with ps.InstrumentManager(instruments[0]) as manager:
     measurement = manager.measure(method)
 ----
 
 or managing the instrument connection yourself:
 
-[source,python]
+[,python]
 ----
 instruments = discover_async()
 
-manager = pypalmsens.InstrumentManager(instruments[0])
+manager = ps.InstrumentManager(instruments[0])
 manager.connect()
 ...
 await manager.disconnect()

@@ -1,4 +1,4 @@
-import pypalmsens
+import pypalmsens as ps
 
 
 def new_data_callback(new_data):
@@ -6,18 +6,18 @@ def new_data_callback(new_data):
         print(point)
 
 
-method = pypalmsens.ChronoAmperometry(
+method = ps.ChronoAmperometry(
     interval_time=0.004,
     potential=1.0,
     run_time=5.0,
 )
 
-instruments = pypalmsens.discover()
+instruments = ps.discover()
 
 print(instruments)
 
 # run multichannel experiment with callback
-with pypalmsens.InstrumentPool(instruments, callback=new_data_callback) as pool:
+with ps.InstrumentPool(instruments, callback=new_data_callback) as pool:
     results = pool.measure(method=method)
 
 print(results)

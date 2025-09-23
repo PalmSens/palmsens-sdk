@@ -393,9 +393,8 @@ class InstrumentManager:
         self.__active_measurement_error = None
 
         is_valid, message = self.validate_method(psmethod)
-        if is_valid is not True:
-            print(message)
-            return None
+        if not is_valid:
+            raise ValueError(message)
 
         loop = asyncio.new_event_loop()
         begin_measurement_event = asyncio.Event()

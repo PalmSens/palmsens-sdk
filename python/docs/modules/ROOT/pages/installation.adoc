@@ -22,9 +22,10 @@ Python 3.13 contains https://github.com/python/cpython/issues/130522[a known iss
 +
 If you do not use them it is recommended to disable scanning for FTDI devices.
 +
-[source,python]
+[,python]
 ----
-available_instruments = pypalmsens.discover(ftdi=False)
+import pypalmsens as ps
+available_instruments = ps.discover(ftdi=False)
 ----
 
 == Virtual environments
@@ -36,7 +37,7 @@ This section shows how to set up and activate an environment.
 
 Setting up a virtual environment using https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/[Python, pip and venv]:
 
-[source,powershell]
+[,powershell]
 ----
 python -m venv .venv
 .venv/Scripts/activate.ps1
@@ -45,7 +46,7 @@ python -m pip install -e .[develop]
 
 Alternatively, setting up a https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html[virtual environment using Conda]:
 
-[source,powershell]
+[,powershell]
 ----
 conda create -n pypalmsens python=3.13
 conda activate pypalmsens

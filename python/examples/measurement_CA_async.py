@@ -1,6 +1,6 @@
 import asyncio
 
-import pypalmsens
+import pypalmsens as ps
 
 
 def new_data_callback(new_data):
@@ -9,18 +9,17 @@ def new_data_callback(new_data):
 
 
 async def main():
-    available_instruments = await pypalmsens.discover_async()
-    print('connecting to ' + available_instruments[0].name)
+    instruments = await ps.discover_async()
+    print(instruments)
 
-    async with await pypalmsens.connect_async(available_instruments[0]) as manager:
-        print('connection established')
+    async with await ps.connect_async(instruments[0]) as manager:
         manager.callback = new_data_callback
 
         serial = await manager.get_instrument_serial()
         print(serial)
 
         # Chronoamperometry measurement using helper class
-        method = pypalmsens.ChronoAmperometry(
+        method = ps.ChronoAmperometry(
             interval_time=0.02,
             potential=1.0,
             run_time=2.0,
@@ -28,10 +27,7 @@ async def main():
 
         measurement = await manager.measure(method)
 
-        if measurement is not None:
-            print('measurement finished')
-        else:
-            print('failed to start measurement')
+    print(measurement)
 
 
 asyncio.run(main())

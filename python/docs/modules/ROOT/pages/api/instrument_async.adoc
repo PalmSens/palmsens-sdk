@@ -12,32 +12,32 @@ This means you have to use the await/async expressions to manage the event loop.
 
 For example, to connect:
 
-[source,python]
+[,python]
 ----
-import pypalmsens
+import pypalmsens as ps
 
-async with await pypalmsens.connect_async() as manager:
-        method = pypalmsens.ChronoAmperometry()
+async with await ps.connect_async() as manager:
+        method = ps.ChronoAmperometry()
         measurement = await manager.measure(method)
 ----
 
 or using `InstrumentManagerAsync()` directly as a context manager:
 
-[source,python]
+[,python]
 ----
 instruments = await discover_async()
 
-async with pypalmsens.InstrumentManagerAsync(instruments[0]) as manager:
+async with ps.InstrumentManagerAsync(instruments[0]) as manager:
     measurement = await manager.measure(method)
 ----
 
 or managing the instrument connection yourself:
 
-[source,python]
+[,python]
 ----
 instruments = await discover_async()
 
-manager = pypalmsens.InstrumentManagerAsync(instruments[0])
+manager = ps.InstrumentManagerAsync(instruments[0])
 await manager.connect()
 ...
 await manager.disconnect()

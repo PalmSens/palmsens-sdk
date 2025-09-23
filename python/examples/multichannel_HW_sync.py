@@ -1,20 +1,21 @@
 import asyncio
-import pypalmsens
+import pypalmsens as ps
 
 
 async def main():
-    method = pypalmsens.ChronoAmperometry(
+    method = ps.ChronoAmperometry(
         interval_time=0.004,
         potential=1.0,
         run_time=5.0,
     )
+    method.general.use_hardware_sync = True
 
-    instruments = await pypalmsens.discover_async(ftdi=True)
+    instruments = await ps.discover_async(ftdi=True)
 
     print(instruments)
 
-    async with pypalmsens.InstrumentPoolAsync(instruments) as pool:
-        results = await pool.measure_hw_sync(method)
+    async with ps.InstrumentPoolAsync(instruments) as pool:
+        results = await pool.measure(method)
 
     print(results)
 

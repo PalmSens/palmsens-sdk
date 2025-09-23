@@ -2,20 +2,18 @@ from pathlib import Path
 
 import pandas as pd
 
-import pypalmsens
+import pypalmsens as ps
 
-script_dir = Path(__file__).parent
+examples_dir = Path(__file__).parent
 
 # load a method file
-method = pypalmsens.load_method_file(script_dir / 'PSDummyCell_LSV.psmethod', as_method=True)
+method = ps.load_method_file(examples_dir / 'PSDummyCell_LSV.psmethod', as_method=True)
 
 # save the method file
-pypalmsens.save_method_file(script_dir / 'PSDummyCell_LSV_copy.psmethod', method)
+ps.save_method_file(examples_dir / 'PSDummyCell_LSV_copy.psmethod', method)
 
 # load a session file
-measurements = pypalmsens.load_session_file(
-    script_dir / 'Demo CV DPV EIS IS-C electrode.pssession'
-)
+measurements = ps.load_session_file(examples_dir / 'Demo CV DPV EIS IS-C electrode.pssession')
 
 for measurement in measurements:
     print(f'loaded measurement: {measurement.title}, {measurement.timestamp}')
@@ -27,8 +25,8 @@ for measurement in measurements:
     print(f'Has EIS fit results: {"yes" if len(measurement.eis_fit) > 0 else "no"}')
 
 # save the session file
-pypalmsens.save_session_file(
-    script_dir / 'Demo CV DPV EIS IS-C electrode_copy.pssession', [measurements[0]]
+ps.save_session_file(
+    examples_dir / 'Demo CV DPV EIS IS-C electrode_copy.pssession', [measurements[0]]
 )
 
 # convert measurments to pandas dataframes

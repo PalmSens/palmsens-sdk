@@ -50,11 +50,11 @@ Other::
 
 This example creates a method for a square-wave voltammetry measurement versus the open circuit potential:
 
-[source,python]
+[,python]
 ----
->>> import pypalmsens
+>>> import pypalmsens as ps
 
->>> method = pypalmsens.SquareWaveVoltammetry(
+>>> method = ps.SquareWaveVoltammetry(
 ...    conditioning_potential = 2.0,  # V
 ...    conditioning_time = 2,  # seconds
 ...    versus_ocp_mode = 3,  # versus begin and end potential
@@ -69,7 +69,7 @@ This example creates a method for a square-wave voltammetry measurement versus t
 
 Because methods are https://www.attrs.org/[attrs dataclasses], all attributes can be modified afterwards:
 
-[source,python]
+[,python]
 ----
 >>> method.begin_potential = -1.0
 >>> method.end_potential = 1.0
@@ -78,7 +78,7 @@ Because methods are https://www.attrs.org/[attrs dataclasses], all attributes ca
 
 Dataclasses can be serialized to and from a dictionary:
 
-[source,python]
+[,python]
 ----
 >>> from attrs import asdict
 >>> d = asdict(method)
@@ -90,14 +90,14 @@ Dataclasses can be serialized to and from a dictionary:
  'frequency': 10,
  'amplitude': 0.08,
  ...}
->>> method2 == pypalmsens.SquareWaveVoltammetry(**d)
+>>> method2 == ps.SquareWaveVoltammetry(**d)
 >>> method == method2
 True
 ----
 
 It can be updated like a dataclass:
 
-[source,python]
+[,python]
 ----
 >>> from attrs import evolve
 >>> method2 = evolve(method, equilibration_time=10.0)
@@ -122,9 +122,9 @@ These are accessible via attributes on the methods.
 
 For example:
 
-[source,python]
+[,python]
 ----
->>> cv = pypalmsens.CyclicVoltammetry()
+>>> cv = ps.CyclicVoltammetry()
 >>> cv.current_range
 CurrentRange(
     max=<CURRENT_RANGE.cr_10_mA: 8>,
@@ -137,11 +137,11 @@ There are two ways to modify the current ranges, for example, if we want so set 
 
 1. By passing current ranges as an argument during initialization
 +
-[source,python]
+[,python]
 ----
->>> cv = pypalmsens.CyclicVoltammetry(
-...     current_range=pypalmsens.settings.current_range(
-...         start=pypalmsens.settings.CURRENT_RANGE.cr_10_uA
+>>> cv = ps.CyclicVoltammetry(
+...     current_range=ps.settings.current_range(
+...         start=ps.settings.CURRENT_RANGE.cr_10_uA
 ...     )
 ... )
 >>> cv.current_range
@@ -155,10 +155,10 @@ CurrentRange(
 
 2. By updating the attributes (after initialization)
 +
-[source,python]
+[,python]
 ----
->>> cv = pypalmsens.CyclicVoltammetry()
->>> cv.current_range.start = pypalmsens.settings.CURRENT_RANGE.cr_10_uA
+>>> cv = ps.CyclicVoltammetry()
+>>> cv.current_range.start = ps.settings.CURRENT_RANGE.cr_10_uA
 ----
 
 [TIP]
@@ -168,10 +168,10 @@ If you want to use a fixed current (or potential) range,
 you can save yourself some typing by passing `CURRENT_RANGE` directly.
 This automatically expands into the `CurrentRange` object with `min`, `max`, and `start` equal.
 
-[source,python]
+[,python]
 ----
->>> cv = pypalmsens.CyclicVoltammetry(
-...    current_range=pypalmsens.settings.CURRENT_RANGE.cr_10_uA
+>>> cv = ps.CyclicVoltammetry(
+...    current_range=ps.settings.CURRENT_RANGE.cr_10_uA
 ... )
 >>> cv.current_range
 CurrentRange(

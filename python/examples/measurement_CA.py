@@ -1,4 +1,4 @@
-import pypalmsens
+import pypalmsens as ps
 
 
 def new_data_callback(new_data):
@@ -6,19 +6,17 @@ def new_data_callback(new_data):
         print(point)
 
 
-available_instruments = pypalmsens.discover()
-print('connecting to ' + available_instruments[0].name)
+instruments = ps.discover()
+print(instruments)
 
-with pypalmsens.connect(available_instruments[0]) as manager:
-    print('connection established')
-
+with ps.connect(instruments[0]) as manager:
     manager.callback = new_data_callback
 
     serial = manager.get_instrument_serial()
     print(serial)
 
     # Chronoamperometry measurement using helper class
-    method = pypalmsens.ChronoAmperometry(
+    method = ps.ChronoAmperometry(
         interval_time=0.01,
         potential=1.0,
         run_time=10.0,
@@ -26,7 +24,4 @@ with pypalmsens.connect(available_instruments[0]) as manager:
 
     measurement = manager.measure(method)
 
-    if measurement is not None:
-        print('measurement finished')
-    else:
-        print('failed to start measurement')
+print(measurement)

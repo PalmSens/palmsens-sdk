@@ -1,6 +1,6 @@
 import csv
 
-import pypalmsens
+import pypalmsens as ps
 
 
 def stream_to_csv_callback(new_data):
@@ -12,28 +12,24 @@ def stream_to_csv_callback(new_data):
 csv_file = open('test.csv', 'w', newline='')
 csv_writer = csv.writer(csv_file, delimiter=' ')
 
-available_instruments = pypalmsens.discover()
-print('connecting to ' + available_instruments[0].name)
+instruments = ps.discover()
+print(instruments)
 
-with pypalmsens.connect(available_instruments[0]) as manager:
+with ps.connect(instruments[0]) as manager:
     manager.callback = stream_to_csv_callback
-
-    print('connection established')
 
     serial = manager.get_instrument_serial()
     print(serial)
 
-    # #Chronoamperometry measurement using helper class
-    method = pypalmsens.ChronoAmperometry(
+    # Chronoamperometry measurement using helper class
+    method = ps.ChronoAmperometry(
         interval_time=0.0004,
         potential=1.0,
         run_time=10.0,
     )
 
     measurement = manager.measure(method)
-    if measurement is not None:
-        print('measurement finished')
-    else:
-        print('failed to start measurement')
 
-    csv_file.close()
+print(measurement)
+
+csv_file.close()

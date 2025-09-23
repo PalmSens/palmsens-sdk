@@ -4,9 +4,9 @@ This page contains a listing of all available techniques in PyPalmSens.
 
 For example to set up a CV experiment:
 
-[source,python]
+[,python]
 ----
-import pypalmsens
+import pypalmsens as ps
 
 method = pypalmsens.CyclicVoltammetry(
     begin_potential = -1,

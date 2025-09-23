@@ -1,6 +1,6 @@
 import asyncio
 from attrs import evolve
-import pypalmsens
+import pypalmsens as ps
 
 
 async def custom_loop(manager, *, method, steps):
@@ -14,7 +14,7 @@ async def custom_loop(manager, *, method, steps):
 
 
 async def main():
-    method = pypalmsens.ChronoAmperometry(
+    method = ps.ChronoAmperometry(
         interval_time=0.004,
         run_time=5.0,
     )
@@ -31,17 +31,17 @@ async def main():
         },
     ]
 
-    instruments = await pypalmsens.discover_async(ftdi=True)
+    instruments = await ps.discover_async(ftdi=True)
 
     print(instruments)
 
-    async with pypalmsens.InstrumentPoolAsync(instruments) as pool:
+    async with ps.InstrumentPoolAsync(instruments) as pool:
         results = await pool.submit(custom_loop, method=method, steps=steps)
 
     print(results)
 
     for i, measurements in enumerate(results):
-        pypalmsens.save_session_file(f'example-{i}.pssession', measurements)
+        ps.save_session_file(f'example-{i}.pssession', measurements)
 
 
 asyncio.run(main())

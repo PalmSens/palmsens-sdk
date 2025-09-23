@@ -16,7 +16,7 @@ With PyPalmSens, you can:
 
 To install:
 
-[source,console]
+[,console]
 ----
 pip install pypalmsens
 ----
@@ -29,33 +29,38 @@ For specific installation instructions for your platform, see xref:installation.
 
 The following example shows how to set up and measure a simple chronoamperometry experiment:
 
-[source,python]
+[,python]
 ----
->>> import pypalmsens
+>>> import pypalmsens as ps
 
->>> method = pypalmsens.ChronoAmperometry(
+>>> method = ps.ChronoAmperometry(
 ...     interval_time=0.01,
 ...     potential=1.0,
 ...     run_time=10.0,
 ... )
 
->>> with pypalmsens.connect() as manager:  # <1>
+>>> with ps.connect() as manager:  # <1>
 ...     measurement = manager.measure(method)
 ----
 <1> `connect()` tries to connect to the first instrument it finds
 
+[TIP]
+====
+We shorten the imported name from `pypalmsens` to `ps`. This is a widely adopted convention for better readability of code.
+====
+
 The following example shows how to discover devices and manually read out the current.
 
-[source,python]
+[,python]
 ----
->>> import pypalmsens
+>>> import pypalmsens as ps
 
->>> instruments = pypalmsens.discover()
+>>> instruments = ps.discover()
 
->>> with pypalmsens.connect(device=instruments[0]) as manager:
+>>> with ps.connect(device=instruments[0]) as manager:
 ...     manager.set_cell(True)
 ...     manager.set_potential(1)
-...     manager.set_current_range(pypalmsens.settings.CURRENT_RANGE.cr_1_mA)
+...     manager.set_current_range(ps.settings.CURRENT_RANGE.cr_1_mA)
 ...
 ...     current = manager.read_current()
 ...     print(f'{current=} µA')
@@ -66,12 +71,12 @@ current=92.8065 µA
 
 Analyze a previous measurement with https://pandas.pydata.org/[pandas]:
 
-[source,python]
+[,python]
 ----
 >>> import pandas as pd
->>> from pypalmsens import load_session_file
+>>> import pypalmsens as ps
 
->>> measurements = load_session_file('Demo CV DPV EIS IS-C electrode.pssession')
+>>> measurements = ps.load_session_file('Demo CV DPV EIS IS-C electrode.pssession')
 
 >>> frames = []
 >>> frame_names = []

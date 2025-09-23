@@ -1,18 +1,16 @@
-import pypalmsens
+import pypalmsens as ps
 
-available_instruments = pypalmsens.discover()
-print('connecting to ' + available_instruments[0].name)
+instruments = ps.discover()
+print(instruments)
 
-with pypalmsens.connect(available_instruments[0]) as manager:
-    print('connection established')
-
+with ps.connect(instruments[0]) as manager:
     manager.set_cell(True)
     print('cell enabled')
 
     manager.set_potential(1)
     print('set potential to 1V')
 
-    manager.set_current_range(pypalmsens.settings.CURRENT_RANGE.cr_1_mA)
+    manager.set_current_range(ps.settings.CURRENT_RANGE.cr_1_mA)
     print('set cell to to 1mA currrent range')
 
     current = manager.read_current()

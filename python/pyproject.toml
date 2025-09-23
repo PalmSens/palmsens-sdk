@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
 [project]
 name = "PyPalmSens"
-version = "1.0.0"
+version = "1.1.0"
 description = "Python SDK for PalmSens instruments"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -43,7 +43,7 @@ dependencies = [
 [project.urls]
 homepage = "https://github.com/palmsens/palmsens_sdk"
 issues = "https://github.com/palmsens/palmsens_sdk/issues"
-documentation = "https://github.com/palmsens/palmsens_sdk"
+documentation = "https://palmsens.github.io/PalmSens_SDK/python/latest"
 changelog = "https://github.com/palmsens/palmsens_sdk/releases"
 
 [project.optional-dependencies]
@@ -113,7 +113,7 @@ allow_redefinition = true
 ignore_missing_imports = true
 
 [tool.bumpversion]
-current_version = "1.0.0"
+current_version = "1.1.0"
 
 [[tool.bumpversion.files]]
 filename = "src/pypalmsens/__init__.py"

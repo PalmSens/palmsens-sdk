@@ -7,10 +7,12 @@ Connect, control and process data from your PalmSens instrument using MATLAB.
 | - | - | - |
 | **Control your instrument using MATLAB** | **Import experimental results from PSTrace** | **Generate Nyquist and Bode plots** |
 
+For more information, see the [documentation](https://palmsens.github.io/PalmSens_SDK/matlab/latest/index.html).
+
 ## Installation
 
 To use the matlab SDK, download the latest [release here](https://github.com/palmsens/palmsens_sdk/releases).
-Unzip and load the directory in Matlab.
+Unzip the file and load the directory 'matlab-x.y.z' in Matlab.
 
 ## Examples
 

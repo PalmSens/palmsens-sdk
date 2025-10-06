@@ -32,6 +32,7 @@ if WINDOWS:
         BluetoothDevice,
         FTDIDevice,
         USBCDCDevice,
+        WinUSBDevice,
     )
 
 if LINUX:
@@ -41,6 +42,7 @@ if LINUX:
 async def discover_async(
     ftdi: bool = False,
     usbcdc: bool = True,
+    winusb: bool = True,
     bluetooth: bool = False,
     serial: bool = True,
 ) -> list[Instrument]:
@@ -52,6 +54,8 @@ async def discover_async(
         If True, discover ftdi devices
     usbcdc : bool
         If True, discover usbcdc devices (Windows only)
+    winusb : bool
+        If True, discover winusb devices (Windows only)
     bluetooth : bool
         If True, discover bluetooth devices (Windows only)
     """
@@ -87,6 +91,17 @@ async def discover_async(
                     id=usbcdc_instrument.ToString(),
                     interface='usbcdc',
                     device=usbcdc_instrument,
+                )
+            )
+
+    if WINDOWS and winusb:
+        winusb_instruments = await create_future(WinUSBDevice.DiscoverDevicesAsync())
+        for winusb_instrument in winusb_instruments:
+            available_instruments.append(
+                Instrument(
+                    id=winusb_instrument.ToString(),
+                    interface='winusb',
+                    device=winusb_instrument,
                 )
             )
 

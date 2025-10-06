@@ -32,6 +32,7 @@ if WINDOWS:
         BluetoothDevice,
         FTDIDevice,
         USBCDCDevice,
+        WinUSBDevice,
     )
 else:
     from PalmSens.Core.Linux.Comm.Devices import FTDIDevice, SerialPortDevice
@@ -40,6 +41,7 @@ else:
 def discover(
     ftdi: bool = False,
     usbcdc: bool = True,
+    winusb: bool = True,
     bluetooth: bool = False,
     serial: bool = True,
 ) -> list[Instrument]:
@@ -51,6 +53,8 @@ def discover(
         If True, discover ftdi devices
     usbcdc : bool
         If True, discover usbcdc devices (Windows only)
+    winusb : bool
+        If True, discover winusb devices (Windows only)
     bluetooth : bool
         If True, discover bluetooth devices (Windows only)
     serial : bool
@@ -78,6 +82,17 @@ def discover(
                     id=usbcdc_instrument.ToString(),
                     interface='usbcdc',
                     device=usbcdc_instrument,
+                )
+            )
+
+    if WINDOWS and winusb:
+        winusb_instruments = WinUSBDevice.DiscoverDevices(*args)
+        for winusb_instrument in winusb_instruments[0]:
+            available_instruments.append(
+                Instrument(
+                    id=winusb_instrument.ToString(),
+                    interface='winusb',
+                    device=winusb_instrument,
                 )
             )
 

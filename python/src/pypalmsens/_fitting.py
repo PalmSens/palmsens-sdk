@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal, Optional
 
 from PalmSens import Fitting as PSFitting
@@ -331,8 +331,8 @@ class CircuitModel:
     lambda_factor: float = 10.00
     """Lambda Scaling Factor. Levenberg-Marquardt only (default = 10)."""
 
-    _last_result: Optional[FitResult] = None
-    _last_psfitter: Optional[PSFitting.FitAlgorithm] = None
+    _last_result: Optional[FitResult] = field(default=None, repr=False)
+    _last_psfitter: Optional[PSFitting.FitAlgorithm] = field(default=None, repr=False)
 
     def default_parameters(self) -> Parameters:
         """Get default parameters. Use this to modify parameter values.

@@ -193,19 +193,17 @@ def test_CurrentLimitSettings():
     obj = Techniques.CyclicVoltammetry()
 
     kwargs = {
-        'use_limit_max': True,
-        'limit_max': 123.0,
-        'use_limit_min': True,
-        'limit_min': 678.0,
+        'min': 123.0,
+        'max': 678.0,
     }
 
     params = ps.settings.CurrentLimits(**kwargs)
     params._update_psmethod(obj=obj)
 
-    assert obj.UseLimitMaxValue is True
-    assert obj.LimitMaxValue == 123.0
     assert obj.UseLimitMinValue is True
-    assert obj.LimitMinValue == 678.0
+    assert obj.LimitMinValue == 123.0
+    assert obj.UseLimitMaxValue is True
+    assert obj.LimitMaxValue == 678.0
 
     new_params = ps.settings.CurrentLimits()
     new_params._update_params(obj=obj)
@@ -217,19 +215,17 @@ def test_PotentialLimitSettings():
     obj = Techniques.CyclicVoltammetry()
 
     kwargs = {
-        'use_limit_max': True,
-        'limit_max': 123.0,
-        'use_limit_min': True,
-        'limit_min': 678.0,
+        'min': 123.0,
+        'max': 678.0,
     }
 
     params = ps.settings.PotentialLimits(**kwargs)
     params._update_psmethod(obj=obj)
 
-    assert obj.UseLimitMaxValue is True
-    assert obj.LimitMaxValue == 123.0
     assert obj.UseLimitMinValue is True
-    assert obj.LimitMinValue == 678.0
+    assert obj.LimitMinValue == 123.0
+    assert obj.UseLimitMaxValue is True
+    assert obj.LimitMaxValue == 678.0
 
     new_params = ps.settings.PotentialLimits()
     new_params._update_params(obj=obj)
@@ -241,19 +237,17 @@ def test_ChargeLimitSettings():
     obj = Techniques.CyclicVoltammetry()
 
     kwargs = {
-        'use_limit_max': True,
-        'limit_max': 123.0,
-        'use_limit_min': True,
-        'limit_min': 678.0,
+        'min': 123.0,
+        'max': 678.0,
     }
 
     params = ps.settings.ChargeLimits(**kwargs)
     params._update_psmethod(obj=obj)
 
-    assert obj.UseChargeLimitMax is True
-    assert obj.ChargeLimitMax == 123.0
     assert obj.UseChargeLimitMin is True
-    assert obj.ChargeLimitMin == 678.0
+    assert obj.ChargeLimitMin == 123.0
+    assert obj.UseChargeLimitMax is True
+    assert obj.ChargeLimitMax == 678.0
 
     new_params = ps.settings.ChargeLimits()
     new_params._update_params(obj=obj)
@@ -265,8 +259,7 @@ def test_IrDropCompensationSettings():
     obj = Techniques.CyclicVoltammetry()
 
     kwargs = {
-        'enable': True,
-        'ir_compensation': 123.0,
+        'resistance': 123.0,
     }
 
     params = ps.settings.IrDropCompensation(**kwargs)
@@ -285,7 +278,6 @@ def test_TriggerAtEquilibrationSettings():
     obj = Techniques.CyclicVoltammetry()
 
     kwargs = {
-        'enable': True,
         'd0': True,
         'd1': False,
         'd2': True,
@@ -308,7 +300,6 @@ def test_TriggerAtMeasurementSettings():
     obj = Techniques.CyclicVoltammetry()
 
     kwargs = {
-        'enable': True,
         'd0': True,
         'd1': True,
         'd2': False,
@@ -331,7 +322,6 @@ def test_TriggerAtDelaySettings():
     obj = Techniques.PulsedAmpDetection()
 
     kwargs = {
-        'enable': True,
         'delay': 1.0,
         'd0': True,
         'd1': True,

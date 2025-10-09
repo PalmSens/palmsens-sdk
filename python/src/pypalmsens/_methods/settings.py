@@ -224,119 +224,144 @@ class PostMeasurement(CommonSettings):
 
 @attrs.define
 class CurrentLimits(CommonSettings):
-    """Set the limit settings for a given method."""
+    """Set the limit settings for a given method.
 
-    use_limit_max: bool = False
-    """Use limit current max.
+    Depending on the method, this will:
+    - Abort the measurement
+    - Reverse the scan instead (CV)
+    - Proceed to the next stage (Mixed Mode)
+    """
 
-    This will reverse the scan instead of aborting measurement."""
+    max: None | float = None
+    """Set limit current max in µA."""
 
-    limit_max: float = 0.0
-    """Limit current max in µA."""
-
-    use_limit_min: bool = False
-    """Use limit current min.
-
-    This will reverse the scan instead of aborting measurement."""
-
-    limit_min: float = 0.0
-    """Limit current min in µA."""
+    min: None | float = None
+    """Set limit current min in µA."""
 
     def _update_psmethod(self, *, obj):
-        obj.UseLimitMaxValue = self.use_limit_max
-        obj.LimitMaxValue = self.limit_max
-        obj.UseLimitMinValue = self.use_limit_min
-        obj.LimitMinValue = self.limit_min
+        if self.max is not None:
+            obj.UseLimitMaxValue = True
+            obj.LimitMaxValue = self.max
+        else:
+            obj.UseLimitMaxValue = False
+
+        if self.min is not None:
+            obj.UseLimitMinValue = True
+            obj.LimitMinValue = self.min
+        else:
+            obj.UseLimitMinValue = False
 
     def _update_params(self, *, obj):
-        self.use_limit_max = obj.UseLimitMaxValue
-        self.limit_max = obj.LimitMaxValue
-        self.use_limit_min = obj.UseLimitMinValue
-        self.limit_min = obj.LimitMinValue
+        if obj.UseLimitMaxValue:
+            self.max = obj.LimitMaxValue
+        else:
+            self.max = None
+
+        if obj.UseLimitMinValue:
+            self.min = obj.LimitMinValue
+        else:
+            self.min = None
 
 
 @attrs.define
 class PotentialLimits(CommonSettings):
-    """Set the limit settings for a given method."""
+    """Set the limit settings for a given method.
 
-    use_limit_max: bool = False
-    """Use limit potential max."""
+    Depending on the method, this will:
+    - Abort the measurement
+    - Proceed to the next stage (Mixed Mode)
+    """
 
-    limit_max: float = 0.0
-    """Limit potential max in V."""
+    max: None | float = None
+    """Set limit potential max in V."""
 
-    use_limit_min: bool = False
-    """Use limit potential min."""
-
-    limit_min: float = 0.0
-    """Limit potential min in V."""
+    min: None | float = None
+    """Set limit potential min in V."""
 
     def _update_psmethod(self, *, obj):
-        obj.UseLimitMaxValue = self.use_limit_max
-        obj.LimitMaxValue = self.limit_max
-        obj.UseLimitMinValue = self.use_limit_min
-        obj.LimitMinValue = self.limit_min
+        if self.max is not None:
+            obj.UseLimitMaxValue = True
+            obj.LimitMaxValue = self.max
+        else:
+            obj.UseLimitMaxValue = False
+
+        if self.min is not None:
+            obj.UseLimitMinValue = True
+            obj.LimitMinValue = self.min
+        else:
+            obj.UseLimitMinValue = False
 
     def _update_params(self, *, obj):
-        self.use_limit_max = obj.UseLimitMaxValue
-        self.limit_max = obj.LimitMaxValue
-        self.use_limit_min = obj.UseLimitMinValue
-        self.limit_min = obj.LimitMinValue
+        if obj.UseLimitMaxValue:
+            self.max = obj.LimitMaxValue
+        else:
+            self.max = None
+
+        if obj.UseLimitMinValue:
+            self.min = obj.LimitMinValue
+        else:
+            self.min = None
 
 
 @attrs.define
 class ChargeLimits(CommonSettings):
     """Set the charge limit settings for a given method."""
 
-    use_limit_max: bool = False
-    """Use limit charge max."""
+    max: None | float = 0.0
+    """Set limit charge max in µC."""
 
-    limit_max: float = 0.0
-    """Limit charge max in µC."""
-
-    use_limit_min: bool = False
-    """Use limit charge min."""
-
-    limit_min: float = 0.0
-    """Limit charge min in µC."""
+    min: None | float = 0.0
+    """Set limit charge min in µC."""
 
     def _update_psmethod(self, *, obj):
-        obj.UseChargeLimitMax = self.use_limit_max
-        obj.ChargeLimitMax = self.limit_max
-        obj.UseChargeLimitMin = self.use_limit_min
-        obj.ChargeLimitMin = self.limit_min
+        if self.max is not None:
+            obj.UseChargeLimitMax = True
+            obj.ChargeLimitMax = self.max
+        else:
+            obj.UseChargeLimitMax = False
+
+        if self.min is not None:
+            obj.UseChargeLimitMin = True
+            obj.ChargeLimitMin = self.min
+        else:
+            obj.UseChargeLimitMin = False
 
     def _update_params(self, *, obj):
-        self.use_limit_max = obj.UseChargeLimitMax
-        self.limit_max = obj.ChargeLimitMax
-        self.use_limit_min = obj.UseChargeLimitMin
-        self.limit_min = obj.ChargeLimitMin
+        if obj.UseChargeLimitMax:
+            self.max = obj.ChargeLimitMax
+        else:
+            self.max = None
+
+        if obj.UseChargeLimitMin:
+            self.min = obj.ChargeLimitMin
+        else:
+            self.min = None
 
 
 @attrs.define
 class IrDropCompensation(CommonSettings):
     """Set the iR drop compensation settings for a given method."""
 
-    enable: bool = False
-    """Enable iR compensation"""
-    ir_compensation: float = 0.0
-    """Set the iR compensation in Ω"""
+    resistance: None | float = None
+    """Set the iR compensation resistance in Ω"""
 
     def _update_psmethod(self, *, obj):
-        obj.UseIRDropComp = self.enable
-        obj.IRDropCompRes = self.ir_compensation
+        if self.resistance:
+            obj.UseIRDropComp = True
+            obj.IRDropCompRes = self.resistance
+        else:
+            obj.UseIRDropComp = False
 
     def _update_params(self, *, obj):
-        self.enable = obj.UseIRDropComp
-        self.ir_compensation = obj.IRDropCompRes
+        if obj.UseIRDropComp:
+            self.resistance = obj.IRDropCompRes
+        else:
+            self.resistance = None
 
 
 @attrs.define
 class EquilibrationTriggers(CommonSettings):
-    """Set the trigger at equilibration settings for a given method."""
-
-    enable: bool = False
-    """Enable equilibration triggers.
+    """Set the trigger at equilibration settings for a given method.
 
     If enabled, set one or more digital outputs at the start of
     the equilibration period.
@@ -355,20 +380,25 @@ class EquilibrationTriggers(CommonSettings):
     """If True, enable trigger at d3 high."""
 
     def _update_psmethod(self, *, obj):
-        obj.UseTriggerOnEquil = self.enable
-        obj.TriggerValueOnEquil = convert_bools_to_int((self.d0, self.d1, self.d2, self.d3))
+        if any((self.d0, self.d1, self.d2, self.d3)):
+            obj.UseTriggerOnEquil = True
+            obj.TriggerValueOnEquil = convert_bools_to_int((self.d0, self.d1, self.d2, self.d3))
+        else:
+            obj.UseTriggerOnEquil = False
 
     def _update_params(self, *, obj):
-        self.enable = obj.UseTriggerOnEquil
-        self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(obj.TriggerValueOnEquil)
+        if obj.UseTriggerOnEquil:
+            self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(obj.TriggerValueOnEquil)
+        else:
+            self.d0 = False
+            self.d1 = False
+            self.d2 = False
+            self.d3 = False
 
 
 @attrs.define
 class MeasurementTriggers(CommonSettings):
-    """Set the trigger at measurement settings for a given method."""
-
-    enable: bool = False
-    """Enable measurement triggers.
+    """Set the trigger at measurement settings for a given method.
 
     If enabled, set one or more digital outputs at the start measurement,
     """
@@ -386,20 +416,25 @@ class MeasurementTriggers(CommonSettings):
     """If True, enable trigger at d3 high."""
 
     def _update_psmethod(self, *, obj):
-        obj.UseTriggerOnStart = self.enable
-        obj.TriggerValueOnStart = convert_bools_to_int((self.d0, self.d1, self.d2, self.d3))
+        if any((self.d0, self.d1, self.d2, self.d3)):
+            obj.UseTriggerOnStart = True
+            obj.TriggerValueOnStart = convert_bools_to_int((self.d0, self.d1, self.d2, self.d3))
+        else:
+            obj.UseTriggerOnEquil = False
 
     def _update_params(self, *, obj):
-        self.enable = obj.UseTriggerOnStart
-        self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(obj.TriggerValueOnStart)
+        if obj.UseTriggerOnStart:
+            self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(obj.TriggerValueOnStart)
+        else:
+            self.d0 = False
+            self.d1 = False
+            self.d2 = False
+            self.d3 = False
 
 
 @attrs.define
 class DelayTriggers(CommonSettings):
-    """Set the delayed trigger at measurement settings for a given method."""
-
-    enable: bool = False
-    """Enable delay after start triggers.
+    """Set the delayed trigger at measurement settings for a given method.
 
     If enabled, set one or more digital outputs at the start measurement after a delay,
     """
@@ -423,14 +458,24 @@ class DelayTriggers(CommonSettings):
     """If True, enable trigger at d3 high."""
 
     def _update_psmethod(self, *, obj):
-        obj.UseTriggerOnDelay = self.enable
-        obj.TriggerValueOnDelay = convert_bools_to_int((self.d0, self.d1, self.d2, self.d3))
         obj.TriggerDelayPeriod = self.delay
 
+        if any((self.d0, self.d1, self.d2, self.d3)):
+            obj.UseTriggerOnDelay = True
+            obj.TriggerValueOnDelay = convert_bools_to_int((self.d0, self.d1, self.d2, self.d3))
+        else:
+            obj.UseTriggerOnDelay = False
+
     def _update_params(self, *, obj):
-        self.enable = obj.UseTriggerOnDelay
-        self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(obj.TriggerValueOnDelay)
         self.delay = obj.TriggerDelayPeriod
+
+        if obj.UseTriggerOnDelay:
+            self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(obj.TriggerValueOnDelay)
+        else:
+            self.d0 = False
+            self.d1 = False
+            self.d2 = False
+            self.d3 = False
 
 
 @attrs.define

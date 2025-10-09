@@ -3,17 +3,17 @@ from __future__ import annotations
 import pytest
 import pytest_asyncio
 
-import pypalmsens
+import pypalmsens as ps
 from pypalmsens._data.measurement import Measurement
 from pypalmsens._instruments import Instrument
 
 
 @pytest.fixture
 def pool():
-    instruments = pypalmsens.discover()
+    instruments = ps.discover()
     assert len(instruments) >= 0
 
-    with pypalmsens.InstrumentPool(instruments) as pool:
+    with ps.InstrumentPool(instruments) as pool:
         yield pool
 
     assert pool.is_disconnected() is True
@@ -21,10 +21,10 @@ def pool():
 
 @pytest_asyncio.fixture
 async def apool():
-    instruments = await pypalmsens.discover_async()
+    instruments = await ps.discover_async()
     assert len(instruments) >= 0
 
-    async with pypalmsens.InstrumentPoolAsync(instruments) as pool:
+    async with ps.InstrumentPoolAsync(instruments) as pool:
         yield pool
 
     assert pool.is_disconnected() is True
@@ -69,7 +69,7 @@ async def test_pool_async(apool):
 
 @pytest.mark.instrument
 def test_pool_measure(pool):
-    method = pypalmsens.LinearSweepVoltammetry(
+    method = ps.LinearSweepVoltammetry(
         end_potential=-0.5,
         begin_potential=0.5,
         step_potential=0.1,
@@ -85,7 +85,7 @@ def test_pool_measure(pool):
 @pytest.mark.asyncio
 @pytest.mark.instrument
 async def test_pool_measure_async(apool):
-    method = pypalmsens.LinearSweepVoltammetry(
+    method = ps.LinearSweepVoltammetry(
         end_potential=-0.5,
         begin_potential=0.5,
         step_potential=0.1,
@@ -115,7 +115,7 @@ async def test_pool_submit_async(apool):
 @pytest.mark.asyncio
 @pytest.mark.instrument
 async def test_pool_hw_sync_async(apool):
-    method = pypalmsens.LinearSweepVoltammetry(
+    method = ps.LinearSweepVoltammetry(
         end_potential=-0.5,
         begin_potential=0.5,
         step_potential=0.1,
@@ -153,17 +153,19 @@ async def test_pool_hw_sync_async(apool):
     ],
 )
 @pytest.mark.asyncio
+@pytest.mark.instrument
 async def test_pool_hw_sync_fail(devices):
-    method = pypalmsens.LinearSweepVoltammetry()
+    method = ps.LinearSweepVoltammetry()
     method.general.use_hardware_sync = True
 
-    pool = pypalmsens.InstrumentPoolAsync(devices)
+    pool = ps.InstrumentPoolAsync(devices)
     with pytest.raises(ValueError):
         _ = await pool.measure(method)
 
 
+@pytest.mark.instrument
 def test_pool_instrument():
-    device = pypalmsens._instruments.Instrument(id='test', interface='test', device=None)
-    mgr = pypalmsens.InstrumentManagerAsync(device)
-    pool = pypalmsens.InstrumentPoolAsync([mgr])
+    device = ps._instruments.Instrument(id='test', interface='test', device=None)
+    mgr = ps.InstrumentManagerAsync(device)
+    pool = ps.InstrumentPoolAsync([mgr])
     assert pool.managers

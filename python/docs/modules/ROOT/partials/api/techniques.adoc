@@ -321,7 +321,7 @@ Applied current range.
 * link:#pypalmsens.ChronoPotentiometry.interval_time[*interval++_++time*]
 (link:#float[float]) – Interval time in s (default: 0.1)
 * link:#pypalmsens.ChronoPotentiometry.run_time[*run++_++time*]
-(link:#float[float]) – Run time in s (default: 1.0)
+(link:#float[float]) – Run time in s.
 * link:#pypalmsens.ChronoPotentiometry.record_auxiliary_input[*record++_++auxiliary++_++input*]
 (link:#bool[bool]) – Record auxiliary input.
 * link:#pypalmsens.ChronoPotentiometry.record_cell_potential[*record++_++cell++_++potential*]
@@ -451,7 +451,7 @@ Interval time in s (default: 0.1)
 run_time: float = 1.0
 ----
 
-Run time in s (default: 1.0)
+Run time in s.
 
 ==== `record++_++auxiliary++_++input`
 

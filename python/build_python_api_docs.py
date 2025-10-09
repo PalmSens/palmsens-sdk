@@ -159,6 +159,11 @@ pages = (
         },
     ),
     Page(
+        name='mixed_mode',
+        title='Mixed Mode',
+        module='pypalmsens.mixed_mode',
+    ),
+    Page(
         name='fitting',
         title='Fitting',
         module='pypalmsens.fitting',
@@ -170,8 +175,8 @@ pages = (
     ),
 )
 
-ROOT_DIR = Path(__file__).parents[1]
-WORKDIR = ROOT_DIR / 'docs' / 'modules' / 'python' / 'partials' / 'api'
+ROOT_DIR = Path(__file__).parent
+WORKDIR = ROOT_DIR / 'docs' / 'modules' / 'ROOT' / 'partials' / 'api'
 
 
 with tempfile.TemporaryDirectory() as temp_dir:

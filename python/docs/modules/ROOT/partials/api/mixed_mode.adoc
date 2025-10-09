@@ -1,0 +1,389 @@
+== `pypalmsens.mixed++_++mode`
+
+*Classes:*
+
+* link:#pypalmsens.mixed_mode.ConstantE[*ConstantE*] – Amperometric
+detection stage.
+* link:#pypalmsens.mixed_mode.ConstantI[*ConstantI*] – Potentiometry
+stage.
+* link:#pypalmsens.mixed_mode.SweepE[*SweepE*] – Linear sweep detection
+stage.
+* link:#pypalmsens.mixed_mode.OpenCircuit[*OpenCircuit*] – Ocp stage.
+* link:#pypalmsens.mixed_mode.Impedance[*Impedance*] – Electostatic
+impedance stage.
+* link:#pypalmsens.mixed_mode.MixedMode[*MixedMode*] – Create mixed mode
+method parameters.
+
+=== `ConstantE`
+
+Amperometric detection stage.
+
+*Attributes:*
+
+* link:#pypalmsens.mixed_mode.ConstantE.potential[*potential*]
+(link:#float[float]) – Potential in V.
+* link:#pypalmsens.mixed_mode.ConstantE.run_time[*run++_++time*]
+(link:#float[float]) – Run time in s.
+* link:#pypalmsens.mixed_mode.ConstantE.current_limits[*current++_++limits*]
+(link:#pypalmsens._methods.settings.CurrentLimits[CurrentLimits]) – Set
+the current limit settings.
+
+==== `potential`
+
+[source,python]
+----
+potential: float = 0.0
+----
+
+Potential in V.
+
+==== `run++_++time`
+
+[source,python]
+----
+run_time: float = 1.0
+----
+
+Run time in s.
+
+==== `current++_++limits`
+
+[source,python]
+----
+current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
+----
+
+Set the current limit settings.
+
+=== `ConstantI`
+
+Potentiometry stage.
+
+*Attributes:*
+
+* link:#pypalmsens.mixed_mode.ConstantI.current[*current*]
+(link:#float[float]) – The current to apply in the given current range.
+* link:#pypalmsens.mixed_mode.ConstantI.applied_current_range[*applied++_++current++_++range*]
+(link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT++_++RANGE]) –
+Applied current range.
+* link:#pypalmsens.mixed_mode.ConstantI.run_time[*run++_++time*]
+(link:#float[float]) – Run time in s.
+* link:#pypalmsens.mixed_mode.ConstantI.potential_limits[*potential++_++limits*]
+(link:#pypalmsens._methods.settings.PotentialLimits[PotentialLimits]) –
+Set the potential limit settings
+
+==== `current`
+
+[source,python]
+----
+current: float = 0.0
+----
+
+The current to apply in the given current range.
+
+Note that this value acts as a multiplier in the applied current range.
+
+So if 10 uA is the applied current range and 1.5 is given as current
+value, the applied current will be 15 uA.
+
+==== `applied++_++current++_++range`
+
+[source,python]
+----
+applied_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_100_uA
+----
+
+Applied current range.
+
+Use `CURRENT++_++RANGE` to define the range.
+
+==== `run++_++time`
+
+[source,python]
+----
+run_time: float = 1.0
+----
+
+Run time in s.
+
+==== `potential++_++limits`
+
+[source,python]
+----
+potential_limits: PotentialLimits = attrs.field(factory=PotentialLimits)
+----
+
+Set the potential limit settings
+
+=== `SweepE`
+
+Linear sweep detection stage.
+
+*Attributes:*
+
+* link:#pypalmsens.mixed_mode.SweepE.begin_potential[*begin++_++potential*]
+(link:#float[float]) – Begin potential in V.
+* link:#pypalmsens.mixed_mode.SweepE.end_potential[*end++_++potential*]
+(link:#float[float]) – End potential in V.
+* link:#pypalmsens.mixed_mode.SweepE.step_potential[*step++_++potential*]
+(link:#float[float]) – Step potential in V.
+* link:#pypalmsens.mixed_mode.SweepE.scanrate[*scanrate*]
+(link:#float[float]) – Scan rate in V/s.
+* link:#pypalmsens.mixed_mode.SweepE.current_limits[*current++_++limits*]
+(link:#pypalmsens._methods.settings.CurrentLimits[CurrentLimits]) – Set
+the current limit settings.
+
+==== `begin++_++potential`
+
+[source,python]
+----
+begin_potential: float = -0.5
+----
+
+Begin potential in V.
+
+==== `end++_++potential`
+
+[source,python]
+----
+end_potential: float = 0.5
+----
+
+End potential in V.
+
+==== `step++_++potential`
+
+[source,python]
+----
+step_potential: float = 0.1
+----
+
+Step potential in V.
+
+==== `scanrate`
+
+[source,python]
+----
+scanrate: float = 1.0
+----
+
+Scan rate in V/s.
+
+==== `current++_++limits`
+
+[source,python]
+----
+current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
+----
+
+Set the current limit settings.
+
+=== `OpenCircuit`
+
+Ocp stage.
+
+*Attributes:*
+
+* link:#pypalmsens.mixed_mode.OpenCircuit.potential_limits[*potential++_++limits*]
+(link:#pypalmsens._methods.settings.PotentialLimits[PotentialLimits]) –
+Set the potential limit settings
+* link:#pypalmsens.mixed_mode.OpenCircuit.run_time[*run++_++time*]
+(link:#float[float]) – Run time in s.
+
+==== `potential++_++limits`
+
+[source,python]
+----
+potential_limits: PotentialLimits = attrs.field(factory=PotentialLimits)
+----
+
+Set the potential limit settings
+
+==== `run++_++time`
+
+[source,python]
+----
+run_time: float = 1.0
+----
+
+Run time in s.
+
+=== `Impedance`
+
+Electostatic impedance stage.
+
+*Attributes:*
+
+* link:#pypalmsens.mixed_mode.Impedance.run_time[*run++_++time*]
+(link:#float[float]) – Run time in s.
+* link:#pypalmsens.mixed_mode.Impedance.dc_potential[*dc++_++potential*]
+(link:#float[float]) – DC potential in V.
+* link:#pypalmsens.mixed_mode.Impedance.ac_potential[*ac++_++potential*]
+(link:#float[float]) – AC potential in V RMS.
+* link:#pypalmsens.mixed_mode.Impedance.frequency[*frequency*]
+(link:#float[float]) – Frequency in Hz.
+* link:#pypalmsens.mixed_mode.Impedance.min_sampling_time[*min++_++sampling++_++time*]
+(link:#float[float]) – Minimum sampling time in s.
+* link:#pypalmsens.mixed_mode.Impedance.max_equilibration_time[*max++_++equilibration++_++time*]
+(link:#float[float]) – Max equilibration time in s.
+
+==== `run++_++time`
+
+[source,python]
+----
+run_time: float = 10.0
+----
+
+Run time in s.
+
+==== `dc++_++potential`
+
+[source,python]
+----
+dc_potential: float = 0.0
+----
+
+DC potential in V.
+
+==== `ac++_++potential`
+
+[source,python]
+----
+ac_potential: float = 0.01
+----
+
+AC potential in V RMS.
+
+==== `frequency`
+
+[source,python]
+----
+frequency: float = 50000.0
+----
+
+Frequency in Hz.
+
+==== `min++_++sampling++_++time`
+
+[source,python]
+----
+min_sampling_time: float = 0.5
+----
+
+Minimum sampling time in s.
+
+The instrument will measure at leas 2 sine waves. The sampling time will
+be automatically adjusted when necessary.
+
+==== `max++_++equilibration++_++time`
+
+[source,python]
+----
+max_equilibration_time: float = 5.0
+----
+
+Max equilibration time in s.
+
+Used as a guard when the frequency drops below 1/max. equilibration
+time.
+
+=== `MixedMode`
+
+Create mixed mode method parameters.
+
+*Attributes:*
+
+* link:#pypalmsens.mixed_mode.MixedMode.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
+the autoranging current.
+* link:#pypalmsens.mixed_mode.MixedMode.pretreatment[*pretreatment*]
+(link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
+the pretreatment settings.
+* link:#pypalmsens.mixed_mode.MixedMode.post_measurement[*post++_++measurement*]
+(link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
+Set the post measurement settings.
+* link:#pypalmsens.mixed_mode.MixedMode.data_processing[*data++_++processing*]
+(link:#pypalmsens._methods.settings.DataProcessing[DataProcessing]) –
+Set the data processing settings.
+* link:#pypalmsens.mixed_mode.MixedMode.general[*general*]
+(link:#pypalmsens._methods.settings.General[General]) – Sets
+general/other settings.
+* link:#pypalmsens.mixed_mode.MixedMode.interval_time[*interval++_++time*]
+(link:#float[float]) – Interval time in s.
+* link:#pypalmsens.mixed_mode.MixedMode.cycles[*cycles*]
+(link:#int[int]) – Number of times to go through all stages.
+* link:#pypalmsens.mixed_mode.MixedMode.stages[*stages*]
+(link:#list[list]++[++link:#pypalmsens._methods.mixed_mode.TStage[TStage]++]++)
+– List of stages to run through.
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+----
+
+Set the autoranging current.
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+----
+
+Set the pretreatment settings.
+
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+----
+
+Set the post measurement settings.
+
+==== `data++_++processing`
+
+[source,python]
+----
+data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+----
+
+Set the data processing settings.
+
+==== `general`
+
+[source,python]
+----
+general: General = attrs.field(factory=General)
+----
+
+Sets general/other settings.
+
+==== `interval++_++time`
+
+[source,python]
+----
+interval_time: float = 0.1
+----
+
+Interval time in s.
+
+==== `cycles`
+
+[source,python]
+----
+cycles: int = 1
+----
+
+Number of times to go through all stages.
+
+==== `stages`
+
+[source,python]
+----
+stages: list[TStage] = attrs.field(factory=list)
+----
+
+List of stages to run through.

@@ -43,7 +43,7 @@ Other::
 // - xref:api/techniques.adoc#_fastimpedancespectroscopy[Fast Impedance Spectroscopy]
 - xref:api/techniques.adoc#_galvanostaticimpedancespectroscopy[Galvanostatic Impedance Spectroscopy]
 // - xref:api/techniques.adoc#_fastgalvanostaticimpedancespectroscopy[Fast Galvanostatic Impedance Spectroscopy]
-// - xref:api/techniques.adoc#_mixedmode[Mixed Mode]
+- xref:api/techniques.adoc#_mixedmode[Mixed Mode]
 - xref:api/techniques.adoc#_methodscript[Method Script]
 
 == Setting up a method

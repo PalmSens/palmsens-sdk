@@ -515,7 +515,7 @@ instrument. The connection will be terminated after the context ends.
 
 [source,python]
 ----
-discover_async(ftdi=False, usbcdc=True, bluetooth=False, serial=True)
+discover_async(ftdi=False, usbcdc=True, winusb=True, bluetooth=False, serial=True)
 ----
 
 Discover instruments.
@@ -524,6 +524,8 @@ Discover instruments.
 
 * *ftdi* (link:#bool[bool]) – If True, discover ftdi devices
 * *usbcdc* (link:#bool[bool]) – If True, discover usbcdc devices
+(Windows only)
+* *winusb* (link:#bool[bool]) – If True, discover winusb devices
 (Windows only)
 * *bluetooth* (link:#bool[bool]) – If True, discover bluetooth devices
 (Windows only)

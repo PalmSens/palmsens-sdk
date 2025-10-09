@@ -6,7 +6,7 @@ import pytest
 from PalmSens import Techniques
 from pytest import approx
 
-import pypalmsens
+import pypalmsens as ps
 from pypalmsens.data import Measurement
 from pypalmsens.settings import (
     CURRENT_RANGE,
@@ -40,7 +40,7 @@ def assert_params_round_trip_equal(*, pscls, pycls, kwargs):
 
 @pytest.fixture(scope='module')
 def manager():
-    with pypalmsens.connect() as mgr:
+    with ps.connect() as mgr:
         logger.warning('Connected to %s' % mgr.instrument.id)
         yield mgr
 
@@ -75,7 +75,7 @@ class TestCV:
         'scanrate': 5,
         'n_scans': 2,
     }
-    pycls = pypalmsens.CyclicVoltammetry
+    pycls = ps.CyclicVoltammetry
     pscls = Techniques.CyclicVoltammetry
 
     def test_params_round_trip(self):
@@ -88,7 +88,7 @@ class TestCV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_range=pypalmsens.settings.CurrentRange(
+            current_range=ps.settings.CurrentRange(
                 max=CURRENT_RANGE.cr_1_mA,
                 min=CURRENT_RANGE.cr_100_nA,
                 start=CURRENT_RANGE.cr_100_uA,
@@ -123,7 +123,7 @@ class TestLSV:
         'step_potential': 0.1,
         'scanrate': 2.0,
     }
-    pycls = pypalmsens.LinearSweepVoltammetry
+    pycls = ps.LinearSweepVoltammetry
     pscls = Techniques.LinearSweep
 
     def test_params_round_trip(self):
@@ -136,7 +136,7 @@ class TestLSV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_range=pypalmsens.settings.CurrentRange(
+            current_range=ps.settings.CurrentRange(
                 max=CURRENT_RANGE.cr_1_mA,
                 min=CURRENT_RANGE.cr_100_nA,
                 start=CURRENT_RANGE.cr_100_uA,
@@ -166,7 +166,7 @@ class TestSWV:
         'amplitude': 0.05,
         'record_forward_and_reverse_currents': True,
     }
-    pycls = pypalmsens.SquareWaveVoltammetry
+    pycls = ps.SquareWaveVoltammetry
     pscls = Techniques.SquareWave
 
     def test_params_round_trip(self):
@@ -179,7 +179,7 @@ class TestSWV:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            current_range=pypalmsens.settings.CurrentRange(
+            current_range=ps.settings.CurrentRange(
                 max=CURRENT_RANGE.cr_1_mA,
                 min=CURRENT_RANGE.cr_100_nA,
                 start=CURRENT_RANGE.cr_100_uA,
@@ -206,7 +206,7 @@ class TestCP:
         'interval_time': 0.1,
         'run_time': 1.0,
     }
-    pycls = pypalmsens.ChronoPotentiometry
+    pycls = ps.ChronoPotentiometry
     pscls = Techniques.Potentiometry
 
     def test_params_round_trip(self):
@@ -219,7 +219,7 @@ class TestCP:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            potential_range=pypalmsens.settings.PotentialRange(
+            potential_range=ps.settings.PotentialRange(
                 max=POTENTIAL_RANGE.pr_1_V,
                 min=POTENTIAL_RANGE.pr_10_mV,
                 start=POTENTIAL_RANGE.pr_1_V,
@@ -243,7 +243,7 @@ class TestOCP:
         'interval_time': 0.1,
         'run_time': 1.0,
     }
-    pycls = pypalmsens.OpenCircuitPotentiometry
+    pycls = ps.OpenCircuitPotentiometry
     pscls = Techniques.OpenCircuitPotentiometry
 
     def test_params_round_trip(self):
@@ -256,7 +256,7 @@ class TestOCP:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(
-            potential_range=pypalmsens.settings.PotentialRange(
+            potential_range=ps.settings.PotentialRange(
                 max=POTENTIAL_RANGE.pr_1_V,
                 min=POTENTIAL_RANGE.pr_10_mV,
                 start=POTENTIAL_RANGE.pr_1_V,
@@ -280,7 +280,7 @@ class TestCA:
         'interval_time': 0.1,
         'run_time': 1.0,
     }
-    pycls = pypalmsens.ChronoAmperometry
+    pycls = ps.ChronoAmperometry
     pscls = Techniques.AmperometricDetection
 
     def test_params_round_trip(self):
@@ -314,7 +314,7 @@ class TestDP:
         'pulse_time': 0.1,
         'scan_rate': 0.5,
     }
-    pycls = pypalmsens.DifferentialPulseVoltammetry
+    pycls = ps.DifferentialPulseVoltammetry
     pscls = Techniques.DifferentialPulse
 
     def test_params_round_trip(self):
@@ -349,7 +349,7 @@ class TestMA:
             ELevel(level=0.3, duration=0.2),
         ],
     }
-    pycls = pypalmsens.MultiStepAmperometry
+    pycls = ps.MultiStepAmperometry
     pscls = Techniques.MultistepAmperometry
 
     def test_params_round_trip(self):
@@ -385,7 +385,7 @@ class TestEIS:
         'max_frequency': 1e5,
         'min_frequency': 1e3,
     }
-    pycls = pypalmsens.ElectrochemicalImpedanceSpectroscopy
+    pycls = ps.ElectrochemicalImpedanceSpectroscopy
     pscls = Techniques.ImpedimetricMethod
 
     def test_params_round_trip(self):
@@ -452,7 +452,7 @@ class TestGIS:
         'max_frequency': 1e5,
         'min_frequency': 1e3,
     }
-    pycls = pypalmsens.GalvanostaticImpedanceSpectroscopy
+    pycls = ps.GalvanostaticImpedanceSpectroscopy
     pscls = Techniques.ImpedimetricGstatMethod
 
     def test_params_round_trip(self):
@@ -529,7 +529,7 @@ class TestMS:
             '\n'  # must end with 2 newlines
         )
     }
-    pycls = pypalmsens.MethodScript
+    pycls = ps.MethodScript
     pscls = Techniques.MethodScriptSandbox
 
     def test_params_round_trip(self):
@@ -552,3 +552,103 @@ class TestMS:
 
         assert dataset.array_names == {'AppliedPotential1_1', 'Current1_1'}
         assert dataset.array_quantities == {'Current', 'Potential'}
+
+
+class TestMM:
+    kwargs = {
+        'cycles': 2,
+        'interval_time': 0.02,
+        'stages': [
+            ps.mixed_mode.ConstantE(
+                run_time=0.1,
+                potential=0.5,
+            ),
+            ps.mixed_mode.ConstantI(
+                run_time=0.1,
+                current=1.0,
+                applied_current_range=ps.settings.CURRENT_RANGE.cr_100_nA,
+            ),
+            ps.mixed_mode.SweepE(
+                begin_potential=-0.5,
+                end_potential=0.5,
+                step_potential=0.25,
+                scanrate=20.0,
+            ),
+            ps.mixed_mode.OpenCircuit(
+                run_time=0.1,
+            ),
+            ps.mixed_mode.Impedance(
+                frequency=50000,
+                ac_potential=0.01,
+                dc_potential=0.0,
+                run_time=0.1,
+                min_sampling_time=0.0,
+            ),
+        ],
+    }
+    pycls = ps.mixed_mode.MixedMode
+    pscls = Techniques.MixedMode
+
+    def test_params_round_trip(self):
+        assert_params_round_trip_equal(
+            pscls=self.pscls,
+            pycls=self.pycls,
+            kwargs=self.kwargs,
+        )
+
+    @pytest.mark.instrument
+    def test_measurement(self, manager):
+        method = self.pycls(**self.kwargs)
+        measurement = manager.measure(method)
+
+        assert measurement
+        assert isinstance(measurement, Measurement)
+
+        dataset = measurement.dataset
+
+        assert len(dataset) == 4
+
+        assert dataset.array_names == {'charge', 'current', 'potential', 'time'}
+        assert dataset.array_quantities == {'Charge', 'Current', 'Potential', 'Time'}
+
+        eis = measurement.eis_data
+        assert len(eis) == 2
+
+        eis_dataset = eis[0].dataset
+
+        assert eis_dataset.array_names == {
+            'Capacitance',
+            "Capacitance'",
+            "Capacitance''",
+            'Eac',
+            'Frequency',
+            'Iac',
+            'Idc',
+            'Phase',
+            'Y',
+            'YIm',
+            'YRe',
+            'Z',
+            'ZIm',
+            'ZRe',
+            'mEdc',
+            'miDC',
+            'potential',
+            'time',
+        }
+        assert eis_dataset.array_quantities == {
+            "-C''",
+            '-Phase',
+            "-Z''",
+            'C',
+            "C'",
+            'Current',
+            'Frequency',
+            'Potential',
+            'Time',
+            'Y',
+            "Y'",
+            "Y''",
+            'Z',
+            "Z'",
+        }

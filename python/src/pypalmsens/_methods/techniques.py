@@ -820,7 +820,7 @@ class ChronoPotentiometry(
     """Interval time in s (default: 0.1)"""
 
     run_time: float = 1.0
-    """Run time in s (default: 1.0)"""
+    """Run time in s."""
 
     record_auxiliary_input: bool = False
     """Record auxiliary input."""

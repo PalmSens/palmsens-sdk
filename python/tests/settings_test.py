@@ -3,7 +3,7 @@ from __future__ import annotations
 from attrs import asdict
 from PalmSens import Techniques
 
-import pypalmsens
+import pypalmsens as ps
 from pypalmsens._methods._shared import (
     CURRENT_RANGE,
     POTENTIAL_RANGE,
@@ -60,14 +60,14 @@ def test_AutorangingCurrentSettings():
 
     obj = Techniques.CyclicVoltammetry()
 
-    params = pypalmsens.settings.CurrentRange(**kwargs)
+    params = ps.settings.CurrentRange(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.Ranging.MaximumCurrentRange.Description == '100 uA'
     assert obj.Ranging.MinimumCurrentRange.Description == '100 nA'
     assert obj.Ranging.StartCurrentRange.Description == '10 uA'
 
-    new_params = pypalmsens.settings.CurrentRange()
+    new_params = ps.settings.CurrentRange()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -82,14 +82,14 @@ def test_AutorangingPotentialSettings():
 
     obj = Techniques.Potentiometry()
 
-    params = pypalmsens.settings.PotentialRange(**kwargs)
+    params = ps.settings.PotentialRange(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.RangingPotential.MaximumPotentialRange.Description == '100 mV'
     assert obj.RangingPotential.MinimumPotentialRange.Description == '1 mV'
     assert obj.RangingPotential.StartPotentialRange.Description == '10 mV'
 
-    new_params = pypalmsens.settings.PotentialRange()
+    new_params = ps.settings.PotentialRange()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -105,7 +105,7 @@ def test_PretreatmentSettings():
         'conditioning_time': 78,
     }
 
-    params = pypalmsens.settings.Pretreatment(**kwargs)
+    params = ps.settings.Pretreatment(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.DepositionPotential == 12
@@ -113,7 +113,7 @@ def test_PretreatmentSettings():
     assert obj.ConditioningPotential == 56
     assert obj.ConditioningTime == 78
 
-    new_params = pypalmsens.settings.Pretreatment()
+    new_params = ps.settings.Pretreatment()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -128,14 +128,14 @@ def test_VersusOcpSettings():
         'stability_criterion': 123,
     }
 
-    params = pypalmsens.settings.VersusOCP(**kwargs)
+    params = ps.settings.VersusOCP(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.OCPmode == 7
     assert obj.OCPMaxOCPTime == 200
     assert obj.OCPStabilityCriterion == 123
 
-    new_params = pypalmsens.settings.VersusOCP()
+    new_params = ps.settings.VersusOCP()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -152,7 +152,7 @@ def test_BipotSettings():
         'current_range_start': CURRENT_RANGE.cr_10_uA,
     }
 
-    params = pypalmsens.settings.BiPot(**kwargs)
+    params = ps.settings.BiPot(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.BipotModePS == Techniques.CyclicVoltammetry.EnumPalmSensBipotMode(1)
@@ -161,7 +161,7 @@ def test_BipotSettings():
     assert obj.BipotRanging.MinimumCurrentRange.Description == '10 nA'
     assert obj.BipotRanging.StartCurrentRange.Description == '10 uA'
 
-    new_params = pypalmsens.settings.BiPot()
+    new_params = ps.settings.BiPot()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -176,14 +176,14 @@ def test_PostMeasurementSettings():
         'standby_time': 678,
     }
 
-    params = pypalmsens.settings.PostMeasurement(**kwargs)
+    params = ps.settings.PostMeasurement(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.CellOnAfterMeasurement is True
     assert obj.StandbyPotential == 123
     assert obj.StandbyTime == 678
 
-    new_params = pypalmsens.settings.PostMeasurement()
+    new_params = ps.settings.PostMeasurement()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -199,7 +199,7 @@ def test_CurrentLimitSettings():
         'limit_min': 678.0,
     }
 
-    params = pypalmsens.settings.CurrentLimits(**kwargs)
+    params = ps.settings.CurrentLimits(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.UseLimitMaxValue is True
@@ -207,7 +207,7 @@ def test_CurrentLimitSettings():
     assert obj.UseLimitMinValue is True
     assert obj.LimitMinValue == 678.0
 
-    new_params = pypalmsens.settings.CurrentLimits()
+    new_params = ps.settings.CurrentLimits()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -223,7 +223,7 @@ def test_PotentialLimitSettings():
         'limit_min': 678.0,
     }
 
-    params = pypalmsens.settings.PotentialLimits(**kwargs)
+    params = ps.settings.PotentialLimits(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.UseLimitMaxValue is True
@@ -231,7 +231,7 @@ def test_PotentialLimitSettings():
     assert obj.UseLimitMinValue is True
     assert obj.LimitMinValue == 678.0
 
-    new_params = pypalmsens.settings.PotentialLimits()
+    new_params = ps.settings.PotentialLimits()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -247,7 +247,7 @@ def test_ChargeLimitSettings():
         'limit_min': 678.0,
     }
 
-    params = pypalmsens.settings.ChargeLimits(**kwargs)
+    params = ps.settings.ChargeLimits(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.UseChargeLimitMax is True
@@ -255,7 +255,7 @@ def test_ChargeLimitSettings():
     assert obj.UseChargeLimitMin is True
     assert obj.ChargeLimitMin == 678.0
 
-    new_params = pypalmsens.settings.ChargeLimits()
+    new_params = ps.settings.ChargeLimits()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -269,13 +269,13 @@ def test_IrDropCompensationSettings():
         'ir_compensation': 123.0,
     }
 
-    params = pypalmsens.settings.IrDropCompensation(**kwargs)
+    params = ps.settings.IrDropCompensation(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.UseIRDropComp is True
     assert obj.IRDropCompRes == 123
 
-    new_params = pypalmsens.settings.IrDropCompensation()
+    new_params = ps.settings.IrDropCompensation()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -292,13 +292,13 @@ def test_TriggerAtEquilibrationSettings():
         'd3': True,
     }
 
-    params = pypalmsens.settings.EquilibrationTriggers(**kwargs)
+    params = ps.settings.EquilibrationTriggers(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.UseTriggerOnEquil is True
     assert obj.TriggerValueOnEquil == 13
 
-    new_params = pypalmsens.settings.EquilibrationTriggers()
+    new_params = ps.settings.EquilibrationTriggers()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -315,13 +315,38 @@ def test_TriggerAtMeasurementSettings():
         'd3': True,
     }
 
-    params = pypalmsens.settings.MeasurementTriggers(**kwargs)
+    params = ps.settings.MeasurementTriggers(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.UseTriggerOnStart is True
     assert obj.TriggerValueOnStart == 11
 
-    new_params = pypalmsens.settings.MeasurementTriggers()
+    new_params = ps.settings.MeasurementTriggers()
+    new_params._update_params(obj=obj)
+
+    assert asdict(new_params) == kwargs
+
+
+def test_TriggerAtDelaySettings():
+    obj = Techniques.PulsedAmpDetection()
+
+    kwargs = {
+        'enable': True,
+        'delay': 1.0,
+        'd0': True,
+        'd1': True,
+        'd2': False,
+        'd3': True,
+    }
+
+    params = ps.settings.DelayTriggers(**kwargs)
+    params._update_psmethod(obj=obj)
+
+    assert obj.UseTriggerOnDelay is True
+    assert obj.TriggerValueOnDelay == 11
+    assert obj.TriggerDelayPeriod == 1.0
+
+    new_params = ps.settings.DelayTriggers()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -339,7 +364,7 @@ def test_MultiplexerSettings():
         'set_unselected_channel_working_electrode': 1,
     }
 
-    params = pypalmsens.settings.Multiplexer(**kwargs)
+    params = ps.settings.Multiplexer(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert int(obj.MuxMethod) == 0
@@ -351,7 +376,7 @@ def test_MultiplexerSettings():
     assert obj.MuxSett.CommonCERE is True
     assert int(obj.MuxSett.UnselWE) == 1
 
-    new_params = pypalmsens.settings.Multiplexer()
+    new_params = ps.settings.Multiplexer()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -366,14 +391,14 @@ def test_PeakSettings():
         'min_height': 37,
     }
 
-    params = pypalmsens.settings.DataProcessing(**kwargs)
+    params = ps.settings.DataProcessing(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.SmoothLevel == 1
     assert obj.MinPeakWidth == 13
     assert obj.MinPeakHeight == 37
 
-    new_params = pypalmsens.settings.DataProcessing()
+    new_params = ps.settings.DataProcessing()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs
@@ -389,7 +414,7 @@ def test_CommonSettings():
         'power_frequency': 60,
     }
 
-    params = pypalmsens.settings.General(**kwargs)
+    params = ps.settings.General(**kwargs)
     params._update_psmethod(obj=obj)
 
     assert obj.SaveOnDevice
@@ -397,7 +422,7 @@ def test_CommonSettings():
     assert obj.Notes == 'testtest'
     assert obj.PowerFreq == 60
 
-    new_params = pypalmsens.settings.General()
+    new_params = ps.settings.General()
     new_params._update_params(obj=obj)
 
     assert asdict(new_params) == kwargs

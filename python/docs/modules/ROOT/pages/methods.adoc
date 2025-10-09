@@ -8,42 +8,42 @@ Voltammetric Techniques::
 
 - xref:api/techniques.adoc#_linearsweepvoltammetry[Linear Sweep Voltammetry]
 - xref:api/techniques.adoc#_cyclicvoltammetry[Cyclic Voltammetry]
-// - xref:api/techniques.adoc#_fastcyclicvoltammetry[Fast Cyclic Voltammetry]
-// - xref:api/techniques.adoc#_acvoltammetry[AC Voltammetry]
+- xref:api/techniques.adoc#_fastcyclicvoltammetry[Fast Cyclic Voltammetry]
+- xref:api/techniques.adoc#_acvoltammetry[AC Voltammetry]
 
 Pulsed Techniques::
 
 - xref:api/techniques.adoc#_differentialpulsevoltammetry[Differential Pulse Voltammetry]
 - xref:api/techniques.adoc#_squarewavevoltammetry[Square Wave Voltammetry]
-// - xref:api/techniques.adoc#_normalpulsevoltammetry[Normal Pulse Voltammetry]
+- xref:api/techniques.adoc#_normalpulsevoltammetry[Normal Pulse Voltammetry]
 
 Amperometric Techniques::
 
 - xref:api/techniques.adoc#_chronoamperometry[Chronoamperometry]
 - xref:api/techniques.adoc#_multistepamperometry[Multistep Amperometry]
-// - xref:api/techniques.adoc#_fastamperometry[Fast Amperometry]
-// - xref:api/techniques.adoc#_pulsedamperometricdetection[Pulsed Amperometric Detection]
-// - xref:api/techniques.adoc#_multiplepulseamperometry[Multiple Pulse Amperometry]
+- xref:api/techniques.adoc#_fastamperometry[Fast Amperometry]
+- xref:api/techniques.adoc#_pulsedamperometricdetection[Pulsed Amperometric Detection]
+- xref:api/techniques.adoc#_multiplepulseamperometry[Multiple Pulse Amperometry]
 
 Potentiometric Techniques::
 
 - xref:api/techniques.adoc#_opencircuitpotentiometry[Open Circuit Potentiometry]
 - xref:api/techniques.adoc#_chronopotentiometry[Chronopotentiometry]
-// - xref:api/techniques.adoc#_linearsweeppotentiometry[Linear Sweep Potentiometry]
-// - xref:api/techniques.adoc#_multisteppotentiometry[Multistep Potentiometry]
-// - xref:api/techniques.adoc#_strippingchronopotentiometry[Stripping Chronopotentiometry]
+- xref:api/techniques.adoc#_linearsweeppotentiometry[Linear Sweep Potentiometry]
+- xref:api/techniques.adoc#_multisteppotentiometry[Multistep Potentiometry]
+- xref:api/techniques.adoc#_strippingchronopotentiometry[Stripping Chronopotentiometry]
 
-// Coulometric techniques::
+Coulometric techniques::
 
-// - xref:api/techniques.adoc#_chronocoulometry[Chronocoulometry]
+- xref:api/techniques.adoc#_chronocoulometry[Chronocoulometry]
 
 Other::
 
 - xref:api/techniques.adoc#_impedancespectroscopy[Impedance Spectroscopy]
-// - xref:api/techniques.adoc#_fastimpedancespectroscopy[Fast Impedance Spectroscopy]
+- xref:api/techniques.adoc#_fastimpedancespectroscopy[Fast Impedance Spectroscopy]
 - xref:api/techniques.adoc#_galvanostaticimpedancespectroscopy[Galvanostatic Impedance Spectroscopy]
-// - xref:api/techniques.adoc#_fastgalvanostaticimpedancespectroscopy[Fast Galvanostatic Impedance Spectroscopy]
-- xref:api/techniques.adoc#_mixedmode[Mixed Mode]
+- xref:api/techniques.adoc#_fastgalvanostaticimpedancespectroscopy[Fast Galvanostatic Impedance Spectroscopy]
+- xref:api/mixed_mode.adoc#_mixedmode[Mixed Mode]
 - xref:api/techniques.adoc#_methodscript[Method Script]
 
 == Setting up a method

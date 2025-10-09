@@ -395,6 +395,45 @@ class MeasurementTriggers(CommonSettings):
 
 
 @attrs.define
+class DelayTriggers(CommonSettings):
+    """Set the delayed trigger at measurement settings for a given method."""
+
+    enable: bool = False
+    """Enable delay after start triggers.
+
+    If enabled, set one or more digital outputs at the start measurement after a delay,
+    """
+
+    delay: float = 0.5
+    """Delay in s after the measurement has started.
+
+    The value will be rounded to interval time * number of data points.
+    """
+
+    d0: bool = False
+    """If True, enable trigger at d0 high."""
+
+    d1: bool = False
+    """If True, enable trigger at d1 high."""
+
+    d2: bool = False
+    """If True, enable trigger at d2 high."""
+
+    d3: bool = False
+    """If True, enable trigger at d3 high."""
+
+    def _update_psmethod(self, *, obj):
+        obj.UseTriggerOnDelay = self.enable
+        obj.TriggerValueOnDelay = convert_bools_to_int((self.d0, self.d1, self.d2, self.d3))
+        obj.TriggerDelayPeriod = self.delay
+
+    def _update_params(self, *, obj):
+        self.enable = obj.UseTriggerOnDelay
+        self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(obj.TriggerValueOnDelay)
+        self.delay = obj.TriggerDelayPeriod
+
+
+@attrs.define
 class Multiplexer(CommonSettings):
     """Set the multiplexer settings for a given method."""
 

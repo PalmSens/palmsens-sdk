@@ -2,28 +2,239 @@
 
 *Classes:*
 
+* link:#pypalmsens.ACVoltammetry[*ACVoltammetry*] – Create AC
+Voltammetry method parameters.
 * link:#pypalmsens.ChronoAmperometry[*ChronoAmperometry*] – Create
 chrono amperometry method parameters.
+* link:#pypalmsens.ChronoCoulometry[*ChronoCoulometry*] – Create linear
+sweep method parameters.
 * link:#pypalmsens.ChronoPotentiometry[*ChronoPotentiometry*] – Create
 potentiometry method parameters.
 * link:#pypalmsens.CyclicVoltammetry[*CyclicVoltammetry*] – Create
 cyclic voltammetry method parameters.
 * link:#pypalmsens.DifferentialPulseVoltammetry[*DifferentialPulseVoltammetry*]
-– Create square wave method parameters.
+– Create differential pulse voltammetry method parameters.
 * link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy[*ElectrochemicalImpedanceSpectroscopy*]
 – Create potentiometry method parameters.
+* link:#pypalmsens.FastCyclicVoltammetry[*FastCyclicVoltammetry*] –
+Create fast cyclic voltammetry method parameters.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy[*FastGalvanostaticImpedanceSpectroscopy*]
+– Create fast galvanostatic impededance spectroscopy method parameters.
+* link:#pypalmsens.FastImpedanceSpectroscopy[*FastImpedanceSpectroscopy*]
+– Create fast impedance spectroscopy method parameters.
 * link:#pypalmsens.GalvanostaticImpedanceSpectroscopy[*GalvanostaticImpedanceSpectroscopy*]
 – Create potentiometry method parameters.
+* link:#pypalmsens.LinearSweepPotentiometry[*LinearSweepPotentiometry*]
+– Create linear sweep potentiometry method parameters.
 * link:#pypalmsens.LinearSweepVoltammetry[*LinearSweepVoltammetry*] –
 Create linear sweep method parameters.
 * link:#pypalmsens.MethodScript[*MethodScript*] – Create a method script
 sandbox object.
 * link:#pypalmsens.MultiStepAmperometry[*MultiStepAmperometry*] – Create
 multi-step amperometry method parameters.
+* link:#pypalmsens.MultiStepPotentiometry[*MultiStepPotentiometry*] –
+Create multi-step potentiometry method parameters.
+* link:#pypalmsens.NormalPulseVoltammetry[*NormalPulseVoltammetry*] –
+Create normal pulse voltammetry method parameters.
 * link:#pypalmsens.OpenCircuitPotentiometry[*OpenCircuitPotentiometry*]
 – Create open circuit potentiometry method parameters.
+* link:#pypalmsens.PulsedAmperometricDetection[*PulsedAmperometricDetection*]
+– Create pulsed amperometric detection method parameters.
 * link:#pypalmsens.SquareWaveVoltammetry[*SquareWaveVoltammetry*] –
 Create square wave method parameters.
+* link:#pypalmsens.StrippingChronoPotentiometry[*StrippingChronoPotentiometry*]
+– Create stripping potentiometry method parameters.
+
+=== `ACVoltammetry`
+
+Create AC Voltammetry method parameters.
+
+*Attributes:*
+
+* link:#pypalmsens.ACVoltammetry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
+the autoranging current.
+* link:#pypalmsens.ACVoltammetry.pretreatment[*pretreatment*]
+(link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
+the pretreatment settings.
+* link:#pypalmsens.ACVoltammetry.versus_ocp[*versus++_++ocp*]
+(link:#pypalmsens._methods.settings.VersusOCP[VersusOCP]) – Set the
+versus OCP settings.
+* link:#pypalmsens.ACVoltammetry.post_measurement[*post++_++measurement*]
+(link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
+Set the post measurement settings.
+* link:#pypalmsens.ACVoltammetry.equilibrion_triggers[*equilibrion++_++triggers*]
+(link:#pypalmsens._methods.settings.EquilibrationTriggers[EquilibrationTriggers])
+– Set the trigger at equilibration settings.
+* link:#pypalmsens.ACVoltammetry.measurement_triggers[*measurement++_++triggers*]
+(link:#pypalmsens._methods.settings.MeasurementTriggers[MeasurementTriggers])
+– Set the trigger at measurement settings.
+* link:#pypalmsens.ACVoltammetry.data_processing[*data++_++processing*]
+(link:#pypalmsens._methods.settings.DataProcessing[DataProcessing]) –
+Set the data processing settings.
+* link:#pypalmsens.ACVoltammetry.general[*general*]
+(link:#pypalmsens._methods.settings.General[General]) – Sets
+general/other settings.
+* link:#pypalmsens.ACVoltammetry.equilibration_time[*equilibration++_++time*]
+(link:#float[float]) – Equilibration time in s.
+* link:#pypalmsens.ACVoltammetry.begin_potential[*begin++_++potential*]
+(link:#float[float]) – Begin potential in V.
+* link:#pypalmsens.ACVoltammetry.end_potential[*end++_++potential*]
+(link:#float[float]) – End potential in V.
+* link:#pypalmsens.ACVoltammetry.step_potential[*step++_++potential*]
+(link:#float[float]) – Step potential in V.
+* link:#pypalmsens.ACVoltammetry.ac_potential[*ac++_++potential*]
+(link:#float[float]) – Sine wave amplitude in V as rms value.
+* link:#pypalmsens.ACVoltammetry.frequency[*frequency*]
+(link:#float[float]) – AC frequency in HZ.
+* link:#pypalmsens.ACVoltammetry.scanrate[*scanrate*]
+(link:#float[float]) – Scan rate in V/s.
+* link:#pypalmsens.ACVoltammetry.measure_dc_current[*measure++_++dc++_++current*]
+(link:#bool[bool]) – Measure the DC current seperately.
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+----
+
+Set the autoranging current.
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+----
+
+Set the pretreatment settings.
+
+==== `versus++_++ocp`
+
+[source,python]
+----
+versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+----
+
+Set the versus OCP settings.
+
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+----
+
+Set the post measurement settings.
+
+==== `equilibrion++_++triggers`
+
+[source,python]
+----
+equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+----
+
+Set the trigger at equilibration settings.
+
+==== `measurement++_++triggers`
+
+[source,python]
+----
+measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+----
+
+Set the trigger at measurement settings.
+
+==== `data++_++processing`
+
+[source,python]
+----
+data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+----
+
+Set the data processing settings.
+
+==== `general`
+
+[source,python]
+----
+general: General = attrs.field(factory=General)
+----
+
+Sets general/other settings.
+
+==== `equilibration++_++time`
+
+[source,python]
+----
+equilibration_time: float = 0.0
+----
+
+Equilibration time in s.
+
+==== `begin++_++potential`
+
+[source,python]
+----
+begin_potential: float = -0.5
+----
+
+Begin potential in V.
+
+==== `end++_++potential`
+
+[source,python]
+----
+end_potential: float = 0.5
+----
+
+End potential in V.
+
+==== `step++_++potential`
+
+[source,python]
+----
+step_potential: float = 0.1
+----
+
+Step potential in V.
+
+==== `ac++_++potential`
+
+[source,python]
+----
+ac_potential: float = 0.01
+----
+
+Sine wave amplitude in V as rms value.
+
+==== `frequency`
+
+[source,python]
+----
+frequency: float = 100.0
+----
+
+AC frequency in HZ.
+
+==== `scanrate`
+
+[source,python]
+----
+scanrate: float = 1.0
+----
+
+Scan rate in V/s.
+
+==== `measure++_++dc++_++current`
+
+[source,python]
+----
+measure_dc_current: bool = False
+----
+
+Measure the DC current seperately.
 
 === `ChronoAmperometry`
 
@@ -248,6 +459,211 @@ enable_bipot_current: bool = False
 ----
 
 Enable bipot current.
+
+==== `record++_++auxiliary++_++input`
+
+[source,python]
+----
+record_auxiliary_input: bool = False
+----
+
+Record auxiliary input.
+
+==== `record++_++cell++_++potential`
+
+[source,python]
+----
+record_cell_potential: bool = False
+----
+
+Record cell potential.
+
+Counter electrode vs ground.
+
+==== `record++_++we++_++potential`
+
+[source,python]
+----
+record_we_potential: bool = False
+----
+
+Record applied working electrode potential.
+
+Reference electrode vs ground.
+
+=== `ChronoCoulometry`
+
+Create linear sweep method parameters.
+
+*Attributes:*
+
+* link:#pypalmsens.ChronoCoulometry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
+the autoranging current.
+* link:#pypalmsens.ChronoCoulometry.pretreatment[*pretreatment*]
+(link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
+the pretreatment settings.
+* link:#pypalmsens.ChronoCoulometry.post_measurement[*post++_++measurement*]
+(link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
+Set the post measurement settings.
+* link:#pypalmsens.ChronoCoulometry.current_limits[*current++_++limits*]
+(link:#pypalmsens._methods.settings.CurrentLimits[CurrentLimits]) – Set
+the current limit settings.
+* link:#pypalmsens.ChronoCoulometry.charge_limits[*charge++_++limits*]
+(link:#pypalmsens._methods.settings.ChargeLimits[ChargeLimits]) – Set
+the charge limit settings
+* link:#pypalmsens.ChronoCoulometry.data_processing[*data++_++processing*]
+(link:#pypalmsens._methods.settings.DataProcessing[DataProcessing]) –
+Set the data processing settings.
+* link:#pypalmsens.ChronoCoulometry.general[*general*]
+(link:#pypalmsens._methods.settings.General[General]) – Sets
+general/other settings.
+* link:#pypalmsens.ChronoCoulometry.equilibration_time[*equilibration++_++time*]
+(link:#float[float]) – Equilibration time in s.
+* link:#pypalmsens.ChronoCoulometry.interval_time[*interval++_++time*]
+(link:#float[float]) – Interval time in s.
+* link:#pypalmsens.ChronoCoulometry.step1_potential[*step1++_++potential*]
+(link:#float[float]) – Potential applied during first step in V.
+* link:#pypalmsens.ChronoCoulometry.step1_run_time[*step1++_++run++_++time*]
+(link:#float[float]) – Run time for the first step.
+* link:#pypalmsens.ChronoCoulometry.step2_potential[*step2++_++potential*]
+(link:#float[float]) – Potential applied during second step in V.
+* link:#pypalmsens.ChronoCoulometry.step2_run_time[*step2++_++run++_++time*]
+(link:#float[float]) – Run time for the second step.
+* link:#pypalmsens.ChronoCoulometry.bandwidth[*bandwidth*] (None ++|++
+link:#float[float]) – Override bandwidth on MethodSCRIPT devices if set.
+* link:#pypalmsens.ChronoCoulometry.record_auxiliary_input[*record++_++auxiliary++_++input*]
+(link:#bool[bool]) – Record auxiliary input.
+* link:#pypalmsens.ChronoCoulometry.record_cell_potential[*record++_++cell++_++potential*]
+(link:#bool[bool]) – Record cell potential.
+* link:#pypalmsens.ChronoCoulometry.record_we_potential[*record++_++we++_++potential*]
+(link:#bool[bool]) – Record applied working electrode potential.
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+----
+
+Set the autoranging current.
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+----
+
+Set the pretreatment settings.
+
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+----
+
+Set the post measurement settings.
+
+==== `current++_++limits`
+
+[source,python]
+----
+current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
+----
+
+Set the current limit settings.
+
+==== `charge++_++limits`
+
+[source,python]
+----
+charge_limits: ChargeLimits = attrs.field(factory=ChargeLimits)
+----
+
+Set the charge limit settings
+
+==== `data++_++processing`
+
+[source,python]
+----
+data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+----
+
+Set the data processing settings.
+
+==== `general`
+
+[source,python]
+----
+general: General = attrs.field(factory=General)
+----
+
+Sets general/other settings.
+
+==== `equilibration++_++time`
+
+[source,python]
+----
+equilibration_time: float = 0.0
+----
+
+Equilibration time in s.
+
+==== `interval++_++time`
+
+[source,python]
+----
+interval_time: float = 0.1
+----
+
+Interval time in s.
+
+==== `step1++_++potential`
+
+[source,python]
+----
+step1_potential: float = 0.5
+----
+
+Potential applied during first step in V.
+
+==== `step1++_++run++_++time`
+
+[source,python]
+----
+step1_run_time: float = 5.0
+----
+
+Run time for the first step.
+
+==== `step2++_++potential`
+
+[source,python]
+----
+step2_potential: float = 0.5
+----
+
+Potential applied during second step in V.
+
+==== `step2++_++run++_++time`
+
+[source,python]
+----
+step2_run_time: float = 5.0
+----
+
+Run time for the second step.
+
+==== `bandwidth`
+
+[source,python]
+----
+bandwidth: None | float = None
+----
+
+Override bandwidth on MethodSCRIPT devices if set.
 
 ==== `record++_++auxiliary++_++input`
 
@@ -531,7 +947,7 @@ general/other settings.
 * link:#pypalmsens.CyclicVoltammetry.scanrate[*scanrate*]
 (link:#float[float]) – Scan rate in V/s
 * link:#pypalmsens.CyclicVoltammetry.n_scans[*n++_++scans*]
-(link:#float[float]) – Number of scans
+(link:#int[int]) – Number of scans
 * link:#pypalmsens.CyclicVoltammetry.enable_bipot_current[*enable++_++bipot++_++current*]
 (link:#bool[bool]) – Enable bipot current.
 * link:#pypalmsens.CyclicVoltammetry.record_auxiliary_input[*record++_++auxiliary++_++input*]
@@ -689,7 +1105,7 @@ Scan rate in V/s
 
 [source,python]
 ----
-n_scans: float = 1
+n_scans: int = 1
 ----
 
 Number of scans
@@ -736,7 +1152,7 @@ Reference electrode vs ground.
 
 === `DifferentialPulseVoltammetry`
 
-Create square wave method parameters.
+Create differential pulse voltammetry method parameters.
 
 *Attributes:*
 
@@ -1179,6 +1595,505 @@ min_frequency: float = 1000.0
 
 Minimum frequency in Hz.
 
+=== `FastCyclicVoltammetry`
+
+Create fast cyclic voltammetry method parameters.
+
+*Attributes:*
+
+* link:#pypalmsens.FastCyclicVoltammetry.pretreatment[*pretreatment*]
+(link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
+the pretreatment settings.
+* link:#pypalmsens.FastCyclicVoltammetry.versus_ocp[*versus++_++ocp*]
+(link:#pypalmsens._methods.settings.VersusOCP[VersusOCP]) – Set the
+versus OCP settings.
+* link:#pypalmsens.FastCyclicVoltammetry.post_measurement[*post++_++measurement*]
+(link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
+Set the post measurement settings.
+* link:#pypalmsens.FastCyclicVoltammetry.ir_drop_compensation[*ir++_++drop++_++compensation*]
+(link:#pypalmsens._methods.settings.IrDropCompensation[IrDropCompensation])
+– Set the iR drop compensation settings.
+* link:#pypalmsens.FastCyclicVoltammetry.data_processing[*data++_++processing*]
+(link:#pypalmsens._methods.settings.DataProcessing[DataProcessing]) –
+Set the data processing settings.
+* link:#pypalmsens.FastCyclicVoltammetry.general[*general*]
+(link:#pypalmsens._methods.settings.General[General]) – Sets
+general/other settings.
+* link:#pypalmsens.FastCyclicVoltammetry.current_range[*current++_++range*]
+(link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT++_++RANGE]) –
+Fixed current range.
+* link:#pypalmsens.FastCyclicVoltammetry.equilibration_time[*equilibration++_++time*]
+(link:#float[float]) – Equilibration time in s
+* link:#pypalmsens.FastCyclicVoltammetry.begin_potential[*begin++_++potential*]
+(link:#float[float]) – Begin potential in V
+* link:#pypalmsens.FastCyclicVoltammetry.vertex1_potential[*vertex1++_++potential*]
+(link:#float[float]) – Vertex 1 potential in V
+* link:#pypalmsens.FastCyclicVoltammetry.vertex2_potential[*vertex2++_++potential*]
+(link:#float[float]) – Vertex 2 potential in V
+* link:#pypalmsens.FastCyclicVoltammetry.step_potential[*step++_++potential*]
+(link:#float[float]) – Step potential in V
+* link:#pypalmsens.FastCyclicVoltammetry.scanrate[*scanrate*]
+(link:#float[float]) – Scan rate in V/s
+* link:#pypalmsens.FastCyclicVoltammetry.n_scans[*n++_++scans*]
+(link:#int[int]) – Number of scans
+* link:#pypalmsens.FastCyclicVoltammetry.n_avg_scans[*n++_++avg++_++scans*]
+(link:#int[int]) – Number of scans to be averaged.
+* link:#pypalmsens.FastCyclicVoltammetry.n_equil_scans[*n++_++equil++_++scans*]
+(link:#int[int]) – Number of equilibration scans.
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+----
+
+Set the pretreatment settings.
+
+==== `versus++_++ocp`
+
+[source,python]
+----
+versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+----
+
+Set the versus OCP settings.
+
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+----
+
+Set the post measurement settings.
+
+==== `ir++_++drop++_++compensation`
+
+[source,python]
+----
+ir_drop_compensation: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+----
+
+Set the iR drop compensation settings.
+
+==== `data++_++processing`
+
+[source,python]
+----
+data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+----
+
+Set the data processing settings.
+
+==== `general`
+
+[source,python]
+----
+general: General = attrs.field(factory=General)
+----
+
+Sets general/other settings.
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range: CURRENT_RANGE = CURRENT_RANGE.cr_1_uA
+----
+
+Fixed current range.
+
+==== `equilibration++_++time`
+
+[source,python]
+----
+equilibration_time: float = 0.0
+----
+
+Equilibration time in s
+
+==== `begin++_++potential`
+
+[source,python]
+----
+begin_potential: float = -0.5
+----
+
+Begin potential in V
+
+==== `vertex1++_++potential`
+
+[source,python]
+----
+vertex1_potential: float = 0.5
+----
+
+Vertex 1 potential in V
+
+==== `vertex2++_++potential`
+
+[source,python]
+----
+vertex2_potential: float = -0.5
+----
+
+Vertex 2 potential in V
+
+==== `step++_++potential`
+
+[source,python]
+----
+step_potential: float = 0.01
+----
+
+Step potential in V
+
+==== `scanrate`
+
+[source,python]
+----
+scanrate: float = 500.0
+----
+
+Scan rate in V/s
+
+==== `n++_++scans`
+
+[source,python]
+----
+n_scans: int = 1
+----
+
+Number of scans
+
+==== `n++_++avg++_++scans`
+
+[source,python]
+----
+n_avg_scans: int = 1
+----
+
+Number of scans to be averaged.
+
+==== `n++_++equil++_++scans`
+
+[source,python]
+----
+n_equil_scans: int = 1
+----
+
+Number of equilibration scans.
+
+=== `FastGalvanostaticImpedanceSpectroscopy`
+
+Create fast galvanostatic impededance spectroscopy method parameters.
+
+*Attributes:*
+
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
+the autoranging current.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.potential_range[*potential++_++range*]
+(link:#pypalmsens._methods.settings.PotentialRange[PotentialRange]) –
+Set the autoranging potential.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.pretreatment[*pretreatment*]
+(link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
+the pretreatment settings.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.post_measurement[*post++_++measurement*]
+(link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
+Set the post measurement settings.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.general[*general*]
+(link:#pypalmsens._methods.settings.General[General]) – Sets
+general/other settings.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.applied_current_range[*applied++_++current++_++range*]
+(link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT++_++RANGE]) –
+Applied current range.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.run_time[*run++_++time*]
+(link:#float[float]) – Run time in s.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.interval_time[*interval++_++time*]
+(link:#float[float]) – Interval time in s.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.ac_current[*ac++_++current*]
+(link:#float[float]) – AC current in applied current range RMS.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.dc_current[*dc++_++current*]
+(link:#float[float]) – DC current in applied current range.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.frequency[*frequency*]
+(link:#float[float]) – Frequency in Hz.
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+----
+
+Set the autoranging current.
+
+==== `potential++_++range`
+
+[source,python]
+----
+potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+----
+
+Set the autoranging potential.
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+----
+
+Set the pretreatment settings.
+
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+----
+
+Set the post measurement settings.
+
+==== `general`
+
+[source,python]
+----
+general: General = attrs.field(factory=General)
+----
+
+Sets general/other settings.
+
+==== `applied++_++current++_++range`
+
+[source,python]
+----
+applied_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_100_uA
+----
+
+Applied current range.
+
+Use `CURRENT++_++RANGE` to define the range.
+
+==== `run++_++time`
+
+[source,python]
+----
+run_time: float = 10.0
+----
+
+Run time in s.
+
+==== `interval++_++time`
+
+[source,python]
+----
+interval_time: float = 0.1
+----
+
+Interval time in s.
+
+==== `ac++_++current`
+
+[source,python]
+----
+ac_current: float = 0.01
+----
+
+AC current in applied current range RMS.
+
+This value is multiplied by the applied current range.
+
+==== `dc++_++current`
+
+[source,python]
+----
+dc_current: float = 0.0
+----
+
+DC current in applied current range.
+
+This value is multiplied by the applied current range.
+
+==== `frequency`
+
+[source,python]
+----
+frequency: float = 50000.0
+----
+
+Frequency in Hz.
+
+=== `FastImpedanceSpectroscopy`
+
+Create fast impedance spectroscopy method parameters.
+
+*Attributes:*
+
+* link:#pypalmsens.FastImpedanceSpectroscopy.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
+the autoranging current.
+* link:#pypalmsens.FastImpedanceSpectroscopy.potential_range[*potential++_++range*]
+(link:#pypalmsens._methods.settings.PotentialRange[PotentialRange]) –
+Set the autoranging potential.
+* link:#pypalmsens.FastImpedanceSpectroscopy.pretreatment[*pretreatment*]
+(link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
+the pretreatment settings.
+* link:#pypalmsens.FastImpedanceSpectroscopy.versus_ocp[*versus++_++ocp*]
+(link:#pypalmsens._methods.settings.VersusOCP[VersusOCP]) – Set the
+versus OCP settings.
+* link:#pypalmsens.FastImpedanceSpectroscopy.post_measurement[*post++_++measurement*]
+(link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
+Set the post measurement settings.
+* link:#pypalmsens.FastImpedanceSpectroscopy.equilibrion_triggers[*equilibrion++_++triggers*]
+(link:#pypalmsens._methods.settings.EquilibrationTriggers[EquilibrationTriggers])
+– Set the trigger at equilibration settings.
+* link:#pypalmsens.FastImpedanceSpectroscopy.measurement_triggers[*measurement++_++triggers*]
+(link:#pypalmsens._methods.settings.MeasurementTriggers[MeasurementTriggers])
+– Set the trigger at measurement settings.
+* link:#pypalmsens.FastImpedanceSpectroscopy.general[*general*]
+(link:#pypalmsens._methods.settings.General[General]) – Sets
+general/other settings.
+* link:#pypalmsens.FastImpedanceSpectroscopy.equilibration_time[*equilibration++_++time*]
+(link:#float[float]) – Equilibration time in s.
+* link:#pypalmsens.FastImpedanceSpectroscopy.interval_time[*interval++_++time*]
+(link:#float[float]) – Interval time in s.
+* link:#pypalmsens.FastImpedanceSpectroscopy.run_time[*run++_++time*]
+(link:#float[float]) – Run time in s.
+* link:#pypalmsens.FastImpedanceSpectroscopy.dc_potential[*dc++_++potential*]
+(link:#float[float]) – Potential applied during measurement in V.
+* link:#pypalmsens.FastImpedanceSpectroscopy.ac_potential[*ac++_++potential*]
+(link:#float[float]) – Potential amplitude in V (rms).
+* link:#pypalmsens.FastImpedanceSpectroscopy.frequency[*frequency*]
+(link:#float[float]) – Frequency in Hz.
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+----
+
+Set the autoranging current.
+
+==== `potential++_++range`
+
+[source,python]
+----
+potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+----
+
+Set the autoranging potential.
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+----
+
+Set the pretreatment settings.
+
+==== `versus++_++ocp`
+
+[source,python]
+----
+versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+----
+
+Set the versus OCP settings.
+
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+----
+
+Set the post measurement settings.
+
+==== `equilibrion++_++triggers`
+
+[source,python]
+----
+equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+----
+
+Set the trigger at equilibration settings.
+
+==== `measurement++_++triggers`
+
+[source,python]
+----
+measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+----
+
+Set the trigger at measurement settings.
+
+==== `general`
+
+[source,python]
+----
+general: General = attrs.field(factory=General)
+----
+
+Sets general/other settings.
+
+==== `equilibration++_++time`
+
+[source,python]
+----
+equilibration_time: float = 0.0
+----
+
+Equilibration time in s.
+
+==== `interval++_++time`
+
+[source,python]
+----
+interval_time: float = 0.1
+----
+
+Interval time in s.
+
+==== `run++_++time`
+
+[source,python]
+----
+run_time: float = 10.0
+----
+
+Run time in s.
+
+==== `dc++_++potential`
+
+[source,python]
+----
+dc_potential: float = 0.0
+----
+
+Potential applied during measurement in V.
+
+==== `ac++_++potential`
+
+[source,python]
+----
+ac_potential: float = 0.01
+----
+
+Potential amplitude in V (rms).
+
+==== `frequency`
+
+[source,python]
+----
+frequency: float = 50000.0
+----
+
+Frequency in Hz.
+
 === `GalvanostaticImpedanceSpectroscopy`
 
 Create potentiometry method parameters.
@@ -1361,6 +2276,221 @@ min_frequency: float = 1000.0
 ----
 
 Minimum frequency in Hz.
+
+=== `LinearSweepPotentiometry`
+
+Create linear sweep potentiometry method parameters.
+
+*Attributes:*
+
+* link:#pypalmsens.LinearSweepPotentiometry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
+the autoranging current.
+* link:#pypalmsens.LinearSweepPotentiometry.potential_range[*potential++_++range*]
+(link:#pypalmsens._methods.settings.PotentialRange[PotentialRange]) –
+Set the autoranging potential.
+* link:#pypalmsens.LinearSweepPotentiometry.pretreatment[*pretreatment*]
+(link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
+the pretreatment settings.
+* link:#pypalmsens.LinearSweepPotentiometry.post_measurement[*post++_++measurement*]
+(link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
+Set the post measurement settings.
+* link:#pypalmsens.LinearSweepPotentiometry.potential_limits[*potential++_++limits*]
+(link:#pypalmsens._methods.settings.PotentialLimits[PotentialLimits]) –
+Set the potential limit settings
+* link:#pypalmsens.LinearSweepPotentiometry.measurement_triggers[*measurement++_++triggers*]
+(link:#pypalmsens._methods.settings.MeasurementTriggers[MeasurementTriggers])
+– Set the trigger at measurement settings.
+* link:#pypalmsens.LinearSweepPotentiometry.delay_triggers[*delay++_++triggers*]
+(link:#pypalmsens._methods.settings.DelayTriggers[DelayTriggers]) – Set
+the delayed trigger at measurement settings.
+* link:#pypalmsens.LinearSweepPotentiometry.multiplexer[*multiplexer*]
+(link:#pypalmsens._methods.settings.Multiplexer[Multiplexer]) – Set the
+multiplexer settings
+* link:#pypalmsens.LinearSweepPotentiometry.data_processing[*data++_++processing*]
+(link:#pypalmsens._methods.settings.DataProcessing[DataProcessing]) –
+Set the data processing settings.
+* link:#pypalmsens.LinearSweepPotentiometry.general[*general*]
+(link:#pypalmsens._methods.settings.General[General]) – Sets
+general/other settings.
+* link:#pypalmsens.LinearSweepPotentiometry.applied_current_range[*applied++_++current++_++range*]
+(link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT++_++RANGE]) –
+Applied current range.
+* link:#pypalmsens.LinearSweepPotentiometry.current_begin[*current++_++begin*]
+(link:#float[float]) – Current applied at beginning of measurement.
+* link:#pypalmsens.LinearSweepPotentiometry.current_end[*current++_++end*]
+(link:#float[float]) – Current applied at end of measurement.
+* link:#pypalmsens.LinearSweepPotentiometry.current_step[*current++_++step*]
+(link:#float[float]) – Current step.
+* link:#pypalmsens.LinearSweepPotentiometry.scan_rate[*scan++_++rate*]
+(link:#float[float]) – The applied scan rate.
+* link:#pypalmsens.LinearSweepPotentiometry.record_auxiliary_input[*record++_++auxiliary++_++input*]
+(link:#bool[bool]) – Record auxiliary input.
+* link:#pypalmsens.LinearSweepPotentiometry.record_we_current[*record++_++we++_++current*]
+(link:#bool[bool]) – Record working electrode current.
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+----
+
+Set the autoranging current.
+
+==== `potential++_++range`
+
+[source,python]
+----
+potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+----
+
+Set the autoranging potential.
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+----
+
+Set the pretreatment settings.
+
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+----
+
+Set the post measurement settings.
+
+==== `potential++_++limits`
+
+[source,python]
+----
+potential_limits: PotentialLimits = attrs.field(factory=PotentialLimits)
+----
+
+Set the potential limit settings
+
+==== `measurement++_++triggers`
+
+[source,python]
+----
+measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+----
+
+Set the trigger at measurement settings.
+
+==== `delay++_++triggers`
+
+[source,python]
+----
+delay_triggers: DelayTriggers = attrs.field(factory=DelayTriggers)
+----
+
+Set the delayed trigger at measurement settings.
+
+==== `multiplexer`
+
+[source,python]
+----
+multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+----
+
+Set the multiplexer settings
+
+==== `data++_++processing`
+
+[source,python]
+----
+data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+----
+
+Set the data processing settings.
+
+==== `general`
+
+[source,python]
+----
+general: General = attrs.field(factory=General)
+----
+
+Sets general/other settings.
+
+==== `applied++_++current++_++range`
+
+[source,python]
+----
+applied_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_100_uA
+----
+
+Applied current range.
+
+Use `CURRENT++_++RANGE` to define the range.
+
+==== `current++_++begin`
+
+[source,python]
+----
+current_begin: float = -1.0
+----
+
+Current applied at beginning of measurement.
+
+This value is multiplied by the defined current range.
+
+==== `current++_++end`
+
+[source,python]
+----
+current_end: float = 1.0
+----
+
+Current applied at end of measurement.
+
+This value is multiplied by the defined current range.
+
+==== `current++_++step`
+
+[source,python]
+----
+current_step: float = 0.01
+----
+
+Current step.
+
+This value is multiplied by the defined current range.
+
+==== `scan++_++rate`
+
+[source,python]
+----
+scan_rate: float = 1.0
+----
+
+The applied scan rate.
+
+This value is multiplied by the defined current range.
+
+==== `record++_++auxiliary++_++input`
+
+[source,python]
+----
+record_auxiliary_input: bool = False
+----
+
+Record auxiliary input.
+
+==== `record++_++we++_++current`
+
+[source,python]
+----
+record_we_current: bool = False
+----
+
+Record working electrode current.
 
 === `LinearSweepVoltammetry`
 
@@ -1847,6 +2977,436 @@ Record applied working electrode potential.
 
 Reference electrode vs ground.
 
+=== `MultiStepPotentiometry`
+
+Create multi-step potentiometry method parameters.
+
+*Attributes:*
+
+* link:#pypalmsens.MultiStepPotentiometry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
+the autoranging current.
+* link:#pypalmsens.MultiStepPotentiometry.potential_range[*potential++_++range*]
+(link:#pypalmsens._methods.settings.PotentialRange[PotentialRange]) –
+Set the autoranging potential.
+* link:#pypalmsens.MultiStepPotentiometry.pretreatment[*pretreatment*]
+(link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
+the pretreatment settings.
+* link:#pypalmsens.MultiStepPotentiometry.post_measurement[*post++_++measurement*]
+(link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
+Set the post measurement settings.
+* link:#pypalmsens.MultiStepPotentiometry.potential_limits[*potential++_++limits*]
+(link:#pypalmsens._methods.settings.PotentialLimits[PotentialLimits]) –
+Set the potential limit settings
+* link:#pypalmsens.MultiStepPotentiometry.multiplexer[*multiplexer*]
+(link:#pypalmsens._methods.settings.Multiplexer[Multiplexer]) – Set the
+multiplexer settings
+* link:#pypalmsens.MultiStepPotentiometry.data_processing[*data++_++processing*]
+(link:#pypalmsens._methods.settings.DataProcessing[DataProcessing]) –
+Set the data processing settings.
+* link:#pypalmsens.MultiStepPotentiometry.general[*general*]
+(link:#pypalmsens._methods.settings.General[General]) – Sets
+general/other settings.
+* link:#pypalmsens.MultiStepPotentiometry.applied_current_range[*applied++_++current++_++range*]
+(link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT++_++RANGE]) –
+Applied current range.
+* link:#pypalmsens.MultiStepPotentiometry.interval_time[*interval++_++time*]
+(link:#float[float]) – Interval time in s.
+* link:#pypalmsens.MultiStepPotentiometry.n_cycles[*n++_++cycles*]
+(link:#float[float]) – Number of cycles.
+* link:#pypalmsens.MultiStepPotentiometry.levels[*levels*]
+(link:#list[list]++[++link:#pypalmsens._methods._shared.ILevel[ILevel]++]++)
+– List of levels.
+* link:#pypalmsens.MultiStepPotentiometry.record_auxiliary_input[*record++_++auxiliary++_++input*]
+(link:#bool[bool]) – Record auxiliary input.
+* link:#pypalmsens.MultiStepPotentiometry.record_we_current[*record++_++we++_++current*]
+(link:#bool[bool]) – Record applied working electrode potential.
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+----
+
+Set the autoranging current.
+
+==== `potential++_++range`
+
+[source,python]
+----
+potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+----
+
+Set the autoranging potential.
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+----
+
+Set the pretreatment settings.
+
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+----
+
+Set the post measurement settings.
+
+==== `potential++_++limits`
+
+[source,python]
+----
+potential_limits: PotentialLimits = attrs.field(factory=PotentialLimits)
+----
+
+Set the potential limit settings
+
+==== `multiplexer`
+
+[source,python]
+----
+multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+----
+
+Set the multiplexer settings
+
+==== `data++_++processing`
+
+[source,python]
+----
+data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+----
+
+Set the data processing settings.
+
+==== `general`
+
+[source,python]
+----
+general: General = attrs.field(factory=General)
+----
+
+Sets general/other settings.
+
+==== `applied++_++current++_++range`
+
+[source,python]
+----
+applied_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_1_uA
+----
+
+Applied current range.
+
+Use `CURRENT++_++RANGE` to define the range.
+
+==== `interval++_++time`
+
+[source,python]
+----
+interval_time: float = 0.1
+----
+
+Interval time in s.
+
+==== `n++_++cycles`
+
+[source,python]
+----
+n_cycles: float = 1
+----
+
+Number of cycles.
+
+==== `levels`
+
+[source,python]
+----
+levels: list[ILevel] = attrs.field(factory=(lambda: [ILevel()]))
+----
+
+List of levels.
+
+Use `ILevel()` to create levels.
+
+==== `record++_++auxiliary++_++input`
+
+[source,python]
+----
+record_auxiliary_input: bool = False
+----
+
+Record auxiliary input.
+
+==== `record++_++we++_++current`
+
+[source,python]
+----
+record_we_current: bool = False
+----
+
+Record applied working electrode potential.
+
+Reference electrode vs ground.
+
+=== `NormalPulseVoltammetry`
+
+Create normal pulse voltammetry method parameters.
+
+*Attributes:*
+
+* link:#pypalmsens.NormalPulseVoltammetry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
+the autoranging current.
+* link:#pypalmsens.NormalPulseVoltammetry.pretreatment[*pretreatment*]
+(link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
+the pretreatment settings.
+* link:#pypalmsens.NormalPulseVoltammetry.versus_ocp[*versus++_++ocp*]
+(link:#pypalmsens._methods.settings.VersusOCP[VersusOCP]) – Set the
+versus OCP settings.
+* link:#pypalmsens.NormalPulseVoltammetry.bipot[*bipot*]
+(link:#pypalmsens._methods.settings.BiPot[BiPot]) – Set the bipot
+settings
+* link:#pypalmsens.NormalPulseVoltammetry.post_measurement[*post++_++measurement*]
+(link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
+Set the post measurement settings.
+* link:#pypalmsens.NormalPulseVoltammetry.ir_drop_compensation[*ir++_++drop++_++compensation*]
+(link:#pypalmsens._methods.settings.IrDropCompensation[IrDropCompensation])
+– Set the iR drop compensation settings.
+* link:#pypalmsens.NormalPulseVoltammetry.equilibrion_triggers[*equilibrion++_++triggers*]
+(link:#pypalmsens._methods.settings.EquilibrationTriggers[EquilibrationTriggers])
+– Set the trigger at equilibration settings.
+* link:#pypalmsens.NormalPulseVoltammetry.measurement_triggers[*measurement++_++triggers*]
+(link:#pypalmsens._methods.settings.MeasurementTriggers[MeasurementTriggers])
+– Set the trigger at measurement settings.
+* link:#pypalmsens.NormalPulseVoltammetry.multiplexer[*multiplexer*]
+(link:#pypalmsens._methods.settings.Multiplexer[Multiplexer]) – Set the
+multiplexer settings
+* link:#pypalmsens.NormalPulseVoltammetry.data_processing[*data++_++processing*]
+(link:#pypalmsens._methods.settings.DataProcessing[DataProcessing]) –
+Set the data processing settings.
+* link:#pypalmsens.NormalPulseVoltammetry.general[*general*]
+(link:#pypalmsens._methods.settings.General[General]) – Sets
+general/other settings.
+* link:#pypalmsens.NormalPulseVoltammetry.equilibration_time[*equilibration++_++time*]
+(link:#float[float]) – Equilibration time in s.
+* link:#pypalmsens.NormalPulseVoltammetry.begin_potential[*begin++_++potential*]
+(link:#float[float]) – Begin potential in V.
+* link:#pypalmsens.NormalPulseVoltammetry.end_potential[*end++_++potential*]
+(link:#float[float]) – End potential in V.
+* link:#pypalmsens.NormalPulseVoltammetry.step_potential[*step++_++potential*]
+(link:#float[float]) – Step potential in V.
+* link:#pypalmsens.NormalPulseVoltammetry.pulse_time[*pulse++_++time*]
+(link:#float[float]) – Pulse time in s.
+* link:#pypalmsens.NormalPulseVoltammetry.scan_rate[*scan++_++rate*]
+(link:#float[float]) – Scan rate (potential/time) in V/s.
+* link:#pypalmsens.NormalPulseVoltammetry.enable_bipot_current[*enable++_++bipot++_++current*]
+(link:#bool[bool]) – Enable bipot current.
+* link:#pypalmsens.NormalPulseVoltammetry.record_auxiliary_input[*record++_++auxiliary++_++input*]
+(link:#bool[bool]) – Record auxiliary input.
+* link:#pypalmsens.NormalPulseVoltammetry.record_cell_potential[*record++_++cell++_++potential*]
+(link:#bool[bool]) – Record cell potential.
+* link:#pypalmsens.NormalPulseVoltammetry.record_we_potential[*record++_++we++_++potential*]
+(link:#bool[bool]) – Record applied working electrode potential.
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+----
+
+Set the autoranging current.
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+----
+
+Set the pretreatment settings.
+
+==== `versus++_++ocp`
+
+[source,python]
+----
+versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+----
+
+Set the versus OCP settings.
+
+==== `bipot`
+
+[source,python]
+----
+bipot: BiPot = attrs.field(factory=BiPot)
+----
+
+Set the bipot settings
+
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+----
+
+Set the post measurement settings.
+
+==== `ir++_++drop++_++compensation`
+
+[source,python]
+----
+ir_drop_compensation: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+----
+
+Set the iR drop compensation settings.
+
+==== `equilibrion++_++triggers`
+
+[source,python]
+----
+equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+----
+
+Set the trigger at equilibration settings.
+
+==== `measurement++_++triggers`
+
+[source,python]
+----
+measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+----
+
+Set the trigger at measurement settings.
+
+==== `multiplexer`
+
+[source,python]
+----
+multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+----
+
+Set the multiplexer settings
+
+==== `data++_++processing`
+
+[source,python]
+----
+data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+----
+
+Set the data processing settings.
+
+==== `general`
+
+[source,python]
+----
+general: General = attrs.field(factory=General)
+----
+
+Sets general/other settings.
+
+==== `equilibration++_++time`
+
+[source,python]
+----
+equilibration_time: float = 0.0
+----
+
+Equilibration time in s.
+
+==== `begin++_++potential`
+
+[source,python]
+----
+begin_potential: float = -0.5
+----
+
+Begin potential in V.
+
+==== `end++_++potential`
+
+[source,python]
+----
+end_potential: float = 0.5
+----
+
+End potential in V.
+
+==== `step++_++potential`
+
+[source,python]
+----
+step_potential: float = 0.1
+----
+
+Step potential in V.
+
+==== `pulse++_++time`
+
+[source,python]
+----
+pulse_time: float = 0.01
+----
+
+Pulse time in s.
+
+==== `scan++_++rate`
+
+[source,python]
+----
+scan_rate: float = 1.0
+----
+
+Scan rate (potential/time) in V/s.
+
+==== `enable++_++bipot++_++current`
+
+[source,python]
+----
+enable_bipot_current: bool = False
+----
+
+Enable bipot current.
+
+==== `record++_++auxiliary++_++input`
+
+[source,python]
+----
+record_auxiliary_input: bool = False
+----
+
+Record auxiliary input.
+
+==== `record++_++cell++_++potential`
+
+[source,python]
+----
+record_cell_potential: bool = False
+----
+
+Record cell potential.
+
+Counter electrode vs ground.
+
+==== `record++_++we++_++potential`
+
+[source,python]
+----
+record_we_potential: bool = False
+----
+
+Record applied working electrode potential.
+
+Reference electrode vs ground.
+
 === `OpenCircuitPotentiometry`
 
 Create open circuit potentiometry method parameters.
@@ -2019,6 +3579,227 @@ record_we_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_1_uA
 Record working electrode current range.
 
 Use `CURRENT++_++RANGE` to define the range.
+
+=== `PulsedAmperometricDetection`
+
+Create pulsed amperometric detection method parameters.
+
+*Attributes:*
+
+* link:#pypalmsens.PulsedAmperometricDetection.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
+the autoranging current.
+* link:#pypalmsens.PulsedAmperometricDetection.pretreatment[*pretreatment*]
+(link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
+the pretreatment settings.
+* link:#pypalmsens.PulsedAmperometricDetection.versus_ocp[*versus++_++ocp*]
+(link:#pypalmsens._methods.settings.VersusOCP[VersusOCP]) – Set the
+versus OCP settings.
+* link:#pypalmsens.PulsedAmperometricDetection.bipot[*bipot*]
+(link:#pypalmsens._methods.settings.BiPot[BiPot]) – Set the bipot
+settings
+* link:#pypalmsens.PulsedAmperometricDetection.post_measurement[*post++_++measurement*]
+(link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
+Set the post measurement settings.
+* link:#pypalmsens.PulsedAmperometricDetection.equilibrion_triggers[*equilibrion++_++triggers*]
+(link:#pypalmsens._methods.settings.EquilibrationTriggers[EquilibrationTriggers])
+– Set the trigger at equilibration settings.
+* link:#pypalmsens.PulsedAmperometricDetection.measurement_triggers[*measurement++_++triggers*]
+(link:#pypalmsens._methods.settings.MeasurementTriggers[MeasurementTriggers])
+– Set the trigger at measurement settings.
+* link:#pypalmsens.PulsedAmperometricDetection.delay_triggers[*delay++_++triggers*]
+(link:#pypalmsens._methods.settings.DelayTriggers[DelayTriggers]) – Set
+the delayed trigger at measurement settings.
+* link:#pypalmsens.PulsedAmperometricDetection.multiplexer[*multiplexer*]
+(link:#pypalmsens._methods.settings.Multiplexer[Multiplexer]) – Set the
+multiplexer settings
+* link:#pypalmsens.PulsedAmperometricDetection.data_processing[*data++_++processing*]
+(link:#pypalmsens._methods.settings.DataProcessing[DataProcessing]) –
+Set the data processing settings.
+* link:#pypalmsens.PulsedAmperometricDetection.general[*general*]
+(link:#pypalmsens._methods.settings.General[General]) – Sets
+general/other settings.
+* link:#pypalmsens.PulsedAmperometricDetection.equilibration_time[*equilibration++_++time*]
+(link:#float[float]) – Equilibration time in s.
+* link:#pypalmsens.PulsedAmperometricDetection.potential[*potential*]
+(link:#float[float]) – Potential in V.
+* link:#pypalmsens.PulsedAmperometricDetection.pulse_potential[*pulse++_++potential*]
+(link:#float[float]) – Pulse potential in V.
+* link:#pypalmsens.PulsedAmperometricDetection.pulse_time[*pulse++_++time*]
+(link:#float[float]) – Pulse time in s.
+* link:#pypalmsens.PulsedAmperometricDetection.mode[*mode*]
+(link:#typing.Literal[Literal]++[++'`dc`', '`pulse`',
+'`differential`'++]++) – Measurement mode.
+* link:#pypalmsens.PulsedAmperometricDetection.interval_time[*interval++_++time*]
+(link:#float[float]) – Interval time in s.
+* link:#pypalmsens.PulsedAmperometricDetection.run_time[*run++_++time*]
+(link:#float[float]) – Run time in s.
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+----
+
+Set the autoranging current.
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+----
+
+Set the pretreatment settings.
+
+==== `versus++_++ocp`
+
+[source,python]
+----
+versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+----
+
+Set the versus OCP settings.
+
+==== `bipot`
+
+[source,python]
+----
+bipot: BiPot = attrs.field(factory=BiPot)
+----
+
+Set the bipot settings
+
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+----
+
+Set the post measurement settings.
+
+==== `equilibrion++_++triggers`
+
+[source,python]
+----
+equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+----
+
+Set the trigger at equilibration settings.
+
+==== `measurement++_++triggers`
+
+[source,python]
+----
+measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+----
+
+Set the trigger at measurement settings.
+
+==== `delay++_++triggers`
+
+[source,python]
+----
+delay_triggers: DelayTriggers = attrs.field(factory=DelayTriggers)
+----
+
+Set the delayed trigger at measurement settings.
+
+==== `multiplexer`
+
+[source,python]
+----
+multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+----
+
+Set the multiplexer settings
+
+==== `data++_++processing`
+
+[source,python]
+----
+data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+----
+
+Set the data processing settings.
+
+==== `general`
+
+[source,python]
+----
+general: General = attrs.field(factory=General)
+----
+
+Sets general/other settings.
+
+==== `equilibration++_++time`
+
+[source,python]
+----
+equilibration_time: float = 0.0
+----
+
+Equilibration time in s.
+
+==== `potential`
+
+[source,python]
+----
+potential: float = 0.5
+----
+
+Potential in V.
+
+==== `pulse++_++potential`
+
+[source,python]
+----
+pulse_potential: float = 0.05
+----
+
+Pulse potential in V.
+
+==== `pulse++_++time`
+
+[source,python]
+----
+pulse_time: float = 0.01
+----
+
+Pulse time in s.
+
+==== `mode`
+
+[source,python]
+----
+mode: Literal['dc', 'pulse', 'differential'] = 'dc'
+----
+
+Measurement mode.
+
+* dc: Measurement is performed at potential (E dc)
+* pulse: measurement is performed at pulse potential (E pulse)
+* differential: measurement is (pulse - dc)
+
+==== `interval++_++time`
+
+[source,python]
+----
+interval_time: float = 0.1
+----
+
+Interval time in s.
+
+==== `run++_++time`
+
+[source,python]
+----
+run_time: float = 10.0
+----
+
+Run time in s.
 
 === `SquareWaveVoltammetry`
 
@@ -2283,3 +4064,139 @@ record_forward_and_reverse_currents: bool = False
 ----
 
 Record forward and reverse currents
+
+=== `StrippingChronoPotentiometry`
+
+Create stripping potentiometry method parameters.
+
+If the stripping current is set to 0, then chemical stripping is
+performed, otherwise it is chemical constant current stripping. The
+applicable range is {plus}- 0.001 microampere to {plus}- 2 milliampere.
+
+*Attributes:*
+
+* link:#pypalmsens.StrippingChronoPotentiometry.current_range[*current++_++range*]
+(link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
+the autoranging current.
+* link:#pypalmsens.StrippingChronoPotentiometry.potential_range[*potential++_++range*]
+(link:#pypalmsens._methods.settings.PotentialRange[PotentialRange]) –
+Set the autoranging potential.
+* link:#pypalmsens.StrippingChronoPotentiometry.pretreatment[*pretreatment*]
+(link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
+the pretreatment settings.
+* link:#pypalmsens.StrippingChronoPotentiometry.post_measurement[*post++_++measurement*]
+(link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
+Set the post measurement settings.
+* link:#pypalmsens.StrippingChronoPotentiometry.data_processing[*data++_++processing*]
+(link:#pypalmsens._methods.settings.DataProcessing[DataProcessing]) –
+Set the data processing settings.
+* link:#pypalmsens.StrippingChronoPotentiometry.general[*general*]
+(link:#pypalmsens._methods.settings.General[General]) – Sets
+general/other settings.
+* link:#pypalmsens.StrippingChronoPotentiometry.current[*current*]
+(link:#float[float]) – The stripping current to apply in the given
+current range.
+* link:#pypalmsens.StrippingChronoPotentiometry.applied_current_range[*applied++_++current++_++range*]
+(link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT++_++RANGE]) –
+Applied current range.
+* link:#pypalmsens.StrippingChronoPotentiometry.end_potential[*end++_++potential*]
+(link:#float[float]) – Potential in V where measurement ends.
+* link:#pypalmsens.StrippingChronoPotentiometry.measurement_time[*measurement++_++time*]
+(link:#float[float]) – Measurement time in s (default: 1.0)
+
+==== `current++_++range`
+
+[source,python]
+----
+current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+----
+
+Set the autoranging current.
+
+==== `potential++_++range`
+
+[source,python]
+----
+potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+----
+
+Set the autoranging potential.
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+----
+
+Set the pretreatment settings.
+
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+----
+
+Set the post measurement settings.
+
+==== `data++_++processing`
+
+[source,python]
+----
+data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+----
+
+Set the data processing settings.
+
+==== `general`
+
+[source,python]
+----
+general: General = attrs.field(factory=General)
+----
+
+Sets general/other settings.
+
+==== `current`
+
+[source,python]
+----
+current: float = 0.0
+----
+
+The stripping current to apply in the given current range.
+
+Note that this value acts as a multiplier in the applied current range.
+
+So if 10 uA is the applied current range and 1.5 is given as current
+value, the applied current will be 15 uA.
+
+==== `applied++_++current++_++range`
+
+[source,python]
+----
+applied_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_100_uA
+----
+
+Applied current range.
+
+Use `CURRENT++_++RANGE` to define the range.
+
+==== `end++_++potential`
+
+[source,python]
+----
+end_potential: float = 0.0
+----
+
+Potential in V where measurement ends.
+
+==== `measurement++_++time`
+
+[source,python]
+----
+measurement_time: float = 1.0
+----
+
+Measurement time in s (default: 1.0)

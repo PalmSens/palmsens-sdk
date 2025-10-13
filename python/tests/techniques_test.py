@@ -1,34 +1,25 @@
 from __future__ import annotations
 
 import logging
+import tempfile
+from pathlib import Path
 
 import pytest
 import System
-from PalmSens import Method as PSMethod
-from pytest import approx
+from helpers import assert_params_match_kwargs
 
 import pypalmsens as ps
 
 logger = logging.getLogger(__name__)
 
 
-def assert_params_match_kwargs(params, *, kwargs):
-    for key, exp in kwargs.items():
-        ret = getattr(params, key)
-        if isinstance(exp, float):
-            assert ret == approx(exp), f'{key}: expected {exp}, got {ret}'
-        else:
-            assert ret == exp, f'{key}: expected {exp}, got {ret}'
-
-
 def assert_params_round_trip_equal(*, pycls, kwargs):
-    obj = PSMethod.FromMethodID(pycls._id)
-
     params = pycls(**kwargs)
-    params._update_psmethod(obj=obj)
 
-    new_params = pycls()
-    new_params._update_params(obj=obj)
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp, f'{pycls._id}.psmethod')
+        ps.save_method_file(path, params)
+        new_params = ps.load_method_file(path)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
 
@@ -998,11 +989,13 @@ class TestMM:
             ps.mixed_mode.ConstantE(
                 run_time=0.1,
                 potential=0.5,
+                current_limits=ps.settings.CurrentLimits(min=1, max=10.0),
             ),
             ps.mixed_mode.ConstantI(
                 run_time=0.1,
                 current=1.0,
                 applied_current_range=ps.settings.CURRENT_RANGE.cr_100_nA,
+                potential_limits=ps.settings.PotentialLimits(min=-1, max=1),
             ),
             ps.mixed_mode.SweepE(
                 begin_potential=-0.5,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal, Protocol, runtime_checkable
+from typing import Literal
 
 import attrs
 import PalmSens
@@ -15,18 +15,11 @@ from ._shared import (
     convert_bools_to_int,
     convert_int_to_bools,
 )
-
-
-@runtime_checkable
-class CommonSettings(Protocol):
-    """Protocol to provide generic methods for parameters."""
-
-    def _update_psmethod(self, *, obj): ...
-    def _update_params(self, *, obj): ...
+from .base import BaseSettings
 
 
 @attrs.define
-class CurrentRange(CommonSettings):
+class CurrentRange(BaseSettings):
     """Set the autoranging current for a given method."""
 
     max: CURRENT_RANGE = CURRENT_RANGE.cr_10_mA
@@ -44,19 +37,19 @@ class CurrentRange(CommonSettings):
 
     Use `CURRENT_RANGE` to define the range."""
 
-    def _update_psmethod(self, *, obj):
-        obj.Ranging.MaximumCurrentRange = self.max._to_psobj()
-        obj.Ranging.MinimumCurrentRange = self.min._to_psobj()
-        obj.Ranging.StartCurrentRange = self.start._to_psobj()
+    def _update_psmethod(self, psmethod: PSMethod, /):
+        psmethod.Ranging.MaximumCurrentRange = self.max._to_psobj()
+        psmethod.Ranging.MinimumCurrentRange = self.min._to_psobj()
+        psmethod.Ranging.StartCurrentRange = self.start._to_psobj()
 
-    def _update_params(self, *, obj):
-        self.max = CURRENT_RANGE._from_psobj(obj.Ranging.MaximumCurrentRange)
-        self.min = CURRENT_RANGE._from_psobj(obj.Ranging.MinimumCurrentRange)
-        self.start = CURRENT_RANGE._from_psobj(obj.Ranging.StartCurrentRange)
+    def _update_params(self, psmethod: PSMethod, /):
+        self.max = CURRENT_RANGE._from_psobj(psmethod.Ranging.MaximumCurrentRange)
+        self.min = CURRENT_RANGE._from_psobj(psmethod.Ranging.MinimumCurrentRange)
+        self.start = CURRENT_RANGE._from_psobj(psmethod.Ranging.StartCurrentRange)
 
 
 @attrs.define
-class PotentialRange(CommonSettings):
+class PotentialRange(BaseSettings):
     """Set the autoranging potential for a given method."""
 
     max: POTENTIAL_RANGE = POTENTIAL_RANGE.pr_1_V
@@ -74,19 +67,19 @@ class PotentialRange(CommonSettings):
 
     Use `POTENTIAL_RANGE` to define the range."""
 
-    def _update_psmethod(self, *, obj):
-        obj.RangingPotential.MaximumPotentialRange = self.max._to_psobj()
-        obj.RangingPotential.MinimumPotentialRange = self.min._to_psobj()
-        obj.RangingPotential.StartPotentialRange = self.start._to_psobj()
+    def _update_psmethod(self, psmethod: PSMethod, /):
+        psmethod.RangingPotential.MaximumPotentialRange = self.max._to_psobj()
+        psmethod.RangingPotential.MinimumPotentialRange = self.min._to_psobj()
+        psmethod.RangingPotential.StartPotentialRange = self.start._to_psobj()
 
-    def _update_params(self, *, obj):
-        self.max = POTENTIAL_RANGE._from_psobj(obj.RangingPotential.MaximumPotentialRange)
-        self.min = POTENTIAL_RANGE._from_psobj(obj.RangingPotential.MinimumPotentialRange)
-        self.start = POTENTIAL_RANGE._from_psobj(obj.RangingPotential.StartPotentialRange)
+    def _update_params(self, psmethod: PSMethod, /):
+        self.max = POTENTIAL_RANGE._from_psobj(psmethod.RangingPotential.MaximumPotentialRange)
+        self.min = POTENTIAL_RANGE._from_psobj(psmethod.RangingPotential.MinimumPotentialRange)
+        self.start = POTENTIAL_RANGE._from_psobj(psmethod.RangingPotential.StartPotentialRange)
 
 
 @attrs.define
-class Pretreatment(CommonSettings):
+class Pretreatment(BaseSettings):
     """Set the pretreatment settings for a given method."""
 
     deposition_potential: float = 0.0
@@ -101,21 +94,21 @@ class Pretreatment(CommonSettings):
     conditioning_time: float = 0.0
     """Conditioning time in s"""
 
-    def _update_psmethod(self, *, obj):
-        obj.DepositionPotential = self.deposition_potential
-        obj.DepositionTime = self.deposition_time
-        obj.ConditioningPotential = self.conditioning_potential
-        obj.ConditioningTime = self.conditioning_time
+    def _update_psmethod(self, psmethod: PSMethod, /):
+        psmethod.DepositionPotential = self.deposition_potential
+        psmethod.DepositionTime = self.deposition_time
+        psmethod.ConditioningPotential = self.conditioning_potential
+        psmethod.ConditioningTime = self.conditioning_time
 
-    def _update_params(self, *, obj):
-        self.deposition_potential = obj.DepositionPotential
-        self.deposition_time = obj.DepositionTime
-        self.conditioning_potential = obj.ConditioningPotential
-        self.conditioning_time = obj.ConditioningTime
+    def _update_params(self, psmethod: PSMethod, /):
+        self.deposition_potential = psmethod.DepositionPotential
+        self.deposition_time = psmethod.DepositionTime
+        self.conditioning_potential = psmethod.ConditioningPotential
+        self.conditioning_time = psmethod.ConditioningTime
 
 
 @attrs.define
-class VersusOCP(CommonSettings):
+class VersusOCP(BaseSettings):
     """Set the versus OCP settings for a given method."""
 
     mode: int = 0
@@ -142,22 +135,25 @@ class VersusOCP(CommonSettings):
     If larger than 0, then the value is taken as the stability threshold.
     """
 
-    def _update_psmethod(self, *, obj):
-        obj.OCPmode = self.mode
-        obj.OCPMaxOCPTime = self.max_ocp_time
-        obj.OCPStabilityCriterion = self.stability_criterion
+    def _update_psmethod(self, psmethod: PSMethod, /):
+        psmethod.OCPmode = self.mode
+        psmethod.OCPMaxOCPTime = self.max_ocp_time
+        psmethod.OCPStabilityCriterion = self.stability_criterion
 
-    def _update_params(self, *, obj):
-        self.mode = obj.OCPmode
-        self.max_ocp_time = obj.OCPMaxOCPTime
-        self.stability_criterion = obj.OCPStabilityCriterion
+    def _update_params(self, psmethod: PSMethod, /):
+        self.mode = psmethod.OCPmode
+        self.max_ocp_time = psmethod.OCPMaxOCPTime
+        self.stability_criterion = psmethod.OCPStabilityCriterion
 
 
 @attrs.define
-class BiPot(CommonSettings):
+class BiPot(BaseSettings):
     """Set the bipot settings for a given method."""
 
-    mode: Literal['constant', 'offset'] = 'constant'
+    _mode_t = Literal['constant', 'offset']
+    _MODES: tuple[_mode_t, ...] = ('constant', 'offset')
+
+    mode: _mode_t = 'constant'
     """Set the bipotential mode.
 
     Possible values: `constant` or `offset`"""
@@ -180,26 +176,30 @@ class BiPot(CommonSettings):
 
     Use `CURRENT_RANGE` to define the range."""
 
-    _BIPOT_MODES = ('constant', 'offset')
+    def _update_psmethod(self, psmethod: PSMethod, /):
+        bipot_num = self._MODES.index(self.mode)
+        psmethod.BipotModePS = PalmSens.Method.EnumPalmSensBipotMode(bipot_num)
+        psmethod.BiPotPotential = self.potential
+        psmethod.BipotRanging.MaximumCurrentRange = self.current_range_max._to_psobj()
+        psmethod.BipotRanging.MinimumCurrentRange = self.current_range_min._to_psobj()
+        psmethod.BipotRanging.StartCurrentRange = self.current_range_start._to_psobj()
 
-    def _update_psmethod(self, *, obj):
-        bipot_num = self._BIPOT_MODES.index(self.mode)
-        obj.BipotModePS = PalmSens.Method.EnumPalmSensBipotMode(bipot_num)
-        obj.BiPotPotential = self.potential
-        obj.BipotRanging.MaximumCurrentRange = self.current_range_max._to_psobj()
-        obj.BipotRanging.MinimumCurrentRange = self.current_range_min._to_psobj()
-        obj.BipotRanging.StartCurrentRange = self.current_range_start._to_psobj()
-
-    def _update_params(self, *, obj):
-        self.mode = self._BIPOT_MODES[int(obj.BipotModePS)]
-        self.potential = obj.BiPotPotential
-        self.current_range_max = CURRENT_RANGE._from_psobj(obj.BipotRanging.MaximumCurrentRange)
-        self.current_range_min = CURRENT_RANGE._from_psobj(obj.BipotRanging.MinimumCurrentRange)
-        self.current_range_start = CURRENT_RANGE._from_psobj(obj.BipotRanging.StartCurrentRange)
+    def _update_params(self, psmethod: PSMethod, /):
+        self.mode = self._MODES[int(psmethod.BipotModePS)]
+        self.potential = psmethod.BiPotPotential
+        self.current_range_max = CURRENT_RANGE._from_psobj(
+            psmethod.BipotRanging.MaximumCurrentRange
+        )
+        self.current_range_min = CURRENT_RANGE._from_psobj(
+            psmethod.BipotRanging.MinimumCurrentRange
+        )
+        self.current_range_start = CURRENT_RANGE._from_psobj(
+            psmethod.BipotRanging.StartCurrentRange
+        )
 
 
 @attrs.define
-class PostMeasurement(CommonSettings):
+class PostMeasurement(BaseSettings):
     """Set the post measurement settings for a given method."""
 
     cell_on_after_measurement: bool = False
@@ -211,19 +211,19 @@ class PostMeasurement(CommonSettings):
     standby_time: float = 0.0
     """Standby time (s) for use with cell on after measurement."""
 
-    def _update_psmethod(self, *, obj):
-        obj.CellOnAfterMeasurement = self.cell_on_after_measurement
-        obj.StandbyPotential = self.standby_potential
-        obj.StandbyTime = self.standby_time
+    def _update_psmethod(self, psmethod: PSMethod, /):
+        psmethod.CellOnAfterMeasurement = self.cell_on_after_measurement
+        psmethod.StandbyPotential = self.standby_potential
+        psmethod.StandbyTime = self.standby_time
 
-    def _update_params(self, *, obj):
-        self.cell_on_after_measurement = obj.CellOnAfterMeasurement
-        self.standby_potential = obj.StandbyPotential
-        self.standby_time = obj.StandbyTime
+    def _update_params(self, psmethod: PSMethod, /):
+        self.cell_on_after_measurement = psmethod.CellOnAfterMeasurement
+        self.standby_potential = psmethod.StandbyPotential
+        self.standby_time = psmethod.StandbyTime
 
 
 @attrs.define
-class CurrentLimits(CommonSettings):
+class CurrentLimits(BaseSettings):
     """Set the limit settings for a given method.
 
     Depending on the method, this will:
@@ -238,33 +238,33 @@ class CurrentLimits(CommonSettings):
     min: None | float = None
     """Set limit current min in µA."""
 
-    def _update_psmethod(self, *, obj):
+    def _update_psmethod(self, psmethod: PSMethod, /):
         if self.max is not None:
-            obj.UseLimitMaxValue = True
-            obj.LimitMaxValue = self.max
+            psmethod.UseLimitMaxValue = True
+            psmethod.LimitMaxValue = self.max
         else:
-            obj.UseLimitMaxValue = False
+            psmethod.UseLimitMaxValue = False
 
         if self.min is not None:
-            obj.UseLimitMinValue = True
-            obj.LimitMinValue = self.min
+            psmethod.UseLimitMinValue = True
+            psmethod.LimitMinValue = self.min
         else:
-            obj.UseLimitMinValue = False
+            psmethod.UseLimitMinValue = False
 
-    def _update_params(self, *, obj):
-        if obj.UseLimitMaxValue:
-            self.max = obj.LimitMaxValue
+    def _update_params(self, psmethod: PSMethod, /):
+        if psmethod.UseLimitMaxValue:
+            self.max = psmethod.LimitMaxValue
         else:
             self.max = None
 
-        if obj.UseLimitMinValue:
-            self.min = obj.LimitMinValue
+        if psmethod.UseLimitMinValue:
+            self.min = psmethod.LimitMinValue
         else:
             self.min = None
 
 
 @attrs.define
-class PotentialLimits(CommonSettings):
+class PotentialLimits(BaseSettings):
     """Set the limit settings for a given method.
 
     Depending on the method, this will:
@@ -278,33 +278,33 @@ class PotentialLimits(CommonSettings):
     min: None | float = None
     """Set limit potential min in V."""
 
-    def _update_psmethod(self, *, obj):
+    def _update_psmethod(self, psmethod: PSMethod, /):
         if self.max is not None:
-            obj.UseLimitMaxValue = True
-            obj.LimitMaxValue = self.max
+            psmethod.UseLimitMaxValue = True
+            psmethod.LimitMaxValue = self.max
         else:
-            obj.UseLimitMaxValue = False
+            psmethod.UseLimitMaxValue = False
 
         if self.min is not None:
-            obj.UseLimitMinValue = True
-            obj.LimitMinValue = self.min
+            psmethod.UseLimitMinValue = True
+            psmethod.LimitMinValue = self.min
         else:
-            obj.UseLimitMinValue = False
+            psmethod.UseLimitMinValue = False
 
-    def _update_params(self, *, obj):
-        if obj.UseLimitMaxValue:
-            self.max = obj.LimitMaxValue
+    def _update_params(self, psmethod: PSMethod, /):
+        if psmethod.UseLimitMaxValue:
+            self.max = psmethod.LimitMaxValue
         else:
             self.max = None
 
-        if obj.UseLimitMinValue:
-            self.min = obj.LimitMinValue
+        if psmethod.UseLimitMinValue:
+            self.min = psmethod.LimitMinValue
         else:
             self.min = None
 
 
 @attrs.define
-class ChargeLimits(CommonSettings):
+class ChargeLimits(BaseSettings):
     """Set the charge limit settings for a given method."""
 
     max: None | float = 0.0
@@ -313,54 +313,54 @@ class ChargeLimits(CommonSettings):
     min: None | float = 0.0
     """Set limit charge min in µC."""
 
-    def _update_psmethod(self, *, obj):
+    def _update_psmethod(self, psmethod: PSMethod, /):
         if self.max is not None:
-            obj.UseChargeLimitMax = True
-            obj.ChargeLimitMax = self.max
+            psmethod.UseChargeLimitMax = True
+            psmethod.ChargeLimitMax = self.max
         else:
-            obj.UseChargeLimitMax = False
+            psmethod.UseChargeLimitMax = False
 
         if self.min is not None:
-            obj.UseChargeLimitMin = True
-            obj.ChargeLimitMin = self.min
+            psmethod.UseChargeLimitMin = True
+            psmethod.ChargeLimitMin = self.min
         else:
-            obj.UseChargeLimitMin = False
+            psmethod.UseChargeLimitMin = False
 
-    def _update_params(self, *, obj):
-        if obj.UseChargeLimitMax:
-            self.max = obj.ChargeLimitMax
+    def _update_params(self, psmethod: PSMethod, /):
+        if psmethod.UseChargeLimitMax:
+            self.max = psmethod.ChargeLimitMax
         else:
             self.max = None
 
-        if obj.UseChargeLimitMin:
-            self.min = obj.ChargeLimitMin
+        if psmethod.UseChargeLimitMin:
+            self.min = psmethod.ChargeLimitMin
         else:
             self.min = None
 
 
 @attrs.define
-class IrDropCompensation(CommonSettings):
+class IrDropCompensation(BaseSettings):
     """Set the iR drop compensation settings for a given method."""
 
     resistance: None | float = None
     """Set the iR compensation resistance in Ω"""
 
-    def _update_psmethod(self, *, obj):
+    def _update_psmethod(self, psmethod: PSMethod, /):
         if self.resistance:
-            obj.UseIRDropComp = True
-            obj.IRDropCompRes = self.resistance
+            psmethod.UseIRDropComp = True
+            psmethod.IRDropCompRes = self.resistance
         else:
-            obj.UseIRDropComp = False
+            psmethod.UseIRDropComp = False
 
-    def _update_params(self, *, obj):
-        if obj.UseIRDropComp:
-            self.resistance = obj.IRDropCompRes
+    def _update_params(self, psmethod: PSMethod, /):
+        if psmethod.UseIRDropComp:
+            self.resistance = psmethod.IRDropCompRes
         else:
             self.resistance = None
 
 
 @attrs.define
-class EquilibrationTriggers(CommonSettings):
+class EquilibrationTriggers(BaseSettings):
     """Set the trigger at equilibration settings for a given method.
 
     If enabled, set one or more digital outputs at the start of
@@ -379,16 +379,20 @@ class EquilibrationTriggers(CommonSettings):
     d3: bool = False
     """If True, enable trigger at d3 high."""
 
-    def _update_psmethod(self, *, obj):
+    def _update_psmethod(self, psmethod: PSMethod, /):
         if any((self.d0, self.d1, self.d2, self.d3)):
-            obj.UseTriggerOnEquil = True
-            obj.TriggerValueOnEquil = convert_bools_to_int((self.d0, self.d1, self.d2, self.d3))
+            psmethod.UseTriggerOnEquil = True
+            psmethod.TriggerValueOnEquil = convert_bools_to_int(
+                (self.d0, self.d1, self.d2, self.d3)
+            )
         else:
-            obj.UseTriggerOnEquil = False
+            psmethod.UseTriggerOnEquil = False
 
-    def _update_params(self, *, obj):
-        if obj.UseTriggerOnEquil:
-            self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(obj.TriggerValueOnEquil)
+    def _update_params(self, psmethod: PSMethod, /):
+        if psmethod.UseTriggerOnEquil:
+            self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(
+                psmethod.TriggerValueOnEquil
+            )
         else:
             self.d0 = False
             self.d1 = False
@@ -397,7 +401,7 @@ class EquilibrationTriggers(CommonSettings):
 
 
 @attrs.define
-class MeasurementTriggers(CommonSettings):
+class MeasurementTriggers(BaseSettings):
     """Set the trigger at measurement settings for a given method.
 
     If enabled, set one or more digital outputs at the start measurement,
@@ -415,16 +419,20 @@ class MeasurementTriggers(CommonSettings):
     d3: bool = False
     """If True, enable trigger at d3 high."""
 
-    def _update_psmethod(self, *, obj):
+    def _update_psmethod(self, psmethod: PSMethod, /):
         if any((self.d0, self.d1, self.d2, self.d3)):
-            obj.UseTriggerOnStart = True
-            obj.TriggerValueOnStart = convert_bools_to_int((self.d0, self.d1, self.d2, self.d3))
+            psmethod.UseTriggerOnStart = True
+            psmethod.TriggerValueOnStart = convert_bools_to_int(
+                (self.d0, self.d1, self.d2, self.d3)
+            )
         else:
-            obj.UseTriggerOnEquil = False
+            psmethod.UseTriggerOnEquil = False
 
-    def _update_params(self, *, obj):
-        if obj.UseTriggerOnStart:
-            self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(obj.TriggerValueOnStart)
+    def _update_params(self, psmethod: PSMethod, /):
+        if psmethod.UseTriggerOnStart:
+            self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(
+                psmethod.TriggerValueOnStart
+            )
         else:
             self.d0 = False
             self.d1 = False
@@ -433,7 +441,7 @@ class MeasurementTriggers(CommonSettings):
 
 
 @attrs.define
-class DelayTriggers(CommonSettings):
+class DelayTriggers(BaseSettings):
     """Set the delayed trigger at measurement settings for a given method.
 
     If enabled, set one or more digital outputs at the start measurement after a delay,
@@ -457,20 +465,24 @@ class DelayTriggers(CommonSettings):
     d3: bool = False
     """If True, enable trigger at d3 high."""
 
-    def _update_psmethod(self, *, obj):
-        obj.TriggerDelayPeriod = self.delay
+    def _update_psmethod(self, psmethod: PSMethod, /):
+        psmethod.TriggerDelayPeriod = self.delay
 
         if any((self.d0, self.d1, self.d2, self.d3)):
-            obj.UseTriggerOnDelay = True
-            obj.TriggerValueOnDelay = convert_bools_to_int((self.d0, self.d1, self.d2, self.d3))
+            psmethod.UseTriggerOnDelay = True
+            psmethod.TriggerValueOnDelay = convert_bools_to_int(
+                (self.d0, self.d1, self.d2, self.d3)
+            )
         else:
-            obj.UseTriggerOnDelay = False
+            psmethod.UseTriggerOnDelay = False
 
-    def _update_params(self, *, obj):
-        self.delay = obj.TriggerDelayPeriod
+    def _update_params(self, psmethod: PSMethod, /):
+        self.delay = psmethod.TriggerDelayPeriod
 
-        if obj.UseTriggerOnDelay:
-            self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(obj.TriggerValueOnDelay)
+        if psmethod.UseTriggerOnDelay:
+            self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(
+                psmethod.TriggerValueOnDelay
+            )
         else:
             self.d0 = False
             self.d1 = False
@@ -479,10 +491,13 @@ class DelayTriggers(CommonSettings):
 
 
 @attrs.define
-class Multiplexer(CommonSettings):
+class Multiplexer(BaseSettings):
     """Set the multiplexer settings for a given method."""
 
-    mode: Literal['none', 'consecutive', 'alternate'] = 'none'
+    _mode_t = Literal['none', 'consecutive', 'alternate']
+    _MODES: tuple[_mode_t, ...] = ('none', 'consecutive', 'alternate')
+
+    mode: _mode_t = 'none'
     """Set multiplexer mode.
 
     Possible values:
@@ -512,41 +527,41 @@ class Multiplexer(CommonSettings):
     set_unselected_channel_working_electrode: int = 0
     """Set the unselected channel working electrode to 0 = Disconnected / floating, 1 = Ground, 2 = Standby potential. Default is 0."""
 
-    _MUX_MODES = ('none', 'consecutive', 'alternate')
-
-    def _update_psmethod(self, *, obj):
+    def _update_psmethod(self, psmethod: PSMethod, /):
         # Create a mux8r2 multiplexer settings settings object
-        mux_mode = self._MUX_MODES.index(self.mode) - 1
-        obj.MuxMethod = PSMuxMethod(mux_mode)
+        mux_mode = self._MODES.index(self.mode) - 1
+        psmethod.MuxMethod = PSMuxMethod(mux_mode)
 
         # disable all mux channels (range 0-127)
-        for i in range(len(obj.UseMuxChannel)):
-            obj.UseMuxChannel[i] = False
+        for i in range(len(psmethod.UseMuxChannel)):
+            psmethod.UseMuxChannel[i] = False
 
         # set the selected mux channels
         for i in self.channels:
-            obj.UseMuxChannel[i - 1] = True
+            psmethod.UseMuxChannel[i - 1] = True
 
-        obj.MuxSett.ConnSEWE = self.connect_sense_to_working_electrode
-        obj.MuxSett.ConnectCERE = self.combine_reference_and_counter_electrodes
-        obj.MuxSett.CommonCERE = self.use_channel_1_reference_and_counter_electrodes
-        obj.MuxSett.UnselWE = PSMethod.MuxSettings.UnselWESetting(
+        psmethod.MuxSett.ConnSEWE = self.connect_sense_to_working_electrode
+        psmethod.MuxSett.ConnectCERE = self.combine_reference_and_counter_electrodes
+        psmethod.MuxSett.CommonCERE = self.use_channel_1_reference_and_counter_electrodes
+        psmethod.MuxSett.UnselWE = PSMethod.MuxSettings.UnselWESetting(
             self.set_unselected_channel_working_electrode
         )
 
-    def _update_params(self, *, obj):
-        self.mode = self._MUX_MODES[int(obj.MuxMethod) + 1]
+    def _update_params(self, psmethod: PSMethod, /):
+        self.mode = self._MODES[int(psmethod.MuxMethod) + 1]
 
-        self.channels = [i + 1 for i in range(len(obj.UseMuxChannel)) if obj.UseMuxChannel[i]]
+        self.channels = [
+            i + 1 for i in range(len(psmethod.UseMuxChannel)) if psmethod.UseMuxChannel[i]
+        ]
 
-        self.connect_sense_to_working_electrode = obj.MuxSett.ConnSEWE
-        self.combine_reference_and_counter_electrodes = obj.MuxSett.ConnectCERE
-        self.use_channel_1_reference_and_counter_electrodes = obj.MuxSett.CommonCERE
-        self.set_unselected_channel_working_electrode = int(obj.MuxSett.UnselWE)
+        self.connect_sense_to_working_electrode = psmethod.MuxSett.ConnSEWE
+        self.combine_reference_and_counter_electrodes = psmethod.MuxSett.ConnectCERE
+        self.use_channel_1_reference_and_counter_electrodes = psmethod.MuxSett.CommonCERE
+        self.set_unselected_channel_working_electrode = int(psmethod.MuxSett.UnselWE)
 
 
 @attrs.define
-class DataProcessing(CommonSettings):
+class DataProcessing(BaseSettings):
     """Set the data processing settings for a given method."""
 
     smooth_level: int = 0
@@ -571,19 +586,19 @@ class DataProcessing(CommonSettings):
     The value is in the unit of the curves X axis (V).
     Peaks narrower than this value are neglected (default: 0.1 V)."""
 
-    def _update_psmethod(self, *, obj):
-        obj.SmoothLevel = self.smooth_level
-        obj.MinPeakHeight = self.min_height
-        obj.MinPeakWidth = self.min_width
+    def _update_psmethod(self, psmethod: PSMethod, /):
+        psmethod.SmoothLevel = self.smooth_level
+        psmethod.MinPeakHeight = self.min_height
+        psmethod.MinPeakWidth = self.min_width
 
-    def _update_params(self, *, obj):
-        self.smooth_level = obj.SmoothLevel
-        self.min_width = single_to_double(obj.MinPeakWidth)
-        self.min_height = single_to_double(obj.MinPeakHeight)
+    def _update_params(self, psmethod: PSMethod, /):
+        self.smooth_level = psmethod.SmoothLevel
+        self.min_width = single_to_double(psmethod.MinPeakWidth)
+        self.min_height = single_to_double(psmethod.MinPeakHeight)
 
 
 @attrs.define
-class General(CommonSettings):
+class General(BaseSettings):
     """Sets general/other settings for a given method."""
 
     save_on_internal_storage: bool = False
@@ -601,14 +616,14 @@ class General(CommonSettings):
     Adjusts sampling on instrument to account for mains frequency.
     Set to 50 Hz or 60 Hz depending on your region (default: 50)."""
 
-    def _update_psmethod(self, *, obj):
-        obj.SaveOnDevice = self.save_on_internal_storage
-        obj.UseHWSync = self.use_hardware_sync
-        obj.Notes = self.notes
-        obj.PowerFreq = self.power_frequency
+    def _update_psmethod(self, psmethod: PSMethod, /):
+        psmethod.SaveOnDevice = self.save_on_internal_storage
+        psmethod.UseHWSync = self.use_hardware_sync
+        psmethod.Notes = self.notes
+        psmethod.PowerFreq = self.power_frequency
 
-    def _update_params(self, *, obj):
-        self.save_on_internal_storage = obj.SaveOnDevice
-        self.use_hardware_sync = obj.UseHWSync
-        self.notes = obj.Notes
-        self.power_frequency = obj.PowerFreq
+    def _update_params(self, psmethod: PSMethod, /):
+        self.save_on_internal_storage = psmethod.SaveOnDevice
+        self.use_hardware_sync = psmethod.UseHWSync
+        self.notes = psmethod.Notes
+        self.power_frequency = psmethod.PowerFreq

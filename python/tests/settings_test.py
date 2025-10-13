@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from attrs import asdict
+from helpers import assert_params_match_kwargs
 from PalmSens import Techniques
 
 import pypalmsens as ps
@@ -61,16 +61,16 @@ def test_AutorangingCurrentSettings():
     obj = Techniques.CyclicVoltammetry()
 
     params = ps.settings.CurrentRange(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.Ranging.MaximumCurrentRange.Description == '100 uA'
     assert obj.Ranging.MinimumCurrentRange.Description == '100 nA'
     assert obj.Ranging.StartCurrentRange.Description == '10 uA'
 
     new_params = ps.settings.CurrentRange()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_AutorangingPotentialSettings():
@@ -83,16 +83,16 @@ def test_AutorangingPotentialSettings():
     obj = Techniques.Potentiometry()
 
     params = ps.settings.PotentialRange(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.RangingPotential.MaximumPotentialRange.Description == '100 mV'
     assert obj.RangingPotential.MinimumPotentialRange.Description == '1 mV'
     assert obj.RangingPotential.StartPotentialRange.Description == '10 mV'
 
     new_params = ps.settings.PotentialRange()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_PretreatmentSettings():
@@ -106,7 +106,7 @@ def test_PretreatmentSettings():
     }
 
     params = ps.settings.Pretreatment(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.DepositionPotential == 12
     assert obj.DepositionTime == 34
@@ -114,9 +114,9 @@ def test_PretreatmentSettings():
     assert obj.ConditioningTime == 78
 
     new_params = ps.settings.Pretreatment()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_VersusOcpSettings():
@@ -129,16 +129,16 @@ def test_VersusOcpSettings():
     }
 
     params = ps.settings.VersusOCP(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.OCPmode == 7
     assert obj.OCPMaxOCPTime == 200
     assert obj.OCPStabilityCriterion == 123
 
     new_params = ps.settings.VersusOCP()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_BipotSettings():
@@ -153,7 +153,7 @@ def test_BipotSettings():
     }
 
     params = ps.settings.BiPot(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.BipotModePS == Techniques.CyclicVoltammetry.EnumPalmSensBipotMode(1)
     assert obj.BiPotPotential == 10.0
@@ -162,9 +162,9 @@ def test_BipotSettings():
     assert obj.BipotRanging.StartCurrentRange.Description == '10 uA'
 
     new_params = ps.settings.BiPot()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_PostMeasurementSettings():
@@ -177,16 +177,16 @@ def test_PostMeasurementSettings():
     }
 
     params = ps.settings.PostMeasurement(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.CellOnAfterMeasurement is True
     assert obj.StandbyPotential == 123
     assert obj.StandbyTime == 678
 
     new_params = ps.settings.PostMeasurement()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_CurrentLimitSettings():
@@ -198,7 +198,7 @@ def test_CurrentLimitSettings():
     }
 
     params = ps.settings.CurrentLimits(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.UseLimitMinValue is True
     assert obj.LimitMinValue == 123.0
@@ -206,9 +206,9 @@ def test_CurrentLimitSettings():
     assert obj.LimitMaxValue == 678.0
 
     new_params = ps.settings.CurrentLimits()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_PotentialLimitSettings():
@@ -220,7 +220,7 @@ def test_PotentialLimitSettings():
     }
 
     params = ps.settings.PotentialLimits(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.UseLimitMinValue is True
     assert obj.LimitMinValue == 123.0
@@ -228,9 +228,9 @@ def test_PotentialLimitSettings():
     assert obj.LimitMaxValue == 678.0
 
     new_params = ps.settings.PotentialLimits()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_ChargeLimitSettings():
@@ -242,7 +242,7 @@ def test_ChargeLimitSettings():
     }
 
     params = ps.settings.ChargeLimits(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.UseChargeLimitMin is True
     assert obj.ChargeLimitMin == 123.0
@@ -250,9 +250,9 @@ def test_ChargeLimitSettings():
     assert obj.ChargeLimitMax == 678.0
 
     new_params = ps.settings.ChargeLimits()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_IrDropCompensationSettings():
@@ -263,15 +263,15 @@ def test_IrDropCompensationSettings():
     }
 
     params = ps.settings.IrDropCompensation(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.UseIRDropComp is True
     assert obj.IRDropCompRes == 123
 
     new_params = ps.settings.IrDropCompensation()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_TriggerAtEquilibrationSettings():
@@ -285,15 +285,15 @@ def test_TriggerAtEquilibrationSettings():
     }
 
     params = ps.settings.EquilibrationTriggers(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.UseTriggerOnEquil is True
     assert obj.TriggerValueOnEquil == 13
 
     new_params = ps.settings.EquilibrationTriggers()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_TriggerAtMeasurementSettings():
@@ -307,15 +307,15 @@ def test_TriggerAtMeasurementSettings():
     }
 
     params = ps.settings.MeasurementTriggers(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.UseTriggerOnStart is True
     assert obj.TriggerValueOnStart == 11
 
     new_params = ps.settings.MeasurementTriggers()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_TriggerAtDelaySettings():
@@ -330,16 +330,16 @@ def test_TriggerAtDelaySettings():
     }
 
     params = ps.settings.DelayTriggers(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.UseTriggerOnDelay is True
     assert obj.TriggerValueOnDelay == 11
     assert obj.TriggerDelayPeriod == 1.0
 
     new_params = ps.settings.DelayTriggers()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_MultiplexerSettings():
@@ -355,7 +355,7 @@ def test_MultiplexerSettings():
     }
 
     params = ps.settings.Multiplexer(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert int(obj.MuxMethod) == 0
     for i, v in enumerate([True, False, True, False, True]):
@@ -367,9 +367,9 @@ def test_MultiplexerSettings():
     assert int(obj.MuxSett.UnselWE) == 1
 
     new_params = ps.settings.Multiplexer()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_PeakSettings():
@@ -382,16 +382,16 @@ def test_PeakSettings():
     }
 
     params = ps.settings.DataProcessing(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.SmoothLevel == 1
     assert obj.MinPeakWidth == 13
     assert obj.MinPeakHeight == 37
 
     new_params = ps.settings.DataProcessing()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 def test_CommonSettings():
@@ -405,7 +405,7 @@ def test_CommonSettings():
     }
 
     params = ps.settings.General(**kwargs)
-    params._update_psmethod(obj=obj)
+    params._update_psmethod(obj)
 
     assert obj.SaveOnDevice
     assert obj.UseHWSync
@@ -413,6 +413,6 @@ def test_CommonSettings():
     assert obj.PowerFreq == 60
 
     new_params = ps.settings.General()
-    new_params._update_params(obj=obj)
+    new_params._update_params(obj)
 
-    assert asdict(new_params) == kwargs
+    assert_params_match_kwargs(new_params, kwargs=kwargs)

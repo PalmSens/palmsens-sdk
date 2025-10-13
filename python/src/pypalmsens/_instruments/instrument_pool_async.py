@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Sequence
 
-from .._methods import MethodSettings
+from .._methods import BaseTechnique
 from ._common import Instrument
 from .instrument_manager_async import InstrumentManagerAsync
 
@@ -96,7 +96,7 @@ class InstrumentPoolAsync:
         await manager.connect()
         self.managers.append(manager)
 
-    async def measure(self, method: MethodSettings) -> list[Measurement]:
+    async def measure(self, method: BaseTechnique) -> list[Measurement]:
         """Concurrently start measurement on all managers in the pool.
 
         For hardware synchronization, set `use_hardware_sync` on the method.
@@ -126,7 +126,7 @@ class InstrumentPoolAsync:
 
     async def _measure_hw_sync(
         self,
-        method: MethodSettings,
+        method: BaseTechnique,
     ) -> list[Awaitable[Measurement]]:
         """Concurrently start measurement on all managers in the pool.
 

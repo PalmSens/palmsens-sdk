@@ -80,8 +80,7 @@ Dataclasses can be serialized to and from a dictionary:
 
 [,python]
 ----
->>> from attrs import asdict
->>> d = asdict(method)
+>>> d = method.to_dict()
 >>> d
 {'equilibration_time': 0.0,
  'begin_potential': -1.0,

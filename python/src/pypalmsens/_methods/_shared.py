@@ -72,7 +72,7 @@ class CURRENT_RANGE(Enum):
         return PalmSens.CurrentRange(PalmSens.CurrentRanges(self.value))
 
     @classmethod
-    def _from_psobj(cls, psobj):
+    def _from_psobj(cls, psobj, /):
         """Convert from PS object."""
         return cls(int(PalmSens.CurrentRange.GetCRfromCRByte(psobj.CRbyte)))
 
@@ -104,7 +104,7 @@ class POTENTIAL_RANGE(Enum):
         return PalmSens.PotentialRange(PalmSens.PotentialRanges(self.value))
 
     @classmethod
-    def _from_psobj(cls, psobj):
+    def _from_psobj(cls, psobj, /):
         """Convert from PS object."""
         return cls(int(PalmSens.PotentialRange.get_PR(psobj)))
 

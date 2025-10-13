@@ -19,7 +19,7 @@ from PalmSens.Plottables import (
 from System import EventHandler  # type: ignore
 
 from .._data._shared import ArrayType, _get_values_from_NETArray
-from .._methods import CURRENT_RANGE, MethodSettings
+from .._methods import CURRENT_RANGE, BaseTechnique
 from ..data import Measurement
 from ._common import Callback, Instrument, create_future, firmware_warning
 
@@ -392,7 +392,7 @@ class InstrumentManager:
 
         return True, None
 
-    def measure(self, method: MethodSettings):
+    def measure(self, method: BaseTechnique):
         """Start measurement using given method parameters.
 
         Parameters

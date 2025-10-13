@@ -10,7 +10,7 @@ from PalmSens.Devices import PalmSens4Capabilities
 from . import techniques
 
 if TYPE_CHECKING:
-    from .techniques import MethodSettings
+    from .techniques import BaseTechnique
 
 
 class Method:
@@ -65,9 +65,9 @@ class Method:
         """The technique number used in the firmware."""
         return self.psmethod.Technique
 
-    def to_settings(self) -> MethodSettings:
+    def to_settings(self) -> BaseTechnique:
         """Extract techniques parameters as dataclass."""
-        return techniques.MethodSettings._from_psmethod(psmethod=self.psmethod)
+        return techniques.BaseTechnique._from_psmethod(self.psmethod)
 
     def to_dict(self) -> dict[str, Any]:
         """Return dictionary with technique parameters."""

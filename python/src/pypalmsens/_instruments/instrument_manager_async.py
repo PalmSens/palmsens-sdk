@@ -19,7 +19,7 @@ from System import EventHandler
 from System.Threading.Tasks import Task
 
 from .._data._shared import ArrayType, _get_values_from_NETArray
-from .._methods import CURRENT_RANGE, MethodSettings
+from .._methods import CURRENT_RANGE, BaseTechnique
 from ..data import Measurement
 from ._common import Callback, Instrument, create_future, firmware_warning
 
@@ -391,7 +391,7 @@ class InstrumentManagerAsync:
 
         return True, None
 
-    async def measure(self, method: MethodSettings, hardware_sync_initiated_event=None):
+    async def measure(self, method: BaseTechnique, hardware_sync_initiated_event=None):
         """Start measurement using given method parameters.
 
         Parameters
@@ -590,7 +590,7 @@ class InstrumentManagerAsync:
         #     self.__measuring = False
         #     return None
 
-    def initiate_hardware_sync_follower_channel(self, method: MethodSettings):
+    def initiate_hardware_sync_follower_channel(self, method: BaseTechnique):
         """Initiate hardware sync follower channel.
 
         Parameters

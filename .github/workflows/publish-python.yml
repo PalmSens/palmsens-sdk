@@ -43,7 +43,7 @@ jobs:
 
     - name: Push back changes to main and tag
       run: |
-        git tag --force ${{ env.TAG }} HEAD
+        git tag --force $GITHUB_REF_NAME HEAD
         git push --force --tags
         git switch -C main
         git push --set-upstream -f origin main
@@ -95,7 +95,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: python-package-distributions
-        path: python/dist/
+        path: dist/
 
     - name: Publish distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1

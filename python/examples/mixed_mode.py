@@ -1,5 +1,16 @@
 import pypalmsens as ps
 
+# example with a single cycle with reduced charge/discharge timeouts
+N_CYCLES = 1
+OCP_TIME = 5
+TIMEOUT = 10
+
+# # For a complete 1000-cycle run, you could use he following parameters
+# # Note that this could take a while :-)
+# N_CYCLES = 1000
+# OCP_TIME = 300
+# TIMEOUT = 10000
+
 
 def new_data_callback(new_data):
     for point in new_data:
@@ -11,35 +22,35 @@ print(instruments)
 
 method = ps.mixed_mode.MixedMode(
     current_range=ps.settings.CurrentRange(
-        max=ps.settings.CURRENT_RANGE.cr_1_A,  # 1 A range
-        min=ps.settings.CURRENT_RANGE.cr_1_uA,  # 1 µA range
-        start=ps.settings.CURRENT_RANGE.cr_1_mA,  # 1 mA range
+        min=ps.settings.CURRENT_RANGE.cr_1_mA,  # 1 mA range
+        max=ps.settings.CURRENT_RANGE.cr_100_mA,  # 100 mA range
+        start=ps.settings.CURRENT_RANGE.cr_100_mA,  # 100 mA range
     ),
-    cycles=2,
+    interval_time=1.0,
+    cycles=N_CYCLES,
     stages=[
-        ps.mixed_mode.ConstantE(
-            run_time=1.0,
-            potential=0.5,
+        ps.mixed_mode.OpenCircuit(
+            run_time=OCP_TIME,  # s
         ),
         ps.mixed_mode.ConstantI(
-            run_time=1.0,
-            current=1.0,
-            applied_current_range=ps.settings.CURRENT_RANGE.cr_100_nA,
+            run_time=TIMEOUT,  # s
+            current=3.0,
+            applied_current_range=ps.settings.CURRENT_RANGE.cr_100_mA,
+            potential_limits=ps.settings.PotentialLimits(max=4.2),
         ),
-        ps.mixed_mode.SweepE(
-            begin_potential=-0.5,
-            end_potential=0.5,
-            step_potential=0.1,
-            scanrate=2.0,
+        ps.mixed_mode.ConstantE(
+            run_time=TIMEOUT,  # s
+            potential=4.2,
+            current_limits=ps.settings.CurrentLimits(min=50000),  # mA
         ),
         ps.mixed_mode.OpenCircuit(
-            run_time=5.0,
+            run_time=OCP_TIME,  # s
         ),
-        ps.mixed_mode.Impedance(
-            frequency=50000,
-            ac_potential=0.01,
-            dc_potential=0.0,
-            run_time=1.0,
+        ps.mixed_mode.ConstantI(
+            run_time=TIMEOUT,  # s
+            current=-3.0,
+            applied_current_range=ps.settings.CURRENT_RANGE.cr_100_mA,
+            potential_limits=ps.settings.PotentialLimits(min=2.5),
         ),
     ],
 )

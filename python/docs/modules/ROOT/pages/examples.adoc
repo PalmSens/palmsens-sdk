@@ -74,7 +74,8 @@ include::example$measurement_EIS.py[]
 
 == Mixed Mode
 
-This example shows how to set up a Mixed Mode measurement.
+This example shows how to set up a Mixed Mode measurement for a typicial charge / discharge cycle of a common Lithium battery.
+Note that the example has a reduced number of cycles and maximum run time.
 
 .mixed_mode.py
 [,python]

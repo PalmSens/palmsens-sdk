@@ -24,7 +24,7 @@ To install:
 pip install pypalmsens
 ```
 
-PyPalmSens is built on top of the included [PalmSens .NET libraries](https://palmsens.github.io/PalmSens_SDK/start/core_dll.html), and therefore requires the .NET runtime to be installed.
+PyPalmSens is built on top of the included [PalmSens .NET libraries](https://sdk.palmsens.com/start/core_dll.html), and therefore requires the .NET runtime to be installed.
 
 For specific installation instructions for your platform, see the
-[documentation](https://palmsens.github.io/PalmSens_SDK/python/latest/index.html).
+[documentation](https://sdk.palmsens.com/python/latest/index.html).

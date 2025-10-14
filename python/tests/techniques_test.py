@@ -21,6 +21,7 @@ def assert_params_round_trip_equal(*, pycls, kwargs):
         ps.save_method_file(path, params)
         new_params = ps.load_method_file(path)
 
+    assert new_params == params
     assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
@@ -535,6 +536,44 @@ class TestPAD:
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = self.pycls(**self.kwargs)
+        measurement = manager.measure(method)
+
+        assert measurement
+        assert isinstance(measurement, ps.data.Measurement)
+
+        dataset = measurement.dataset
+        assert len(dataset) == 3
+
+        assert dataset.array_names == {'potential', 'time', 'current'}
+        assert dataset.array_quantities == {'Potential', 'Time', 'Current'}
+
+
+class TestMPAD:
+    kwargs = {
+        'run_time': 2.5,
+        'potential_1': 0.1,
+        'potential_2': 0.1,
+        'potential_3': 0.1,
+        'duration_1': 0.15,
+        'duration_2': 0.15,
+        'duration_3': 0.15,
+    }
+    pycls = ps.MultiplePulseAmperometry
+
+    def test_params_round_trip(self):
+        assert_params_round_trip_equal(
+            pycls=self.pycls,
+            kwargs=self.kwargs,
+        )
+
+    @pytest.mark.xfail(
+        raises=ValueError,
+        reason='Not all devices support MPAD.',
+    )
+    @pytest.mark.instrument
+    def test_measurement(self, manager):
+        method = self.pycls(**self.kwargs)
+
         measurement = manager.measure(method)
 
         assert measurement

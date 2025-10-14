@@ -200,7 +200,7 @@ Set versus OCP mode.
 * link:#pypalmsens.settings.VersusOCP.max_ocp_time[*max++_++ocp++_++time*]
 (link:#float[float]) – Maximum OCP time in s
 * link:#pypalmsens.settings.VersusOCP.stability_criterion[*stability++_++criterion*]
-(link:#int[int]) – Stability criterion (potential/time) in mV/s.
+(link:#float[float]) – Stability criterion (potential/time) in mV/s.
 
 ==== `mode`
 
@@ -235,7 +235,7 @@ Maximum OCP time in s
 
 [source,python]
 ----
-stability_criterion: int = 0
+stability_criterion: float = 0.0
 ----
 
 Stability criterion (potential/time) in mV/s.

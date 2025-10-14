@@ -8,6 +8,8 @@ from PalmSens import FixedCurrentRange as PSFixedCurrentRange
 from PalmSens import Method as PSMethod
 from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 
+from pypalmsens._shared import single_to_double
+
 from . import mixins
 from ._shared import (
     CURRENT_RANGE,
@@ -93,12 +95,12 @@ class CyclicVoltammetry(
         )
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.begin_potential = psmethod.BeginPotential
-        self.vertex1_potential = psmethod.Vtx1Potential
-        self.vertex2_potential = psmethod.Vtx2Potential
-        self.step_potential = psmethod.StepPotential
-        self.scanrate = psmethod.Scanrate
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.begin_potential = single_to_double(psmethod.BeginPotential)
+        self.vertex1_potential = single_to_double(psmethod.Vtx1Potential)
+        self.vertex2_potential = single_to_double(psmethod.Vtx2Potential)
+        self.step_potential = single_to_double(psmethod.StepPotential)
+        self.scanrate = single_to_double(psmethod.Scanrate)
         self.n_scans = psmethod.nScans
 
         msk = get_extra_value_mask(psmethod)
@@ -172,12 +174,12 @@ class FastCyclicVoltammetry(
 
     def _update_params(self, psmethod: PSMethod, /):
         self.current_range = CURRENT_RANGE._from_psobj(psmethod.Ranging.StartCurrentRange)
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.begin_potential = psmethod.BeginPotential
-        self.vertex1_potential = psmethod.Vtx1Potential
-        self.vertex2_potential = psmethod.Vtx2Potential
-        self.step_potential = psmethod.StepPotential
-        self.scanrate = psmethod.Scanrate
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.begin_potential = single_to_double(psmethod.BeginPotential)
+        self.vertex1_potential = single_to_double(psmethod.Vtx1Potential)
+        self.vertex2_potential = single_to_double(psmethod.Vtx2Potential)
+        self.step_potential = single_to_double(psmethod.StepPotential)
+        self.scanrate = single_to_double(psmethod.Scanrate)
         self.n_scans = psmethod.nScans
         self.n_avg_scans = psmethod.nAvgScans
         self.n_equil_scans = psmethod.nEqScans
@@ -235,13 +237,13 @@ class ACVoltammetry(
         psmethod.Scanrate = self.scanrate
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.begin_potential = psmethod.BeginPotential
-        self.end_potential = psmethod.EndPotential
-        self.step_potential = psmethod.StepPotential
-        self.ac_potential = psmethod.SineWaveAmplitude
-        self.frequency = psmethod.Frequency
-        self.scanrate = psmethod.Scanrate
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.begin_potential = single_to_double(psmethod.BeginPotential)
+        self.end_potential = single_to_double(psmethod.EndPotential)
+        self.step_potential = single_to_double(psmethod.StepPotential)
+        self.ac_potential = single_to_double(psmethod.SineWaveAmplitude)
+        self.frequency = single_to_double(psmethod.Frequency)
+        self.scanrate = single_to_double(psmethod.Scanrate)
         self.measure_dc_current = psmethod.MeasureDCcurrent
 
 
@@ -313,11 +315,11 @@ class LinearSweepVoltammetry(
         )
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.begin_potential = psmethod.BeginPotential
-        self.end_potential = psmethod.EndPotential
-        self.step_potential = psmethod.StepPotential
-        self.scanrate = psmethod.Scanrate
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.begin_potential = single_to_double(psmethod.BeginPotential)
+        self.end_potential = single_to_double(psmethod.EndPotential)
+        self.step_potential = single_to_double(psmethod.StepPotential)
+        self.scanrate = single_to_double(psmethod.Scanrate)
 
         msk = get_extra_value_mask(psmethod)
 
@@ -405,12 +407,12 @@ class SquareWaveVoltammetry(
         )
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.begin_potential = psmethod.BeginPotential
-        self.end_potential = psmethod.EndPotential
-        self.step_potential = psmethod.StepPotential
-        self.frequency = psmethod.Frequency
-        self.amplitude = psmethod.PulseAmplitude
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.begin_potential = single_to_double(psmethod.BeginPotential)
+        self.end_potential = single_to_double(psmethod.EndPotential)
+        self.step_potential = single_to_double(psmethod.StepPotential)
+        self.frequency = single_to_double(psmethod.Frequency)
+        self.amplitude = single_to_double(psmethod.PulseAmplitude)
 
         msk = get_extra_value_mask(psmethod)
 
@@ -499,13 +501,13 @@ class DifferentialPulseVoltammetry(
         )
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.begin_potential = psmethod.BeginPotential
-        self.end_potential = psmethod.EndPotential
-        self.step_potential = psmethod.StepPotential
-        self.pulse_potential = psmethod.PulsePotential
-        self.pulse_time = psmethod.PulseTime
-        self.scan_rate = psmethod.Scanrate
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.begin_potential = single_to_double(psmethod.BeginPotential)
+        self.end_potential = single_to_double(psmethod.EndPotential)
+        self.step_potential = single_to_double(psmethod.StepPotential)
+        self.pulse_potential = single_to_double(psmethod.PulsePotential)
+        self.pulse_time = single_to_double(psmethod.PulseTime)
+        self.scan_rate = single_to_double(psmethod.Scanrate)
 
         msk = get_extra_value_mask(psmethod)
 
@@ -589,12 +591,12 @@ class NormalPulseVoltammetry(
         )
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.begin_potential = psmethod.BeginPotential
-        self.end_potential = psmethod.EndPotential
-        self.step_potential = psmethod.StepPotential
-        self.pulse_time = psmethod.PulseTime
-        self.scan_rate = psmethod.Scanrate
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.begin_potential = single_to_double(psmethod.BeginPotential)
+        self.end_potential = single_to_double(psmethod.EndPotential)
+        self.step_potential = single_to_double(psmethod.StepPotential)
+        self.pulse_time = single_to_double(psmethod.PulseTime)
+        self.scan_rate = single_to_double(psmethod.Scanrate)
 
         msk = get_extra_value_mask(psmethod)
 
@@ -672,10 +674,10 @@ class ChronoAmperometry(
         )
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.interval_time = psmethod.IntervalTime
-        self.potential = psmethod.Potential
-        self.run_time = psmethod.RunTime
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.interval_time = single_to_double(psmethod.IntervalTime)
+        self.potential = single_to_double(psmethod.Potential)
+        self.run_time = single_to_double(psmethod.RunTime)
 
         msk = get_extra_value_mask(psmethod)
 
@@ -737,11 +739,11 @@ class FastAmperometry(
 
     def _update_params(self, psmethod: PSMethod, /):
         self.current_range = CURRENT_RANGE._from_psobj(psmethod.Ranging.StartCurrentRange)
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.equilibration_potential = psmethod.EqPotentialFA
-        self.interval_time = psmethod.IntervalTime
-        self.potential = psmethod.Potential
-        self.run_time = psmethod.RunTime
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.equilibration_potential = single_to_double(psmethod.EqPotentialFA)
+        self.interval_time = single_to_double(psmethod.IntervalTime)
+        self.potential = single_to_double(psmethod.Potential)
+        self.run_time = single_to_double(psmethod.RunTime)
 
 
 @attrs.define
@@ -817,8 +819,8 @@ class MultiStepAmperometry(
         )
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.interval_time = psmethod.IntervalTime
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.interval_time = single_to_double(psmethod.IntervalTime)
         self.n_cycles = psmethod.nCycles
 
         self.levels = [ELevel.from_psobj(pslevel) for pslevel in psmethod.Levels]
@@ -839,7 +841,6 @@ class PulsedAmperometricDetection(
     BaseTechnique,
     mixins.CurrentRangeMixin,
     mixins.PretreatmentMixin,
-    mixins.VersusOCPMixin,
     mixins.BiPotMixin,
     mixins.PostMeasurementMixin,
     mixins.EquilibrationTriggersMixin,
@@ -894,14 +895,75 @@ class PulsedAmperometricDetection(
         psmethod.tMode = PSTechniques.PulsedAmpDetection.enumMode(mode)
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.interval_time = psmethod.IntervalTime
-        self.potential = psmethod.Potential
-        self.pulse_potential = psmethod.PulsePotentialAD
-        self.pulse_time = psmethod.PulseTime
-        self.run_time = psmethod.RunTime
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.interval_time = single_to_double(psmethod.IntervalTime)
+        self.potential = single_to_double(psmethod.Potential)
+        self.pulse_potential = single_to_double(psmethod.PulsePotentialAD)
+        self.pulse_time = single_to_double(psmethod.PulseTime)
+        self.run_time = single_to_double(psmethod.RunTime)
 
         self.mode = self._MODES[int(psmethod.tMode) - 1]
+
+
+@attrs.define
+class MultiplePulseAmperometry(
+    BaseTechnique,
+    mixins.CurrentRangeMixin,
+    mixins.PretreatmentMixin,
+    mixins.PostMeasurementMixin,
+    mixins.DataProcessingMixin,
+    mixins.GeneralMixin,
+):
+    """Create multiple pulse amperometry method parameters."""
+
+    _id = 'mpad'
+
+    equilibration_time: float = 0.0
+    """Equilibration time in s."""
+
+    run_time: float = 10.0
+    """Run time in s."""
+
+    duration_1: float = 0.1
+    """Duration of the first applied potential in s."""
+
+    duration_2: float = 0.1
+    """Duration of the first applied potential in s."""
+
+    duration_3: float = 0.1
+    """Duration of the first applied potential in s."""
+
+    potential_1: float = 0.0
+    """First applied potential level at which the current is recorded in V."""
+
+    potential_2: float = 0.0
+    """Second applied potential level at which the current is recorded in V."""
+
+    potential_3: float = 0.0
+    """Third applied potential level at which the current is recorded in V."""
+
+    def _update_psmethod(self, psmethod: PSMethod, /):
+        """Update method with multistep amperometry settings."""
+        psmethod.EquilibrationTime = self.equilibration_time
+        psmethod.RunTime = self.run_time
+
+        psmethod.E1 = self.potential_1
+        psmethod.E2 = self.potential_2
+        psmethod.E3 = self.potential_3
+        psmethod.t1 = self.duration_1
+        psmethod.t2 = self.duration_2
+        psmethod.t3 = self.duration_3
+
+    def _update_params(self, psmethod: PSMethod, /):
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.run_time = single_to_double(psmethod.RunTime)
+
+        self.potential_1 = single_to_double(psmethod.E1)
+        self.potential_2 = single_to_double(psmethod.E2)
+        self.potential_3 = single_to_double(psmethod.E3)
+        self.duration_1 = single_to_double(psmethod.t1)
+        self.duration_2 = single_to_double(psmethod.t2)
+        self.duration_3 = single_to_double(psmethod.t3)
 
 
 @attrs.define
@@ -951,8 +1013,8 @@ class OpenCircuitPotentiometry(
         )
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.interval_time = psmethod.IntervalTime
-        self.run_time = psmethod.RunTime
+        self.interval_time = single_to_double(psmethod.IntervalTime)
+        self.run_time = single_to_double(psmethod.RunTime)
         self.record_we_current_range = CURRENT_RANGE._from_psobj(psmethod.AppliedCurrentRange)
 
         msk = get_extra_value_mask(psmethod)
@@ -1028,10 +1090,10 @@ class ChronoPotentiometry(
         )
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.current = psmethod.Current
+        self.current = single_to_double(psmethod.Current)
         self.applied_current_range = CURRENT_RANGE._from_psobj(psmethod.AppliedCurrentRange)
-        self.interval_time = psmethod.IntervalTime
-        self.run_time = psmethod.RunTime
+        self.interval_time = single_to_double(psmethod.IntervalTime)
+        self.run_time = single_to_double(psmethod.RunTime)
 
         msk = get_extra_value_mask(psmethod)
 
@@ -1091,10 +1153,10 @@ class StrippingChronoPotentiometry(
         psmethod.AppliedCurrentRange = self.applied_current_range._to_psobj()
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.current = psmethod.Current
+        self.current = single_to_double(psmethod.Current)
         self.applied_current_range = CURRENT_RANGE._from_psobj(psmethod.AppliedCurrentRange)
-        self.measurement_time = psmethod.MeasurementTime
-        self.end_potential = psmethod.EndPotential
+        self.measurement_time = single_to_double(psmethod.MeasurementTime)
+        self.end_potential = single_to_double(psmethod.EndPotential)
 
 
 @attrs.define
@@ -1166,10 +1228,10 @@ class LinearSweepPotentiometry(
     def _update_params(self, psmethod: PSMethod, /):
         self.applied_current_range = CURRENT_RANGE._from_psobj(psmethod.AppliedCurrentRange)
 
-        self.current_begin = psmethod.BeginCurrent
-        self.current_end = psmethod.EndCurrent
-        self.current_step = psmethod.StepCurrent
-        self.scan_rate = psmethod.ScanrateG
+        self.current_begin = single_to_double(psmethod.BeginCurrent)
+        self.current_end = single_to_double(psmethod.EndCurrent)
+        self.current_step = single_to_double(psmethod.StepCurrent)
+        self.scan_rate = single_to_double(psmethod.ScanrateG)
 
         msk = get_extra_value_mask(psmethod)
 
@@ -1204,7 +1266,7 @@ class MultiStepPotentiometry(
     interval_time: float = 0.1
     """Interval time in s."""
 
-    n_cycles: float = 1
+    n_cycles: int = 1
     """Number of cycles."""
 
     levels: list[ILevel] = attrs.field(factory=lambda: [ILevel()])
@@ -1246,7 +1308,7 @@ class MultiStepPotentiometry(
     def _update_params(self, psmethod: PSMethod, /):
         self.applied_current_range = CURRENT_RANGE._from_psobj(psmethod.AppliedCurrentRange)
 
-        self.interval_time = psmethod.IntervalTime
+        self.interval_time = single_to_double(psmethod.IntervalTime)
         self.n_cycles = psmethod.nCycles
 
         self.levels = [ILevel.from_psobj(pslevel) for pslevel in psmethod.Levels]
@@ -1331,15 +1393,15 @@ class ChronoCoulometry(
         )
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.interval_time = psmethod.IntervalTime
-        self.step1_potential = psmethod.EFirstStep
-        self.step2_potential = psmethod.ESecondStep
-        self.step1_run_time = psmethod.TFirstStep
-        self.step2_run_time = psmethod.TSecondStep
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.interval_time = single_to_double(psmethod.IntervalTime)
+        self.step1_potential = single_to_double(psmethod.EFirstStep)
+        self.step2_potential = single_to_double(psmethod.ESecondStep)
+        self.step1_run_time = single_to_double(psmethod.TFirstStep)
+        self.step2_run_time = single_to_double(psmethod.TSecondStep)
 
         if psmethod.OverrideBandwidth:
-            self.bandwidth = psmethod.Bandwidth
+            self.bandwidth = single_to_double(psmethod.Bandwidth)
 
         msk = get_extra_value_mask(psmethod)
 
@@ -1398,12 +1460,12 @@ class ElectrochemicalImpedanceSpectroscopy(
         psmethod.MinFrequency = self.min_frequency
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.dc_potential = psmethod.Potential
-        self.ac_potential = psmethod.Eac
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.dc_potential = single_to_double(psmethod.Potential)
+        self.ac_potential = single_to_double(psmethod.Eac)
         self.n_frequencies = psmethod.nFrequencies
-        self.max_frequency = psmethod.MaxFrequency
-        self.min_frequency = psmethod.MinFrequency
+        self.max_frequency = single_to_double(psmethod.MaxFrequency)
+        self.min_frequency = single_to_double(psmethod.MinFrequency)
 
 
 @attrs.define
@@ -1450,12 +1512,12 @@ class FastImpedanceSpectroscopy(
         psmethod.RunTime = self.run_time
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.ac_potential = psmethod.Eac
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.frequency = psmethod.FixedFrequency
-        self.interval_time = psmethod.IntervalTime
-        self.dc_potential = psmethod.Potential
-        self.run_time = psmethod.RunTime
+        self.ac_potential = single_to_double(psmethod.Eac)
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.frequency = single_to_double(psmethod.FixedFrequency)
+        self.interval_time = single_to_double(psmethod.IntervalTime)
+        self.dc_potential = single_to_double(psmethod.Potential)
+        self.run_time = single_to_double(psmethod.RunTime)
 
 
 @attrs.define
@@ -1512,12 +1574,12 @@ class GalvanostaticImpedanceSpectroscopy(
 
     def _update_params(self, psmethod: PSMethod, /):
         self.applied_current_range = CURRENT_RANGE._from_psobj(psmethod.AppliedCurrentRange)
-        self.equilibration_time = psmethod.EquilibrationTime
-        self.ac_current = psmethod.Iac
-        self.dc_current = psmethod.Idc
+        self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
+        self.ac_current = single_to_double(psmethod.Iac)
+        self.dc_current = single_to_double(psmethod.Idc)
         self.n_frequencies = psmethod.nFrequencies
-        self.max_frequency = psmethod.MaxFrequency
-        self.min_frequency = psmethod.MinFrequency
+        self.max_frequency = single_to_double(psmethod.MaxFrequency)
+        self.min_frequency = single_to_double(psmethod.MinFrequency)
 
 
 @attrs.define
@@ -1568,11 +1630,11 @@ class FastGalvanostaticImpedanceSpectroscopy(
 
     def _update_params(self, psmethod: PSMethod, /):
         self.applied_current_range = CURRENT_RANGE._from_psobj(psmethod.AppliedCurrentRange)
-        self.ac_current = psmethod.Iac
-        self.dc_current = psmethod.Idc
-        self.frequency = psmethod.FixedFrequency
-        self.run_time = psmethod.RunTime
-        self.interval_time = psmethod.IntervalTime
+        self.ac_current = single_to_double(psmethod.Iac)
+        self.dc_current = single_to_double(psmethod.Idc)
+        self.frequency = single_to_double(psmethod.FixedFrequency)
+        self.run_time = single_to_double(psmethod.RunTime)
+        self.interval_time = single_to_double(psmethod.IntervalTime)
 
 
 @attrs.define

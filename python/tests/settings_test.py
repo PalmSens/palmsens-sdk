@@ -71,6 +71,7 @@ def test_AutorangingCurrentSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_AutorangingPotentialSettings():
@@ -93,6 +94,7 @@ def test_AutorangingPotentialSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_PretreatmentSettings():
@@ -117,6 +119,7 @@ def test_PretreatmentSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_VersusOcpSettings():
@@ -139,6 +142,7 @@ def test_VersusOcpSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_BipotSettings():
@@ -165,6 +169,7 @@ def test_BipotSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_PostMeasurementSettings():
@@ -187,6 +192,7 @@ def test_PostMeasurementSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_CurrentLimitSettings():
@@ -209,6 +215,7 @@ def test_CurrentLimitSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_PotentialLimitSettings():
@@ -231,6 +238,7 @@ def test_PotentialLimitSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_ChargeLimitSettings():
@@ -253,6 +261,7 @@ def test_ChargeLimitSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_IrDropCompensationSettings():
@@ -272,6 +281,7 @@ def test_IrDropCompensationSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_TriggerAtEquilibrationSettings():
@@ -294,6 +304,7 @@ def test_TriggerAtEquilibrationSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_TriggerAtMeasurementSettings():
@@ -316,6 +327,7 @@ def test_TriggerAtMeasurementSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_TriggerAtDelaySettings():
@@ -340,6 +352,7 @@ def test_TriggerAtDelaySettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_MultiplexerSettings():
@@ -370,6 +383,7 @@ def test_MultiplexerSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_PeakSettings():
@@ -392,6 +406,7 @@ def test_PeakSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params
 
 
 def test_CommonSettings():
@@ -416,3 +431,4 @@ def test_CommonSettings():
     new_params._update_params(obj)
 
     assert_params_match_kwargs(new_params, kwargs=kwargs)
+    assert new_params == params

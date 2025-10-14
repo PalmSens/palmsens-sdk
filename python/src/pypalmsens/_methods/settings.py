@@ -101,10 +101,10 @@ class Pretreatment(BaseSettings):
         psmethod.ConditioningTime = self.conditioning_time
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.deposition_potential = psmethod.DepositionPotential
-        self.deposition_time = psmethod.DepositionTime
-        self.conditioning_potential = psmethod.ConditioningPotential
-        self.conditioning_time = psmethod.ConditioningTime
+        self.deposition_potential = single_to_double(psmethod.DepositionPotential)
+        self.deposition_time = single_to_double(psmethod.DepositionTime)
+        self.conditioning_potential = single_to_double(psmethod.ConditioningPotential)
+        self.conditioning_time = single_to_double(psmethod.ConditioningTime)
 
 
 @attrs.define
@@ -128,7 +128,7 @@ class VersusOCP(BaseSettings):
     max_ocp_time: float = 20.0
     """Maximum OCP time in s"""
 
-    stability_criterion: int = 0
+    stability_criterion: float = 0.0
     """Stability criterion (potential/time) in mV/s.
 
     If equal to 0 means no stability criterion.
@@ -142,8 +142,8 @@ class VersusOCP(BaseSettings):
 
     def _update_params(self, psmethod: PSMethod, /):
         self.mode = psmethod.OCPmode
-        self.max_ocp_time = psmethod.OCPMaxOCPTime
-        self.stability_criterion = psmethod.OCPStabilityCriterion
+        self.max_ocp_time = single_to_double(psmethod.OCPMaxOCPTime)
+        self.stability_criterion = single_to_double(psmethod.OCPStabilityCriterion)
 
 
 @attrs.define
@@ -186,7 +186,7 @@ class BiPot(BaseSettings):
 
     def _update_params(self, psmethod: PSMethod, /):
         self.mode = self._MODES[int(psmethod.BipotModePS)]
-        self.potential = psmethod.BiPotPotential
+        self.potential = single_to_double(psmethod.BiPotPotential)
         self.current_range_max = CURRENT_RANGE._from_psobj(
             psmethod.BipotRanging.MaximumCurrentRange
         )
@@ -218,8 +218,8 @@ class PostMeasurement(BaseSettings):
 
     def _update_params(self, psmethod: PSMethod, /):
         self.cell_on_after_measurement = psmethod.CellOnAfterMeasurement
-        self.standby_potential = psmethod.StandbyPotential
-        self.standby_time = psmethod.StandbyTime
+        self.standby_potential = single_to_double(psmethod.StandbyPotential)
+        self.standby_time = single_to_double(psmethod.StandbyTime)
 
 
 @attrs.define
@@ -253,12 +253,12 @@ class CurrentLimits(BaseSettings):
 
     def _update_params(self, psmethod: PSMethod, /):
         if psmethod.UseLimitMaxValue:
-            self.max = psmethod.LimitMaxValue
+            self.max = single_to_double(psmethod.LimitMaxValue)
         else:
             self.max = None
 
         if psmethod.UseLimitMinValue:
-            self.min = psmethod.LimitMinValue
+            self.min = single_to_double(psmethod.LimitMinValue)
         else:
             self.min = None
 
@@ -293,12 +293,12 @@ class PotentialLimits(BaseSettings):
 
     def _update_params(self, psmethod: PSMethod, /):
         if psmethod.UseLimitMaxValue:
-            self.max = psmethod.LimitMaxValue
+            self.max = single_to_double(psmethod.LimitMaxValue)
         else:
             self.max = None
 
         if psmethod.UseLimitMinValue:
-            self.min = psmethod.LimitMinValue
+            self.min = single_to_double(psmethod.LimitMinValue)
         else:
             self.min = None
 
@@ -328,12 +328,12 @@ class ChargeLimits(BaseSettings):
 
     def _update_params(self, psmethod: PSMethod, /):
         if psmethod.UseChargeLimitMax:
-            self.max = psmethod.ChargeLimitMax
+            self.max = single_to_double(psmethod.ChargeLimitMax)
         else:
             self.max = None
 
         if psmethod.UseChargeLimitMin:
-            self.min = psmethod.ChargeLimitMin
+            self.min = single_to_double(psmethod.ChargeLimitMin)
         else:
             self.min = None
 
@@ -354,7 +354,7 @@ class IrDropCompensation(BaseSettings):
 
     def _update_params(self, psmethod: PSMethod, /):
         if psmethod.UseIRDropComp:
-            self.resistance = psmethod.IRDropCompRes
+            self.resistance = single_to_double(psmethod.IRDropCompRes)
         else:
             self.resistance = None
 
@@ -477,7 +477,7 @@ class DelayTriggers(BaseSettings):
             psmethod.UseTriggerOnDelay = False
 
     def _update_params(self, psmethod: PSMethod, /):
-        self.delay = psmethod.TriggerDelayPeriod
+        self.delay = single_to_double(psmethod.TriggerDelayPeriod)
 
         if psmethod.UseTriggerOnDelay:
             self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(

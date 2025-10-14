@@ -144,6 +144,7 @@ pages = (
                 'VersusOCP',
                 'BiPot',
                 'ELevel',
+                'ILevel',
                 'PostMeasurement',
                 'CurrentLimits',
                 'PotentialLimits',

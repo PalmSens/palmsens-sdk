@@ -17,6 +17,8 @@ settings for a given method.
 a given method.
 * link:#pypalmsens.settings.ELevel[*ELevel*] – Create a multi-step
 amperometry level method object.
+* link:#pypalmsens.settings.ILevel[*ILevel*] – Create a multi-step
+potentiometry level method object.
 * link:#pypalmsens.settings.PostMeasurement[*PostMeasurement*] – Set the
 post measurement settings for a given method.
 * link:#pypalmsens.settings.CurrentLimits[*CurrentLimits*] – Set the
@@ -248,8 +250,8 @@ Set the bipot settings for a given method.
 *Attributes:*
 
 * link:#pypalmsens.settings.BiPot.mode[*mode*]
-(link:#typing.Literal[Literal]++[++'`constant`', '`offset`'++]++) – Set
-the bipotential mode.
+(link:#pypalmsens._methods.settings.BiPot._mode_t[++_++mode++_++t]) –
+Set the bipotential mode.
 * link:#pypalmsens.settings.BiPot.potential[*potential*]
 (link:#float[float]) – Set the bipotential in V
 * link:#pypalmsens.settings.BiPot.current_range_max[*current++_++range++_++max*]
@@ -266,7 +268,7 @@ Start bipotential current range.
 
 [source,python]
 ----
-mode: Literal['constant', 'offset'] = 'constant'
+mode: _mode_t = 'constant'
 ----
 
 Set the bipotential mode.
@@ -432,6 +434,125 @@ from_psobj(psobj)
 
 Construct ELevel dataclass from PalmSens.Techniques.ELevel object.
 
+=== `ILevel`
+
+[source,python]
+----
+ILevel(level=0.0, duration=1.0, record=True, limit_potential_max=None, limit_potential_min=None, trigger_lines=list())
+----
+
+Create a multi-step potentiometry level method object.
+
+*Functions:*
+
+* link:#pypalmsens.settings.ILevel.to_psobj[*to++_++psobj*] –
+* link:#pypalmsens.settings.ILevel.from_psobj[*from++_++psobj*] –
+Construct ILevel dataclass from PalmSens.Techniques.ELevel object.
+
+*Attributes:*
+
+* link:#pypalmsens.settings.ILevel.level[*level*] (link:#float[float]) –
+Level in I.
+* link:#pypalmsens.settings.ILevel.duration[*duration*]
+(link:#float[float]) – Duration in s.
+* link:#pypalmsens.settings.ILevel.record[*record*] (link:#bool[bool]) –
+Record the current.
+* link:#pypalmsens.settings.ILevel.limit_potential_max[*limit++_++potential++_++max*]
+(link:#float[float] ++|++ None) – Limit potential max in V. Set to None
+to disable.
+* link:#pypalmsens.settings.ILevel.limit_potential_min[*limit++_++potential++_++min*]
+(link:#float[float] ++|++ None) – Limit potential min in V. Set to None
+to disable.
+* link:#pypalmsens.settings.ILevel.trigger_lines[*trigger++_++lines*]
+(link:#typing.Sequence[Sequence]++[++link:#typing.Literal[Literal]++[++0,
+1, 2, 3++]]++) – Trigger at level lines.
+* link:#pypalmsens.settings.ILevel.use_limits[*use++_++limits*]
+(link:#bool[bool]) – Return True if instance sets current limits.
+
+==== `level`
+
+[source,python]
+----
+level: float = 0.0
+----
+
+Level in I.
+
+This value is multiplied by the applied current range.
+
+==== `duration`
+
+[source,python]
+----
+duration: float = 1.0
+----
+
+Duration in s.
+
+==== `record`
+
+[source,python]
+----
+record: bool = True
+----
+
+Record the current.
+
+==== `limit++_++potential++_++max`
+
+[source,python]
+----
+limit_potential_max: float | None = None
+----
+
+Limit potential max in V. Set to None to disable.
+
+==== `limit++_++potential++_++min`
+
+[source,python]
+----
+limit_potential_min: float | None = None
+----
+
+Limit potential min in V. Set to None to disable.
+
+==== `trigger++_++lines`
+
+[source,python]
+----
+trigger_lines: Sequence[Literal[0, 1, 2, 3]] = field(default_factory=list)
+----
+
+Trigger at level lines.
+
+Set digital output lines at start of measurement, end of equilibration.
+Accepted values: 0 for d0, 1 for d1, 2 for d2, 3 for d3.
+
+==== `use++_++limits`
+
+[source,python]
+----
+use_limits: bool
+----
+
+Return True if instance sets current limits.
+
+==== `to++_++psobj`
+
+[source,python]
+----
+to_psobj()
+----
+
+==== `from++_++psobj`
+
+[source,python]
+----
+from_psobj(psobj)
+----
+
+Construct ILevel dataclass from PalmSens.Techniques.ELevel object.
+
 === `PostMeasurement`
 
 Set the post measurement settings for a given method.
@@ -478,107 +599,70 @@ Standby time (s) for use with cell on after measurement.
 
 Set the limit settings for a given method.
 
+Depending on the method, this will:
+
+* Abort the measurement
+* Reverse the scan instead (CV)
+* Proceed to the next stage (Mixed Mode)
+
 *Attributes:*
 
-* link:#pypalmsens.settings.CurrentLimits.use_limit_max[*use++_++limit++_++max*]
-(link:#bool[bool]) – Use limit current max.
-* link:#pypalmsens.settings.CurrentLimits.limit_max[*limit++_++max*]
-(link:#float[float]) – Limit current max in µA.
-* link:#pypalmsens.settings.CurrentLimits.use_limit_min[*use++_++limit++_++min*]
-(link:#bool[bool]) – Use limit current min.
-* link:#pypalmsens.settings.CurrentLimits.limit_min[*limit++_++min*]
-(link:#float[float]) – Limit current min in µA.
+* link:#pypalmsens.settings.CurrentLimits.max[*max*] (None ++|++
+link:#float[float]) – Set limit current max in µA.
+* link:#pypalmsens.settings.CurrentLimits.min[*min*] (None ++|++
+link:#float[float]) – Set limit current min in µA.
 
-==== `use++_++limit++_++max`
+==== `max`
 
 [source,python]
 ----
-use_limit_max: bool = False
+max: None | float = None
 ----
 
-Use limit current max.
+Set limit current max in µA.
 
-This will reverse the scan instead of aborting measurement.
-
-==== `limit++_++max`
+==== `min`
 
 [source,python]
 ----
-limit_max: float = 0.0
+min: None | float = None
 ----
 
-Limit current max in µA.
-
-==== `use++_++limit++_++min`
-
-[source,python]
-----
-use_limit_min: bool = False
-----
-
-Use limit current min.
-
-This will reverse the scan instead of aborting measurement.
-
-==== `limit++_++min`
-
-[source,python]
-----
-limit_min: float = 0.0
-----
-
-Limit current min in µA.
+Set limit current min in µA.
 
 === `PotentialLimits`
 
 Set the limit settings for a given method.
 
+Depending on the method, this will:
+
+* Abort the measurement
+* Proceed to the next stage (Mixed Mode)
+
 *Attributes:*
 
-* link:#pypalmsens.settings.PotentialLimits.use_limit_max[*use++_++limit++_++max*]
-(link:#bool[bool]) – Use limit potential max.
-* link:#pypalmsens.settings.PotentialLimits.limit_max[*limit++_++max*]
-(link:#float[float]) – Limit potential max in V.
-* link:#pypalmsens.settings.PotentialLimits.use_limit_min[*use++_++limit++_++min*]
-(link:#bool[bool]) – Use limit potential min.
-* link:#pypalmsens.settings.PotentialLimits.limit_min[*limit++_++min*]
-(link:#float[float]) – Limit potential min in V.
+* link:#pypalmsens.settings.PotentialLimits.max[*max*] (None ++|++
+link:#float[float]) – Set limit potential max in V.
+* link:#pypalmsens.settings.PotentialLimits.min[*min*] (None ++|++
+link:#float[float]) – Set limit potential min in V.
 
-==== `use++_++limit++_++max`
+==== `max`
 
 [source,python]
 ----
-use_limit_max: bool = False
+max: None | float = None
 ----
 
-Use limit potential max.
+Set limit potential max in V.
 
-==== `limit++_++max`
+==== `min`
 
 [source,python]
 ----
-limit_max: float = 0.0
+min: None | float = None
 ----
 
-Limit potential max in V.
-
-==== `use++_++limit++_++min`
-
-[source,python]
-----
-use_limit_min: bool = False
-----
-
-Use limit potential min.
-
-==== `limit++_++min`
-
-[source,python]
-----
-limit_min: float = 0.0
-----
-
-Limit potential min in V.
+Set limit potential min in V.
 
 === `ChargeLimits`
 
@@ -586,50 +670,28 @@ Set the charge limit settings for a given method.
 
 *Attributes:*
 
-* link:#pypalmsens.settings.ChargeLimits.use_limit_max[*use++_++limit++_++max*]
-(link:#bool[bool]) – Use limit charge max.
-* link:#pypalmsens.settings.ChargeLimits.limit_max[*limit++_++max*]
-(link:#float[float]) – Limit charge max in µC.
-* link:#pypalmsens.settings.ChargeLimits.use_limit_min[*use++_++limit++_++min*]
-(link:#bool[bool]) – Use limit charge min.
-* link:#pypalmsens.settings.ChargeLimits.limit_min[*limit++_++min*]
-(link:#float[float]) – Limit charge min in µC.
+* link:#pypalmsens.settings.ChargeLimits.max[*max*] (None ++|++
+link:#float[float]) – Set limit charge max in µC.
+* link:#pypalmsens.settings.ChargeLimits.min[*min*] (None ++|++
+link:#float[float]) – Set limit charge min in µC.
 
-==== `use++_++limit++_++max`
+==== `max`
 
 [source,python]
 ----
-use_limit_max: bool = False
+max: None | float = 0.0
 ----
 
-Use limit charge max.
+Set limit charge max in µC.
 
-==== `limit++_++max`
+==== `min`
 
 [source,python]
 ----
-limit_max: float = 0.0
+min: None | float = 0.0
 ----
 
-Limit charge max in µC.
-
-==== `use++_++limit++_++min`
-
-[source,python]
-----
-use_limit_min: bool = False
-----
-
-Use limit charge min.
-
-==== `limit++_++min`
-
-[source,python]
-----
-limit_min: float = 0.0
-----
-
-Limit charge min in µC.
+Set limit charge min in µC.
 
 === `IrDropCompensation`
 
@@ -637,37 +699,28 @@ Set the iR drop compensation settings for a given method.
 
 *Attributes:*
 
-* link:#pypalmsens.settings.IrDropCompensation.enable[*enable*]
-(link:#bool[bool]) – Enable iR compensation
-* link:#pypalmsens.settings.IrDropCompensation.ir_compensation[*ir++_++compensation*]
-(link:#float[float]) – Set the iR compensation in Ω
+* link:#pypalmsens.settings.IrDropCompensation.resistance[*resistance*]
+(None ++|++ link:#float[float]) – Set the iR compensation resistance in
+Ω
 
-==== `enable`
-
-[source,python]
-----
-enable: bool = False
-----
-
-Enable iR compensation
-
-==== `ir++_++compensation`
+==== `resistance`
 
 [source,python]
 ----
-ir_compensation: float = 0.0
+resistance: None | float = None
 ----
 
-Set the iR compensation in Ω
+Set the iR compensation resistance in Ω
 
 === `EquilibrationTriggers`
 
 Set the trigger at equilibration settings for a given method.
 
+If enabled, set one or more digital outputs at the start of the
+equilibration period.
+
 *Attributes:*
 
-* link:#pypalmsens.settings.EquilibrationTriggers.enable[*enable*]
-(link:#bool[bool]) – Enable equilibration triggers.
 * link:#pypalmsens.settings.EquilibrationTriggers.d0[*d0*]
 (link:#bool[bool]) – If True, enable trigger at d0 high.
 * link:#pypalmsens.settings.EquilibrationTriggers.d1[*d1*]
@@ -676,18 +729,6 @@ Set the trigger at equilibration settings for a given method.
 (link:#bool[bool]) – If True, enable trigger at d2 high.
 * link:#pypalmsens.settings.EquilibrationTriggers.d3[*d3*]
 (link:#bool[bool]) – If True, enable trigger at d3 high.
-
-==== `enable`
-
-[source,python]
-----
-enable: bool = False
-----
-
-Enable equilibration triggers.
-
-If enabled, set one or more digital outputs at the start of the
-equilibration period.
 
 ==== `d0`
 
@@ -729,10 +770,10 @@ If True, enable trigger at d3 high.
 
 Set the trigger at measurement settings for a given method.
 
+If enabled, set one or more digital outputs at the start measurement,
+
 *Attributes:*
 
-* link:#pypalmsens.settings.MeasurementTriggers.enable[*enable*]
-(link:#bool[bool]) – Enable measurement triggers.
 * link:#pypalmsens.settings.MeasurementTriggers.d0[*d0*]
 (link:#bool[bool]) – If True, enable trigger at d0 high.
 * link:#pypalmsens.settings.MeasurementTriggers.d1[*d1*]
@@ -741,17 +782,6 @@ Set the trigger at measurement settings for a given method.
 (link:#bool[bool]) – If True, enable trigger at d2 high.
 * link:#pypalmsens.settings.MeasurementTriggers.d3[*d3*]
 (link:#bool[bool]) – If True, enable trigger at d3 high.
-
-==== `enable`
-
-[source,python]
-----
-enable: bool = False
-----
-
-Enable measurement triggers.
-
-If enabled, set one or more digital outputs at the start measurement,
 
 ==== `d0`
 
@@ -796,8 +826,8 @@ Set the multiplexer settings for a given method.
 *Attributes:*
 
 * link:#pypalmsens.settings.Multiplexer.mode[*mode*]
-(link:#typing.Literal[Literal]++[++'`none`', '`consecutive`',
-'`alternate`'++]++) – Set multiplexer mode.
+(link:#pypalmsens._methods.settings.Multiplexer._mode_t[++_++mode++_++t])
+– Set multiplexer mode.
 * link:#pypalmsens.settings.Multiplexer.channels[*channels*]
 (link:#list[list]++[++link:#int[int]++]++) – Set multiplexer channels
 * link:#pypalmsens.settings.Multiplexer.connect_sense_to_working_electrode[*connect++_++sense++_++to++_++working++_++electrode*]
@@ -818,7 +848,7 @@ Disconnected / floating, 1 = Ground, 2 = Standby potential. Default is
 
 [source,python]
 ----
-mode: Literal['none', 'consecutive', 'alternate'] = 'none'
+mode: _mode_t = 'none'
 ----
 
 Set multiplexer mode.

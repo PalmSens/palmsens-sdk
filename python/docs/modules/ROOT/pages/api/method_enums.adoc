@@ -1,3 +1,3 @@
-= Enums
+= Current/Potential ranges
 
 include::partial$api/settings_enums.adoc[]

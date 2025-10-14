@@ -49,6 +49,13 @@ Create square wave method parameters.
 
 Create AC Voltammetry method parameters.
 
+*Functions:*
+
+* link:#pypalmsens.ACVoltammetry.to_dict[*to++_++dict*] – Return the
+technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.ACVoltammetry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
+
 *Attributes:*
 
 * link:#pypalmsens.ACVoltammetry.current_range[*current++_++range*]
@@ -96,7 +103,7 @@ general/other settings.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -105,7 +112,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -114,7 +121,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+versus_ocp: settings.VersusOCP = attrs.field(factory=(settings.VersusOCP))
 ----
 
 Set the versus OCP settings.
@@ -123,7 +130,7 @@ Set the versus OCP settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -132,7 +139,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(factory=(settings.EquilibrationTriggers))
 ----
 
 Set the trigger at equilibration settings.
@@ -141,7 +148,7 @@ Set the trigger at equilibration settings.
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -150,7 +157,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -159,7 +166,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -236,9 +243,34 @@ measure_dc_current: bool = False
 
 Measure the DC current seperately.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `ChronoAmperometry`
 
 Create chrono amperometry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.ChronoAmperometry.to_dict[*to++_++dict*] – Return the
+technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.ChronoAmperometry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -302,7 +334,7 @@ general/other settings.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -311,7 +343,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -320,7 +352,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+versus_ocp: settings.VersusOCP = attrs.field(factory=(settings.VersusOCP))
 ----
 
 Set the versus OCP settings.
@@ -329,7 +361,7 @@ Set the versus OCP settings.
 
 [source,python]
 ----
-bipot: BiPot = attrs.field(factory=BiPot)
+bipot: settings.BiPot = attrs.field(factory=(settings.BiPot))
 ----
 
 Set the bipot settings
@@ -338,7 +370,7 @@ Set the bipot settings
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -347,7 +379,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
+current_limits: settings.CurrentLimits = attrs.field(factory=(settings.CurrentLimits))
 ----
 
 Set the current limit settings.
@@ -356,7 +388,7 @@ Set the current limit settings.
 
 [source,python]
 ----
-charge_limits: ChargeLimits = attrs.field(factory=ChargeLimits)
+charge_limits: settings.ChargeLimits = attrs.field(factory=(settings.ChargeLimits))
 ----
 
 Set the charge limit settings
@@ -365,7 +397,7 @@ Set the charge limit settings
 
 [source,python]
 ----
-ir_drop_compensation: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+ir_drop_compensation: settings.IrDropCompensation = attrs.field(factory=(settings.IrDropCompensation))
 ----
 
 Set the iR drop compensation settings.
@@ -374,7 +406,7 @@ Set the iR drop compensation settings.
 
 [source,python]
 ----
-equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(factory=(settings.EquilibrationTriggers))
 ----
 
 Set the trigger at equilibration settings.
@@ -383,7 +415,7 @@ Set the trigger at equilibration settings.
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -392,7 +424,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -401,7 +433,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -410,7 +442,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -491,9 +523,34 @@ Record applied working electrode potential.
 
 Reference electrode vs ground.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `ChronoCoulometry`
 
 Create linear sweep method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.ChronoCoulometry.to_dict[*to++_++dict*] – Return the
+technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.ChronoCoulometry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -543,7 +600,7 @@ link:#float[float]) – Override bandwidth on MethodSCRIPT devices if set.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -552,7 +609,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -561,7 +618,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -570,7 +627,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
+current_limits: settings.CurrentLimits = attrs.field(factory=(settings.CurrentLimits))
 ----
 
 Set the current limit settings.
@@ -579,7 +636,7 @@ Set the current limit settings.
 
 [source,python]
 ----
-charge_limits: ChargeLimits = attrs.field(factory=ChargeLimits)
+charge_limits: settings.ChargeLimits = attrs.field(factory=(settings.ChargeLimits))
 ----
 
 Set the charge limit settings
@@ -588,7 +645,7 @@ Set the charge limit settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -597,7 +654,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -696,9 +753,34 @@ Record applied working electrode potential.
 
 Reference electrode vs ground.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `ChronoPotentiometry`
 
 Create potentiometry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.ChronoPotentiometry.to_dict[*to++_++dict*] – Return
+the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.ChronoPotentiometry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -749,7 +831,7 @@ Applied current range.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -758,7 +840,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+potential_range: settings.PotentialRange = attrs.field(factory=(settings.PotentialRange), converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -767,7 +849,7 @@ Set the autoranging potential.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -776,7 +858,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -785,7 +867,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-potential_limits: PotentialLimits = attrs.field(factory=PotentialLimits)
+potential_limits: settings.PotentialLimits = attrs.field(factory=(settings.PotentialLimits))
 ----
 
 Set the potential limit settings
@@ -794,7 +876,7 @@ Set the potential limit settings
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -803,7 +885,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -812,7 +894,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -821,7 +903,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -898,27 +980,74 @@ record_we_current: bool = False
 
 Record working electrode current.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `CyclicVoltammetry`
 
 Create cyclic voltammetry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.CyclicVoltammetry.to_dict[*to++_++dict*] – Return the
+technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.CyclicVoltammetry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
 * link:#pypalmsens.CyclicVoltammetry.current_range[*current++_++range*]
 (link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
+* link:#pypalmsens.CyclicVoltammetry.equilibration_time[*equilibration++_++time*]
+(link:#float[float]) – Equilibration time in s
 * link:#pypalmsens.CyclicVoltammetry.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
 the pretreatment settings.
+* link:#pypalmsens.CyclicVoltammetry.begin_potential[*begin++_++potential*]
+(link:#float[float]) – Begin potential in V
+* link:#pypalmsens.CyclicVoltammetry.vertex1_potential[*vertex1++_++potential*]
+(link:#float[float]) – Vertex 1 potential in V
 * link:#pypalmsens.CyclicVoltammetry.versus_ocp[*versus++_++ocp*]
 (link:#pypalmsens._methods.settings.VersusOCP[VersusOCP]) – Set the
 versus OCP settings.
+* link:#pypalmsens.CyclicVoltammetry.vertex2_potential[*vertex2++_++potential*]
+(link:#float[float]) – Vertex 2 potential in V
+* link:#pypalmsens.CyclicVoltammetry.step_potential[*step++_++potential*]
+(link:#float[float]) – Step potential in V
+* link:#pypalmsens.CyclicVoltammetry.scanrate[*scanrate*]
+(link:#float[float]) – Scan rate in V/s
+* link:#pypalmsens.CyclicVoltammetry.n_scans[*n++_++scans*]
+(link:#int[int]) – Number of scans
 * link:#pypalmsens.CyclicVoltammetry.post_measurement[*post++_++measurement*]
 (link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
 Set the post measurement settings.
+* link:#pypalmsens.CyclicVoltammetry.enable_bipot_current[*enable++_++bipot++_++current*]
+(link:#bool[bool]) – Enable bipot current.
+* link:#pypalmsens.CyclicVoltammetry.record_auxiliary_input[*record++_++auxiliary++_++input*]
+(link:#bool[bool]) – Record auxiliary input.
 * link:#pypalmsens.CyclicVoltammetry.current_limits[*current++_++limits*]
 (link:#pypalmsens._methods.settings.CurrentLimits[CurrentLimits]) – Set
 the current limit settings.
+* link:#pypalmsens.CyclicVoltammetry.record_cell_potential[*record++_++cell++_++potential*]
+(link:#bool[bool]) – Record cell potential.
+* link:#pypalmsens.CyclicVoltammetry.record_we_potential[*record++_++we++_++potential*]
+(link:#bool[bool]) – Record applied working electrode potential.
 * link:#pypalmsens.CyclicVoltammetry.ir_drop_compensation[*ir++_++drop++_++compensation*]
 (link:#pypalmsens._methods.settings.IrDropCompensation[IrDropCompensation])
 – Set the iR drop compensation settings.
@@ -934,118 +1063,15 @@ Set the data processing settings.
 * link:#pypalmsens.CyclicVoltammetry.general[*general*]
 (link:#pypalmsens._methods.settings.General[General]) – Sets
 general/other settings.
-* link:#pypalmsens.CyclicVoltammetry.equilibration_time[*equilibration++_++time*]
-(link:#float[float]) – Equilibration time in s
-* link:#pypalmsens.CyclicVoltammetry.begin_potential[*begin++_++potential*]
-(link:#float[float]) – Begin potential in V
-* link:#pypalmsens.CyclicVoltammetry.vertex1_potential[*vertex1++_++potential*]
-(link:#float[float]) – Vertex 1 potential in V
-* link:#pypalmsens.CyclicVoltammetry.vertex2_potential[*vertex2++_++potential*]
-(link:#float[float]) – Vertex 2 potential in V
-* link:#pypalmsens.CyclicVoltammetry.step_potential[*step++_++potential*]
-(link:#float[float]) – Step potential in V
-* link:#pypalmsens.CyclicVoltammetry.scanrate[*scanrate*]
-(link:#float[float]) – Scan rate in V/s
-* link:#pypalmsens.CyclicVoltammetry.n_scans[*n++_++scans*]
-(link:#int[int]) – Number of scans
-* link:#pypalmsens.CyclicVoltammetry.enable_bipot_current[*enable++_++bipot++_++current*]
-(link:#bool[bool]) – Enable bipot current.
-* link:#pypalmsens.CyclicVoltammetry.record_auxiliary_input[*record++_++auxiliary++_++input*]
-(link:#bool[bool]) – Record auxiliary input.
-* link:#pypalmsens.CyclicVoltammetry.record_cell_potential[*record++_++cell++_++potential*]
-(link:#bool[bool]) – Record cell potential.
-* link:#pypalmsens.CyclicVoltammetry.record_we_potential[*record++_++we++_++potential*]
-(link:#bool[bool]) – Record applied working electrode potential.
 
 ==== `current++_++range`
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
-
-==== `pretreatment`
-
-[source,python]
-----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
-----
-
-Set the pretreatment settings.
-
-==== `versus++_++ocp`
-
-[source,python]
-----
-versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
-----
-
-Set the versus OCP settings.
-
-==== `post++_++measurement`
-
-[source,python]
-----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
-----
-
-Set the post measurement settings.
-
-==== `current++_++limits`
-
-[source,python]
-----
-current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
-----
-
-Set the current limit settings.
-
-==== `ir++_++drop++_++compensation`
-
-[source,python]
-----
-ir_drop_compensation: IrDropCompensation = attrs.field(factory=IrDropCompensation)
-----
-
-Set the iR drop compensation settings.
-
-==== `equilibrion++_++triggers`
-
-[source,python]
-----
-equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
-----
-
-Set the trigger at equilibration settings.
-
-==== `measurement++_++triggers`
-
-[source,python]
-----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
-----
-
-Set the trigger at measurement settings.
-
-==== `data++_++processing`
-
-[source,python]
-----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
-----
-
-Set the data processing settings.
-
-==== `general`
-
-[source,python]
-----
-general: General = attrs.field(factory=General)
-----
-
-Sets general/other settings.
 
 ==== `equilibration++_++time`
 
@@ -1055,6 +1081,15 @@ equilibration_time: float = 0.0
 ----
 
 Equilibration time in s
+
+==== `pretreatment`
+
+[source,python]
+----
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
+----
+
+Set the pretreatment settings.
 
 ==== `begin++_++potential`
 
@@ -1073,6 +1108,15 @@ vertex1_potential: float = 0.5
 ----
 
 Vertex 1 potential in V
+
+==== `versus++_++ocp`
+
+[source,python]
+----
+versus_ocp: settings.VersusOCP = attrs.field(factory=(settings.VersusOCP))
+----
+
+Set the versus OCP settings.
 
 ==== `vertex2++_++potential`
 
@@ -1110,6 +1154,15 @@ n_scans: int = 1
 
 Number of scans
 
+==== `post++_++measurement`
+
+[source,python]
+----
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
+----
+
+Set the post measurement settings.
+
 ==== `enable++_++bipot++_++current`
 
 [source,python]
@@ -1127,6 +1180,15 @@ record_auxiliary_input: bool = False
 ----
 
 Record auxiliary input.
+
+==== `current++_++limits`
+
+[source,python]
+----
+current_limits: settings.CurrentLimits = attrs.field(factory=(settings.CurrentLimits))
+----
+
+Set the current limit settings.
 
 ==== `record++_++cell++_++potential`
 
@@ -1150,9 +1212,79 @@ Record applied working electrode potential.
 
 Reference electrode vs ground.
 
+==== `ir++_++drop++_++compensation`
+
+[source,python]
+----
+ir_drop_compensation: settings.IrDropCompensation = attrs.field(factory=(settings.IrDropCompensation))
+----
+
+Set the iR drop compensation settings.
+
+==== `equilibrion++_++triggers`
+
+[source,python]
+----
+equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(factory=(settings.EquilibrationTriggers))
+----
+
+Set the trigger at equilibration settings.
+
+==== `measurement++_++triggers`
+
+[source,python]
+----
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
+----
+
+Set the trigger at measurement settings.
+
+==== `data++_++processing`
+
+[source,python]
+----
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
+----
+
+Set the data processing settings.
+
+==== `general`
+
+[source,python]
+----
+general: settings.General = attrs.field(factory=(settings.General))
+----
+
+Sets general/other settings.
+
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `DifferentialPulseVoltammetry`
 
 Create differential pulse voltammetry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.DifferentialPulseVoltammetry.to_dict[*to++_++dict*] –
+Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.DifferentialPulseVoltammetry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -1216,7 +1348,7 @@ general/other settings.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -1225,7 +1357,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -1234,7 +1366,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+versus_ocp: settings.VersusOCP = attrs.field(factory=(settings.VersusOCP))
 ----
 
 Set the versus OCP settings.
@@ -1243,7 +1375,7 @@ Set the versus OCP settings.
 
 [source,python]
 ----
-bipot: BiPot = attrs.field(factory=BiPot)
+bipot: settings.BiPot = attrs.field(factory=(settings.BiPot))
 ----
 
 Set the bipot settings
@@ -1252,7 +1384,7 @@ Set the bipot settings
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -1261,7 +1393,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-ir_drop_compensation: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+ir_drop_compensation: settings.IrDropCompensation = attrs.field(factory=(settings.IrDropCompensation))
 ----
 
 Set the iR drop compensation settings.
@@ -1270,7 +1402,7 @@ Set the iR drop compensation settings.
 
 [source,python]
 ----
-equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(factory=(settings.EquilibrationTriggers))
 ----
 
 Set the trigger at equilibration settings.
@@ -1279,7 +1411,7 @@ Set the trigger at equilibration settings.
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -1288,7 +1420,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -1297,7 +1429,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -1306,7 +1438,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -1414,9 +1546,34 @@ Record applied working electrode potential.
 
 Reference electrode vs ground.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `ElectrochemicalImpedanceSpectroscopy`
 
 Create potentiometry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy.to_dict[*to++_++dict*]
+– Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -1464,7 +1621,7 @@ general/other settings.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -1473,7 +1630,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+potential_range: settings.PotentialRange = attrs.field(factory=(settings.PotentialRange), converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -1482,7 +1639,7 @@ Set the autoranging potential.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -1491,7 +1648,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+versus_ocp: settings.VersusOCP = attrs.field(factory=(settings.VersusOCP))
 ----
 
 Set the versus OCP settings.
@@ -1500,7 +1657,7 @@ Set the versus OCP settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -1509,7 +1666,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(factory=(settings.EquilibrationTriggers))
 ----
 
 Set the trigger at equilibration settings.
@@ -1518,7 +1675,7 @@ Set the trigger at equilibration settings.
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -1527,7 +1684,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -1536,7 +1693,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -1595,9 +1752,34 @@ min_frequency: float = 1000.0
 
 Minimum frequency in Hz.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `FastCyclicVoltammetry`
 
 Create fast cyclic voltammetry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.FastCyclicVoltammetry.to_dict[*to++_++dict*] – Return
+the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.FastCyclicVoltammetry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -1645,7 +1827,7 @@ Fixed current range.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -1654,7 +1836,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+versus_ocp: settings.VersusOCP = attrs.field(factory=(settings.VersusOCP))
 ----
 
 Set the versus OCP settings.
@@ -1663,7 +1845,7 @@ Set the versus OCP settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -1672,7 +1854,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-ir_drop_compensation: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+ir_drop_compensation: settings.IrDropCompensation = attrs.field(factory=(settings.IrDropCompensation))
 ----
 
 Set the iR drop compensation settings.
@@ -1681,7 +1863,7 @@ Set the iR drop compensation settings.
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -1690,7 +1872,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -1785,9 +1967,34 @@ n_equil_scans: int = 1
 
 Number of equilibration scans.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `FastGalvanostaticImpedanceSpectroscopy`
 
 Create fast galvanostatic impededance spectroscopy method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.to_dict[*to++_++dict*]
+– Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -1824,7 +2031,7 @@ Applied current range.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -1833,7 +2040,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+potential_range: settings.PotentialRange = attrs.field(factory=(settings.PotentialRange), converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -1842,7 +2049,7 @@ Set the autoranging potential.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -1851,7 +2058,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -1860,7 +2067,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -1925,9 +2132,34 @@ frequency: float = 50000.0
 
 Frequency in Hz.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `FastImpedanceSpectroscopy`
 
 Create fast impedance spectroscopy method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.FastImpedanceSpectroscopy.to_dict[*to++_++dict*] –
+Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.FastImpedanceSpectroscopy.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -1972,7 +2204,7 @@ general/other settings.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -1981,7 +2213,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+potential_range: settings.PotentialRange = attrs.field(factory=(settings.PotentialRange), converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -1990,7 +2222,7 @@ Set the autoranging potential.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -1999,7 +2231,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+versus_ocp: settings.VersusOCP = attrs.field(factory=(settings.VersusOCP))
 ----
 
 Set the versus OCP settings.
@@ -2008,7 +2240,7 @@ Set the versus OCP settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -2017,7 +2249,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(factory=(settings.EquilibrationTriggers))
 ----
 
 Set the trigger at equilibration settings.
@@ -2026,7 +2258,7 @@ Set the trigger at equilibration settings.
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -2035,7 +2267,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -2094,9 +2326,34 @@ frequency: float = 50000.0
 
 Frequency in Hz.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `GalvanostaticImpedanceSpectroscopy`
 
 Create potentiometry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.GalvanostaticImpedanceSpectroscopy.to_dict[*to++_++dict*]
+– Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.GalvanostaticImpedanceSpectroscopy.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -2144,7 +2401,7 @@ Applied current range.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -2153,7 +2410,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+potential_range: settings.PotentialRange = attrs.field(factory=(settings.PotentialRange), converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -2162,7 +2419,7 @@ Set the autoranging potential.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -2171,7 +2428,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -2180,7 +2437,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(factory=(settings.EquilibrationTriggers))
 ----
 
 Set the trigger at equilibration settings.
@@ -2189,7 +2446,7 @@ Set the trigger at equilibration settings.
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -2198,7 +2455,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -2207,7 +2464,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -2277,9 +2534,34 @@ min_frequency: float = 1000.0
 
 Minimum frequency in Hz.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `LinearSweepPotentiometry`
 
 Create linear sweep potentiometry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.LinearSweepPotentiometry.to_dict[*to++_++dict*] –
+Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.LinearSweepPotentiometry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -2333,7 +2615,7 @@ Applied current range.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -2342,7 +2624,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+potential_range: settings.PotentialRange = attrs.field(factory=(settings.PotentialRange), converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -2351,7 +2633,7 @@ Set the autoranging potential.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -2360,7 +2642,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -2369,7 +2651,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-potential_limits: PotentialLimits = attrs.field(factory=PotentialLimits)
+potential_limits: settings.PotentialLimits = attrs.field(factory=(settings.PotentialLimits))
 ----
 
 Set the potential limit settings
@@ -2378,7 +2660,7 @@ Set the potential limit settings
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -2387,7 +2669,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-delay_triggers: DelayTriggers = attrs.field(factory=DelayTriggers)
+delay_triggers: settings.DelayTriggers = attrs.field(factory=(settings.DelayTriggers))
 ----
 
 Set the delayed trigger at measurement settings.
@@ -2396,7 +2678,7 @@ Set the delayed trigger at measurement settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -2405,7 +2687,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -2414,7 +2696,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -2492,9 +2774,34 @@ record_we_current: bool = False
 
 Record working electrode current.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `LinearSweepVoltammetry`
 
 Create linear sweep method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.LinearSweepVoltammetry.to_dict[*to++_++dict*] –
+Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.LinearSweepVoltammetry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -2557,7 +2864,7 @@ general/other settings.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -2566,7 +2873,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -2575,7 +2882,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+versus_ocp: settings.VersusOCP = attrs.field(factory=(settings.VersusOCP))
 ----
 
 Set the versus OCP settings.
@@ -2584,7 +2891,7 @@ Set the versus OCP settings.
 
 [source,python]
 ----
-bipot: BiPot = attrs.field(factory=BiPot)
+bipot: settings.BiPot = attrs.field(factory=(settings.BiPot))
 ----
 
 Set the bipot settings
@@ -2593,7 +2900,7 @@ Set the bipot settings
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -2602,7 +2909,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
+current_limits: settings.CurrentLimits = attrs.field(factory=(settings.CurrentLimits))
 ----
 
 Set the current limit settings.
@@ -2611,7 +2918,7 @@ Set the current limit settings.
 
 [source,python]
 ----
-ir_drop_compensation: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+ir_drop_compensation: settings.IrDropCompensation = attrs.field(factory=(settings.IrDropCompensation))
 ----
 
 Set the iR drop compensation settings.
@@ -2620,7 +2927,7 @@ Set the iR drop compensation settings.
 
 [source,python]
 ----
-equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(factory=(settings.EquilibrationTriggers))
 ----
 
 Set the trigger at equilibration settings.
@@ -2629,7 +2936,7 @@ Set the trigger at equilibration settings.
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -2638,7 +2945,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -2647,7 +2954,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -2656,7 +2963,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -2746,9 +3053,34 @@ Record applied working electrode potential.
 
 Reference electrode vs ground.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `MethodScript`
 
 Create a method script sandbox object.
+
+*Functions:*
+
+* link:#pypalmsens.MethodScript.to_dict[*to++_++dict*] – Return the
+technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.MethodScript.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -2767,9 +3099,34 @@ Script to run.
 For more info on MethodSCRIPT, see:
 https://www.palmsens.com/methodscript/ for more information.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `MultiStepAmperometry`
 
 Create multi-step amperometry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.MultiStepAmperometry.to_dict[*to++_++dict*] – Return
+the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.MultiStepAmperometry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -2822,7 +3179,7 @@ general/other settings.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -2831,7 +3188,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -2840,7 +3197,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-bipot: BiPot = attrs.field(factory=BiPot)
+bipot: settings.BiPot = attrs.field(factory=(settings.BiPot))
 ----
 
 Set the bipot settings
@@ -2849,7 +3206,7 @@ Set the bipot settings
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -2858,7 +3215,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-current_limits: CurrentLimits = attrs.field(factory=CurrentLimits)
+current_limits: settings.CurrentLimits = attrs.field(factory=(settings.CurrentLimits))
 ----
 
 Set the current limit settings.
@@ -2867,7 +3224,7 @@ Set the current limit settings.
 
 [source,python]
 ----
-ir_drop_compensation: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+ir_drop_compensation: settings.IrDropCompensation = attrs.field(factory=(settings.IrDropCompensation))
 ----
 
 Set the iR drop compensation settings.
@@ -2876,7 +3233,7 @@ Set the iR drop compensation settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -2885,7 +3242,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -2894,7 +3251,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -2977,9 +3334,34 @@ Record applied working electrode potential.
 
 Reference electrode vs ground.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `MultiStepPotentiometry`
 
 Create multi-step potentiometry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.MultiStepPotentiometry.to_dict[*to++_++dict*] –
+Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.MultiStepPotentiometry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -3026,7 +3408,7 @@ Applied current range.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -3035,7 +3417,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+potential_range: settings.PotentialRange = attrs.field(factory=(settings.PotentialRange), converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -3044,7 +3426,7 @@ Set the autoranging potential.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -3053,7 +3435,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -3062,7 +3444,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-potential_limits: PotentialLimits = attrs.field(factory=PotentialLimits)
+potential_limits: settings.PotentialLimits = attrs.field(factory=(settings.PotentialLimits))
 ----
 
 Set the potential limit settings
@@ -3071,7 +3453,7 @@ Set the potential limit settings
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -3080,7 +3462,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -3089,7 +3471,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -3154,9 +3536,34 @@ Record applied working electrode potential.
 
 Reference electrode vs ground.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `NormalPulseVoltammetry`
 
 Create normal pulse voltammetry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.NormalPulseVoltammetry.to_dict[*to++_++dict*] –
+Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.NormalPulseVoltammetry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -3218,7 +3625,7 @@ general/other settings.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -3227,7 +3634,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -3236,7 +3643,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+versus_ocp: settings.VersusOCP = attrs.field(factory=(settings.VersusOCP))
 ----
 
 Set the versus OCP settings.
@@ -3245,7 +3652,7 @@ Set the versus OCP settings.
 
 [source,python]
 ----
-bipot: BiPot = attrs.field(factory=BiPot)
+bipot: settings.BiPot = attrs.field(factory=(settings.BiPot))
 ----
 
 Set the bipot settings
@@ -3254,7 +3661,7 @@ Set the bipot settings
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -3263,7 +3670,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-ir_drop_compensation: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+ir_drop_compensation: settings.IrDropCompensation = attrs.field(factory=(settings.IrDropCompensation))
 ----
 
 Set the iR drop compensation settings.
@@ -3272,7 +3679,7 @@ Set the iR drop compensation settings.
 
 [source,python]
 ----
-equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(factory=(settings.EquilibrationTriggers))
 ----
 
 Set the trigger at equilibration settings.
@@ -3281,7 +3688,7 @@ Set the trigger at equilibration settings.
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -3290,7 +3697,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -3299,7 +3706,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -3308,7 +3715,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -3407,9 +3814,34 @@ Record applied working electrode potential.
 
 Reference electrode vs ground.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `OpenCircuitPotentiometry`
 
 Create open circuit potentiometry method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.OpenCircuitPotentiometry.to_dict[*to++_++dict*] –
+Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.OpenCircuitPotentiometry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -3456,7 +3888,7 @@ Record working electrode current range.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -3465,7 +3897,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+potential_range: settings.PotentialRange = attrs.field(factory=(settings.PotentialRange), converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -3474,7 +3906,7 @@ Set the autoranging potential.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -3483,7 +3915,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -3492,7 +3924,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-potential_limits: PotentialLimits = attrs.field(factory=PotentialLimits)
+potential_limits: settings.PotentialLimits = attrs.field(factory=(settings.PotentialLimits))
 ----
 
 Set the potential limit settings
@@ -3501,7 +3933,7 @@ Set the potential limit settings
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -3510,7 +3942,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -3519,7 +3951,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -3528,7 +3960,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -3580,9 +4012,34 @@ Record working electrode current range.
 
 Use `CURRENT++_++RANGE` to define the range.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `PulsedAmperometricDetection`
 
 Create pulsed amperometric detection method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.PulsedAmperometricDetection.to_dict[*to++_++dict*] –
+Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.PulsedAmperometricDetection.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -3628,8 +4085,8 @@ general/other settings.
 * link:#pypalmsens.PulsedAmperometricDetection.pulse_time[*pulse++_++time*]
 (link:#float[float]) – Pulse time in s.
 * link:#pypalmsens.PulsedAmperometricDetection.mode[*mode*]
-(link:#typing.Literal[Literal]++[++'`dc`', '`pulse`',
-'`differential`'++]++) – Measurement mode.
+(link:#pypalmsens._methods.techniques.PulsedAmperometricDetection._mode_t[++_++mode++_++t])
+– Measurement mode.
 * link:#pypalmsens.PulsedAmperometricDetection.interval_time[*interval++_++time*]
 (link:#float[float]) – Interval time in s.
 * link:#pypalmsens.PulsedAmperometricDetection.run_time[*run++_++time*]
@@ -3639,7 +4096,7 @@ general/other settings.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -3648,7 +4105,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -3657,7 +4114,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+versus_ocp: settings.VersusOCP = attrs.field(factory=(settings.VersusOCP))
 ----
 
 Set the versus OCP settings.
@@ -3666,7 +4123,7 @@ Set the versus OCP settings.
 
 [source,python]
 ----
-bipot: BiPot = attrs.field(factory=BiPot)
+bipot: settings.BiPot = attrs.field(factory=(settings.BiPot))
 ----
 
 Set the bipot settings
@@ -3675,7 +4132,7 @@ Set the bipot settings
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -3684,7 +4141,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(factory=(settings.EquilibrationTriggers))
 ----
 
 Set the trigger at equilibration settings.
@@ -3693,7 +4150,7 @@ Set the trigger at equilibration settings.
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -3702,7 +4159,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-delay_triggers: DelayTriggers = attrs.field(factory=DelayTriggers)
+delay_triggers: settings.DelayTriggers = attrs.field(factory=(settings.DelayTriggers))
 ----
 
 Set the delayed trigger at measurement settings.
@@ -3711,7 +4168,7 @@ Set the delayed trigger at measurement settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -3720,7 +4177,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -3729,7 +4186,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -3774,7 +4231,7 @@ Pulse time in s.
 
 [source,python]
 ----
-mode: Literal['dc', 'pulse', 'differential'] = 'dc'
+mode: _mode_t = 'dc'
 ----
 
 Measurement mode.
@@ -3801,9 +4258,34 @@ run_time: float = 10.0
 
 Run time in s.
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `SquareWaveVoltammetry`
 
 Create square wave method parameters.
+
+*Functions:*
+
+* link:#pypalmsens.SquareWaveVoltammetry.to_dict[*to++_++dict*] – Return
+the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.SquareWaveVoltammetry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -3867,7 +4349,7 @@ general/other settings.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -3876,7 +4358,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -3885,7 +4367,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-versus_ocp: VersusOCP = attrs.field(factory=VersusOCP)
+versus_ocp: settings.VersusOCP = attrs.field(factory=(settings.VersusOCP))
 ----
 
 Set the versus OCP settings.
@@ -3894,7 +4376,7 @@ Set the versus OCP settings.
 
 [source,python]
 ----
-bipot: BiPot = attrs.field(factory=BiPot)
+bipot: settings.BiPot = attrs.field(factory=(settings.BiPot))
 ----
 
 Set the bipot settings
@@ -3903,7 +4385,7 @@ Set the bipot settings
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -3912,7 +4394,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-ir_drop_compensation: IrDropCompensation = attrs.field(factory=IrDropCompensation)
+ir_drop_compensation: settings.IrDropCompensation = attrs.field(factory=(settings.IrDropCompensation))
 ----
 
 Set the iR drop compensation settings.
@@ -3921,7 +4403,7 @@ Set the iR drop compensation settings.
 
 [source,python]
 ----
-equilibrion_triggers: EquilibrationTriggers = attrs.field(factory=EquilibrationTriggers)
+equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(factory=(settings.EquilibrationTriggers))
 ----
 
 Set the trigger at equilibration settings.
@@ -3930,7 +4412,7 @@ Set the trigger at equilibration settings.
 
 [source,python]
 ----
-measurement_triggers: MeasurementTriggers = attrs.field(factory=MeasurementTriggers)
+measurement_triggers: settings.MeasurementTriggers = attrs.field(factory=(settings.MeasurementTriggers))
 ----
 
 Set the trigger at measurement settings.
@@ -3939,7 +4421,7 @@ Set the trigger at measurement settings.
 
 [source,python]
 ----
-multiplexer: Multiplexer = attrs.field(factory=Multiplexer)
+multiplexer: settings.Multiplexer = attrs.field(factory=(settings.Multiplexer))
 ----
 
 Set the multiplexer settings
@@ -3948,7 +4430,7 @@ Set the multiplexer settings
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -3957,7 +4439,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -4065,6 +4547,24 @@ record_forward_and_reverse_currents: bool = False
 
 Record forward and reverse currents
 
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.
+
 === `StrippingChronoPotentiometry`
 
 Create stripping potentiometry method parameters.
@@ -4072,6 +4572,13 @@ Create stripping potentiometry method parameters.
 If the stripping current is set to 0, then chemical stripping is
 performed, otherwise it is chemical constant current stripping. The
 applicable range is {plus}- 0.001 microampere to {plus}- 2 milliampere.
+
+*Functions:*
+
+* link:#pypalmsens.StrippingChronoPotentiometry.to_dict[*to++_++dict*] –
+Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.StrippingChronoPotentiometry.from_method_id[*from++_++method++_++id*]
+– Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
@@ -4108,7 +4615,7 @@ Applied current range.
 
 [source,python]
 ----
-current_range: CurrentRange = attrs.field(factory=CurrentRange, converter=current_converter)
+current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRange), converter=current_converter)
 ----
 
 Set the autoranging current.
@@ -4117,7 +4624,7 @@ Set the autoranging current.
 
 [source,python]
 ----
-potential_range: PotentialRange = attrs.field(factory=PotentialRange, converter=potential_converter)
+potential_range: settings.PotentialRange = attrs.field(factory=(settings.PotentialRange), converter=potential_converter)
 ----
 
 Set the autoranging potential.
@@ -4126,7 +4633,7 @@ Set the autoranging potential.
 
 [source,python]
 ----
-pretreatment: Pretreatment = attrs.field(factory=Pretreatment)
+pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment))
 ----
 
 Set the pretreatment settings.
@@ -4135,7 +4642,7 @@ Set the pretreatment settings.
 
 [source,python]
 ----
-post_measurement: PostMeasurement = attrs.field(factory=PostMeasurement)
+post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostMeasurement))
 ----
 
 Set the post measurement settings.
@@ -4144,7 +4651,7 @@ Set the post measurement settings.
 
 [source,python]
 ----
-data_processing: DataProcessing = attrs.field(factory=DataProcessing)
+data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataProcessing))
 ----
 
 Set the data processing settings.
@@ -4153,7 +4660,7 @@ Set the data processing settings.
 
 [source,python]
 ----
-general: General = attrs.field(factory=General)
+general: settings.General = attrs.field(factory=(settings.General))
 ----
 
 Sets general/other settings.
@@ -4200,3 +4707,21 @@ measurement_time: float = 1.0
 ----
 
 Measurement time in s (default: 1.0)
+
+==== `to++_++dict`
+
+[source,python]
+----
+to_dict()
+----
+
+Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++method++_++id`
+
+[source,python]
+----
+from_method_id(id)
+----
+
+Create new instance of appropriate technique from method ID.

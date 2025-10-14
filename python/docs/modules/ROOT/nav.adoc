@@ -10,6 +10,7 @@
 ** xref:api/techniques.adoc[]
 *** xref:api/method_settings.adoc[]
 *** xref:api/method_enums.adoc[]
+*** xref:api/mixed_mode.adoc[]
 ** xref:api/instrument.adoc[]
 *** xref:api/instrument_async.adoc[async]
 ** xref:api/fitting.adoc[]

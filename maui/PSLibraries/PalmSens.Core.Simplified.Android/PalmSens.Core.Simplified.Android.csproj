@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0-android</TargetFramework>
+    <AssemblyTitle>PalmSens.Core.Simplified.Android</AssemblyTitle>
+    <Product>PalmSens.Core.Simplified.Android</Product>
+    <Copyright>Copyright ©  2017</Copyright>
+    <AssemblyVersion>5.10.0316</AssemblyVersion>
+    <FileVersion>5.10.0316</FileVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PalmSens.Core.Simplified\PalmSens.Core.Simplified.NET.csproj" />
+  </ItemGroup>
+</Project>

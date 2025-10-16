@@ -9,4 +9,4 @@ SDKs are available for the ecosystems below. See the links for installation inst
 - xref:python:ROOT:index.adoc[]
 - xref:matlab:ROOT:index.adoc[]
 - xref:labview:ROOT:index.adoc[]
-- xref:dotnet[] (WIP)
+- xref:maui:ROOT:index.adoc[]

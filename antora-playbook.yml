@@ -19,6 +19,10 @@ content:
       branches: HEAD
       # tags: ['labview-*']
       start_path: labview/docs
+    - url: .
+      branches: HEAD
+      # tags: ['maui-*']
+      start_path: maui/docs
 urls:
   latest_version_segment: latest
 ui:

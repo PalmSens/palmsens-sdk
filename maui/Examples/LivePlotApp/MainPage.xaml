@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sdkplot="clr-namespace:SDKPlot.Maui;assembly=SDKPlot.Maui"
+             xmlns:local="clr-namespace:PalmSensLivePlot"
+             x:Class="PalmSensLivePlot.MainPage"
+             x:DataType="local:MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="25,25"
+            Spacing="15">
+            <Image
+                Source="banner.png"
+                HeightRequest="185"
+                Aspect="AspectFit" />
+
+            <Label
+                Text="Live plot example"
+                Style="{StaticResource Headline}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+            <Picker x:Name="DevicePicker"
+                    Title="Select a device"
+                    ItemsSource="{Binding AvailableDevices}"
+                    SelectedItem="{Binding SelectedDevice}">
+            </Picker>
+
+            <FlexLayout JustifyContent="SpaceBetween" >
+
+                <Button
+                x:Name="DiscoverBtn"
+                Text="Refresh"
+                Clicked="DiscoverClicked"
+                FlexLayout.Basis="48%"
+                 />
+
+                <Button
+                x:Name="ConnectBtn"
+                Text="Connect"
+                Clicked="ConnectClicked"
+                IsEnabled="False"
+                FlexLayout.Basis="48%"
+                 />
+
+            </FlexLayout>
+
+            <Border Stroke="Gray" Padding="10" >
+                <CollectionView ItemsSource="{Binding Log}"
+                            HeightRequest="100"
+                            ItemsUpdatingScrollMode="KeepLastItemInView"
+                            />
+            </Border>
+
+            <HorizontalStackLayout Spacing="10">
+
+                <Label x:Name="PotentialLabel"
+                   Text="Potential:"  FontAttributes="Bold" />
+
+                <Label x:Name="PotentialValue"
+                   Text="-" />
+
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout Spacing="10">
+
+                <Label x:Name="CurrentLabel"
+                   Text="Current:"  FontAttributes="Bold" />
+
+                <Label x:Name="CurrentValue"
+                   Text="-" />
+
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout Spacing="10">
+
+                <Label x:Name="StatusLabel"
+                   Text="Status:" FontAttributes="Bold" />
+
+                <Label x:Name="StatusValue"
+                   Text="-" />
+
+            </HorizontalStackLayout>
+
+            <Button
+                x:Name="MeasureBtn"
+                Text="Measure"
+                Clicked="MeasureClicked"
+                IsEnabled="False"
+                HorizontalOptions="Fill" />
+
+            <sdkplot:PlotView x:Name="plotView1" HeightRequest="500" >
+            </sdkplot:PlotView>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

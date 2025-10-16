@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:PalmSensInternalStorage"
+             x:Class="PalmSensInternalStorage.MainPage"
+             x:DataType="local:MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="25,25"
+            Spacing="15">
+            <Image
+                Source="banner.png"
+                HeightRequest="185"
+                Aspect="AspectFit" />
+
+            <Label
+                Text="Internal Storage"
+                Style="{StaticResource Headline}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+            <Picker x:Name="DevicePicker"
+                    Title="Select a device"
+                    ItemsSource="{Binding AvailableDevices}"
+                    SelectedItem="{Binding SelectedDevice}">
+            </Picker>
+
+            <FlexLayout JustifyContent="SpaceBetween" >
+
+                <Button
+                x:Name="DiscoverBtn"
+                Text="Refresh"
+                Clicked="DiscoverClicked"
+                FlexLayout.Basis="48%"
+                 />
+
+                <Button
+                x:Name="ConnectBtn"
+                Text="Connect"
+                Clicked="ConnectClicked"
+                IsEnabled="False"
+                FlexLayout.Basis="48%"
+                 />
+
+            </FlexLayout>
+
+            <Border Stroke="Gray" Padding="10" >
+                <CollectionView ItemsSource="{Binding Log}"
+                            HeightRequest="100"
+                            ItemsUpdatingScrollMode="KeepLastItemInView"
+                            />
+            </Border>
+
+            <Label
+                Text="File browser"
+                Style="{StaticResource SubHeadline}"
+                />
+
+            <FlexLayout JustifyContent="SpaceBetween" >
+
+                <Button
+                x:Name="ListFilesBtn"
+                Text="Show root directory"
+                Clicked="ListFilesClicked"
+                IsEnabled="False"
+                FlexLayout.Basis="48%"
+                 />
+
+                <Button
+                x:Name="OpenFileBtn"
+                Text="Open item"
+                Clicked="OpenFileClicked"
+                IsEnabled="False"
+                FlexLayout.Basis="48%"
+                 />
+
+            </FlexLayout>
+
+            <Border Stroke="Gray" Padding="10" >
+                <CollectionView ItemsSource="{Binding InternalStorage}"
+                            HeightRequest="500"
+                            ItemsUpdatingScrollMode="KeepLastItemInView"
+                            SelectionMode="Single"
+                            SelectedItem="{Binding SelectedFile}">
+                </CollectionView>
+            </Border>
+
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

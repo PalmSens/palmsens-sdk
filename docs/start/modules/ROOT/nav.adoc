@@ -1,6 +1,7 @@
 * xref:python:ROOT:index.adoc[Python]
 * xref:matlab:ROOT:index.adoc[Matlab]
 * xref:labview:ROOT:index.adoc[Labview]
+* xref:labview:ROOT:index.adoc[.NET MAUI]
 
 .PalmSens .NET libraries
 ** xref:api.adoc[]

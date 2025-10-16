@@ -12,4 +12,4 @@ SDKs are available for the ecosystems below. See the links for installation inst
 - [Python](./python) - [documentation](https://sdk.palmsens.com/python/latest/index.html)
 - [Matlab](./matlab) - [documentation](https://sdk.palmsens.com/matlab/latest/index.html)
 - [Labview](./labview) - [documentation](https://sdk.palmsens.com/labview/latest/index.html)
-- [Dotnet](./dotnet) (WIP)
+- [.NET MAUI](./maui) - [documentation](https://sdk.palmsens.com/maui/latest/index.html)

@@ -1,0 +1,35 @@
+= .NET MAUI SDK for PalmSens devices
+
+WARNING: The .NET MAUI SDK is under active development and not ready for use. 🚧
+
+Supported platforms:
+
+* Windows
+// * Android
+// * IOS
+// * MacOS
+
+== Compatible devices and firmware
+
+The PalmSens .NET MAUI SDK is based on PalmSens core version 5.12 which is compatible with:
+
+[cols=",",options="header",]
+|===
+|Device |Minimum required firmware version
+|EmStat |3.7
+|EmStat2 |7.7
+|EmStat3 |7.7
+|EmStat3{plus} |7.7
+|EmStat4 |1.3
+|EmStat4T |1.4
+|EmStat Go |7.7
+|EmStat Pico |1.5
+|Sensit Smart |1.5
+|Sensit BT |1.5
+|Sensit Wearable |1.5
+|MultiEmStat3 |7.7
+|MultiEmStat4 |1.3
+|PalmSens3 |2.8
+|PalmSens4 |1.7
+|MultiPalmSens4 |1.7
+|===

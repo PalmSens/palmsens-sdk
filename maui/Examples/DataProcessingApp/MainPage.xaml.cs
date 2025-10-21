@@ -1,4 +1,4 @@
-﻿using OxyPlot;
+using OxyPlot;
 using PalmSens;
 using PalmSens.Core.Simplified.Data;
 using PalmSens.Data;

@@ -1,0 +1,206 @@
+= Working with data
+:source-language: csharp
+
+This chapter covers how retrieve, manipulate, and analyze datafrom a measurement.
+
+See also:
+
+* xref:examples.adoc#example-data[Data processing example]
+* xref:examples.adoc#example-peaks[Peak detection example]
+* xref:examples.adoc#example-eis-fit[EIS fit example]
+
+== Obtaining the measured values
+
+When a measurement is started by calling the `psCommSimple.Measure` method a reference to the instance of that `SimpleMeasurement` class is returned.
+The `SimpleMeasurement` class references instances of the `SimpleCurve` class in the `SimpleMeasurement.SimpleCurveCollection` property.
+
+The `SimpleCurve` class is used to analyze and manipulate the data. Generate new instances of the `SimpleCurve` class by calling the `SimpleMeasurement.NewSimpleCurve` method.
+This method will generate a new `SimpleCurve` class based on the available `DataArrayType` in the instance `SimpleMeasurement`.
+
+For Cyclic Voltammetry or Mux measurements, multiple `SimpleCurve` objects can be generated.
+
+The `SimpleMeasurement.AvailableDataTypes` property contains a list of the available `DataArrayType` in the measurement.
+To plot a different `SimpleCurve`, call the `SimpleMeasurement.NewSimpleCurve` method directly after it has started to generate another `SimpleCurve` with different units/values.
+
+----
+List<SimpleCurve> chargeCurves = simpleMeasurement.NewSimpleCurve(
+    PalmSens.Data.DataArrayType.Time,
+    PalmSens.Data.DataArrayType.Charge,
+    "Charge/Time"
+); <1>
+----
+<1> Get Charge over Time curves
+
+To access the raw values in the form of an array of doubles use either the `SimpleCurve.XAxisValues` or the `SimpleCurve.YAxisValues` properties.
+
+----
+double[] xValues = simpleCurve.XAxisValues;
+----
+
+Get value of the Y Axis a specified index:
+
+----
+double firstYValue = simpleCurve.YAxisValue(0);
+----
+
+== Smoothing/Filtering
+
+To smooth a `SimpleCurve` call one of the `SimpleCurve.Smooth` methods.
+
+These methods use the https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter[Savitsky-Golay algorithm].
+
+The arguments can be either the `SmoothLevel` enumerator:
+
+----
+SimpleCurve smoothedCurve = simpleCurve.Smooth(SmoothLevel.Medium);
+----
+
+Or an int specifying the window size, i.e. a window of 4 will filter based on the 4 adjacent points in both directions:
+
+----
+SimpleCurve smoothedCurve2 = simpleCurve.Smooth(25);
+----
+
+== Baseline Subtraction
+
+Perform a baseline correction by subtracting the `SimpleCurve` of a baseline measurement from your `SimpleCurve` using a moving average baseline by calling `SimpleCurve.MovingAverageBaseline`.
+To subtract one curve from another, call `SimpleCurve.Subtract` with the `SimpleCurve` to subtract as the argument.
+
+----
+SimpleCurve movingAverageBaseline = simpleCurve.MovingAverageBaseline(); <1>
+SimpleCurve baselineSubtractedCurve = simpleCurve.Subtract(movingAverageBaseline); <2>
+----
+<1> Get the moving average baseline curve
+<2> Get the simple curve with the subtracted baseline
+
+== Arithmetic operations
+
+The `SimpleCurve` class supports other basic operations such as:
+
+* Addition - `SimpleCurve.Add()`
+* Subtraction - `SimpleCurve.Subtract()`
+* Multiplication - `SimpleCurve.Multiply()`
+* Exponentiation - `SimpleCurve.Exponentiate()`
+* Differentiation - `SimpleCurve.Differentiate()`
+* Integration - `SimpleCurve.Integrate()`
+* Base 10 Logarithm - `SimpleCurve.Log10()`
+* Average - `SimpleCurve.Average()`
+* Sum - `SimpleCurve.Sum()`
+* Minimum - `SimpleCurve.Minimum()`
+* Maximum - `SimpleCurve.Maximum()`
+
+== Peak and level detection
+
+The `SimpleCurve` class contains functions for detecting peaks and levels using our algorithms.
+
+There are three peak detection algorithms.
+
+1. The default algorithm detects peaks using the curve’s derivative.
+2. The shoulder algorithm can detect peaks that are on a slope and missed by the default algorithm.
+3. The LSV/CV algorithm is specifically designed for detecting peaks in Linear Sweep and Cyclic Voltammetry.
+
+The detected peaks are added to `SimpleCurve.Peak`, an `IEnumerable` collection of the `Peak` interface.
+The `Peak` interface describes the properties of the peak (i.e. the peak potential, current, height, width, etc.).
+
+Examples of the peak detection are also provided in the xref:examples.adoc#example-data[Data processing] and xref:examples.adoc#example-peaks[Peak detection] example projects.
+
+Detect peaks with a minimum width of 0.01V, a minimum height of 0.05µA and discard any existing peaks:
+
+----
+activeSimpleCurve.DetectPeaks(
+    minPeakWidth=0.01,
+    minPeakHeight=0.05,
+    clearPeaks=true
+);
+----
+
+Now using the the specialized Linear Sweep / Cyclic Voltammetry algorithm:
+
+----
+await activeSimpleCurve.DetectPeaksAsync(
+    minPeakWidth=0.01,
+    minPeakHeight=0.05,
+    clearPeaks=true,
+    peakType=PeakTypes.LSVCV
+);
+----
+
+Get peak properties from the first peak:
+
+----
+double peakHeight = activeSimpleCurve.Peaks[0].PeakValue;
+double peakPotential = activeSimpleCurve.Peaks[0].PeakX;
+----
+
+Level detection works similar to peak detection, except that the results are stored in `SimpleCurve.Levels`, an `IEnumerable` collection of the `Level` class.
+
+Detect levels with a minimum width of 0.5s, a minimum height of 0.05µA, discard any existing levels:
+
+----
+await activeSimpleCurve.DetectLevelsAsync(0.5,0.05,true);
+
+double levelBegin = activeSimpleCurve.Levels[0].LeftX; <1>
+double levelEnd = activeSimpleCurve.Levels[0].RightX;
+double levelCurrent = activeSimpleCurve.Levels[0].LevelY;
+----
+<1> Get level properties from the first level
+
+== Equivalent circuit fitting
+
+The `SimpleCurve.FitEquivalentCircuit()` function fits an equivalent circuit model on your data.
+
+The next code example shows how to fit a Randles circuit using the specified inital values and default fit options. It sets the initial values for the solution resistance (series resistor), charge transfer resistance (parallel resistor), and double layer capacitance (parallel capacitor).
+
+----
+FitResult fitResult = await activeSimpleCurve.FitEquivalentCircuit(
+    "R(RC)", new double[] { 100, 8000, 1e-8 }
+);
+
+double solutionResistance = fitResult.FinalParameters[0]; <1>
+double chargeTransferResistance = fitResult.FinalParameters[1];
+double doubleLayerCapacitance = fitResult.FinalParameters[2];
+----
+<1> Get fit results
+
+To change the default fit options and parameters use the following function in combination with the `CircuitModel` and `FitOptionsCircuit` classes.
+
+----
+CircuitModel circuitModel = new CircuitModel();
+circuitModel.SetEISdata(_activeMeasurement.Measurement.EISdata[0]); <1>
+
+circuitModel.SetCircuit("R(RC)"); <2>
+
+Parameter p = circuitModel.InitialParameters[0]; <3>
+p.MaxValue = 1e6;
+p.MinValue = 1e4;
+p.Value = 1e5; <4>
+----
+<1> Sets reference to measured data
+<2> Sets the circuit defined in the CDC code string (Randles circuit)
+<3> Change bounds and starting value of the solution resistance (in Ω)
+<4> Set starting value (Ω)
+
+To change the fit options:
+
+----
+FitOptionsCircuit fitOptions = new FitOptionsCircuit();
+fitOptions.Model = circuitModel;
+fitOptions.RawData = _activeMeasurement.Measurement.EISdata[0]; <1>
+fitOptions.MaxIterations = 1000; <2>
+fitOptions.MinimumDeltaErrorTerm = 1e-12; <3>
+----
+<1> Sets reference to measured data
+<2> The maximum number of iterations, 500 by default
+<3> The minimum delta in the error term (sum of squares difference between model and data), default is 1e-9
+
+Fit the circuit defined in the CircuitModel and the options specified in the `FitOptions`:
+
+----
+FitResult fitResult = await activeSimpleCurve.FitEquivalentCircuit(circuitModel, fitOptions);
+
+double solutionResistance = fitResult.FinalParameters[0];
+double chargeTransferResistance = fitResult.FinalParameters[1];
+double doubleLayerCapacitance = fitResult.FinalParameters[2];
+----
+
+The xref:examples.adoc#example-eis-fit[EIS fit example] project also demonstrates how to use the equivalent circuit fitting.

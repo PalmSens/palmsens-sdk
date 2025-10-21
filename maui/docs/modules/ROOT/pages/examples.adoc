@@ -1,0 +1,98 @@
+= Example programs
+:experimental:
+
+This page lists some examples to help you get started with app development.
+
+The examples use https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/[asynchronous
+programming] where necessary to prevent the PalmSens SDK libraries from blocking the user interface.
+
+To make a new app using one of the example apps as a template:
+
+1. Copy the directory you want to copy, e.g. `BasicExampleApp`
+2. Rename the directory to e.g. `MyPalmSensApp`
+3. Rename `BasicExampleApp.csproj` to `MyPalmSensApp.csproj`
+4. Right click menu:Solution[Add > Existing Project], select `MyPalmSensApp.csproj` file
+5. Update namespace (find-replace), `BasicExampleApp` -> `MyPalmSensApp`
+
+
+[#example-basic]
+== Basic App
+[.float-group]
+--
+image:example_basic.png[Linux,200,float="right"]
+
+Shows how to discover devices, make a connection, run a measurement, and show the data in a table.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/BasicExampleApp[Link to the code]
+--
+
+[#example-aux-bipot]
+== Auxilliary/BiPot App
+[.float-group]
+--
+image:example_bipotaux.png[Linux,200,float="right"]
+
+Shows how to measure additional data from the auxiliary port or a bipot.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/BiPotAuxExampleApp[Link to the code]
+--
+
+[#example-data]
+== Data Analysis App
+[.float-group]
+--
+image:example_data-processing.png[Linux,200,float="right"]
+
+This app shows how to import, analyze and save data.
+The example loads measurements from a `.pssession` file, and shows how to smooth data, manipulate data, and detect peaks.
+It also shows how to load a method from a `.psmethod files`.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/DataProcessingApp[Link to the code]
+--
+
+[#example-eis-fit]
+== EIS Fit App
+[.float-group]
+--
+image:example_eisfit.png[Linux,200,float="right"]
+
+Shows how perform an equivalent circuit analysis on an EIS frequency scan measurement.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/EISFitApp[Link to the code]
+--
+
+
+[#example-internal]
+== Internal Storage App
+[.float-group]
+--
+image:example_internal-storage.png[Linux,200,float="right"]
+
+Shows how to navigate and access files on the internal storage of a EmStat Pico Development Board, Sensit BT, EmStat4 and PalmSens4.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/InternalStorageApp[Link to the code]
+--
+
+
+[#example-plot]
+== Plot App
+[.float-group]
+--
+image:example_liveplot.png[Linux,200,float="right"]
+
+Shows how to make a connection, run a measurement and plot the results while the measurement is running.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/LivePlotApp[Link to the code]
+--
+
+
+[#example-peaks]
+== Peak Detection App
+[.float-group]
+--
+image:example_peakdetection.png[Linux,200,float="right"]
+
+Shows how to perform an advanced peak detection for Linear Sweep Voltammetry and Cyclic Voltammetry measurements.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/PeakDetectionApp[Link to the code]
+--

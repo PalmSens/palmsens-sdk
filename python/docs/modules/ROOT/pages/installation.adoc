@@ -5,7 +5,7 @@
 
 * https://python.org[Python version 3.10 or newer]
 * .NET Framework 4.7.2
-* Drivers included with _PSTrace5.x_, _MultiTrace4.x_, _PSTrace Xpress_ or the included http://TODO_LINK_TO_DRIVERS[driver installer]
+* Drivers included with _PSTrace5.x_, _MultiTrace4.x_, _PSTrace Xpress_ or the included http://https://github.com/PalmSens/PalmSens_SDK/releases/download/python-1.0.0/PalmSens.Drivers.exe[driver installer]
 
 [NOTE]
 ====

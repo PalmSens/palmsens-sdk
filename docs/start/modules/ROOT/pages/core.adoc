@@ -1,0 +1,28 @@
+= `PalmSens.Core`
+
+The PalmSens SDK is built on the following libraries and projects:
+
+* `PalmSens.Core`
+* `PalmSens.Core.Windows`
+
+These libraries are provided as dlls or nuget packages and contain the namespaces with all the necessary files for using PalmSens/EmStat devices in your software.
+
+* `PalmSens`: All necessary classes and functions for performing measurements and doing analysis with PalmSens or EmStat.
+* `PalmSens.Comm`: For Serial, USB or TCP communication with PalmSens or EmStat
+* `PalmSens.DataFiles`: For saving and loading method and data files
+* `PalmSens.Devices`: For handling communications and device capabilities
+* `PalmSens.Techniques`: Contains all measurement techniques for PalmSens and EmStat
+* `PalmSens.Units`: Contains a collection of units used by these libraries
+
+The basis for handling measurements is the `PalmSens.Measurement` class, or the `PalmSens.Core.Simplified.Data.SimpleMeasurement` class when using the simplified wrapper.
+
+The measurement class contains all classes, functions, and parameters necessary for performing a measurement with a _PalmSens_ or _EmStat_ instrument.
+A `Measurement` has one associated method and can contain multiple curves.
+Curves are a representation of the data in the measurement used for plotting and analysis.
+
+image::sdk_measurement_class.png[Inheritance structure for Method classes, width=50%, role=half-view-width]
+
+The following diagram shows the inheritance structure of the `Method`
+classes:
+
+image::sdk_method_inheritance.png[Inheritance structure for Method classes, role=half-view-width]

@@ -1,0 +1,31 @@
+= Installation
+:experimental: true
+
+Developing native, cross-platform .NET Multi-platform App UI (.NET MAUI) apps requires Visual Studio 2022 17.12 or greater, or the latest Visual Studio Code with the .NET MAUI extension.
+
+See https://learn.microsoft.com/en-us/dotnet/maui/get-started/installation[this page] for installation instructions and how to get started with MAUI.
+
+[#add-sdk-to-solution]
+== Add SDK project to your solution
+
+In Visual Studio, click on your solution and go to menu:File[Add > Existing Project].
+Navigate to the project (`.csproj`) you want to add, e.g. `PSLibraries/PalmSens.Core.Simplified.Maui/PalmSens.Core.Simplified.MAUI.csproj`.
+
+image::add_to_solution.png[]
+
+== Add SDK references to the project
+
+In Visual Studio, click on your project and go to menu:Project[Add Project Reference].
+Select the reference(s) you want to add, e.g. `PalmSens.Core.Simplified.MAUI`.
+
+image::add_to_project.png[]
+
+Reference external libraries (`.dll` files) by selecting them via the
+'Browse' button and reference project files (.csproj) by xref#add-sdk-to-solution[adding them
+to your solution] and referencing the project.
+
+The `PalmSens.Core.dll` and `PalmSens.Core.Windows.dll` libraries should always be referenced.
+If you use the simplified wrapper to control your devices, reference the `PalmSens.Core.Simplified.csproj` and `PalmSens.Core.Simplified.MAUI.csproj` should be referenced.
+To use the plot helpers, reference the `SDKPlot.csproj`, `SDKPlot.Maui.csproj` projects.
+
+You can use `net9.0` as the target .NET runtime.

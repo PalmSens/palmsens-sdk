@@ -16,7 +16,7 @@
                 Aspect="AspectFit" />
 
             <Label
-                Text="Live plot example"
+                Text="Peak Detection example"
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 

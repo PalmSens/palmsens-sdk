@@ -1,17 +1,51 @@
 = .NET MAUI SDK for PalmSens devices
 
+image::banner.png[Banner,role=half-view-width, width=65%]
+
+With this PalmSens SDK you develop Windows applications in Visual Studio using https://dotnet.microsoft.com/en-us/apps/maui[.NET MAUI].
+
+..NET MAUI is a multi-platform app UI framework that lets you build native, cross-platform desktop and mobile apps with one codebase.
+The PalmSens .NET MAUI SDK can be used with all PalmSens instruments and potentiostat modules.
+
 WARNING: The .NET MAUI SDK is under active development and not ready for use. 🚧
 
 Supported platforms:
 
 * Windows
-// * Android
+* Android (under development)
 // * IOS
 // * MacOS
 
+== Contents
+
+These projects contain an open source wrapper for the xref:start:ROOT:core.adoc[`PalmSens.Core`] libraries.
+
+* `PalmSens.Core.Simplified.NET`
+* `PalmSens.Core.Simplified.MAUI`
+* `PalmSens.Core.Simplified.Android`
+* `PalmSens.Core.Simplified.Windows.NET`
+
+The simplified wrappers give you quick and easy access to all the basic functions of the PalmSens/EmStat devices and automatically handles most potential threading issues for you:
+
+* Connecting
+* Manual control of the cell
+* Running measurements
+* Accessing and processing measured data
+* Analyzing and manipulating data
+
+Methods and data structures are referenced from the xref:start:ROOT:core.adoc[`PalmSens.Core`] libraries.
+
+In addition, the projects contain a simple open source plot control that you can use to plot your measurements in real-time.
+They are based on the open-source http://www.oxyplot.org/[OxyPlot library].
+
+* `SDKPlot.NET`
+* `SDKPlot.Maui`
+
+Click xref:examples.adoc[here] for a list of examples!
+
 == Compatible devices and firmware
 
-The PalmSens .NET MAUI SDK is based on PalmSens core version 5.12 which is compatible with:
+The PalmSens .NET MAUI SDK is based on PalmSens Core version 5.12 which is compatible with:
 
 [cols=",",options="header",]
 |===

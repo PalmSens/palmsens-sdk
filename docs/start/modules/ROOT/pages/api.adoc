@@ -1,19 +1,25 @@
 = API reference
 
 All applicable parameters for each technique can be found here.
-For the inheritance hierarchy of the the techniques, see xref:core_dll.adoc[].
+For the inheritance hierarchy of the the techniques, see xref:core.adoc[].
 See section ‘Available techniques’ in the PSTrace manual for more information about the techniques.
 
 Each technique is identified by a specific integer value.
-This integer value can be used to create a class derived from the corresponding
-technique, as follows:
+This integer value can be used to create a class derived from the corresponding technique, as follows:
 
-[,python]
+[,csharp]
 ----
 PalmSens.Method.FromTechniqueNumber(integervalue)
 ----
 
-The integer values are indicated in this appendix inside the brackets `[_]` following each technique name.
+Alternatively, you can use the method id:
+
+[,csharp]
+----
+PalmSens.Method.FromMethodID(stringvalue)
+----
+
+Both values are indicated in this reference for each technique.
 
 The techniques are also directly available from the `PalmSens.Techniques` namespace.
 
@@ -94,9 +100,13 @@ The following properties specify the measurements pretreatment settings:
 |`System.Float`
 |===
 
-== Linear Sweep Voltammetry (LSV) [0]
+[#api-lsv]
+== Linear Sweep Voltammetry
 
-Class: `Palmsens.Techniques.LinearSweep`
+* Short name: LSV
+* Class: `Palmsens.Techniques.LinearSweep`
+* `TechniqueID`: 0
+* `MethodID`: `"lsv"`
 
 |===
 |Property |Description |Type
@@ -120,9 +130,13 @@ connected instrument.
 |`System.Float`
 |===
 
-== Differential Pulse Voltammetry (DPV) [1]
+[#api-1]
+== Differential Pulse Voltammetry
 
-Class: `Palmsens.Techniques.DifferentialPulse`
+* Short name: DPV
+* Class: `Palmsens.Techniques.DifferentialPulse`
+* `TechniqueID`: 1
+* `MethodID`: `"dpv"`
 
 |===
 |Property |Description |Type
@@ -152,9 +166,13 @@ Class: `Palmsens.Techniques.DifferentialPulse`
 |`System.Float`
 |===
 
-== Square Wave Voltammetry (SWV) [2]
+[#api-swv]
+== Square Wave Voltammetry
 
-Class: `Palmsens.Techniques.SquareWave`
+* Short name: SWV
+* Class: `Palmsens.Techniques.SquareWave`
+* `TechniqueID`: 2
+* `MethodID`: `"swv"`
 
 |===
 |Property |Description |Type
@@ -180,9 +198,13 @@ Class: `Palmsens.Techniques.SquareWave`
 |`System.Float`
 |===
 
-== Normal Pulse Voltammetry (NPV) [3]
+[#api-npv]
+== Normal Pulse Voltammetry
 
-Class: `Palmsens.Techniques.NormalPulse`
+* Short name: NPV
+* Class: `Palmsens.Techniques.NormalPulse`
+* `TechniqueID`: 3
+* `MethodID`: `"npv"`
 
 |===
 |Property |Description |Type
@@ -208,9 +230,13 @@ Class: `Palmsens.Techniques.NormalPulse`
 |`System.Float`
 |===
 
-== AC Voltammetry (ACV) [4]
+[#api-acv]
+== AC Voltammetry
 
-Class: `Palmsens.Techniques.ACVoltammetry`
+* Short name: ACV
+* Class: `Palmsens.Techniques.ACVoltammetry`
+* `TechniqueID`: 4
+* `MethodID`: `"acv"`
 
 |===
 |Property |Description |Type
@@ -236,9 +262,13 @@ Class: `Palmsens.Techniques.ACVoltammetry`
 |`System.Float`
 |===
 
-== Cyclic Voltammetry (CV)++|++contextid=306 [5]
+[#api-cv]
+== Cyclic Voltammetry
 
-Class: `Palmsens.Techniques.CyclicVoltammetry`
+* Short name: CV
+* Class: `Palmsens.Techniques.CyclicVoltammetry`
+* `TechniqueID`: 5
+* `MethodID`: `"cv"`
 
 |===
 |Property |Description |Type
@@ -268,15 +298,23 @@ Class: `Palmsens.Techniques.CyclicVoltammetry`
 |`System.Float`
 |===
 
-=== Fast Cyclic Voltammetry Scans
+[#api-fcv]
+== Fast Cyclic Voltammetry
 
-Class: `Palmsens.Techniques.FastCyclicVoltammetry`
+* Short name: FCV
+* Class: `Palmsens.Techniques.FastCyclicVoltammetry`
+* `TechniqueID`: n/a
+* `MethodID`: `"fcv"`
 
-Outdated class. PalmSens 3 and 4 only. For CV’s with sampling over 5000 data points per second, use the regular `Palmsens.Techniques.CyclicVoltammetry()` constructor instead.
+Outdated class. PalmSens 3 and 4 only. For CV’s with sampling over 5000 data points per second, use the regular <<api-cv>> constructor instead.
 
-== Chronopotentiometric Stripping (SCP) [6]
+[#api-scp]
+== Chronopotentiometric Stripping
 
-Class: `PalmSens.Techniques.ChronoPotStripping`
+* Short name: SCP
+* Class: `PalmSens.Techniques.ChronoPotStripping`
+* `TechniqueID`: 6
+* `MethodID`: `"scp"`
 
 |===
 |Property |Description |Type
@@ -298,9 +336,13 @@ Class: `PalmSens.Techniques.ChronoPotStripping`
 |`System.Float`
 |===
 
-== Chronoamperometry (CA) [7]
+[#api-ca]
+== Chronoamperometry
 
-Class: `PalmSens.Techniques.AmperometricDetection`
+* Short name: CA
+* Class: `PalmSens.Techniques.AmperometricDetection`
+* `TechniqueID`: 7
+* `MethodID`: `"ca"`
 
 |===
 |Property |Description |Type
@@ -318,9 +360,13 @@ Class: `PalmSens.Techniques.AmperometricDetection`
 |`System.Float`
 |===
 
-== Pulsed Amperometric Detection (PAD) [8]
+[#api-pad]
+== Pulsed Amperometric Detection
 
-Class: `PalmSens.Techniques.PulsedAmpDetection`
+* Short name: PAD
+* Class: `PalmSens.Techniques.PulsedAmpDetection`
+* `TechniqueID`: 8
+* `MethodID`: `"pad"`
 
 |===
 |Property |Description |Type
@@ -350,9 +396,13 @@ Class: `PalmSens.Techniques.PulsedAmpDetection`
 |`System.Float`
 |===
 
-== Fast Amperometry (FAM) [9]
+[#api-fam]
+== Fast Amperometry
 
-Class: `PalmSens.Techniques.FastAmperometry`
+* Short name: FAM
+* Class: `PalmSens.Techniques.FastAmperometry`
+* `TechniqueID`: 9
+* `MethodID`: `"fam"`
 
 |===
 |Property |Description |Type
@@ -374,9 +424,13 @@ Class: `PalmSens.Techniques.FastAmperometry`
 |`System.Float`
 |===
 
-== Chronopotentiometry (CP) [10]
+[#api-cp]
+== Chronopotentiometry
 
-Class: `PalmSens.Techniques.Potentiometry`
+* Short name: CP
+* Class: `PalmSens.Techniques.Potentiometry`
+* `TechniqueID`: 10
+* `MethodID`: `"cp"`
 
 |===
 |Property |Description |Type
@@ -398,11 +452,15 @@ Class: `PalmSens.Techniques.Potentiometry`
 |`System.Float`
 |===
 
-=== Open Circuit Potentiometry (OCP)
+[#api-ocp]
+== Open Circuit Potentiometry
 
-Class: `PalmSens.Techniques.OpenCircuitPotentiometry`
+* Short name: OCP
+* Class: `PalmSens.Techniques.OpenCircuitPotentiometry`
+* `TechniqueID`: n/a
+* `MethodID`: `"ocp"`
 
-The same as setting the Current to 0.
+The same as <<api-cp>> as setting the `Current` to 0.
 
 |===
 |Property |Description |Type
@@ -416,9 +474,13 @@ The same as setting the Current to 0.
 |`System.Float`
 |===
 
-== Multiple Pulse Amperometry (MPAD) [11]
+[#api-mpad]
+== Multiple Pulse Amperometry
 
-Class: `PalmSens.Techniques.MultiplePulseAmperometry`
+* Short name: MPAD
+* Class: `PalmSens.Techniques.MultiplePulseAmperometry`
+* `TechniqueID`: 11
+* `MethodID`: `"mpad"`
 
 |===
 |Property |Description |Type
@@ -452,28 +514,31 @@ Class: `PalmSens.Techniques.MultiplePulseAmperometry`
 |`System.Float`
 |===
 
-== Electrochemical Impedance Spectroscopy (EIS)
+[#api-eis]
+== Electrochemical Impedance Spectroscopy
 
-Class: `PalmSens.Techniques.ImpedimetricMethod`
+* Short name: EIS
+* Class: `PalmSens.Techniques.ImpedimetricMethod`
+* `TechniqueID`: 14
+* `MethodID`: `"eis"`
 
 The most common properties are described first.
-These are used for a typical EIS measurement, a scan over a specified range of frequencies (i.e. using the default properties `ScanType = ImpedimetricMethod`.
+These are used for a typical EIS measurement, a scan over a specified range of frequencies.
+For example, using the default properties `ScanType = ImpedimetricMethod`,
+`enumScanType.FixedPotential` and `FreqType = ImpedimetricMethod.enumFrequencyType.Scan`.
 
-`enumScanType.FixedPotential` and `FreqType = ImpedimetricMethod.enumFrequencyType.Scan`).
-The additional properties used for a `TimeScan` and a `PotentialScan` are detailed separately in next sections.
+The additional properties used for a `TimeScan` and a `PotentialScan` are detailed separately in next sections.
 
 |===
 |Property |Description |Type
 
 |`ScanType`
 |Scan type specifies whether a single or multiple frequency
-scans are performed. When set to FixedPotential a single scan will be
-performed, this is the recommended setting. *The TimeScan and
-PotentialScan are not fully supported in the SDK*, we highly recommend
-you to implement yourself. A TimeScan performs repeated scans at a given
-time interval within a specified time range. A PotentialScan performs
+scans are performed. When set to `FixedPotential` a single scan will be
+performed, this is the recommended setting. A `TimeScan` performs repeated scans at a given
+time interval within a specified time range. A `PotentialScan` performs
 scans where the DC Potential of the applied sine is incremented within a
-specified range. A PotentialScan should not be performed versus the OCP.
+specified range. A `PotentialScan` should not be performed versus the OCP.
 |`ImpedimetricMethod.enumScanType`
 
 |`Potential`
@@ -514,9 +579,9 @@ applied during MaxEqTime only to reach the stationary state. The maximum number 
 === Time Scan
 
 In a Time Scan impedance spectroscopy measurements are repeated for a
-specific amount of time at a specific interval. The SDK does not support
-this feature fully, we recommend you to design your own implementation
-for this that suits your demands.
+specific amount of time at a specific interval.
+
+NOTE: The SDK does not support this feature fully, we recommend you to design your own implementation for this that suits your demands.
 
 |===
 |Property |Description |Type
@@ -533,9 +598,9 @@ for this that suits your demands.
 === Potential Scan
 
 In a Potential Scan impedance spectroscopy measurements are repeated
-over a range of DC potential values. The SDK does not support this
-feature fully, we recommend you to design your own implementation for
-this that suits your demands.
+over a range of DC potential values.
+
+NOTE: The SDK does not support this feature fully, we recommend you to design your own implementation for this that suits your demands.
 
 |===
 |Property |Description |Type
@@ -568,62 +633,56 @@ The default value for `PalmSens.Method.ExtraValueMsk` is `PalmSens.ExtraValueMas
 
 image::auxilary_input.png[Change auxilary input]
 
-[source,csharp]
+[,csharp]
 ----
-psCommSimpleWinForms.comm.AuxInputSelected = new PalmSens.AuxInput.AuxiliaryInputType(
-    true, "Pt1000", "Temperature sensor", -275f, 189.1f, new PalmSens.Units.Temperature()
+psCommSimple.comm.AuxInputSelected = new PalmSens.AuxInput.AuxiliaryInputType(
+    true, "Pt1000", "Temperature sensor", -275f, 189.1f, new PalmSens.Units.Temperature()
 );
 ----
-+
-The can be ignored and set to true, the second argument is the name, third is the description, fourth the offset, fifth the slope and the final argument is an instance of one of the unit classes in the `PalmSens.Units` namespace.
-* Reverse, record reverse current as used by Square Wave Voltammetry
-* PolyStatWE, not supported in the PalmSens SDK
-* DCcurrent, record the DC current as used with AC Voltammetry
-* CEPotential, PalmSens 4 only
 
-The PSSDKBiPotAuxExample example project demonstrates how to record extra values.
+The can be ignored and set to true, the second argument is the name, third is the description, fourth the offset, fifth the slope and the final argument is an instance of one of the unit classes in the `PalmSens.Units` namespace.
+* Reverse, record reverse current as used by <<api-swv>>
+* PolyStatWE, not supported in the PalmSens SDK
+* DCcurrent, record the DC current as used with <<api-acv>>
+* CEPotential, PalmSens 4 only
 
 == Multiplexer
 
 The `PalmSens.Method` class is also used to specify the multiplexer settings for sequential and alternating measurements.
-Alternating multiplexer measurements restricted to the chronoamperometry and chronopotentiometry techniques.
+Alternating multiplexer measurements restricted to the <<api-ca>> and <<api-cp>> techniques.
 
 The enumerator property `PalmSens.Method.MuxMethod` defines the type multiplexer measurement.
 
-[source,csharp]
+[,csharp]
 ----
-methodCA.MuxMethod = MuxMethod.None; // Default setting, no multiplexer
+// Default setting, no multiplexer
+methodCA.MuxMethod = MuxMethod.None;
 methodCA.MuxMethod = MuxMethod.Alternatingly;
 
 methodCA.MuxMethod = MuxMethod.Sequentially;
 
 // The channels on which to measure are specified in a boolean array
 PalmSens.Method.UseMuxChannel: methodCA.UseMuxChannel = new bool[] {
-true, true, false, false, false, false, false, true };
+    true, true, false, false, false, false, false, true
+};
 ----
 
 The code above will perform a measurement on the first two and last channels of an 8-channel multiplexer. For a 16-channel multiplexer you would also need to assign true or false to the last 8 channels.
 
-Alternating multiplexer measurement can only measure on successive channels and must start with the first channel (i.e. it is possible to alternatingly measure on channels 1 through 4 but it is not possible to alternatingly measure on channel 1, 3 and 5). The multiplexer functionality is demonstrated in the PSSDKMultiplexerExample project.
+Alternating multiplexer measurement can only measure on successive channels and must start with the first channel (i.e. it is possible to alternatingly measure on channels 1 through 4 but it is not possible to alternatingly measure on channel 1, 3 and 5). The multiplexer functionality is demonstrated in the PSSDKMultiplexerExample project.
 
 === Multiplexer settings
 
-When using a MUX8-R2 multiplexer the multiplexer settings must be set digitally instead of via the physical switches on the earlier
-multiplexer models.
+When using a MUX8-R2 multiplexer the multiplexer settings must be set digitally instead of via the physical switches on the earlier multiplexer models.
 The type of multiplexer should be specified in the connected device’s capabilities, when the multiplexer is connected before connecting to the software the capabilities are updated automatically.
-Otherwise, when using the MUX8-R2 the
-`PalmSens.Devices.DeviceCapabilities.MuxType` should be set to `PalmSens.Comm.MuxType.Protocol` manually or by calling
-`PalmSens.Comm.CommManager.ClientConnection.ReadMuxInfo`, `PalmSens.Comm.CommManager.ClientConnection.ReadMuxInfoAsync` when connected asynchronously.
+Otherwise, when using the MUX8-R2 the `PalmSens.Devices.DeviceCapabilities.MuxType` should be set to `PalmSens.Comm.MuxType.Protocol` manually or by calling `PalmSens.Comm.CommManager.ClientConnection.ReadMuxInfo`, `PalmSens.Comm.CommManager.ClientConnection.ReadMuxInfoAsync` when connected asynchronously.
 
-For the MUX8-R2 the settings for a measurement are set in `PalmSens.Method.MuxSett` property with an instance of the
-`PalmSens.Method.MuxSettings` class.
+For the MUX8-R2 the settings for a measurement are set in `PalmSens.Method.MuxSett` property with an instance of the `PalmSens.Method.MuxSettings` class.
 For manual control these settings can be set using the `PalmSens.Comm.ClientConnection.SetMuxSettings` function, `PalmSens.Comm.ClientConnection.SetMuxSettingsAsync` when connected asynchronously.
 
-[source,csharp]
+[,csharp]
 ----
-method.MuxSett = new Method.MuxSettings(false)
-
-{
+method.MuxSett = new Method.MuxSettings(false) {
     CommonCERE = false,
     ConnSEWE = false,
     ConnectCERE = true,
@@ -635,39 +694,38 @@ method.MuxSett = new Method.MuxSettings(false)
 
 == Versus OCP
 
-The versus open circuit potential settings (OCP) are defined in the `PalmSens.Method.OCPmode`, `PalmSens.Method.OCPMaxOCPTime`, and
-`PalmSens.Method.OCPStabilityCriterion` properties.
+The versus open circuit potential settings (OCP) are defined in the `PalmSens.Method.OCPmode`, `PalmSens.Method.OCPMaxOCPTime`, and `PalmSens.Method.OCPStabilityCriterion` properties.
+
 The OCPmode is a bitmask specifies which of the following technique dependent properties or combination thereof will be measured versus the OCP potential:
 
-* Linear Sweep Voltammetry:
+* <<api-lsv>>:
 ** `BeginPotential` = 1
 ** `EndPotential` = 2
-* (Fast) Cyclic Voltammetry
+* <<api-cv>>
 ** `Vtx1Potential` = 1
 ** `Vtx2Potential` = 2
 ** `BeginPotential` = 4
-* Chronoamperometry
+* <<api-ca>>
 ** `Potential` = 1
-* Impedance Spectroscopy (Fixed potential and Time Scan)
+* <<api-eis>> (fixed potential and time scan)
 ** `Potential` = 1
-* Impedance Spectroscopy (Potential Scan)
+* <<api-eis>> (potential scan)
 ** `BeginPotential` = 1
 ** `EndPotential` = 2
 
 The progress and result of the versus OCP measurement step are reported in the `PalmSens.Comm.MeasureVersusOCP` class, which can be obtained by subscribing to the `PalmSens.Comm.CommManager.DeterminingVersusOCP` event which is raised when the versus OCP measurement step is started.
 
-[source,csharp]
+[,csharp]
 ----
-// Defining versus OCP measurement step for a Cyclic Voltammetry
-measurement
-
-// Measure the (Vtx1Potential) 1 + (Vtx2Potential) 2 + (BeginPotential) 4 = 7 versus the OCP potential
+// Defining vs OCP measurement step for CV
+// Measure (Vtx1Potential) 1 + (Vtx2Potential) 2 + (BeginPotential) 4 = 7 versus the OCP potential
 _methodCV.OCPmode = 7;
 
 // Sets the maximum time the versus OCP step can take to 10 seconds
 _methodCV.OCPMaxOCPTime = 10;
 
-// The OCP measurement will stop when the change in potential over time is less than 0.02mV/s, when set to 0 the OCP measurement step will always run for the OCPMaxOCPTime
+// The OCP measurement will stop when the change in potential over time is less than 0.02mV/s,
+// when set to 0 the OCP measurement step will always run for the OCPMaxOCPTime
 _methodCV.OCPStabilityCriterion = 0.02f;
 ----
 
@@ -675,4 +733,5 @@ _methodCV.OCPStabilityCriterion = 0.02f;
 
 There are two method parameters specific to the EmStat Pico.
 The `PalmSens.Method.PGStatMode` property sets the mode in which the measurement should be run, low power, high speed or max range.
-This mode can be set for all techniques but Electrochemical Impedance Spectroscopy. The second property is `PalmSens.Method.SelectedPotentiostatChannel` which let you choose on which channel the EmStat Pico should run the measurement.
+This mode can be set for all techniques but <<api-eis>>.
+The second property is `PalmSens.Method.SelectedPotentiostatChannel` which let you choose on which channel the EmStat Pico should run the measurement.

@@ -66,13 +66,13 @@ https://github.com/palmsens/palmsens_sdk/blob/main/matlab/GetConnectedDevices.m[
 Returns a list of connected PalmSens and Emstat devices.
 
 https://github.com/palmsens/palmsens_sdk/blob/main/matlab/LoadMethod.m[`LoadMethod.m`]::
-Loads a method from a *.psmethod file.
+Loads a method from a `.psmethod` file.
 
 https://github.com/palmsens/palmsens_sdk/blob/main/matlab/LoadPSSDK.m[`LoadPSSDK.m`]::
 Loads the PalmSens Matlab SDK.
 
 https://github.com/palmsens/palmsens_sdk/blob/main/matlab/LoadSession.m[`LoadSession.m`]::
-Load (a) measurement(s) from a *.pssession file.
+Load (a) measurement(s) from a `.pssession` file.
 
 https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MultiChannelMeasurementLoopHelper.m[`MultiChannelMeasurementLoopHelper.m`]::
 Waits for multiple instruments to finish their measurements

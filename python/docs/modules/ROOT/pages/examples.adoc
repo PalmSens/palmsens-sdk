@@ -160,7 +160,25 @@ include::example$multichannel_custom_loop.py[]
 [#multichannel_hw_sync]
 == Multichannel HW sync
 
+On multi-channel devices that support it, hardware sync can be used to synchronize measurements between multiple channels.
+When synchronization is enabled the follower device will wait until the main channel enables synchronisation.
+After that, the follower and main will synchronize their measurement loop start and iterations.
+
 This example shows how to connect to a collection of instruments and run a chronopotentiometry measurement on all channels simultaneously using hardware synchronization.
+
+For hardware synchronization, you set `use_hardware_sync = True` on the method.
+This is the equivalent of `set_channel_sync 1` in MethodSCRIPT.
+At the moment this only works with async.
+
+In addition, your pool of instruments must contain:
+
+* channels from a single https://www.palmsens.com/knowledgebase-article/multichannel-potentiostat/[multi-channel instrument]
+* the first (main) channel of the instrument
+* at least one follower channel
+
+All instruments are prepared and put in a waiting state.
+The measurements are started via a hardware sync trigger on channel 1.
+Only channel 1 (the main channel) has hardware required to trigger the other channels.
 
 .multichannel_HW_sync.py
 [,python]

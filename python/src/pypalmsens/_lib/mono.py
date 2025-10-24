@@ -30,7 +30,7 @@ PLATFORMS = {
     ('Linux', 'arm'): 'linux-arm',
     ('Linux', 'aarch'): 'linux-arm',
     ('Linux', 'arm64'): 'linux-arm64',
-    ('Linux', 'aarch64'): 'linux-arm64',
+    ('Linux', 'aarch64'): 'linux-arm64',  # raspberrypi / raspbian
     ('Darwin', 'arm64'): 'osx-arm64',
     ('Darwin', 'x86_64'): 'osx-x64',
 }

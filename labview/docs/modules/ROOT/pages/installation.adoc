@@ -5,8 +5,14 @@ This page takes you through setting up the SDK for your LabVIEW project.
 
 == Requirements
 
-To discover our instruments and use our SDK libraries our drivers and the .NET/C++ runtimes need to be installed.
-We highly recommend installing PSTrace or MultiTrace as this installs all the required dependencies.
+* https://www.ni.com/en/shop/labview.html[Labview]
+  - The code was developed with Community Version 2025
+  - For compatibility with older versions (down to 2019), use menu:File[Save for previous versions].
+* .NET Framework 4.7.2
+* Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the https://github.com/PalmSens/PalmSens_SDK/releases/download/python-1.0.0/PalmSens.Drivers.exe[driver installer].
+
+Download the latest https://github.com/palmsens/palmsens_sdk/releases[release here].
+Unzip the file and load the project file in Labview.
 
 == Adding the PalmSens folder
 

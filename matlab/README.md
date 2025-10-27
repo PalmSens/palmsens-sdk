@@ -11,7 +11,11 @@ For more information, see the [documentation](https://sdk.palmsens.com/matlab/la
 
 ## Installation
 
-To use the matlab SDK, download the latest [release here](https://github.com/palmsens/palmsens_sdk/releases).
+- [Matlab (R2018 or newer)](https://nl.mathworks.com/products/matlab.html)
+- .NET Framework 4.7.2
+- Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the [driver installer](https://github.com/PalmSens/PalmSens_SDK/releases/download/python-1.0.0/PalmSens.Drivers.exe).
+
+Download the latest [release here](https://github.com/palmsens/palmsens_sdk/releases).
 Unzip the file and load the directory 'matlab-x.y.z' in Matlab.
 
 ## Examples

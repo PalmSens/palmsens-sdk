@@ -25,8 +25,12 @@ You can plot the results of your electrochemical experiment in a Nyquist and Bod
 
 == Installation
 
-To use the matlab SDK, download the latest https://github.com/palmsens/palmsens_sdk/releases[release here].
-Unzip and load the directory in Matlab.
+* https://nl.mathworks.com/products/matlab.html[Matlab (R2018 or newer)]
+* .NET Framework 4.7.2
+* Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the https://github.com/PalmSens/PalmSens_SDK/releases/download/python-1.0.0/PalmSens.Drivers.exe[driver installer].
+
+Download the latest https://github.com/palmsens/palmsens_sdk/releases[release here].
+Unzip the file and load the directory 'matlab-x.y.z' in Matlab.
 
 == Examples
 

@@ -6,23 +6,11 @@ from pathlib import Path
 
 import pytest
 import System
-from helpers import assert_params_match_kwargs
 
 import pypalmsens as ps
+from pypalmsens._methods import BaseTechnique
 
 logger = logging.getLogger(__name__)
-
-
-def assert_params_round_trip_equal(*, pycls, kwargs):
-    params = pycls(**kwargs)
-
-    with tempfile.TemporaryDirectory() as tmp:
-        path = Path(tmp, f'{pycls._id}.psmethod')
-        ps.save_method_file(path, params)
-        new_params = ps.load_method_file(path)
-
-    assert new_params == params
-    assert_params_match_kwargs(new_params, kwargs=kwargs)
 
 
 @pytest.fixture(scope='module')
@@ -54,6 +42,7 @@ def test_read_potential(manager):
 
 
 class TestCV:
+    id = 'cv'
     kwargs = {
         'begin_potential': -1,
         'vertex1_potential': -1,
@@ -61,25 +50,13 @@ class TestCV:
         'step_potential': 0.25,
         'scanrate': 5,
         'n_scans': 2,
+        'current_range': {'max': 7, 'min': 3, 'start': 6},
     }
-    pycls = ps.CyclicVoltammetry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(
-            current_range=ps.settings.CurrentRange(
-                max=ps.settings.CURRENT_RANGE.cr_1_mA,
-                min=ps.settings.CURRENT_RANGE.cr_100_nA,
-                start=ps.settings.CURRENT_RANGE.cr_100_uA,
-            ),
-            **self.kwargs,
-        )
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
+
         measurement = manager.measure(method)
 
         assert measurement
@@ -102,6 +79,7 @@ class TestCV:
 
 
 class TestFCV:
+    id = 'fcv'
     kwargs = {
         'begin_potential': -1,
         'vertex1_potential': -1,
@@ -111,22 +89,14 @@ class TestFCV:
         'n_scans': 3,
         'n_avg_scans': 2,
         'n_equil_scans': 2,
+        'current_range': 5,
     }
-    pycls = ps.FastCyclicVoltammetry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.xfail(raises=AssertionError, reason='FCV only returns 1 scan with nScans>1')
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(
-            current_range=ps.settings.CURRENT_RANGE.cr_10_uA,
-            **self.kwargs,
-        )
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
+
         measurement = manager.measure(method)
 
         assert measurement
@@ -155,30 +125,19 @@ class TestFCV:
 
 
 class TestLSV:
+    id = 'lsv'
     kwargs = {
         'begin_potential': -1.0,
         'end_potential': 1.0,
         'step_potential': 0.1,
         'scanrate': 2.0,
+        'current_range': {'max': 7, 'min': 3, 'start': 6},
     }
-    pycls = ps.LinearSweepVoltammetry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(
-            current_range=ps.settings.CurrentRange(
-                max=ps.settings.CURRENT_RANGE.cr_1_mA,
-                min=ps.settings.CURRENT_RANGE.cr_100_nA,
-                start=ps.settings.CURRENT_RANGE.cr_100_uA,
-            ),
-            **self.kwargs,
-        )
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
+
         measurement = manager.measure(method)
 
         assert measurement
@@ -192,6 +151,7 @@ class TestLSV:
 
 
 class TestACV:
+    id = 'acv'
     kwargs = {
         'begin_potential': -0.15,
         'end_potential': 0.15,
@@ -199,25 +159,12 @@ class TestACV:
         'ac_potential': 0.25,
         'frequency': 200.0,
         'scanrate': 0.2,
+        'current_range': {'max': 7, 'min': 3, 'start': 6},
     }
-    pycls = ps.ACVoltammetry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(
-            current_range=ps.settings.CurrentRange(
-                max=ps.settings.CURRENT_RANGE.cr_1_mA,
-                min=ps.settings.CURRENT_RANGE.cr_100_nA,
-                start=ps.settings.CURRENT_RANGE.cr_100_uA,
-            ),
-            **self.kwargs,
-        )
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -240,6 +187,7 @@ class TestACV:
 
 
 class TestSWV:
+    id = 'swv'
     kwargs = {
         'equilibration_time': 0.0,
         'begin_potential': -0.5,
@@ -248,25 +196,12 @@ class TestSWV:
         'frequency': 10.0,
         'amplitude': 0.05,
         'record_forward_and_reverse_currents': True,
+        'current_range': {'max': 7, 'min': 3, 'start': 6},
     }
-    pycls = ps.SquareWaveVoltammetry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(
-            current_range=ps.settings.CurrentRange(
-                max=ps.settings.CURRENT_RANGE.cr_1_mA,
-                min=ps.settings.CURRENT_RANGE.cr_100_nA,
-                start=ps.settings.CURRENT_RANGE.cr_100_uA,
-            ),
-            **self.kwargs,
-        )
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -281,30 +216,19 @@ class TestSWV:
 
 
 class TestCP:
+    id = 'pot'
     kwargs = {
         'current': 0.0,
         'applied_current_range': ps.settings.CURRENT_RANGE.cr_100_uA,
         'interval_time': 0.1,
         'run_time': 1.0,
+        'potential_range': {'max': 7, 'min': 1, 'start': 7},
     }
-    pycls = ps.ChronoPotentiometry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(
-            potential_range=ps.settings.PotentialRange(
-                max=ps.settings.POTENTIAL_RANGE.pr_1_V,
-                min=ps.settings.POTENTIAL_RANGE.pr_10_mV,
-                start=ps.settings.POTENTIAL_RANGE.pr_1_V,
-            ),
-            **self.kwargs,
-        )
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
+
         measurement = manager.measure(method)
 
         assert measurement
@@ -318,18 +242,13 @@ class TestCP:
 
 
 class TestSCP:
+    id = 'scp'
     kwargs = {
         'current': 0.1,
         'applied_current_range': ps.settings.CURRENT_RANGE.cr_100_uA,
         'measurement_time': 0.2,
+        'potential_range': {'max': 7, 'min': 1, 'start': 7},
     }
-    pycls = ps.StrippingChronoPotentiometry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.xfail(
         raises=System.NotImplementedException,
@@ -337,14 +256,7 @@ class TestSCP:
     )
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(
-            potential_range=ps.settings.PotentialRange(
-                max=ps.settings.POTENTIAL_RANGE.pr_1_V,
-                min=ps.settings.POTENTIAL_RANGE.pr_10_mV,
-                start=ps.settings.POTENTIAL_RANGE.pr_1_V,
-            ),
-            **self.kwargs,
-        )
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -358,29 +270,17 @@ class TestSCP:
 
 
 class TestLSP:
+    id = 'lsp'
     kwargs = {
         'applied_current_range': ps.settings.CURRENT_RANGE.cr_100_uA,
         'current_step': 0.1,
         'scan_rate': 8.0,
+        'potential_range': {'max': 7, 'min': 1, 'start': 7},
     }
-    pycls = ps.LinearSweepPotentiometry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(
-            potential_range=ps.settings.PotentialRange(
-                max=ps.settings.POTENTIAL_RANGE.pr_1_V,
-                min=ps.settings.POTENTIAL_RANGE.pr_10_mV,
-                start=ps.settings.POTENTIAL_RANGE.pr_1_V,
-            ),
-            **self.kwargs,
-        )
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -394,28 +294,16 @@ class TestLSP:
 
 
 class TestOCP:
+    id = 'ocp'
     kwargs = {
         'interval_time': 0.1,
         'run_time': 1.0,
+        'potential_range': {'max': 7, 'min': 1, 'start': 7},
     }
-    pycls = ps.OpenCircuitPotentiometry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(
-            potential_range=ps.settings.PotentialRange(
-                max=ps.settings.POTENTIAL_RANGE.pr_1_V,
-                min=ps.settings.POTENTIAL_RANGE.pr_10_mV,
-                start=ps.settings.POTENTIAL_RANGE.pr_1_V,
-            ),
-            **self.kwargs,
-        )
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -429,21 +317,15 @@ class TestOCP:
 
 
 class TestCA:
+    id = 'ad'
     kwargs = {
         'interval_time': 0.1,
         'run_time': 1.0,
     }
-    pycls = ps.ChronoAmperometry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -456,22 +338,16 @@ class TestCA:
         assert dataset.array_quantities == {'Potential', 'Time', 'Charge', 'Current'}
 
 
-class TestFA:
+class TestFAM:
+    id = 'fam'
     kwargs = {
         'interval_time': 0.1,
         'run_time': 1.0,
     }
-    pycls = ps.FastAmperometry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -484,7 +360,8 @@ class TestFA:
         assert dataset.array_quantities == {'Potential', 'Time', 'Charge', 'Current'}
 
 
-class TestDP:
+class TestDPV:
+    id = 'dpv'
     kwargs = {
         'begin_potential': -0.4,
         'end_potential': 0.4,
@@ -493,17 +370,10 @@ class TestDP:
         'pulse_time': 0.1,
         'scan_rate': 0.5,
     }
-    pycls = ps.DifferentialPulseVoltammetry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -517,6 +387,7 @@ class TestDP:
 
 
 class TestPAD:
+    id = 'pad'
     kwargs = {
         'potential': 0.5,
         'pulse_potential': 1.0,
@@ -525,17 +396,10 @@ class TestPAD:
         'run_time': 1.0,
         'interval_time': 0.2,
     }
-    pycls = ps.PulsedAmperometricDetection
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -549,6 +413,7 @@ class TestPAD:
 
 
 class TestMPAD:
+    id = 'mpad'
     kwargs = {
         'run_time': 2.5,
         'potential_1': 0.1,
@@ -558,13 +423,6 @@ class TestMPAD:
         'duration_2': 0.15,
         'duration_3': 0.15,
     }
-    pycls = ps.MultiplePulseAmperometry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.xfail(
         raises=ValueError,
@@ -572,8 +430,7 @@ class TestMPAD:
     )
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
-
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -587,6 +444,7 @@ class TestMPAD:
 
 
 class TestNPV:
+    id = 'npv'
     kwargs = {
         'begin_potential': -0.4,
         'end_potential': 0.4,
@@ -594,17 +452,10 @@ class TestNPV:
         'pulse_time': 0.1,
         'scan_rate': 0.5,
     }
-    pycls = ps.NormalPulseVoltammetry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -618,26 +469,20 @@ class TestNPV:
 
 
 class TestMA:
+    id = 'ma'
     kwargs = {
         'equilibration_time': 0.0,
         'interval_time': 0.01,
         'n_cycles': 2,
         'levels': [
-            ps.settings.ELevel(level=0.5, duration=0.1),
-            ps.settings.ELevel(level=0.3, duration=0.2),
+            {'level': 0.5, 'duration': 0.1},
+            {'level': 0.3, 'duration': 0.2},
         ],
     }
-    pycls = ps.MultiStepAmperometry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -656,25 +501,20 @@ class TestMA:
 
 
 class TestMP:
+    id = 'mp'
     kwargs = {
         'interval_time': 0.01,
         'n_cycles': 2,
         'levels': [
-            ps.settings.ILevel(level=0.5, duration=0.1),
-            ps.settings.ILevel(level=0.3, duration=0.2),
+            {'level': 0.5, 'duration': 0.1},
+            {'level': 0.3, 'duration': 0.2},
         ],
     }
-    pycls = ps.MultiStepPotentiometry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
+
         measurement = manager.measure(method)
 
         assert measurement
@@ -693,23 +533,17 @@ class TestMP:
 
 
 class TestCC:
+    id = 'cc'
     kwargs = {
         'equilibration_time': 0.0,
         'interval_time': 0.01,
         'step1_run_time': 0.1,
         'step2_run_time': 0.2,
     }
-    pycls = ps.ChronoCoulometry
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -728,22 +562,16 @@ class TestCC:
 
 
 class TestEIS:
+    id = 'eis'
     kwargs = {
         'n_frequencies': 7,
         'max_frequency': 1e5,
         'min_frequency': 1e3,
     }
-    pycls = ps.ElectrochemicalImpedanceSpectroscopy
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -791,21 +619,15 @@ class TestEIS:
 
 
 class TestFIS:
+    id = 'fis'
     kwargs = {
         'frequency': 40000,
         'run_time': 0.5,
     }
-    pycls = ps.FastImpedanceSpectroscopy
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -853,24 +675,18 @@ class TestFIS:
 
 
 class TestGIS:
+    id = 'gis'
     kwargs = {
-        'applied_current_range': ps.settings.CURRENT_RANGE.cr_10_uA,
+        'applied_current_range': 5,
         'equilibration_time': 0.0,
         'n_frequencies': 7,
         'max_frequency': 1e5,
         'min_frequency': 1e3,
     }
-    pycls = ps.GalvanostaticImpedanceSpectroscopy
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -918,21 +734,15 @@ class TestGIS:
 
 
 class TestFGIS:
+    id = 'fgis'
     kwargs = {
-        'applied_current_range': ps.settings.CURRENT_RANGE.cr_10_uA,
+        'applied_current_range': 5,
         'run_time': 0.3,
     }
-    pycls = ps.FastGalvanostaticImpedanceSpectroscopy
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -980,6 +790,7 @@ class TestFGIS:
 
 
 class TestMS:
+    id = 'ms'
     kwargs = {
         'script': (
             'e\n'  # must start with e
@@ -997,17 +808,10 @@ class TestMS:
             '\n'  # must end with 2 newlines
         )
     }
-    pycls = ps.MethodScript
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -1021,50 +825,46 @@ class TestMS:
 
 
 class TestMM:
+    id = 'mm'
     kwargs = {
         'cycles': 2,
         'interval_time': 0.02,
         'stages': [
-            ps.mixed_mode.ConstantE(
-                run_time=0.1,
-                potential=0.5,
-                current_limits=ps.settings.CurrentLimits(min=1, max=10.0),
-            ),
-            ps.mixed_mode.ConstantI(
-                run_time=0.1,
-                current=1.0,
-                applied_current_range=ps.settings.CURRENT_RANGE.cr_100_nA,
-                potential_limits=ps.settings.PotentialLimits(min=-1, max=1),
-            ),
-            ps.mixed_mode.SweepE(
-                begin_potential=-0.5,
-                end_potential=0.5,
-                step_potential=0.25,
-                scanrate=20.0,
-            ),
-            ps.mixed_mode.OpenCircuit(
-                run_time=0.1,
-            ),
-            ps.mixed_mode.Impedance(
-                frequency=50000,
-                ac_potential=0.01,
-                dc_potential=0.0,
-                run_time=0.1,
-                min_sampling_time=0.0,
-            ),
+            {
+                'type': 'ConstantE',
+                'current_limits': {'max': 10.0, 'min': 1},
+                'potential': 0.5,
+                'run_time': 0.1,
+            },
+            {
+                'type': 'ConstantI',
+                'potential_limits': {'max': 1, 'min': -1},
+                'current': 1.0,
+                'applied_current_range': 3,
+                'run_time': 0.1,
+            },
+            {
+                'type': 'SweepE',
+                'begin_potential': -0.5,
+                'end_potential': 0.5,
+                'step_potential': 0.25,
+                'scanrate': 20.0,
+            },
+            {'type': 'OpenCircuit', 'run_time': 0.1},
+            {
+                'type': 'Impedance',
+                'run_time': 0.1,
+                'dc_potential': 0.0,
+                'ac_potential': 0.01,
+                'min_sampling_time': 0.0,
+                'max_equilibration_time': 5.0,
+            },
         ],
     }
-    pycls = ps.mixed_mode.MixedMode
-
-    def test_params_round_trip(self):
-        assert_params_round_trip_equal(
-            pycls=self.pycls,
-            kwargs=self.kwargs,
-        )
 
     @pytest.mark.instrument
     def test_measurement(self, manager):
-        method = self.pycls(**self.kwargs)
+        method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
         measurement = manager.measure(method)
 
         assert measurement
@@ -1118,3 +918,43 @@ class TestMM:
             'Z',
             "Z'",
         }
+
+
+@pytest.mark.parametrize(
+    'method',
+    (
+        TestCV,
+        TestFCV,
+        TestLSV,
+        TestACV,
+        TestSWV,
+        TestCP,
+        TestSCP,
+        TestLSP,
+        TestOCP,
+        TestCA,
+        TestFAM,
+        TestDPV,
+        TestPAD,
+        TestMPAD,
+        TestNPV,
+        TestMA,
+        TestMP,
+        TestCC,
+        TestEIS,
+        TestFIS,
+        TestGIS,
+        TestFGIS,
+        TestMS,
+        TestMM,
+    ),
+)
+def test_params_round_trip(method):
+    params = BaseTechnique._registry[method.id].from_dict(method.kwargs)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp, f'{method.id}.psmethod')
+        ps.save_method_file(path, params)
+        new_params = ps.load_method_file(path)
+
+    assert new_params == params

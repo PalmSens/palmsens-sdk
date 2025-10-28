@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import Any, ClassVar, Protocol, Type, runtime_checkable
 
 import attrs
+import cattrs
 from PalmSens import Method as PSMethod
 
 
@@ -32,7 +33,14 @@ class BaseTechnique(Protocol):
 
     def to_dict(self) -> dict[str, Any]:
         """Return the technique instance as a new key/value dictionary mapping."""
-        return attrs.asdict(self, filter=lambda a, _: not a.name.startswith('_'))
+        return cattrs.unstructure(self)
+
+    @classmethod
+    def from_dict(cls, obj: dict[str, Any]) -> BaseTechnique:
+        """Structure technique instance from dict.
+
+        Opposite of `.to_dict()`"""
+        return cattrs.structure(obj, cls)
 
     @classmethod
     def from_method_id(cls, id: str) -> BaseTechnique:

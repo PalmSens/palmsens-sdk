@@ -114,6 +114,7 @@ async def test_pool_submit_async(apool):
 
 @pytest.mark.asyncio
 @pytest.mark.instrument
+@pytest.mark.xfail(raises=ValueError, reason='Requires multichannel device.')
 async def test_pool_hw_sync_async(apool):
     method = ps.LinearSweepVoltammetry(
         end_potential=-0.5,

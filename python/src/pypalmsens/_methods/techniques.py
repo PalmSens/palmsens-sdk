@@ -769,7 +769,7 @@ class MultiStepAmperometry(
     interval_time: float = 0.1
     """Interval time in s."""
 
-    n_cycles: float = 1
+    n_cycles: int = 1
     """Number of cycles."""
 
     levels: list[ELevel] = attrs.field(factory=lambda: [ELevel()])

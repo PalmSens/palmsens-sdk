@@ -57,6 +57,8 @@ Create AC Voltammetry method parameters.
 
 * link:#pypalmsens.ACVoltammetry.to_dict[*to++_++dict*] – Return the
 technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.ACVoltammetry.from_dict[*from++_++dict*] – Structure
+technique instance from dict.
 * link:#pypalmsens.ACVoltammetry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -256,6 +258,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -273,6 +286,8 @@ Create chrono amperometry method parameters.
 
 * link:#pypalmsens.ChronoAmperometry.to_dict[*to++_++dict*] – Return the
 technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.ChronoAmperometry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.ChronoAmperometry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -536,6 +551,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -553,6 +579,8 @@ Create linear sweep method parameters.
 
 * link:#pypalmsens.ChronoCoulometry.to_dict[*to++_++dict*] – Return the
 technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.ChronoCoulometry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.ChronoCoulometry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -766,6 +794,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -783,6 +822,8 @@ Create potentiometry method parameters.
 
 * link:#pypalmsens.ChronoPotentiometry.to_dict[*to++_++dict*] – Return
 the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.ChronoPotentiometry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.ChronoPotentiometry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -993,6 +1034,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -1010,6 +1062,8 @@ Create cyclic voltammetry method parameters.
 
 * link:#pypalmsens.CyclicVoltammetry.to_dict[*to++_++dict*] – Return the
 technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.CyclicVoltammetry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.CyclicVoltammetry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -1270,6 +1324,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -1287,6 +1352,8 @@ Create differential pulse voltammetry method parameters.
 
 * link:#pypalmsens.DifferentialPulseVoltammetry.to_dict[*to++_++dict*] –
 Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.DifferentialPulseVoltammetry.from_dict[*from++_++dict*]
+– Structure technique instance from dict.
 * link:#pypalmsens.DifferentialPulseVoltammetry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -1559,6 +1626,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -1576,6 +1654,8 @@ Create potentiometry method parameters.
 
 * link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy.to_dict[*to++_++dict*]
 – Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy.from_dict[*from++_++dict*]
+– Structure technique instance from dict.
 * link:#pypalmsens.ElectrochemicalImpedanceSpectroscopy.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -1765,6 +1845,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -1782,6 +1873,8 @@ Create fast amperometry method parameters.
 
 * link:#pypalmsens.FastAmperometry.to_dict[*to++_++dict*] – Return the
 technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.FastAmperometry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.FastAmperometry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -2008,6 +2101,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -2025,6 +2129,8 @@ Create fast cyclic voltammetry method parameters.
 
 * link:#pypalmsens.FastCyclicVoltammetry.to_dict[*to++_++dict*] – Return
 the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.FastCyclicVoltammetry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.FastCyclicVoltammetry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -2223,6 +2329,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -2240,6 +2357,8 @@ Create fast galvanostatic impededance spectroscopy method parameters.
 
 * link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.to_dict[*to++_++dict*]
 – Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.from_dict[*from++_++dict*]
+– Structure technique instance from dict.
 * link:#pypalmsens.FastGalvanostaticImpedanceSpectroscopy.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -2388,6 +2507,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -2405,6 +2535,8 @@ Create fast impedance spectroscopy method parameters.
 
 * link:#pypalmsens.FastImpedanceSpectroscopy.to_dict[*to++_++dict*] –
 Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.FastImpedanceSpectroscopy.from_dict[*from++_++dict*]
+– Structure technique instance from dict.
 * link:#pypalmsens.FastImpedanceSpectroscopy.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -2582,6 +2714,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -2599,6 +2742,8 @@ Create potentiometry method parameters.
 
 * link:#pypalmsens.GalvanostaticImpedanceSpectroscopy.to_dict[*to++_++dict*]
 – Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.GalvanostaticImpedanceSpectroscopy.from_dict[*from++_++dict*]
+– Structure technique instance from dict.
 * link:#pypalmsens.GalvanostaticImpedanceSpectroscopy.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -2790,6 +2935,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -2807,6 +2963,8 @@ Create linear sweep potentiometry method parameters.
 
 * link:#pypalmsens.LinearSweepPotentiometry.to_dict[*to++_++dict*] –
 Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.LinearSweepPotentiometry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.LinearSweepPotentiometry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -3030,6 +3188,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -3047,6 +3216,8 @@ Create linear sweep method parameters.
 
 * link:#pypalmsens.LinearSweepVoltammetry.to_dict[*to++_++dict*] –
 Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.LinearSweepVoltammetry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.LinearSweepVoltammetry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -3309,6 +3480,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -3326,6 +3508,8 @@ Create a method script sandbox object.
 
 * link:#pypalmsens.MethodScript.to_dict[*to++_++dict*] – Return the
 technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.MethodScript.from_dict[*from++_++dict*] – Structure
+technique instance from dict.
 * link:#pypalmsens.MethodScript.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -3355,6 +3539,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -3372,6 +3567,8 @@ Create multiple pulse amperometry method parameters.
 
 * link:#pypalmsens.MultiplePulseAmperometry.to_dict[*to++_++dict*] –
 Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.MultiplePulseAmperometry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.MultiplePulseAmperometry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -3538,6 +3735,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -3555,6 +3763,8 @@ Create multi-step amperometry method parameters.
 
 * link:#pypalmsens.MultiStepAmperometry.to_dict[*to++_++dict*] – Return
 the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.MultiStepAmperometry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.MultiStepAmperometry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -3592,7 +3802,7 @@ general/other settings.
 * link:#pypalmsens.MultiStepAmperometry.interval_time[*interval++_++time*]
 (link:#float[float]) – Interval time in s.
 * link:#pypalmsens.MultiStepAmperometry.n_cycles[*n++_++cycles*]
-(link:#float[float]) – Number of cycles.
+(link:#int[int]) – Number of cycles.
 * link:#pypalmsens.MultiStepAmperometry.levels[*levels*]
 (link:#list[list]++[++link:#pypalmsens._methods._shared.ELevel[ELevel]++]++)
 – List of levels.
@@ -3708,7 +3918,7 @@ Interval time in s.
 
 [source,python]
 ----
-n_cycles: float = 1
+n_cycles: int = 1
 ----
 
 Number of cycles.
@@ -3773,6 +3983,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -3790,6 +4011,8 @@ Create multi-step potentiometry method parameters.
 
 * link:#pypalmsens.MultiStepPotentiometry.to_dict[*to++_++dict*] –
 Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.MultiStepPotentiometry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.MultiStepPotentiometry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -3975,6 +4198,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -3992,6 +4226,8 @@ Create normal pulse voltammetry method parameters.
 
 * link:#pypalmsens.NormalPulseVoltammetry.to_dict[*to++_++dict*] –
 Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.NormalPulseVoltammetry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.NormalPulseVoltammetry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -4253,6 +4489,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -4270,6 +4517,8 @@ Create open circuit potentiometry method parameters.
 
 * link:#pypalmsens.OpenCircuitPotentiometry.to_dict[*to++_++dict*] –
 Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.OpenCircuitPotentiometry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.OpenCircuitPotentiometry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -4451,6 +4700,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -4468,6 +4728,8 @@ Create pulsed amperometric detection method parameters.
 
 * link:#pypalmsens.PulsedAmperometricDetection.to_dict[*to++_++dict*] –
 Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.PulsedAmperometricDetection.from_dict[*from++_++dict*]
+– Structure technique instance from dict.
 * link:#pypalmsens.PulsedAmperometricDetection.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -4685,6 +4947,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -4702,6 +4975,8 @@ Create square wave method parameters.
 
 * link:#pypalmsens.SquareWaveVoltammetry.to_dict[*to++_++dict*] – Return
 the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.SquareWaveVoltammetry.from_dict[*from++_++dict*] –
+Structure technique instance from dict.
 * link:#pypalmsens.SquareWaveVoltammetry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -4974,6 +5249,17 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
+
 ==== `from++_++method++_++id`
 
 [source,python]
@@ -4995,6 +5281,8 @@ applicable range is {plus}- 0.001 microampere to {plus}- 2 milliampere.
 
 * link:#pypalmsens.StrippingChronoPotentiometry.to_dict[*to++_++dict*] –
 Return the technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.StrippingChronoPotentiometry.from_dict[*from++_++dict*]
+– Structure technique instance from dict.
 * link:#pypalmsens.StrippingChronoPotentiometry.from_method_id[*from++_++method++_++id*]
 – Create new instance of appropriate technique from method ID.
 
@@ -5134,6 +5422,17 @@ to_dict()
 ----
 
 Return the technique instance as a new key/value dictionary mapping.
+
+==== `from++_++dict`
+
+[source,python]
+----
+from_dict(obj)
+----
+
+Structure technique instance from dict.
+
+Opposite of `.to++_++dict()`
 
 ==== `from++_++method++_++id`
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import ClassVar, Protocol, Type, runtime_checkable
+from typing import ClassVar, Literal, Protocol, Type, runtime_checkable
 
 import attrs
 from PalmSens import Method as PSMethod
@@ -21,17 +21,17 @@ class BaseStage(Protocol):
     """Protocol to provide base methods for stage classes."""
 
     __attrs_attrs__: ClassVar[list[attrs.Attribute]] = []
-    _type: int
-    _registry: dict[int, Type[BaseStage]] = {}
+    _registry: dict[str, Type[BaseStage]] = {}
+    type: str
 
     def __init_subclass__(cls, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
-        cls._registry[cls._type] = cls
+        cls._registry[cls.type] = cls
 
     @classmethod
-    def from_stage_type(cls, id: int) -> BaseStage:
+    def from_stage_type(cls, id: str) -> BaseStage:
         """Create new instance of appropriate stage from its type."""
-        new = cls._registry[id]
+        new = cls._registry[str(id)]
         return new()
 
     @classmethod
@@ -57,7 +57,8 @@ class BaseStage(Protocol):
 
     def _update_psmethod(self, psmethod, /) -> PSMethod:
         """Add stage to dotnet method, and update paramaters on dotnet stage."""
-        psstage = psmethod.AddStage(self._type)
+        stage_type = getattr(PSMixedMode.EnumMixedModeStageType, self.type)
+        psstage = psmethod.AddStage(stage_type)
         self._update_psstage(psstage)
         self._update_psstage_nested(psstage)
         return psstage
@@ -80,7 +81,7 @@ class BaseStage(Protocol):
 class ConstantE(BaseStage, mixins.CurrentLimitsMixin):
     """Amperometric detection stage."""
 
-    _type = PSMixedMode.EnumMixedModeStageType.ConstantE
+    type: Literal['ConstantE'] = 'ConstantE'
 
     potential: float = 0.0
     """Potential in V."""
@@ -101,7 +102,7 @@ class ConstantE(BaseStage, mixins.CurrentLimitsMixin):
 class ConstantI(BaseStage, mixins.PotentialLimitsMixin):
     """Potentiometry stage."""
 
-    _type = PSMixedMode.EnumMixedModeStageType.ConstantI
+    type: Literal['ConstantI'] = 'ConstantI'
 
     current: float = 0.0
     """The current to apply in the given current range.
@@ -134,7 +135,7 @@ class ConstantI(BaseStage, mixins.PotentialLimitsMixin):
 class SweepE(BaseStage, mixins.CurrentLimitsMixin):
     """Linear sweep detection stage."""
 
-    _type = PSMixedMode.EnumMixedModeStageType.SweepE
+    type: Literal['SweepE'] = 'SweepE'
 
     begin_potential: float = -0.5
     """Begin potential in V."""
@@ -165,7 +166,7 @@ class SweepE(BaseStage, mixins.CurrentLimitsMixin):
 class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin):
     """Ocp stage."""
 
-    _type = PSMixedMode.EnumMixedModeStageType.OpenCircuit
+    type: Literal['OpenCircuit'] = 'OpenCircuit'
 
     run_time: float = 1.0
     """Run time in s."""
@@ -181,7 +182,7 @@ class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin):
 class Impedance(BaseStage):
     """Electostatic impedance stage."""
 
-    _type = PSMixedMode.EnumMixedModeStageType.Impedance
+    type: Literal['Impedance'] = 'Impedance'
 
     run_time: float = 10.0
     """Run time in s."""
@@ -246,7 +247,9 @@ class MixedMode(
     cycles: int = 1
     """Number of times to go through all stages."""
 
-    stages: list[BaseStage] = attrs.field(factory=list)
+    stages: list[ConstantE | ConstantI | SweepE | OpenCircuit | Impedance] = attrs.field(
+        factory=list
+    )
     """List of stages to run through."""
 
     def _update_psmethod(self, psmethod: PSMethod, /):
@@ -264,4 +267,4 @@ class MixedMode(
         for psstage in psmethod.Stages:
             stage = BaseStage._from_psstage(psstage)
 
-            self.stages.append(stage)
+            self.stages.append(stage)  # type: ignore

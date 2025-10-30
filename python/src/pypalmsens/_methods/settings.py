@@ -307,10 +307,10 @@ class PotentialLimits(BaseSettings):
 class ChargeLimits(BaseSettings):
     """Set the charge limit settings for a given method."""
 
-    max: None | float = 0.0
+    max: None | float = None
     """Set limit charge max in µC."""
 
-    min: None | float = 0.0
+    min: None | float = None
     """Set limit charge min in µC."""
 
     def _update_psmethod(self, psmethod: PSMethod, /):

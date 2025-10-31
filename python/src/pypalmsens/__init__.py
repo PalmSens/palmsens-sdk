@@ -1,17 +1,16 @@
 from __future__ import annotations
 
-import sys
+from . import _libpalmsens
 
-# Load dotnet platform dependencies and init SDK
-if sys.platform == 'win32':
-    from ._lib.windows import sdk_version
-else:
-    from ._lib.mono import sdk_version
-
+__sdk_version__ = _libpalmsens.load()
 __version__ = '1.2.2'
-__sdk_version__ = sdk_version
 
-from . import data, fitting, mixed_mode, settings
+from . import (
+    data,
+    fitting,
+    mixed_mode,
+    settings,
+)
 from ._instruments.instrument_manager import (
     InstrumentManager,
     connect,

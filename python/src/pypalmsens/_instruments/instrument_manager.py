@@ -59,78 +59,51 @@ def discover(
         If True, discover bluetooth devices (Windows only)
     serial : bool
         If True, discover serial devices
+
+    Return
+    ------
+    discovered : list[Instrument]
+        List of dataclasses with discovered instruments.
     """
-    available_instruments = []
     args = [''] if WINDOWS else []
+    interfaces = {}
 
     if ftdi:
-        ftdi_instruments = FTDIDevice.DiscoverDevices(*args)
-        for ftdi_instrument in ftdi_instruments[0]:
-            available_instruments.append(
+        interfaces['ftdi'] = FTDIDevice
+
+    if WINDOWS:
+        if usbcdc:
+            interfaces['usbcdc'] = USBCDCDevice
+        if winusb:
+            interfaces['winusb'] = WinUSBDevice
+        if bluetooth:
+            interfaces['bluetooth'] = BluetoothDevice
+            interfaces['ble'] = BLEDevice
+
+    if LINUX:
+        if serial:
+            interfaces['serial'] = SerialPortDevice
+
+    instruments = []
+
+    for name, interface in interfaces.items():
+        devices = interface.DiscoverDevices(*args)
+
+        if WINDOWS:
+            devices = devices[0]
+
+        for device in devices:
+            instruments.append(
                 Instrument(
-                    id=ftdi_instrument.ToString(),
-                    interface='ftdi',
-                    device=ftdi_instrument,
+                    id=device.ToString(),
+                    interface=name,
+                    device=device,
                 )
             )
 
-    if WINDOWS and usbcdc:
-        usbcdc_instruments = USBCDCDevice.DiscoverDevices(*args)
-        for usbcdc_instrument in usbcdc_instruments[0]:
-            available_instruments.append(
-                Instrument(
-                    id=usbcdc_instrument.ToString(),
-                    interface='usbcdc',
-                    device=usbcdc_instrument,
-                )
-            )
+    instruments.sort(key=lambda instrument: instrument.id)
 
-    if WINDOWS and winusb:
-        winusb_instruments = WinUSBDevice.DiscoverDevices(*args)
-        for winusb_instrument in winusb_instruments[0]:
-            available_instruments.append(
-                Instrument(
-                    id=winusb_instrument.ToString(),
-                    interface='winusb',
-                    device=winusb_instrument,
-                )
-            )
-
-    if WINDOWS and bluetooth:
-        ble_instruments = BLEDevice.DiscoverDevices(*args)
-        for ble_instrument in ble_instruments[0]:
-            available_instruments.append(
-                Instrument(
-                    id=ble_instrument.ToString(),
-                    interface='ble',
-                    device=ble_instrument,
-                )
-            )
-
-        bluetooth_instruments = BluetoothDevice.DiscoverDevices(*args)
-        for bluetooth_instrument in bluetooth_instruments[0]:
-            available_instruments.append(
-                Instrument(
-                    id=bluetooth_instrument.ToString(),
-                    interface='bluetooth',
-                    device=bluetooth_instrument,
-                )
-            )
-
-    if LINUX and serial:
-        serial_instruments = SerialPortDevice.DiscoverDevices(*args)
-        for serial_instrument in serial_instruments:
-            available_instruments.append(
-                Instrument(
-                    id=serial_instrument.ToString(),
-                    interface='serial',
-                    device=serial_instrument,
-                )
-            )
-
-    available_instruments.sort(key=lambda instrument: instrument.id)
-
-    return available_instruments
+    return instruments
 
 
 def connect(

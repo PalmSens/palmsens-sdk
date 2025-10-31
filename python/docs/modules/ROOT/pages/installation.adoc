@@ -41,6 +41,15 @@ sudo usermod -a -G dialout $USER
 And log out and in again to make sure the changes have take effect.
 This avoids errors like `can’t open device "/dev/ttyACM0": Permission denied` when trying to connect to a device.
 
+[NOTE]
+.Known issues
+====
+Linux / MacOS support is a work in progress.
+Although many features work, there are some limitations compared to the Windows version.
+
+See https://github.com/PalmSens/PalmSens_SDK/issues/60[this issue] for an actual list of known issues.
+====
+
 [#ftdisetup]
 === FTDI devices (PS 3, ES 1/2/3/Go/Pico)
 

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PalmSens.Core.Linux</name>
+    </assembly>
+    <members>
+        <member name="T:PalmSens.Core.Linux.Comm.FTDI.D2XXNative.FT_DEVICE_INFO_NODE">
+            <summary>
+            Type that holds device information for GetDeviceInformation method.
+            Used with FT_GetDeviceInfo and FT_GetDeviceInfoDetail in FTD2XX.DLL
+            </summary>
+        </member>
+        <member name="F:PalmSens.Core.Linux.Comm.FTDI.D2XXNative.FT_DEVICE_INFO_NODE.Flags">
+            <summary>
+            Indicates device state.  Can be any combination of the following: FT_FLAGS_OPENED, FT_FLAGS_HISPEED
+            </summary>
+        </member>
+        <member name="F:PalmSens.Core.Linux.Comm.FTDI.D2XXNative.FT_DEVICE_INFO_NODE.Type">
+            <summary>
+            Indicates the device type.  Can be one of the following: FT_DEVICE_232R, FT_DEVICE_2232C, FT_DEVICE_BM, FT_DEVICE_AM, FT_DEVICE_100AX or FT_DEVICE_UNKNOWN
+            </summary>
+        </member>
+        <member name="F:PalmSens.Core.Linux.Comm.FTDI.D2XXNative.FT_DEVICE_INFO_NODE.ID">
+            <summary>
+            The Vendor ID and Product ID of the device
+            </summary>
+        </member>
+        <member name="F:PalmSens.Core.Linux.Comm.FTDI.D2XXNative.FT_DEVICE_INFO_NODE.LocId">
+            <summary>
+            The physical location identifier of the device
+            </summary>
+        </member>
+        <member name="F:PalmSens.Core.Linux.Comm.FTDI.D2XXNative.FT_DEVICE_INFO_NODE.SerialNumber">
+            <summary>
+            The device serial number
+            </summary>
+        </member>
+        <member name="F:PalmSens.Core.Linux.Comm.FTDI.D2XXNative.FT_DEVICE_INFO_NODE.Description">
+            <summary>
+            The device description
+            </summary>
+        </member>
+        <member name="F:PalmSens.Core.Linux.Comm.FTDI.D2XXNative.FT_DEVICE_INFO_NODE.ftHandle">
+            <summary>
+            The device handle.  This value is not used externally and is provided for information only.
+            If the device is not open, this value is 0.
+            </summary>
+        </member>
+    </members>
+</doc>

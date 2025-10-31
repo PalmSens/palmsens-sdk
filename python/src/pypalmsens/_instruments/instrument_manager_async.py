@@ -59,76 +59,41 @@ async def discover_async(
     bluetooth : bool
         If True, discover bluetooth devices (Windows only)
     """
-    available_instruments = []
+    interfaces = {}
 
     if ftdi:
-        ftdi_instruments = await create_future(FTDIDevice.DiscoverDevicesAsync())
-        for ftdi_instrument in ftdi_instruments:
-            available_instruments.append(
+        interfaces['ftdi'] = FTDIDevice
+
+    if WINDOWS:
+        if usbcdc:
+            interfaces['usbcdc'] = USBCDCDevice
+        if winusb:
+            interfaces['winusb'] = WinUSBDevice
+        if bluetooth:
+            interfaces['bluetooth'] = BluetoothDevice
+            interfaces['ble'] = BLEDevice
+
+    if LINUX:
+        if serial:
+            interfaces['serial'] = SerialPortDevice
+
+    instruments = []
+
+    for name, interface in interfaces.items():
+        devices = await create_future(interface.DiscoverDevicesAsync())
+
+        for device in devices:
+            instruments.append(
                 Instrument(
-                    id=ftdi_instrument.ToString(),
-                    interface='ftdi',
-                    device=ftdi_instrument,
+                    id=device.ToString(),
+                    interface=name,
+                    device=device,
                 )
             )
 
-    if LINUX and serial:
-        serial_instruments = await create_future(SerialPortDevice.DiscoverDevicesAsync())
-        for serial_instrument in serial_instruments:
-            available_instruments.append(
-                Instrument(
-                    id=serial_instrument.ToString(),
-                    interface='serial',
-                    device=serial_instrument,
-                )
-            )
+    instruments.sort(key=lambda instrument: instrument.id)
 
-    if WINDOWS and usbcdc:
-        usbcdc_instruments = await create_future(USBCDCDevice.DiscoverDevicesAsync())
-        for usbcdc_instrument in usbcdc_instruments:
-            available_instruments.append(
-                Instrument(
-                    id=usbcdc_instrument.ToString(),
-                    interface='usbcdc',
-                    device=usbcdc_instrument,
-                )
-            )
-
-    if WINDOWS and winusb:
-        winusb_instruments = await create_future(WinUSBDevice.DiscoverDevicesAsync())
-        for winusb_instrument in winusb_instruments:
-            available_instruments.append(
-                Instrument(
-                    id=winusb_instrument.ToString(),
-                    interface='winusb',
-                    device=winusb_instrument,
-                )
-            )
-
-    if WINDOWS and bluetooth:
-        ble_instruments = await create_future(BLEDevice.DiscoverDevicesAsync())
-        for ble_instrument in ble_instruments:
-            available_instruments.append(
-                Instrument(
-                    id=ble_instrument.ToString(),
-                    interface='ble',
-                    device=ble_instrument,
-                )
-            )
-
-        bluetooth_instruments = await create_future(BluetoothDevice.DiscoverDevicesAsync())
-        for bluetooth_instrument in bluetooth_instruments:
-            available_instruments.append(
-                Instrument(
-                    id=bluetooth_instrument.ToString(),
-                    interface='bluetooth',
-                    device=bluetooth_instrument,
-                )
-            )
-
-    available_instruments.sort(key=lambda instrument: instrument.id)
-
-    return available_instruments
+    return instruments
 
 
 async def connect_async(

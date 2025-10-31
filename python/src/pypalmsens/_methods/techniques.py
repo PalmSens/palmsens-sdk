@@ -5,6 +5,7 @@ from typing import Literal
 import attrs
 import PalmSens.Techniques as PSTechniques
 from PalmSens import FixedCurrentRange as PSFixedCurrentRange
+from PalmSens import FixedPotentialRange as PSFixedPotentialRange
 from PalmSens import Method as PSMethod
 from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 
@@ -13,6 +14,7 @@ from pypalmsens._shared import single_to_double
 from . import mixins
 from ._shared import (
     CURRENT_RANGE,
+    POTENTIAL_RANGE,
     ELevel,
     ILevel,
     get_extra_value_mask,
@@ -1109,9 +1111,10 @@ class ChronoPotentiometry(
 class StrippingChronoPotentiometry(
     BaseTechnique,
     mixins.CurrentRangeMixin,
-    mixins.PotentialRangeMixin,
     mixins.PretreatmentMixin,
     mixins.PostMeasurementMixin,
+    mixins.EquilibrationTriggersMixin,
+    mixins.MeasurementTriggersMixin,
     mixins.DataProcessingMixin,
     mixins.GeneralMixin,
 ):
@@ -1123,6 +1126,9 @@ class StrippingChronoPotentiometry(
     """
 
     _id = 'scp'
+
+    potential_range: POTENTIAL_RANGE = POTENTIAL_RANGE.pr_500_mV
+    """Fixed potential range."""
 
     current: float = 0.0
     """The stripping current to apply in the given current range.
@@ -1141,10 +1147,15 @@ class StrippingChronoPotentiometry(
     """Potential in V where measurement ends."""
 
     measurement_time: float = 1.0
-    """Measurement time in s (default: 1.0)"""
+    """Measurement time in s."""
+
+    bandwidth: None | float = None
+    """Override the bandwidth filter cutoff frequency (in Hz)."""
 
     def _update_psmethod(self, psmethod: PSMethod, /):
         """Update method with stripping chrono potentiometry settings."""
+        psmethod.RangingPotential = PSFixedPotentialRange(self.potential_range._to_psobj())
+
         psmethod.Current = self.current
         psmethod.AppliedCurrentRange = self.applied_current_range._to_psobj()
         psmethod.MeasurementTime = self.measurement_time
@@ -1152,11 +1163,22 @@ class StrippingChronoPotentiometry(
 
         psmethod.AppliedCurrentRange = self.applied_current_range._to_psobj()
 
+        if self.bandwidth is not None:
+            psmethod.OverrideBandwidth = True
+            psmethod.Bandwidth = self.bandwidth
+
     def _update_params(self, psmethod: PSMethod, /):
+        self.potential_range = POTENTIAL_RANGE._from_psobj(
+            psmethod.RangingPotential.StartPotentialRange
+        )
+
         self.current = single_to_double(psmethod.Current)
         self.applied_current_range = CURRENT_RANGE._from_psobj(psmethod.AppliedCurrentRange)
         self.measurement_time = single_to_double(psmethod.MeasurementTime)
         self.end_potential = single_to_double(psmethod.EndPotential)
+
+        if psmethod.OverrideBandwidth:
+            self.bandwidth = single_to_double(psmethod.Bandwidth)
 
 
 @attrs.define

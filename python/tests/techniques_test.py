@@ -267,8 +267,8 @@ class TestSCP:
     kwargs = {
         'current': 0.1,
         'applied_current_range': ps.settings.CURRENT_RANGE.cr_100_uA,
-        'measurement_time': 0.2,
-        'potential_range': {'max': 7, 'min': 1, 'start': 7},
+        'measurement_time': 1.0,
+        'potential_range': 4,
     }
 
     @pytest.mark.xfail(

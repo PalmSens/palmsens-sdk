@@ -1,3 +1,2 @@
 # https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html
-graft src/pypalmsens/_pssdk/
-graft src/pypalmsens/_runtimes/
+graft src/pypalmsens/_libpalmsens/

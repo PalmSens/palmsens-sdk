@@ -47,14 +47,6 @@ namespace PalmSens.Core.Simplified
         private IPlatformInvoker _platformInvoker = null;
 
         /// <summary>
-        /// Returns an array of connected devices.
-        /// </summary>
-        /// <value>
-        /// The connected devices.
-        /// </value>
-        public IReadOnlyList<Device> AvailableDevices => _platform.AvailableDevices;
-
-        /// <summary>
         /// The connected channels' CommManagers by their unique channel index
         /// </summary>
         private Dictionary<int, CommManager> _commsByChannelIndex = new Dictionary<int, CommManager>();
@@ -269,7 +261,7 @@ namespace PalmSens.Core.Simplified
         /// </summary>
         /// <param name="devices">The devices.</param>
         /// <param name="channelIndices">The channel indices.</param>
-        public async Task Connect(IList<Device> devices, IList<int> channelIndices = null)
+        public async Task Connect(IReadOnlyList<Device> devices, IList<int> channelIndices = null)
         {
             AddComms(await _platform.Connect(devices, channelIndices));
         }
@@ -312,7 +304,7 @@ namespace PalmSens.Core.Simplified
                     {
                         await device.CloseAsync();
                         await Task.Delay(25 + (retries * retries * retries * 300), cancellationToken);
-
+                        
                         try
                         {
                             if (CommsByChannelIndex.ContainsKey(index))
@@ -371,7 +363,7 @@ namespace PalmSens.Core.Simplified
         /// Adds newly connected channels to the collection of connected channels.
         /// </summary>
         /// <param name="connectedChannels">The connected channels.</param>
-        internal void AddComms(IList<(CommManager Comm, int ChannelIndex, Exception Exception)> connectedChannels)
+        internal void AddComms(IReadOnlyList<(CommManager Comm, int ChannelIndex, Exception Exception)> connectedChannels)
         {
             List<Exception> exceptions = new List<Exception>();
 
@@ -407,7 +399,7 @@ namespace PalmSens.Core.Simplified
         /// Remove disconnected channels from collection of connected channels.
         /// </summary>
         /// <param name="disconnectedChannels">The disconnected channels.</param>
-        internal void RemoveComms(IList<(int channelIndex, Exception exception)> disconnectedChannels)
+        internal void RemoveComms(IReadOnlyList<(int channelIndex, Exception exception)> disconnectedChannels)
         {
             List<Exception> exceptions = new List<Exception>();
 
@@ -473,7 +465,7 @@ namespace PalmSens.Core.Simplified
         }
 
         /// <summary>
-        /// Runs a measurement as specified in the method on the specified channel.
+        /// Starts a measurement as specified in the method on the specified channel.
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <param name="channel">The channel.</param>
@@ -488,13 +480,13 @@ namespace PalmSens.Core.Simplified
         /// </exception>
         /// <exception cref="System.ArgumentException">Method is incompatible with the connected channel.</exception>
         /// <exception cref="System.Exception">Could not start measurement.</exception>
-        public async Task<SimpleMeasurement> MeasureAsync(Method method, int channel, int muxChannel, TaskBarrier taskBarrier = null)
+        public async Task<SimpleMeasurement> StartMeasureAsync(Method method, int channel, int muxChannel, TaskBarrier taskBarrier = null)
         {
-            return (await MeasureTask(method, channel, muxChannel, taskBarrier, true, false)).Measurement;
+            return (await StartMeasurementTask(method, channel, muxChannel, taskBarrier, true, false)).Measurement;
         }
 
         /// <summary>
-        /// Runs a measurement as specified in the method on the specified channel.
+        /// Starts a measurement as specified in the method on the specified channel.
         /// </summary>
         /// <param name="method">The method.</param>
         /// <param name="channel">The channel.</param>
@@ -503,74 +495,103 @@ namespace PalmSens.Core.Simplified
         /// <param name="taskBarrier">The task barrier.</param>
         /// <param name="useHWSync">Used for enabling hardware synchronization on supported multi-channel instruments.</param>
         /// <returns></returns>
-        private Task<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)> MeasureTask(Method method, int channel, int muxChannel, TaskBarrier taskBarrier, bool throwExceptions, bool useHWSync)
+        private async Task<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)> StartMeasurementTask(Method method, int channel, int muxChannel, TaskBarrier taskBarrier, bool throwExceptions, bool useHWSync)
         {
-            //Start the measurement on the connected channel, this triggers an event that updates _activeMeasurement
-            return RunAsync(async (int ch, CommManager comm) =>
+            var tcs = new TaskCompletionSource<SimpleMeasurement>();
+
+            AsyncEventHandler<CommManager.BeginMeasurementEventArgsAsync> asyncEventHandler = async (sender, e) =>
             {
-                if (comm.State != CommManager.DeviceState.Idle)
+                CommManager commSender = sender as CommManager;
+
+                SimpleMeasurement simpleMeasurement = new SimpleMeasurement(e.NewMeasurement);
+                simpleMeasurement.Title += $" Channel {commSender.ChannelIndex + 1}";
+                simpleMeasurement.Channel = commSender.ChannelIndex + 1;
+                _activeSimpleMeasurements.TryAdd(commSender.ChannelIndex, simpleMeasurement);
+                if (e.NewMeasurement is ImpedimetricMeasurementBase || e.NewMeasurement is ImpedimetricMeasBaseMS)
+                    _activeSimpleMeasurements[commSender.ChannelIndex].NewSimpleCurve(PalmSens.Data.DataArrayType.ZRe, PalmSens.Data.DataArrayType.ZIm, "Nyquist", true); //Create a nyquist curve by default
+
+                tcs.SetResult(simpleMeasurement);
+            };
+
+            CommManager.EventHandlerCommErrorOccurred asyncEventHandlerCommError = (sender, exception) =>
+            {
+                tcs.SetException(exception);
+            };
+
+            try
+            {
+                //Start the measurement on the connected channel, this triggers an event that updates _activeMeasurement
+                var result = await RunAsync(async (int ch, CommManager comm) =>
                 {
-                    throw new ArgumentException($"Channel {channel} is not idle");
+                    if (comm.State != CommManager.DeviceState.Idle)
+                    {
+                        throw new ArgumentException($"Channel {channel} is not idle");
+                    }
+
+                    //Create a copy of the method and update the method with the device's supported current ranges
+                    Method copy = null;
+                    Method.CopyMethod(method, ref copy);
+
+                    //Check whether method is compatible with the connected channel
+                    bool isValidMethod;
+                    List<string> errors;
+                    ValidateMethod(copy, channel, out isValidMethod, out errors);
+                    if (!isValidMethod)
+                    {
+                        throw new ArgumentException(
+                            $"Method is incompatible with the connected channel: {channel}. {string.Join("\n", errors)}");
+                    }
+
+                    if (useHWSync)
+                    {
+                        comm.Capabilities.IsSlaveChannel = true;
+                    }
+
+                    comm.BeginMeasurementAsync += asyncEventHandler;
+                    comm.CommErrorOccurred += asyncEventHandlerCommError;
+
+                    string errorString = await comm.MeasureAsync(copy, muxChannel, taskBarrier);
+
+                    if (useHWSync)
+                    {
+                        comm.Capabilities.IsSlaveChannel = false;
+                    }
+
+                    if (!(string.IsNullOrEmpty(errorString)))
+                    {
+                        throw new Exception($"Could not start measurement on channel {channel}.\n{errorString}");
+                    }
+                }, channel, throwExceptions);
+
+                if (result.Item2 != null)
+                {
+                    tcs.SetCanceled();
+
+                    return (null, result.Item1, result.Item2);
                 }
 
-                //Create a copy of the method and update the method with the device's supported current ranges
-                Method copy = null;
-                Method.CopyMethod(method, ref copy);
-
-                //Check whether method is compatible with the connected channel
-                bool isValidMethod;
-                List<string> errors;
-                ValidateMethod(copy, channel, out isValidMethod, out errors);
-                if (!isValidMethod)
+                try
                 {
-                    throw new ArgumentException($"Method is incompatible with the connected channel: {channel}. {string.Join("\n", errors)}");
+                    SimpleMeasurement measurement = await tcs.Task;
+                    return (measurement, result.Item1, result.Item2);
                 }
-
-                if (useHWSync)
+                catch (Exception exception)
                 {
-                    comm.Capabilities.IsSlaveChannel = true;
+                    return (null, channel, exception);
                 }
-
-                var tcs = new TaskCompletionSource<SimpleMeasurement>();
-                AsyncEventHandler<CommManager.BeginMeasurementEventArgsAsync> asyncEventHandler = new AsyncEventHandler<CommManager.BeginMeasurementEventArgsAsync>((object sender, CommManager.BeginMeasurementEventArgsAsync e) =>
+            }
+            finally
+            {
+                if (_commsByChannelIndex.TryGetValue(channel, out var commManager))
                 {
-                    CommManager commSender = sender as CommManager;
-
-                    SimpleMeasurement simpleMeasurement = new SimpleMeasurement(e.NewMeasurement);
-                    simpleMeasurement.Title += $" Channel {commSender.ChannelIndex + 1}";
-                    simpleMeasurement.Channel = commSender.ChannelIndex + 1;
-                    _activeSimpleMeasurements.TryAdd(commSender.ChannelIndex, simpleMeasurement);
-                    if (e.NewMeasurement is ImpedimetricMeasurementBase || e.NewMeasurement is ImpedimetricMeasBaseMS)
-                        _activeSimpleMeasurements[commSender.ChannelIndex].NewSimpleCurve(PalmSens.Data.DataArrayType.ZRe, PalmSens.Data.DataArrayType.ZIm, "Nyquist", true); //Create a nyquist curve by default
-
-                    tcs.SetResult(simpleMeasurement);
-                    return Task.CompletedTask;
-                });
-                comm.BeginMeasurementAsync += asyncEventHandler;
-
-                string errorString = await comm.MeasureAsync(copy, muxChannel, taskBarrier);
-
-                if (useHWSync)
-                {
-                    comm.Capabilities.IsSlaveChannel = false;
+                    commManager.BeginMeasurementAsync -= asyncEventHandler;
+                    commManager.CommErrorOccurred -= asyncEventHandlerCommError;
                 }
-
-                if (!(string.IsNullOrEmpty(errorString)))
-                {
-                    throw new Exception($"Could not start measurement on channel {channel}.");
-                }
-
-                comm.ClientConnection.Semaphore.Release();
-                SimpleMeasurement result = await tcs.Task;
-                await comm.ClientConnection.Semaphore.WaitAsync();
-                comm.BeginMeasurementAsync -= asyncEventHandler;
-
-                return result;
-            }, channel, throwExceptions);
+            }
         }
 
         /// <summary>
-        /// Runs a measurement as specified in the method on the specified collection of channels.
+        /// Starts a measurement as specified in the method on the specified collection of channels.
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <param name="channels">The channels.</param>
@@ -587,27 +608,25 @@ namespace PalmSens.Core.Simplified
         /// Not connected to specified channel.</exception>
         /// <exception cref="System.ArgumentException">Method is incompatible with the connected channel.</exception>
         /// <exception cref="System.Exception">Could not start measurement.</exception>
-        public Task<IList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> MeasureAsync(Method method, int[] channels, int muxChannel, bool useHWSync = false)
+        public Task<IReadOnlyList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> StartMeasurementAsync(Method method, int[] channels, int muxChannel, bool useHWSync = false)
         {
             int n = channels.Length;
 
             if (useHWSync)
             {
-                return MeasureWithHWSyncAsync(method, channels, muxChannel, n);
+                return StartMeasurementWithHWSyncAsync(method, channels, muxChannel, n);
             }
-            else
-            {
-                //Barrier used to synchronize measurements (measurements initiate first and desynchronize slightly
-                //before the measurement is triggered on the channels, this barrier synchornizes the triggering on the channels)
-                TaskBarrier taskBarrier = new TaskBarrier(n);
-                return GetTaskResultsAndOrExceptions<SimpleMeasurement>(
-                    (int channel) => MeasureTask(method, channel, muxChannel, taskBarrier, false, false)
-                    , channels);
-            }
+
+            //Barrier used to synchronize measurements (measurements initiate first and desynchronize slightly 
+            //before the measurement is triggered on the channels, this barrier synchornizes the triggering on the channels)
+            TaskBarrier taskBarrier = new TaskBarrier(n);
+            return GetTaskResultsAndOrExceptions<SimpleMeasurement>(
+                (int channel) => StartMeasurementTask(method, channel, muxChannel, taskBarrier, false, false)
+                , channels);
         }
 
         /// <summary>
-        /// Runs a measurement with hardware synchronization on supported multi-channel instruments
+        /// Starts a measurement with hardware synchronization on supported multi-channel instruments
         /// </summary>
         /// <param name="method"></param>
         /// <param name="channels"></param>
@@ -617,7 +636,7 @@ namespace PalmSens.Core.Simplified
         /// <exception cref="IndexOutOfRangeException"></exception>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="Exception"></exception>
-        private async Task<IList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> MeasureWithHWSyncAsync(Method method, int[] channels, int muxChannel, int n)
+        private async Task<IReadOnlyList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> StartMeasurementWithHWSyncAsync(Method method, int[] channels, int muxChannel, int n)
         {
             if (!channels.All(i => CommsByChannelIndex.TryGetValue(i, out var comm) && comm != null))
             {
@@ -658,26 +677,26 @@ namespace PalmSens.Core.Simplified
                     var channelsOrdered = channels.OrderBy(i => i).ToArray();
                     method.UseHWSync = true;
 
-                    var secondaryChannels =
+                    var secondaryChannels = 
                         (await GetTaskResultsAndOrExceptions<SimpleMeasurement>(
-                            (int channel) => MeasureTask(
-                                method,
-                                channel,
-                                muxChannel,
-                                null,
-                                false,
+                            (int channel) => StartMeasurementTask(
+                                method, 
+                                channel, 
+                                muxChannel, 
+                                null, 
+                                false, 
                                 true)
                             , channelsOrdered.Skip(1).ToArray())).ToList(); //Before starting the measurement on the primary channels
                                                                      //it needs to be started on the secondary channels
-                    var primaryChannel =
-                        await MeasureTask(method,
-                            channelsOrdered.First(),
-                            muxChannel,
-                            null,
+                    var primaryChannel = 
+                        await StartMeasurementTask(method,
+                            channelsOrdered.First(), 
+                            muxChannel, 
+                            null, 
                             true,
                             true); //If the measurement is not started on the primary channel
                                     //it will not start on the secondary channels therefore the exception is thrown in this case
-
+                    
                     method.UseHWSync = false;
                     secondaryChannels.Insert(0, primaryChannel);
                     return secondaryChannels;
@@ -689,7 +708,7 @@ namespace PalmSens.Core.Simplified
         }
 
         /// <summary>
-        /// Runs a measurement as specified in the method on all channels.
+        /// Starts a measurement as specified in the method on all channels.
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <param name="channels">The channels.</param>
@@ -702,45 +721,45 @@ namespace PalmSens.Core.Simplified
         /// Not connected to specified channel.</exception>
         /// <exception cref="System.ArgumentException">Method is incompatible with the connected channel.</exception>
         /// <exception cref="System.Exception">Could not start measurement.</exception>
-        public Task<IList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> MeasureAllChannelsAsync(Method method, int muxChannel, bool useHWsync = false)
+        public Task<IReadOnlyList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> StartMeasureAllChannelsAsync(Method method, int muxChannel, bool useHWsync = false)
         {
-            return MeasureAsync(method, AllChannels, muxChannel, useHWsync);
+            return StartMeasurementAsync(method, AllChannels, muxChannel, useHWsync);
         }
 
         /// <summary>
-        /// Runs a measurement as specified in the method on the specified channel.
+        /// Starts a measurement as specified in the method on the specified channel.
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <returns>A SimpleMeasurement instance containing all the data related to the measurement.</returns>
-        public Task<SimpleMeasurement> MeasureAsync(Method method, int channel)
+        public Task<SimpleMeasurement> StartMeasureAsync(Method method, int channel)
         {
-            return MeasureAsync(method, channel, -1);
+            return StartMeasureAsync(method, channel, -1);
         }
 
         /// <summary>
-        /// Runs a measurement as specified in the method on the specified channel.
+        /// Starts a measurement as specified in the method on the specified channel.
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <param name="channels">The channels.</param>
         /// <returns>
         /// A SimpleMeasurement instance containing all the data related to the measurement.
         /// </returns>
-        public Task<IList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> MeasureAsync(Method method, int[] channels, bool useHWSync = false)
+        public Task<IReadOnlyList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> StartMeasureAsync(Method method, int[] channels, bool useHWSync = false)
         {
-            return MeasureAsync(method, channels, -1, useHWSync);
+            return StartMeasurementAsync(method, channels, -1, useHWSync);
         }
 
         /// <summary>
-        /// Runs a measurement as specified in the method on the specified channel.
+        /// Starts a measurement as specified in the method on the specified channel.
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <param name="channels">The channels.</param>
         /// <returns>
         /// A SimpleMeasurement instance containing all the data related to the measurement.
         /// </returns>
-        public Task<IList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> MeasureAllChannelsAsync(Method method, bool useHWSync = false)
-        {
-            return MeasureAsync(method, AllChannels, -1, useHWSync);
+        public Task<IReadOnlyList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> StartMeasurementAllChannelsAsync(Method method, bool useHWSync = false)
+        { 
+            return StartMeasurementAsync(method, AllChannels, -1, useHWSync);
         }
 
         /// <summary>
@@ -759,9 +778,9 @@ namespace PalmSens.Core.Simplified
         /// </exception>
         /// <exception cref="System.ArgumentException">Method is incompatible with the connected channel.</exception>
         /// <exception cref="System.Exception">Could not start measurement.</exception>
-        public async Task<SimpleMeasurement> AwaitMeasurementCompletionAsync(Method method, int channel, int muxChannel, TaskBarrier taskBarrier = null)
+        public async Task<SimpleMeasurement> MeasureAsync(Method method, int channel, int muxChannel, TaskBarrier taskBarrier = null)
         {
-            return (await AwaitMeasurementCompletionTask(method, channel, muxChannel, taskBarrier, true)).Measurement;
+            return (await MeasureTask(method, channel, muxChannel, taskBarrier, true)).Measurement;
         }
 
         /// <summary>
@@ -772,16 +791,43 @@ namespace PalmSens.Core.Simplified
         /// <param name="muxChannel">The mux channel.</param>
         /// <param name="taskBarrier">The task barrier.</param>
         /// <returns></returns>
-        private Task<(SimpleMeasurement Measurement, int ChannelIndex, Exception)> AwaitMeasurementCompletionTask(Method method, int channel, int muxChannel, TaskBarrier taskBarrier, bool throwExceptions)
+        private async Task<(SimpleMeasurement Measurement, int ChannelIndex, Exception)> MeasureTask(Method method, int channel, int muxChannel, TaskBarrier taskBarrier, bool throwExceptions)
         {
-            //Start the measurement on the connected channel, this triggers an event that updates _activeMeasurement
-            return RunAsync(async (int ch, CommManager comm) =>
-            {
-                var tcs = new TaskCompletionSource<SimpleMeasurement>();
-                AsyncEventHandler<CommManager.BeginMeasurementEventArgsAsync> handler = null;
-                try
+            var tcsMeasurementStarted = new TaskCompletionSource<SimpleMeasurement>();
+            var tcsMeasurementFinished = new TaskCompletionSource();
+
+            AsyncEventHandler<CommManager.BeginMeasurementEventArgsAsync> asyncEventHandlerMeasurementStarted =
+                async (sender, e) =>
                 {
-                    handler = await comm.ClientConnection.RunAsync(async () =>
+                    CommManager commSender = sender as CommManager;
+
+                    SimpleMeasurement simpleMeasurement = new SimpleMeasurement(e.NewMeasurement);
+                    simpleMeasurement.Title += $" Channel {commSender.ChannelIndex + 1}";
+                    simpleMeasurement.Channel = commSender.ChannelIndex + 1;
+                    _activeSimpleMeasurements.TryAdd(commSender.ChannelIndex, simpleMeasurement);
+                    if (e.NewMeasurement is ImpedimetricMeasurementBase || e.NewMeasurement is ImpedimetricMeasBaseMS)
+                        _activeSimpleMeasurements[commSender.ChannelIndex]
+                            .NewSimpleCurve(PalmSens.Data.DataArrayType.ZRe,
+                                PalmSens.Data.DataArrayType.ZIm, "Nyquist",
+                                true); //Create a nyquist curve by default
+
+                    tcsMeasurementStarted.SetResult(simpleMeasurement);
+                };
+
+            AsyncEventHandler<CommManager.EndMeasurementAsyncEventArgs> asyncEventHandlerMeasurementFinished = async (sender, args) =>
+            {
+                tcsMeasurementFinished.SetResult();
+            };
+
+            CommManager.EventHandlerCommErrorOccurred asyncEventHandlerCommError = (sender, exception) =>
+            {
+                tcsMeasurementFinished.SetException(exception);
+            };
+
+            try
+            {
+                //Start the measurement on the connected channel, this triggers an event that updates _activeMeasurement
+                var result = await RunAsync(async (int ch, CommManager comm) =>
                     {
                         if (comm.State != CommManager.DeviceState.Idle)
                         {
@@ -816,69 +862,56 @@ namespace PalmSens.Core.Simplified
                                 $"Method is incompatible with the connected channel: {channel}. {string.Join("\n", errors)}");
                         }
 
-                        AsyncEventHandler<CommManager.BeginMeasurementEventArgsAsync> asyncEventHandler =
-                            new AsyncEventHandler<CommManager.BeginMeasurementEventArgsAsync>(
-                                (object sender, CommManager.BeginMeasurementEventArgsAsync e) =>
-                                {
-                                    CommManager commSender = sender as CommManager;
-
-                                    SimpleMeasurement simpleMeasurement = new SimpleMeasurement(e.NewMeasurement);
-                                    simpleMeasurement.Title += $" Channel {commSender.ChannelIndex + 1}";
-                                    simpleMeasurement.Channel = commSender.ChannelIndex + 1;
-                                    _activeSimpleMeasurements.TryAdd(commSender.ChannelIndex, simpleMeasurement);
-                                    if (e.NewMeasurement is ImpedimetricMeasurementBase || e.NewMeasurement is ImpedimetricMeasBaseMS)
-                                        _activeSimpleMeasurements[commSender.ChannelIndex]
-                                            .NewSimpleCurve(PalmSens.Data.DataArrayType.ZRe,
-                                                PalmSens.Data.DataArrayType.ZIm, "Nyquist",
-                                                true); //Create a nyquist curve by default
-
-                                    tcs.SetResult(simpleMeasurement);
-                                    return Task.CompletedTask;
-                                });
-                        comm.BeginMeasurementAsync += asyncEventHandler;
+                        comm.BeginMeasurementAsync += asyncEventHandlerMeasurementStarted;
+                        comm.EndMeasurementAsync += asyncEventHandlerMeasurementFinished;
+                        comm.CommErrorOccurred += asyncEventHandlerCommError;
 
                         string errorString = await comm.MeasureAsync(copy, muxChannel, taskBarrier);
                         if (!(string.IsNullOrEmpty(errorString)))
                         {
                             throw new Exception($"Could not start measurement on channel {channel}.");
                         }
+                    },
+                    channel,
+                    throwExceptions);
 
-                        return asyncEventHandler;
-                    });
+                if (result.Item2 != null)
+                {
+                    tcsMeasurementStarted.SetCanceled();
+                    tcsMeasurementFinished.SetCanceled();
 
-                    SimpleMeasurement result = await tcs.Task;
-                    return result;
+                    return (null, result.Item1, result.Item2);
                 }
-                finally
+
+                try
                 {
-                    if(handler != null) comm.BeginMeasurementAsync -= handler;
+                    SimpleMeasurement measurement = await tcsMeasurementStarted.Task;
+
+                    try
+                    {
+                        await tcsMeasurementFinished.Task;
+                        return (measurement, result.Item1, result.Item2);
+                    }
+                    catch (Exception exception)
+                    {
+                        return (measurement, channel, exception);
+                    }
                 }
-            },
-            channel,
-            throwExceptions,
-            false,
-            (comm, tcs) =>
-            {
-                AsyncEventHandler<CommManager.EndMeasurementAsyncEventArgs> handler = async (sender, args) =>
+                catch (Exception exception)
                 {
-                    tcs.SetResult(true);
-                    await Task.CompletedTask;
-                };
-
-                comm.EndMeasurementAsync += handler;
-
-                return () => { comm.EndMeasurementAsync -= handler; };
-            }, (comm, tcs) =>
+                    tcsMeasurementFinished.SetCanceled();
+                    return (null, channel, exception);
+                }
+            }
+            finally
             {
-                CommManager.EventHandlerCommErrorOccurred handler = (sender, exception) =>
+                if (_commsByChannelIndex.TryGetValue(channel, out var commManager))
                 {
-                    tcs.SetException(exception);
-                };
-
-                comm.CommErrorOccurred += handler;
-
-                return () => { comm.CommErrorOccurred -= handler; };
-            });
+                    commManager.BeginMeasurementAsync -= asyncEventHandlerMeasurementStarted;
+                    commManager.EndMeasurementAsync -= asyncEventHandlerMeasurementFinished;
+                    commManager.CommErrorOccurred -= asyncEventHandlerCommError;
+                }
+            }
         }
 
         /// <summary>
@@ -899,14 +932,14 @@ namespace PalmSens.Core.Simplified
         /// Not connected to specified channel.</exception>
         /// <exception cref="System.ArgumentException">Method is incompatible with the connected channel.</exception>
         /// <exception cref="System.Exception">Could not start measurement.</exception>
-        public Task<IList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> AwaitMeasurementCompletionAsync(Method method, int[] channels, int muxChannel)
+        public Task<IReadOnlyList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> MeasureAsync(Method method, int[] channels, int muxChannel)
         {
             int n = channels.Length;
-            //Barrier used to synchronize measurements (measurements initiate first and desynchronize slightly
+            //Barrier used to synchronize measurements (measurements initiate first and desynchronize slightly 
             //before the measurement is triggered on the channels, this barrier synchornizes the triggering on the channels)
             TaskBarrier taskBarrier = new TaskBarrier(n);
             return GetTaskResultsAndOrExceptions<SimpleMeasurement>(
-                (int channel) => AwaitMeasurementCompletionTask(method, channel, muxChannel, taskBarrier, false)
+                (int channel) => MeasureTask(method, channel, muxChannel, taskBarrier, false)
                 , channels);
         }
 
@@ -924,9 +957,9 @@ namespace PalmSens.Core.Simplified
         /// Not connected to specified channel.</exception>
         /// <exception cref="System.ArgumentException">Method is incompatible with the connected channel.</exception>
         /// <exception cref="System.Exception">Could not start measurement.</exception>
-        public Task<IList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> AwaitMeasurementCompletionAllChannelsAsync(Method method, int muxChannel)
+        public Task<IReadOnlyList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> MeasureAllChannelsAsync(Method method, int muxChannel)
         {
-            return AwaitMeasurementCompletionAsync(method, AllChannels, muxChannel);
+            return MeasureAsync(method, AllChannels, muxChannel);
         }
 
         /// <summary>
@@ -934,9 +967,9 @@ namespace PalmSens.Core.Simplified
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <returns>A SimpleMeasurement instance containing all the data related to the measurement.</returns>
-        public Task<SimpleMeasurement> AwaitMeasurementCompletionAsync(Method method, int channel)
+        public Task<SimpleMeasurement> MeasureAsync(Method method, int channel)
         {
-            return AwaitMeasurementCompletionAsync(method, channel, -1);
+            return MeasureAsync(method, channel, -1);
         }
 
         /// <summary>
@@ -947,9 +980,9 @@ namespace PalmSens.Core.Simplified
         /// <returns>
         /// A SimpleMeasurement instance containing all the data related to the measurement.
         /// </returns>
-        public Task<IList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> AwaitMeasurementCompletionAsync(Method method, int[] channels)
+        public Task<IReadOnlyList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> MeasureAsync(Method method, int[] channels)
         {
-            return AwaitMeasurementCompletionAsync(method, channels, -1);
+            return MeasureAsync(method, channels, -1);
         }
 
         /// <summary>
@@ -960,9 +993,9 @@ namespace PalmSens.Core.Simplified
         /// <returns>
         /// A SimpleMeasurement instance containing all the data related to the measurement.
         /// </returns>
-        public Task<IList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> AwaitMeasurementCompletionAllChannelsAsync(Method method)
+        public Task<IReadOnlyList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> MeasureAllChannelsAsync(Method method)
         {
-            return AwaitMeasurementCompletionAsync(method, AllChannels, -1);
+            return MeasureAsync(method, AllChannels, -1);
         }
 
 
@@ -1243,7 +1276,7 @@ namespace PalmSens.Core.Simplified
         /// <exception cref="System.Exception">Channel must be in idle mode for manual control</exception>
         /// <exception cref="NullReferenceException">Not connected to a channel</exception>
         /// <exception cref="Exception">Channel must be in idle mode for manual control</exception>
-        public Task<IList<(float Potential, int ChannelIndex, Exception Exception)>> ReadCellPotentialAsync(int[] channels)
+        public Task<IReadOnlyList<(float Potential, int ChannelIndex, Exception Exception)>> ReadCellPotentialAsync(int[] channels)
         {
             return GetTaskResultsAndOrExceptions((int channel) => ReadCellPotentialTask(channel, false), channels);
         }
@@ -1258,7 +1291,7 @@ namespace PalmSens.Core.Simplified
         /// <exception cref="System.Exception">Channel must be in idle mode for manual control</exception>
         /// <exception cref="NullReferenceException">Not connected to a channel</exception>
         /// <exception cref="Exception">Channel must be in idle mode for manual control</exception>
-        public Task<IList<(float Potential, int ChannelIndex, Exception Exception)>> ReadCellPotentialAsync()
+        public Task<IReadOnlyList<(float Potential, int ChannelIndex, Exception Exception)>> ReadCellPotentialAsync()
         {
             return ReadCellPotentialAsync(AllChannels);
         }
@@ -1368,7 +1401,7 @@ namespace PalmSens.Core.Simplified
         /// <returns></returns>
         /// <exception cref="NullReferenceException">Not connected to a channel</exception>
         /// <exception cref="Exception">Channel must be in idle mode for manual control</exception>
-        public Task<IList<(float Current, int ChannelIndex, Exception Exception)>> ReadCellCurrentAsync(int[] channels)
+        public Task<IReadOnlyList<(float Current, int ChannelIndex, Exception Exception)>> ReadCellCurrentAsync(int[] channels)
         {
             return GetTaskResultsAndOrExceptions((int channel) => ReadCellCurrentTask(channel, false), channels);
         }
@@ -1379,7 +1412,7 @@ namespace PalmSens.Core.Simplified
         /// <returns></returns>
         /// <exception cref="NullReferenceException">Not connected to a channel</exception>
         /// <exception cref="Exception">Channel must be in idle mode for manual control</exception>
-        public Task<IList<(float Current, int ChannelIndex, Exception Exception)>> ReadCellCurrentAsync()
+        public Task<IReadOnlyList<(float Current, int ChannelIndex, Exception Exception)>> ReadCellCurrentAsync()
         {
             return ReadCellCurrentAsync(AllChannels);
         }
@@ -1610,84 +1643,8 @@ namespace PalmSens.Core.Simplified
                 ex = e;
                 if (throwExceptions) throw ex;
             }
-
+            
             return (result, channel, ex);
-        }
-
-        /// <summary>
-        /// Runs an async Func delegate asynchronously on the clientconnections taskscheduler.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="func">The action.</param>
-        /// <param name="comm">The connection to run the delegate on.</param>
-        /// <returns></returns>
-        private async Task<(T, int, Exception)> RunAsync<T>(
-            Func<int, CommManager, Task<T>> func, int channel,
-            bool throwExceptions = true,
-            bool onInstrumentContext = true,
-            Func<CommManager, TaskCompletionSource<bool>, Action> registerCompletionAction = null,
-            Func<CommManager, TaskCompletionSource<bool>, Action> registerRunTimeExceptionAction = null)
-        {
-            T result = default(T);
-            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            Action unregisterCompletion = null;
-            Action unregisterRunTimeException = null;
-
-            try
-            {
-                await new SynchronizationContextRemover();
-
-                if (!Connected)
-                {
-                    throw new NullReferenceException("Not connected to any channels.");
-                }
-
-                if (!_commsByChannelIndex.ContainsKey(channel))
-                {
-                    throw new ArgumentException($"Not connected to specified channel: {channel}.");
-                }
-
-                CommManager comm = _commsByChannelIndex[channel];
-
-                if (comm == null)
-                {
-                    throw new NullReferenceException($"Not connected to specified channel: {channel}.");
-                }
-
-                unregisterCompletion = registerCompletionAction?.Invoke(comm, tcs);
-                unregisterRunTimeException = registerRunTimeExceptionAction?.Invoke(comm, tcs);
-
-                if(onInstrumentContext)
-                {
-                    result = await comm.ClientConnection.RunAsync(() => func(channel, comm));
-                }
-                else
-                {
-                    result = await func(channel, comm);
-                }
-            }
-            catch (Exception e)
-            {
-                if (throwExceptions) throw new Exception("Failed to start measurement", e);
-                tcs.SetException(e);
-            }
-
-            try
-            {
-                await tcs.Task;
-            }
-            catch (Exception exception)
-            {
-                if (throwExceptions) throw new Exception("Measurement runtime exception", exception);
-                return (result, channel, exception);
-            }
-            finally
-            {
-                unregisterCompletion?.Invoke();
-                unregisterRunTimeException?.Invoke();
-            }
-
-            return (result, channel, null);
         }
 
         /// <summary>
@@ -1726,7 +1683,7 @@ namespace PalmSens.Core.Simplified
         /// <param name="channels"></param>
         /// <param name="throwExceptions">Set to false by default to prevent an exception on one channel interfering with the results of other channels</param>
         /// <returns></returns>
-        public static async Task<IList<(T Result, int ChannelIndex, Exception Exception)>> GetTaskResultsAndOrExceptions<T>(Func<int, Task<(T Result, int ChannelIndex, Exception Exception)>> func, IList<int> channels)
+        public static async Task<IReadOnlyList<(T Result, int ChannelIndex, Exception Exception)>> GetTaskResultsAndOrExceptions<T>(Func<int, Task<(T Result, int ChannelIndex, Exception Exception)>> func, IList<int> channels)
         {
             int n = channels.Count;
 
@@ -1737,28 +1694,23 @@ namespace PalmSens.Core.Simplified
             {
                 int channel = channels[i];
                 int index = i;
-                tasks[index] = func(channel);
-                var continueTask = tasks[index].ContinueWith(
-                    completedTask =>
+                Func<Task<(T Result, int ChannelIndex, Exception Exception)>> wrappedFunc = async () =>
+                {
+                    try
                     {
-                        if (completedTask.IsCanceled)
-                        {
-                            var ex = new MultiChannelInstrumentException(channel, new OperationCanceledException());
-                            results[index] = (default(T), channel, ex);
-                        }
-
-                        else if (completedTask.IsFaulted)
-                        {
-                            var ex = new MultiChannelInstrumentException(channel, completedTask.Exception);
-                            results[index] = (default(T), channel, ex);
-                        }
-
-                        else
-                            results[index] = completedTask.Result;
-                    });
+                        var result = await func(channel);
+                        return result;
+                    }
+                    catch (Exception exception)
+                    {
+                        var ex = new MultiChannelInstrumentException(channel, exception);
+                        return (default(T), channel, ex);
+                    }
+                };
+                tasks[index] = wrappedFunc();
             }
 
-            await Task.WhenAll(tasks);
+            results = await Task.WhenAll(tasks);
 
             return results;
         }

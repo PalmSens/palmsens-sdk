@@ -19,7 +19,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
         /// <param name="muxChannel">Specify the mux channel, default is -1</param>
         /// <returns>The measurement.</returns>
         SimpleMeasurement GetMeasurement(MeasType measType, int muxChannel = -1);
-
+        
         /// <summary>
         /// Get the measurement for this file.
         /// </summary>
@@ -42,7 +42,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
         }
 
         #region IInternalStorageFileLoader Members
-
+        
         /// <summary>
         /// Get the measurement for this file.
         /// </summary>
@@ -64,7 +64,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
 
             return new SimpleMeasurement(meas);
         }
-
+        
         /// <summary>
         /// Get the measurement for this file.
         /// </summary>

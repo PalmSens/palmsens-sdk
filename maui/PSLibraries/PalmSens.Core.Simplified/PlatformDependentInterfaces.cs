@@ -11,23 +11,15 @@ namespace PalmSens.Core.Simplified
 {
     public interface IPlatform
     {
-        IReadOnlyList<Device> AvailableDevices { get; }
-
         Task<IReadOnlyList<Device>> GetAvailableDevices();
 
-        CommManager Connect(Device device);
+        Task<CommManager> Connect(Device device);
 
-        Task<CommManager> ConnectAsync(Device device);
-
-        void Disconnect(CommManager comm);
-
-        Task DisconnectAsync(CommManager comm);
+        Task Disconnect(CommManager comm);
     }
 
     public interface IPlatformMulti
     {
-        IReadOnlyList<Device> AvailableDevices { get; }
-
         Task<IReadOnlyList<Device>> GetAvailableDevices();
 
         /// <summary>
@@ -37,17 +29,17 @@ namespace PalmSens.Core.Simplified
         /// </summary>
         /// <param name="devices">Array devices to connect to.</param>
         /// <param name="channelIndices">Array of unique indices for the specified channel (0, 1, 2, 3... by default)</param>
-        Task<IList<(CommManager Comm, int ChannelIndex, Exception Exception)>> Connect(IList<Device> devices,
+        Task<IReadOnlyList<(CommManager Comm, int ChannelIndex, Exception Exception)>> Connect(IReadOnlyList<Device> devices,
             IList<int> channelIndices = null);
 
         /// <summary>
-        /// Disconnects from channel with the specified CommManagers.
+        /// Disconnects from channel with the specified CommManagers. 
         /// Warning use the platform independent method Disconnect() instead.
         /// Otherwise the generic PSMultiCommSimple does not unsubscribe from the CommManagers correctly
         /// which may result in it not being released from the memory.
         /// </summary>
         /// <param name="comms">The comm.</param>
-        Task<IList<(int ChannelIndex, Exception Exception)>> Disconnect(IList<CommManager> comms);
+        Task<IReadOnlyList<(int ChannelIndex, Exception Exception)>> Disconnect(IReadOnlyList<CommManager> comms);
 
         /// <summary>
         /// Replaces the instance of a device with a new one if possible.
@@ -67,5 +59,12 @@ namespace PalmSens.Core.Simplified
         /// <param name="args">The arguments.</param>
         /// <returns></returns>
         bool InvokeIfRequired(Delegate method, params object[] args);
+
+        /// <summary>
+        /// Invokes if required.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <returns></returns>
+        bool InvokeIfRequired(Action action);
     }
 }

@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using PalmSens.Core.Simplified;
-using PalmSensBiPotExample.Services;
-
-#if WINDOWS
-using PalmSens.Core.Simplified.WinForms;
-#endif
+using static PalmSens.Core.Simplified.MAUI.PalmSensServiceCollectionExtensions;
 
 namespace PalmSensBiPotExample
 {
@@ -21,16 +16,7 @@ namespace PalmSensBiPotExample
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-#if ANDROID
-            //builder.Services.AddSingleton<>();
-#elif IOS
-            //builder.Services.AddSingleton<>();
-#elif MACCATALYST
-            //builder.Services.AddSingleton<>();
-#elif WINDOWS
-            var psCommSimple = PSCommSimpleWindows.Create(new MauiPlatformInvoker());
-            builder.Services.AddSingleton<PSCommSimple>(psCommSimple);
-#endif
+            builder.AddPalmSensSDKServices();
 
 #if DEBUG
             builder.Logging.AddDebug();

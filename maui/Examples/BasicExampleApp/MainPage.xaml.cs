@@ -6,22 +6,28 @@ using PalmSens.Comm;
 using PalmSens.Core.Simplified;
 using PalmSens.Core.Simplified.Data;
 using PalmSens.Techniques;
-using PalmSensBasicExample.Services;
 using System.Collections.ObjectModel;
+using PalmSens.Core.Simplified.MAUI;
 using Device = PalmSens.Devices.Device;
 
 namespace PalmSensBasicExample
 {
     public partial class MainPage : ContentPage
     {
+        public IPlatformInvoker PlatformInvoker { get; }
         private IReadOnlyList<Device> _availableDevices;
         private Device _selectedDevice;
         private readonly PSCommSimple _psCommSimple;
 
-        public MainPage(PSCommSimple psCommSimple)
+        public MainPage(
+            PSCommSimpleMaui psCommSimple,
+            IPlatformInvoker platformInvoker)
         {
+            PlatformInvoker = platformInvoker;
             InitializeComponent();
             BindingContext = this;
+
+            psCommSimple.Initialize();  // This needs to be called after the main page has been initialized
             this._psCommSimple = psCommSimple;
 
             _psCommSimple.StateChanged += OnStateChanged;
@@ -93,7 +99,7 @@ namespace PalmSensBasicExample
             DiscoverBtn.IsEnabled = false;
             try
             {
-                AvailableDevices = await _psCommSimple.GetAvailableDevicesAsync();
+                AvailableDevices = await _psCommSimple.GetAvailableDevices();
                 SelectedDevice = AvailableDevices.FirstOrDefault();
             }
             finally
@@ -110,14 +116,14 @@ namespace PalmSensBasicExample
 
             if (_psCommSimple.Connected)
             {
-                await _psCommSimple.DisconnectAsync();
+                await _psCommSimple.Disconnect();
 
             }
             else
             {
                 try
                 {
-                    await _psCommSimple.ConnectAsync(SelectedDevice);
+                    await _psCommSimple.Connect(SelectedDevice);
                 }
                 catch (Exception ex)
                 {
@@ -130,37 +136,45 @@ namespace PalmSensBasicExample
             Log.Add(_psCommSimple.Connected ? $"Connected to {_psCommSimple.ConnectedDevice}" : "Nothing is connected");
         }
 
+
+
         private async void MeasureClicked(object? sender, EventArgs e)
         {
             Method method = InitMethod();
 
-            if (_psCommSimple.DeviceState == PalmSens.Comm.CommManager.DeviceState.Idle)
+            switch (_psCommSimple.DeviceState)
             {
-                _dataPoints.Clear();
+                case PalmSens.Comm.CommManager.DeviceState.Idle:
+                    Log.Add($"Starting measurement...");
+                    try
+                    {
+                        _activeMeasurement = await _psCommSimple.StartMeasurement(method);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Add(ex.Message);
+                    }
+                    break;
 
-                Log.Add($"Starting measurement...");
-                try
-                {
-                    _activeMeasurement = await _psCommSimple.MeasureAsync(method);
-                }
-                catch (Exception ex)
-                {
-                    Log.Add(ex.Message);
-                }
-            }
-            else
-            {
-                Log.Add($"Aborting measurement...");
-                try
-                {
-                    await _psCommSimple.AbortMeasurementAsync();
-                }
-                catch (Exception ex)
-                {
-                    Log.Add(ex.Message);
-                }
+                case PalmSens.Comm.CommManager.DeviceState.Pretreatment:
+                case PalmSens.Comm.CommManager.DeviceState.Measurement:
+                    Log.Add($"Aborting measurement...");
+                    try
+                    {
+                        await _psCommSimple.AbortMeasurement();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Add(ex.Message);
+                    }
+                    break;
+
+                default:
+                    Log.Add($"Unknown state : {_psCommSimple.DeviceState}.");
+                    break;
             }
         }
+
         private void OnReceiveStatus(object sender, PalmSens.Comm.StatusEventArgs e)
         {
             Status status = e.GetStatus();
@@ -224,7 +238,7 @@ namespace PalmSensBasicExample
 
         private void OnNewDataAdded(object sender, PalmSens.Data.ArrayDataAddedEventArgs e)
         {
-            if (MauiPlatformInvoker.InvokeIfRequired(() => OnNewDataAdded(sender, e)))
+            if (PlatformInvoker.InvokeIfRequired(() => OnNewDataAdded(sender, e)))
             {
                 return;
             }
@@ -256,7 +270,7 @@ namespace PalmSensBasicExample
 
         private void CurveFinished(SimpleCurve activeSimpleCurve)
         {
-            if (MauiPlatformInvoker.InvokeIfRequired(() => CurveFinished(activeSimpleCurve)))
+            if (PlatformInvoker.InvokeIfRequired(() => CurveFinished(activeSimpleCurve)))
             {
                 return;
             }

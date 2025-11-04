@@ -1,20 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using PalmSens.Core.Simplified.Data;
 using PalmSens.Data;
-using PalmSens.PSAndroid;
-using System.IO;
 using PalmSens.DataFiles;
 
-namespace PalmSens.Core.Simplified.Android
+namespace PalmSens.Core.Simplified
 {
     public class SimpleLoadSaveFunctions
     {
@@ -33,7 +25,13 @@ namespace PalmSens.Core.Simplified.Android
             List<SimpleMeasurement> simpleMeasurements = new List<SimpleMeasurement>();
             SessionManager session = null;
 
-            try { session = LoadSaveHelperFunctions.LoadSessionFile(filepath); }
+            try
+            {
+                using (var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
+                {
+                    session = LoadSessionFile(fileStream, filepath);
+                }
+            }
             catch (Exception ex)
             {
                 throw new Exception("An error occured while loading, please make sure the file path is correct and the file is valid");
@@ -44,6 +42,16 @@ namespace PalmSens.Core.Simplified.Android
                     simpleMeasurements.Add(new SimpleMeasurement(measurement));
 
             return simpleMeasurements;
+        }
+
+        private static SessionManager LoadSessionFile(Stream stream, string filePath)
+        {
+            SessionManager sm = new SessionManager();
+            using (StreamReader sr = new StreamReader(stream))
+                sm.Load(sr.BaseStream, filePath);
+
+            sm.MethodForEditor.MethodFilename = new FileInfo(filePath).Name;
+            return sm;
         }
 
         /// <summary>
@@ -93,10 +101,25 @@ namespace PalmSens.Core.Simplified.Android
             session.AddMeasurement(simpleMeasurement.Measurement);
             session.MethodForEditor = simpleMeasurement.Measurement.Method;
 
-            try { LoadSaveHelperFunctions.SaveSessionFile(filepath, session); }
+            try
+            {
+                using (var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    SaveSessionFile(fileStream, filepath, session);
+                }
+            }
             catch (Exception ex)
             {
                 throw new Exception("An error occured while saving, please make sure the file path is correct");
+            }
+        }
+
+        private static void SaveSessionFile(Stream stream, string filePath, SessionManager sessionManager)
+        {
+            sessionManager.MethodForEditor.MethodFilename = new FileInfo(filePath).Name;
+            using (StreamWriter sw = new StreamWriter(stream))
+            {
+                sessionManager.Save(sw.BaseStream, filePath);
             }
         }
 
@@ -121,7 +144,13 @@ namespace PalmSens.Core.Simplified.Android
                     session.AddMeasurement(measurement.Measurement);
             session.MethodForEditor = simpleMeasurements[0].Measurement.Method;
 
-            try { LoadSaveHelperFunctions.SaveSessionFile(filepath, session); }
+            try
+            {
+                using (var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    SaveSessionFile(fileStream, filepath, session);
+                }
+            }
             catch (Exception ex)
             {
                 throw new Exception("An error occured while saving, please make sure the file path is correct");
@@ -158,7 +187,13 @@ namespace PalmSens.Core.Simplified.Android
             if (string.IsNullOrEmpty(filepath))
                 throw new ArgumentException("File path must be specified");
 
-            try { method = LoadSaveHelperFunctions.LoadMethod(filepath); }
+            try
+            {
+                using (var fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read))
+                {
+                    method = LoadMethod(fileStream, filepath);
+                }
+            }
             catch (Exception ex)
             {
                 throw new Exception("An error occured while loading, please make sure the file path is correct and the file is valid");
@@ -167,26 +202,14 @@ namespace PalmSens.Core.Simplified.Android
             return method;
         }
 
-        /// <summary>
-        /// Loads a method from a *.psmethod file from your assets folder.
-        /// </summary>
-        /// <param name="streamReader">The stream reader referencing the *.psmethod file.</param>
-        /// <returns></returns>
-        /// <exception cref="System.ArgumentException">Stream reader cannot be null</exception>
-        /// <exception cref="System.Exception">An error occured while loading, please make sure the file path is correct and the file is valid</exception>
-        public static Method LoadMethod(StreamReader streamReader)
+        private static Method LoadMethod(Stream stream, string filePath, bool isCorrosion = false)
         {
-            if (streamReader == null)
-                throw new ArgumentException("Stream reader cannot be null");
-            Method method = null;
-
-            try { method = MethodFile2.FromStream(streamReader); }
-            catch (Exception ex)
+            using (StreamReader sr = new StreamReader(stream))
             {
-                throw new Exception("An error occured while loading, please make sure the file path is correct and the file is valid");
+                var method = filePath.EndsWith(MethodFile2.FileExtension) ? MethodFile2.FromStream(sr) : MethodFile.FromStream(sr, filePath, isCorrosion).Method;
+                method.MethodFilename = new FileInfo(filePath).Name;
+                return method;
             }
-
-            return method;
         }
 
         /// <summary>
@@ -204,11 +227,22 @@ namespace PalmSens.Core.Simplified.Android
             if (method == null)
                 throw new ArgumentNullException("Method cannot be null");
 
-            try { LoadSaveHelperFunctions.SaveMethod(method, filepath); }
+            try
+            {
+                using (var fileStream = new FileStream(filepath, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    SaveMethod(method, fileStream, filepath);
+                }
+            }
             catch (Exception ex)
             {
                 throw new Exception("An error occured while saving, please make sure the file path is correct");
             }
+        }
+
+        private static void SaveMethod(Method method, Stream stream, string filePath)
+        {
+            MethodFile2.Save(method, stream, filePath, true);
         }
     }
 }

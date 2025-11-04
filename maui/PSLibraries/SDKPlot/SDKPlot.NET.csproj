@@ -19,16 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PalmSens.Core.Simplified\PalmSens.Core.Simplified.NET.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="PalmSens.Core">
-      <HintPath>..\PalmSens.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="PalmSens.Core.Windows.NET"  Condition="'$(TargetFramework)' == 'net9.0-windows10.0.19041.0'">
-      <HintPath>..\PalmSens.Core.Windows.NET.dll</HintPath>
-    </Reference>
+	  <ProjectReference Include="..\..\PSLibraries\PalmSens.Core.Simplified\PalmSens.Core.Simplified.csproj" />
   </ItemGroup>
 
 </Project>

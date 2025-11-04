@@ -1,92 +1,45 @@
-using System;
-using System.Collections.ObjectModel;
-using Android.Content;
 using PalmSens.Devices;
 using PalmSens.Comm;
-using System.Threading.Tasks;
-using Android.App;
-using PalmSens.PSAndroid.Comm;
-using OperationCanceledException = System.OperationCanceledException;
+using PalmSens.Core.Android.Comm;
+using PalmSens.Core.Android.Comm.BlueTooth;
 
 namespace PalmSens.Core.Simplified.Android
 {
-    public class DeviceHandler : IPlatform, IPlatformInvoker
+    public class DeviceHandler : IPlatform
     {
+        internal DeviceDiscoverer _deviceDiscoverer;
+
         internal bool EnableBluetooth = true;
         internal bool EnableUSB = true;
-        private DeviceDiscoverer _deviceDiscoverer = null;
-        private readonly ObservableCollection<Device> _devices = new ObservableCollection<Device>();
-        private readonly ReadOnlyObservableCollection<Device> _devicesReadOnly;
-        private readonly IPlatformInvoker _platformInvoker;
 
-        public DeviceHandler(IPlatformInvoker platformInvoker)
+        /// <summary>
+        /// Scans for connected devices.
+        /// </summary>
+        /// <param name="timeOut">Discovery time out in milliseconds.</param>
+        /// <returns>
+        /// Returns an array of connected devices
+        /// </returns>
+        /// <exception cref="System.ArgumentException">An error occured while attempting to scan for connected devices.</exception>
+        internal async Task<IReadOnlyList<Device>> ScanDevicesAsync(int timeOut = 20000)
         {
-            _devicesReadOnly = new ReadOnlyObservableCollection<Device>(_devices);
-            _platformInvoker = platformInvoker;
+            Device[] devices = new Device[0];
+
+            await new SynchronizationContextRemover();
+
+            try //Attempt to find connected palmsens/emstat devices
+            {
+                _deviceDiscoverer = new DeviceDiscoverer();
+                devices = await Task.Run(async () => (await _deviceDiscoverer.Discover(EnableUSB, EnableBluetooth, timeOut: timeOut)).ToArray());
+                _deviceDiscoverer.Dispose();
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"An error occured while attempting to scan for connected devices. {ex.Message}");
+            }
+            return devices;
         }
 
-        public bool InvokeIfRequired(Action action) => _platformInvoker.InvokeIfRequired(action);
-
-        public ReadOnlyObservableCollection<Device> DiscoverAvailableDevices() => DiscoverAvailableDevices(TimeSpan.FromSeconds(20));
-
-        public ReadOnlyObservableCollection<Device> DiscoverAvailableDevices(TimeSpan timeOut)
-        {
-            _devices.Clear();
-            _deviceDiscoverer = new DeviceDiscoverer(Application.Context);
-
-            //Start discovery in background
-            Task.Run(async () => {
-                try
-                {
-                    await new SynchronizationContextRemover();
-
-                    EventHandler<Device> deviceDiscovered = (sender, device) =>
-                    {
-                        if (!InvokeIfRequired(() => _devices.Add(device)))
-                        {
-                            _devices.Add(device);
-                        }
-                    };
-
-                    EventHandler<Device> deviceRemoved = (sender, device) =>
-                    {
-                        if (!InvokeIfRequired(() => _devices.Remove(device)))
-                        {
-                            _devices.Remove(device);
-                        }
-                    };
-
-                    _deviceDiscoverer.DeviceDiscovered += deviceDiscovered;
-                    _deviceDiscoverer.DeviceRemoved += deviceRemoved;
-
-                    await _deviceDiscoverer.Discover(EnableUSB, EnableBluetooth,
-                        timeOut: (int)timeOut.TotalMilliseconds);
-
-                    AvailableDeviceDiscoveryCompleted?.Invoke(this, new ScanCompletedEventArgs(null));
-                }
-                catch (Exception ex) when (ex is not OperationCanceledException)
-                {
-                    AvailableDeviceDiscoveryCompleted?.Invoke(this, new ScanCompletedEventArgs(new ArgumentException(
-                        $"An error occured while attempting to scan for connected devices. {ex.Message}")));
-                }
-                finally
-                {
-                    _deviceDiscoverer?.Dispose();
-                    _deviceDiscoverer = null;
-                }
-            });
-
-            return _devicesReadOnly;
-        }
-
-        public void CancelAvailableDeviceDiscovery()
-        {
-            _deviceDiscoverer?.Cancel();
-        }
-
-        public event EventHandler<ScanCompletedEventArgs> AvailableDeviceDiscoveryCompleted;
-
-        public Task<CommManager> ConnectAsync(Device device) => Connect(device);
+        public Task<IReadOnlyList<Device>> GetAvailableDevices() => ScanDevicesAsync();
 
         /// <summary>
         /// Connects to the specified device and returns its CommManager.
@@ -97,7 +50,7 @@ namespace PalmSens.Core.Simplified.Android
         /// </returns>
         /// <exception cref="System.ArgumentNullException">The specified device cannot be null.</exception>
         /// <exception cref="System.Exception">Could not connect to the specified device.</exception>
-        internal async Task<CommManager> Connect(Device device)
+        public async Task<CommManager> Connect(Device device)
         {
             if (device == null)
                 throw new ArgumentNullException("The specified device cannot be null.");
@@ -112,50 +65,6 @@ namespace PalmSens.Core.Simplified.Android
                     await device.OpenAsync(); //Open the device to allow a connection
                     comm = await CommManager.CommManagerAsync(device); //Connect to the selected device
                 });
-                CheckSupportForFastBLC(device, comm);
-            }
-            catch (Exception ex)
-            {
-                device.Close();
-                throw new Exception($"Could not connect to the specified device. {ex.Message}");
-            }
-
-            return comm;
-        }
-
-        /// <summary>
-        /// Connects to the specified device and returns its CommManager.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        /// <returns>
-        /// The CommManager of the device or null
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">The specified device cannot be null.</exception>
-        /// <exception cref="System.Exception">Could not connect to the specified device.</exception>
-        [Obsolete("Using the synchronous API on Android is discouraged.")]
-        CommManager IPlatform.Connect(Device device) => ConnectBC(device);
-
-        /// <summary>
-        /// Connects to the specified device and returns its CommManager.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        /// <returns>
-        /// The CommManager of the device or null
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">The specified device cannot be null.</exception>
-        /// <exception cref="System.Exception">Could not connect to the specified device.</exception>
-        [Obsolete("Compatible with SDKs 5.4 and earlier. Please use asynchronous functions, as development of synchronous functions will be fased out")]
-        internal CommManager ConnectBC(Device device)
-        {
-            if (device == null)
-                throw new ArgumentNullException("The specified device cannot be null.");
-            CommManager comm = null;
-
-            try
-            {
-                //TODO: See GitHub issue #1341 No sync BLE Support
-                device.Open(); //Open the device to allow a connection
-                comm = new CommManager(device); //Connect to the selected device
                 CheckSupportForFastBLC(device, comm);
             }
             catch (Exception ex)
@@ -184,30 +93,11 @@ namespace PalmSens.Core.Simplified.Android
         }
 
         /// <summary>
-        /// Disconnects the device using its CommManager.
-        /// </summary>
-        /// <param name="comm">The device's CommManager.</param>
-        /// <exception cref="System.ArgumentNullException">The specified CommManager cannot be null.</exception>
-        [Obsolete("Using the synchronous API on Android is discouraged.")]
-        public void Disconnect(CommManager comm)
-        {
-            if (comm == null)
-                throw new ArgumentNullException("The specified CommManager cannot be null.");
-
-            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            EventHandler disconnected = (sender, args) => tcs.SetResult(true);
-            comm.Disconnected += disconnected;
-            comm.DisconnectAsync();
-            tcs.Task.Wait();
-            comm.Disconnected -= disconnected;
-        }
-
-        /// <summary>
         /// The asynchronous version of method 'Disconnect'.
         /// </summary>
         /// <param name="comm">The device's CommManager.</param>
         /// <exception cref="System.ArgumentNullException">The specified CommManager cannot be null.</exception>
-        public async Task DisconnectAsync(CommManager comm)
+        public async Task Disconnect(CommManager comm)
         {
             await new SynchronizationContextRemover();
 

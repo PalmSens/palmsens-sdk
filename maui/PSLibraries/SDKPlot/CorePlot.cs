@@ -886,6 +886,7 @@ namespace SDKPlot
                     await _plotInvoker.Invoke(() => { OnSimpleCurveNewData(curves); });
                     _plotInvoker.DoEvents();
                     await Task.Delay(TimeSpan.FromMilliseconds(20), cancellationToken);
+                    _signal?.Set();
                 }
             }
             catch (OperationCanceledException) { }

@@ -10,7 +10,7 @@ namespace PalmSens.Core.Simplified.Helpers
         {
             string serial = "";
             int channel = -1;
-
+            
             int iCH = deviceDescription.IndexOf("ch", StringComparison.OrdinalIgnoreCase);
             if (iCH > 0)
             {

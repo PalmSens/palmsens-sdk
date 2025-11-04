@@ -1,23 +1,42 @@
-using Android.App;
+using Android.Content;
 using Android.OS;
-using System;
+using Android.Util;
+using Android.Views;
+using PalmSens.Comm;
+using PalmSens.Devices;
+using PalmSens.Core.Simplified.Data;
+using PalmSens.Core.Simplified.InternalStorage;
 
 namespace PalmSens.Core.Simplified.Android
 {
-    public class PSCommSimpleAndroid : PSCommSimple
+    public class PSCommSimpleAndroid : View
     {
-        public static PSCommSimpleAndroid PSCommFactory()
+        public PSCommSimpleAndroid(Context context, IAttributeSet attrs) :
+            base(context, attrs)
         {
-            PalmSens.PSAndroid.Utils.CoreDependencies.Init(Application.Context); //Initiates PSSDK threading dependencies and external library resolver
+            Initialize();
+        }
+
+        public PSCommSimpleAndroid(Context context, IAttributeSet attrs, int defStyle) :
+            base(context, attrs, defStyle)
+        {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            this.Visibility = ViewStates.Gone;
+            PalmSens.Core.Android.Utils.CoreDependencies.Init(Context);
             InitAsyncFunctionality(System.Environment.ProcessorCount); //Initiate the asynchronous functions in the SDK
-            return new PSCommSimpleAndroid(new DeviceHandler(null));
+            _psCommSimple = new PSCommSimple(new DeviceHandler(), new AndroidPlatformInvoker());
         }
 
         /// <summary>
-        /// Do not use this constructor, use the Factory method to create a new instance
+        /// Instance of the platform independent PSCommSimple class that manages measurements and manual control
         /// </summary>
-        /// <param name="platform"></param>
-        protected PSCommSimpleAndroid(DeviceHandler platform) : base(platform, platform) { }
+        private PSCommSimple _psCommSimple;
+
+        public PSCommSimple PSCommSimple => _psCommSimple; 
 
         /// <summary>
         /// Required initialization for using the async functionalities of the PalmSens SDK.
@@ -25,7 +44,7 @@ namespace PalmSens.Core.Simplified.Android
         /// When possible it will leave one core free for the UI.
         /// </summary>
         /// <param name="nCores">The number of CPU cores.</param>
-        public static void InitAsyncFunctionality(int nCores)
+        private void InitAsyncFunctionality(int nCores)
         {
             SynchronizationContextRemover.Init(nCores > 1 ? nCores - 1 : 1);
         }

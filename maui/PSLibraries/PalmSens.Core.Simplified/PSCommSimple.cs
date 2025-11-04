@@ -1,16 +1,18 @@
-﻿using System;
+﻿using PalmSens.Comm;
+using PalmSens.Core.Simplified.Data;
+using PalmSens.Core.Simplified.InternalStorage;
+using PalmSens.Devices;
+using PalmSens.Plottables;
+using PalmSens.Techniques;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
-using PalmSens.Comm;
-using PalmSens.Devices;
-using PalmSens.Plottables;
-using PalmSens.Core.Simplified.Data;
-using PalmSens.Core.Simplified.InternalStorage;
-using PalmSens.Techniques;
+using static PalmSens.Comm.CommManager;
 
 namespace PalmSens.Core.Simplified
 {
@@ -49,15 +51,7 @@ namespace PalmSens.Core.Simplified
         /// <value>
         /// The connected devices.
         /// </value>
-        public IReadOnlyList<Device> AvailableDevices => _platform.AvailableDevices;
-
-        /// <summary>
-        /// Returns an array of connected devices.
-        /// </summary>
-        /// <value>
-        /// The connected devices.
-        /// </value>
-        public Task<IReadOnlyList<Device>> GetAvailableDevicesAsync() => _platform.GetAvailableDevices();
+        public Task<IReadOnlyList<Device>> GetAvailableDevices() => _platform.GetAvailableDevices();
 
         /// <summary>
         /// The connected device's CommManager
@@ -65,7 +59,7 @@ namespace PalmSens.Core.Simplified
         private CommManager _comm;
 
         /// <summary>
-        /// The task completion source used to obtain the active measurement in the Measure and MeasureAsync functions
+        /// The task completion source used to obtain the active measurement in the Measure and StartMeasurementAsync functions
         /// </summary>
         private TaskCompletionSource<SimpleMeasurement> _taskCompletionSource = null;
 
@@ -82,30 +76,22 @@ namespace PalmSens.Core.Simplified
             {
                 if (_comm != null) //Unsubscribe events
                 {
-                    _comm.BeginMeasurement -= Comm_BeginMeasurement;
-                    _comm.BeginMeasurementAsync -= Comm_BeginMeasurementAsync;
-                    _comm.EndMeasurement -= Comm_EndMeasurement;
-                    _comm.EndMeasurementAsync -= Comm_EndMeasurementAsync;
+                    _comm.BeginMeasurementAsync -= Comm_BeginMeasurement;
+                    _comm.EndMeasurementAsync -= Comm_EndMeasurement;
                     _comm.BeginReceiveCurve -= Comm_BeginReceiveCurve;
-                    _comm.ReceiveStatus -= Comm_ReceiveStatus;
-                    _comm.ReceiveStatusAsync -= Comm_ReceiveStatusAsync;
-                    _comm.StateChanged -= Comm_StateChanged;
-                    _comm.StateChangedAsync -= Comm_StateChangedAsync;
+                    _comm.ReceiveStatusAsync -= Comm_ReceiveStatus;
+                    _comm.StateChangedAsync -= Comm_StateChanged;
                     _comm.Disconnected -= Comm_Disconnected;
                     _comm.CommErrorOccurred -= Comm_CommErrorOccurred;
                 }
                 _comm = value;
                 if (_comm != null) //Subscribe events
                 {
-                    _comm.BeginMeasurement += Comm_BeginMeasurement;
-                    _comm.BeginMeasurementAsync += Comm_BeginMeasurementAsync;
-                    _comm.EndMeasurement += Comm_EndMeasurement;
-                    _comm.EndMeasurementAsync += Comm_EndMeasurementAsync;
+                    _comm.BeginMeasurementAsync += Comm_BeginMeasurement;
+                    _comm.EndMeasurementAsync += Comm_EndMeasurement;
                     _comm.BeginReceiveCurve += Comm_BeginReceiveCurve;
-                    _comm.ReceiveStatus += Comm_ReceiveStatus;
-                    _comm.ReceiveStatusAsync += Comm_ReceiveStatusAsync;
-                    _comm.StateChanged += Comm_StateChanged;
-                    _comm.StateChangedAsync += Comm_StateChangedAsync;
+                    _comm.ReceiveStatusAsync += Comm_ReceiveStatus;
+                    _comm.StateChangedAsync += Comm_StateChanged;
                     _comm.Disconnected += Comm_Disconnected;
                     _comm.CommErrorOccurred += Comm_CommErrorOccurred;
                 }
@@ -209,7 +195,7 @@ namespace PalmSens.Core.Simplified
         private Measurement _activeMeasurement;
 
         /// <summary>
-        /// Gets or sets the active measurement manages the subscription to its events,
+        /// Gets or sets the active measurement manages the subscription to its events, 
         /// the active simple measurement and the active curves.
         /// </summary>
         /// <value>
@@ -233,68 +219,34 @@ namespace PalmSens.Core.Simplified
         #endregion
 
         #region Functions
-        /// <summary>
-        /// Connects to the device with the highest priority.
-        /// </summary>
-        public void Connect()
-        {
-            Connect(AvailableDevices.First());
-        }
 
         /// <summary>
         /// Connects to the device with the highest priority.
         /// </summary>
-        public Task ConnectAsync()
+        public async Task Connect()
         {
-            return ConnectAsync(AvailableDevices.First());
+            await Connect((await GetAvailableDevices())[0]);
         }
 
         /// <summary>
         /// Connects to the specified device.
         /// </summary>
         /// <param name="device">The device.</param>
-        public void Connect(Device device)
+        public async Task Connect(Device device)
         {
-            Comm = _platform.Connect(device);
-        }
-
-        /// <summary>
-        /// Connects to the specified device.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        public async Task ConnectAsync(Device device)
-        {
-            Comm = await _platform.ConnectAsync(device);
+            Comm = await _platform.Connect(device);
         }
 
         /// <summary>
         /// Disconnects from the connected device.
         /// </summary>
         /// <exception cref="System.NullReferenceException">Not connected to a device.</exception>
-        public void Disconnect()
+        public async Task Disconnect()
         {
             try
             {
-                _platform.Disconnect(_comm);
+                await _platform.Disconnect(_comm);
                 _activeMeasurement = null;
-            }
-            catch(Exception e)
-            {
-                throw new Exception("Failed to disconnect.", e);
-            }
-        }
-
-        /// <summary>
-        /// Disconnects from the connected device.
-        /// </summary>
-        /// <exception cref="System.NullReferenceException">Not connected to a device.</exception>
-        public async Task DisconnectAsync()
-        {
-            try {
-                await Task.Run(async () => { //The disconnect function should not be run using CommManager.ClientConnection.RunAsync()
-                    await _platform.DisconnectAsync(_comm);
-                    _activeMeasurement = null;
-                });
             }
             catch (Exception e)
             {
@@ -303,7 +255,7 @@ namespace PalmSens.Core.Simplified
         }
 
         /// <summary>
-        /// Runs a measurement as specified in the method on the connected device.
+        /// Starts a measurement as specified in the method on the connected device.
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <param name="muxChannel">The mux channel to measure on.</param>
@@ -313,109 +265,190 @@ namespace PalmSens.Core.Simplified
         /// <exception cref="System.NullReferenceException">Not connected to a device.</exception>
         /// <exception cref="System.ArgumentException">Method is incompatible with the connected device.</exception>
         /// <exception cref="System.Exception">Could not start measurement.</exception>
-        public SimpleMeasurement Measure(Method method, int muxChannel)
+        public async Task<SimpleMeasurement> StartMeasurement(Method method, int muxChannel, TaskBarrier taskBarrier = null)
         {
-            _activeMeasurement = null;
-            if (_comm == null)
-                throw new NullReferenceException("Not connected to a device.");
-
-            //Create a copy of the method and update the method with the device's supported current ranges
-            Method copy = null;
-            Method.CopyMethod(method, ref copy);
-
-            //Determine optimal pgstat mode for EmStat Pico / Sensit series devices
-            if (Capabilities is EmStatPicoCapabilities)
+            var tcs = new TaskCompletionSource<SimpleMeasurement>();
+            AsyncEventHandler<CommManager.BeginMeasurementEventArgsAsync> asyncEventHandler = async (sender, e) =>
             {
-                copy.DeterminePGStatMode(Capabilities);
-                Capabilities.ActiveSignalTrainConfiguration = copy.PGStatMode; //Set device capabilities to pgstat mode determined/set in method
+                CommManager commSender = sender as CommManager;
+                ActiveMeasurement = e.NewMeasurement;
+
+                if (e.NewMeasurement is ImpedimetricMeasurementBase || e.NewMeasurement is ImpedimetricMeasBaseMS)
+                    _activeSimpleMeasurement.NewSimpleCurve(PalmSens.Data.DataArrayType.ZRe, PalmSens.Data.DataArrayType.ZIm, "Nyquist", true); //Create a nyquist curve by default
+
+                tcs.SetResult(_activeSimpleMeasurement);
+            };
+
+            CommManager.EventHandlerCommErrorOccurred asyncEventHandlerCommError = (sender, exception) =>
+            {
+                tcs.SetException(exception);
+            };
+
+            try
+            {
+                try
+                {
+                    //Start the measurement on the connected channel, this triggers an event that updates _activeMeasurement
+                    await Run(async (CommManager comm) =>
+                    {
+                        //Create a copy of the method and update the method with the device's supported current ranges
+                        Method copy = null;
+                        Method.CopyMethod(method, ref copy);
+
+                        //Determine optimal pgstat mode for EmStat Pico / Sensit series devices
+                        if (Capabilities is EmStatPicoCapabilities)
+                        {
+                            copy.DeterminePGStatMode(Capabilities);
+                            Capabilities.ActiveSignalTrainConfiguration =
+                                copy.PGStatMode; //Set device capabilities to pgstat mode determined/set in method
+                        }
+
+                        copy.Ranging.SupportedCurrentRanges =
+                            Capabilities
+                                .SupportedRanges; //Update the autoranging depending on the current ranges supported by the connected device
+
+                        //Check whether method is compatible with the connected channel
+                        bool isValidMethod;
+                        List<string> errors;
+                        ValidateMethod(copy, out isValidMethod, out errors);
+                        if (!isValidMethod)
+                        {
+                            throw new ArgumentException("Method is incompatible with the connected device.");
+                        }
+
+                        comm.BeginMeasurementAsync += asyncEventHandler;
+                        comm.CommErrorOccurred += asyncEventHandlerCommError;
+
+                        string errorString = await comm.MeasureAsync(copy, muxChannel, taskBarrier);
+                        if (!(string.IsNullOrEmpty(errorString)))
+                        {
+                            throw new Exception($"Could not start measurement: {errorString}");
+                        }
+                    });
+                }
+                catch (Exception exception)
+                {
+                    tcs.SetException(exception);
+                }
+                
+                return await tcs.Task;
             }
-            copy.Ranging.SupportedCurrentRanges = Capabilities.SupportedRanges; //Update the autoranging depending on the current ranges supported by the connected device
-
-            //Check whether method is compatible with the connected device
-            bool isValidMethod;
-            List<string> errors;
-            ValidateMethod(copy, out isValidMethod, out errors);
-            if (!isValidMethod)
-                throw new ArgumentException("Method is incompatible with the connected device.");
-
-            //Init task to wait for the active measurement to be initiated by CommManager.Measure()
-            _taskCompletionSource = new TaskCompletionSource<SimpleMeasurement>();
-            _comm.BeginMeasurement += GetActiveMeasurement;
-
-            //Start the measurement on the connected device, this triggers an event that updates _activeMeasurement
-            string error = Run(() => _comm.Measure(copy, muxChannel));
-            if (!(string.IsNullOrEmpty(error)))
-                throw new Exception($"Could not start measurement: {error}");
-
-            _taskCompletionSource.Task.Wait();
-
-            return _taskCompletionSource.Task.Result;
+            finally
+            {
+                Comm.BeginMeasurementAsync -= asyncEventHandler;
+                Comm.CommErrorOccurred -= asyncEventHandlerCommError;
+            }
         }
 
         /// <summary>
-        /// Runs a measurement as specified in the method on the connected device.
+        /// Runs a measurement as specified in the method on the connected device until completion.
         /// </summary>
-        /// <param name="method">The method containing the measurement parameters.</param>
-        /// <param name="muxChannel">The mux channel to measure on.</param>
-        /// <returns>
-        /// A SimpleMeasurement instance containing all the data related to the measurement.
-        /// </returns>
-        /// <exception cref="System.NullReferenceException">Not connected to a device.</exception>
-        /// <exception cref="System.ArgumentException">Method is incompatible with the connected device.</exception>
-        /// <exception cref="System.Exception">Could not start measurement.</exception>
-        public Task<SimpleMeasurement> MeasureAsync(Method method, int muxChannel, TaskBarrier taskBarrier = null)
+        /// <param name="method">The method.</param>
+        /// <param name="channel">The channel.</param>
+        /// <param name="muxChannel">The mux channel.</param>
+        /// <param name="taskBarrier">The task barrier.</param>
+        /// <returns></returns>
+        public async Task<SimpleMeasurement> Measure(Method method, int muxChannel, TaskBarrier taskBarrier = null)
         {
-            //Start the measurement on the connected channel, this triggers an event that updates _activeMeasurement
-            return RunAsync(async (CommManager comm) =>
-            {
-                //Create a copy of the method and update the method with the device's supported current ranges
-                Method copy = null;
-                Method.CopyMethod(method, ref copy);
+            var tcsMeasurementStarted = new TaskCompletionSource<SimpleMeasurement>();
+            var tcsMeasurementFinished = new TaskCompletionSource();
 
-                //Determine optimal pgstat mode for EmStat Pico / Sensit series devices
-                if (Capabilities is EmStatPicoCapabilities)
-                {
-                    copy.DeterminePGStatMode(Capabilities);
-                    Capabilities.ActiveSignalTrainConfiguration = copy.PGStatMode; //Set device capabilities to pgstat mode determined/set in method
-                }
-                copy.Ranging.SupportedCurrentRanges = Capabilities.SupportedRanges; //Update the autoranging depending on the current ranges supported by the connected device
-
-                //Check whether method is compatible with the connected channel
-                bool isValidMethod;
-                List<string> errors;
-                ValidateMethod(copy, out isValidMethod, out errors);
-                if (!isValidMethod)
-                {
-                    throw new ArgumentException("Method is incompatible with the connected device.");
-                }
-
-                var tcs = new TaskCompletionSource<SimpleMeasurement>();
-                AsyncEventHandler<CommManager.BeginMeasurementEventArgsAsync> asyncEventHandler = new AsyncEventHandler<CommManager.BeginMeasurementEventArgsAsync>((object sender, CommManager.BeginMeasurementEventArgsAsync e) =>
+            AsyncEventHandler<CommManager.BeginMeasurementEventArgsAsync> asyncEventHandlerMeasurementStarted =
+                (sender, e) =>
                 {
                     CommManager commSender = sender as CommManager;
+
                     ActiveMeasurement = e.NewMeasurement;
+                    if (ActiveMeasurement is ImpedimetricMeasurementBase || ActiveMeasurement is ImpedimetricMeasBaseMS)
+                        _activeSimpleMeasurement
+                            .NewSimpleCurve(PalmSens.Data.DataArrayType.ZRe,
+                                PalmSens.Data.DataArrayType.ZIm, "Nyquist",
+                                true); //Create a nyquist curve by default
 
-                    if (e.NewMeasurement is ImpedimetricMeasurementBase || e.NewMeasurement is ImpedimetricMeasBaseMS)
-                        _activeSimpleMeasurement.NewSimpleCurve(PalmSens.Data.DataArrayType.ZRe, PalmSens.Data.DataArrayType.ZIm, "Nyquist", true); //Create a nyquist curve by default
-
-                    tcs.SetResult(_activeSimpleMeasurement);
+                    tcsMeasurementStarted.SetResult(_activeSimpleMeasurement);
                     return Task.CompletedTask;
-                });
-                comm.BeginMeasurementAsync += asyncEventHandler;
+                };
 
-                string errorString = await comm.MeasureAsync(copy, muxChannel, taskBarrier);
-                if (!(string.IsNullOrEmpty(errorString)))
+            AsyncEventHandler<CommManager.EndMeasurementAsyncEventArgs> asyncEventHandlerMeasurementFinished = async (sender, args) =>
+            {
+                tcsMeasurementFinished.SetResult();
+            };
+
+            CommManager.EventHandlerCommErrorOccurred asyncEventHandlerCommError = (sender, exception) =>
+            {
+                tcsMeasurementFinished.SetException(exception);
+            };
+
+            try
+            {
+                try
                 {
-                    throw new Exception($"Could not start measurement: {errorString}");
+                    //Start the measurement on the connected channel, this triggers an event that updates _activeMeasurement
+                    await Run(async (CommManager comm) =>
+                    {
+                        //Create a copy of the method and update the method with the device's supported current ranges
+                        Method copy = null;
+                        Method.CopyMethod(method, ref copy);
+
+                        var capabilities = comm.Capabilities;
+
+                        //Determine optimal pgstat mode for EmStat Pico / Sensit series devices
+                        if (capabilities is EmStatPicoCapabilities)
+                        {
+                            copy.DeterminePGStatMode(capabilities);
+                            capabilities.ActiveSignalTrainConfiguration =
+                                copy.PGStatMode; //Set device capabilities to pgstat mode determined/set in method
+                        }
+
+                        copy.Ranging.SupportedCurrentRanges =
+                            capabilities
+                                .SupportedRanges; //Update the autoranging depending on the current ranges supported by the connected device
+
+                        //Check whether method is compatible with the connected channel
+                        bool isValidMethod;
+                        List<string> errors;
+                        ValidateMethod(copy, out isValidMethod, out errors);
+                        if (!isValidMethod)
+                        {
+                            throw new ArgumentException(
+                                $"Method is incompatible with the connected instrument: {string.Join("\n", errors)}");
+                        }
+
+                        comm.BeginMeasurementAsync += asyncEventHandlerMeasurementStarted;
+                        comm.EndMeasurementAsync += asyncEventHandlerMeasurementFinished;
+                        comm.CommErrorOccurred += asyncEventHandlerCommError;
+
+                        string errorString = await comm.MeasureAsync(copy, muxChannel, taskBarrier);
+                        if (!(string.IsNullOrEmpty(errorString)))
+                        {
+                            throw new Exception($"Could not start measurement.");
+                        }
+                    });
+                }
+                catch (Exception exception)
+                {
+                    tcsMeasurementStarted.SetException(exception);
+                    tcsMeasurementFinished.SetException(exception);
                 }
 
-                comm.ClientConnection.Semaphore.Release();
-                SimpleMeasurement result = await tcs.Task;
-                await comm.ClientConnection.Semaphore.WaitAsync();
-                comm.BeginMeasurementAsync -= asyncEventHandler;
-
-                return result;
-            });
+                try
+                {
+                    SimpleMeasurement measurement = await tcsMeasurementStarted.Task;
+                    await tcsMeasurementFinished.Task;
+                    return measurement;
+                }
+                catch
+                {
+                    tcsMeasurementFinished.SetCanceled();
+                    throw;
+                }
+            }
+            finally
+            {
+                Comm.BeginMeasurementAsync -= asyncEventHandlerMeasurementStarted;
+                Comm.EndMeasurementAsync -= asyncEventHandlerMeasurementFinished;
+                Comm.CommErrorOccurred -= asyncEventHandlerCommError;
+            }
         }
 
         /// <summary>
@@ -435,44 +468,29 @@ namespace PalmSens.Core.Simplified
         }
 
         /// <summary>
-        /// Runs a measurement as specified in the method on the connected device.
+        /// Starts a measurement as specified in the method on the connected device.
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <returns>A SimpleMeasurement instance containing all the data related to the measurement.</returns>
-        public SimpleMeasurement Measure(Method method)
+        public async Task<SimpleMeasurement> StartMeasurement(Method method, TaskBarrier taskBarrier = null)
         {
             if (method.MuxMethod == MuxMethod.Sequentially)
-                return Measure(method, method.GetNextSelectedMuxChannel(-1));
+                return await StartMeasurement(method, method.GetNextSelectedMuxChannel(-1), taskBarrier);
             else
-                return Measure(method, -1);
+                return await StartMeasurement(method, -1, taskBarrier);
         }
 
         /// <summary>
-        /// Runs a measurement as specified in the method on the connected device.
+        /// Runs a measurement as specified in the method on the connected device until completion.
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <returns>A SimpleMeasurement instance containing all the data related to the measurement.</returns>
-        public async Task<SimpleMeasurement> MeasureAsync(Method method, TaskBarrier taskBarrier = null)
+        public async Task<SimpleMeasurement> Measure(Method method, TaskBarrier taskBarrier = null)
         {
             if (method.MuxMethod == MuxMethod.Sequentially)
-                return await MeasureAsync(method, method.GetNextSelectedMuxChannel(-1), taskBarrier);
+                return await Measure(method, method.GetNextSelectedMuxChannel(-1), taskBarrier);
             else
-                return await MeasureAsync(method, -1, taskBarrier);
-        }
-
-        /// <summary>
-        /// Aborts the active measurement.
-        /// </summary>
-        /// <exception cref="System.NullReferenceException">Not connected to a device.</exception>
-        /// <exception cref="System.Exception">Device is not measuring.</exception>
-        public void AbortMeasurement()
-        {
-            Run(() =>
-            {
-                if (_comm.ActiveMeasurement == null)
-                    throw new Exception("Device is not measuring.");
-                _comm.Abort();
-            });
+                return await Measure(method, -1, taskBarrier);
         }
 
         /// <summary>
@@ -480,12 +498,12 @@ namespace PalmSens.Core.Simplified
         /// </summary>
         /// <exception cref="System.NullReferenceException">Not connected to a device.</exception>
         /// <exception cref="System.Exception">The device is not currently performing measurement</exception>
-        public Task AbortMeasurementAsync()
+        public async Task AbortMeasurement()
         {
-            return RunAsync((CommManager comm) => {
+            await Run(async (CommManager comm) => {
                 if (comm.ActiveMeasurement == null)
                     throw new Exception("Device is not measuring.");
-                return comm.AbortAsync();
+                await comm.AbortAsync();
             });
         }
 
@@ -494,46 +512,15 @@ namespace PalmSens.Core.Simplified
         /// </summary>
         /// <exception cref="System.NullReferenceException">Not connected to a device</exception>
         /// <exception cref="System.Exception">Device must be in idle mode for manual control</exception>
-        public void TurnCellOn()
+        public async Task TurnCellOn()
         {
-            Run(() => {
-                if (_comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode for manual control");
-                if (_comm.CellOn)
-                    return;
-                _comm.CellOn = true; });
-        }
-
-        /// <summary>
-        /// Turns the cell on.
-        /// </summary>
-        /// <exception cref="System.NullReferenceException">Not connected to a device</exception>
-        /// <exception cref="System.Exception">Device must be in idle mode for manual control</exception>
-        public Task TurnCellOnAsync()
-        {
-            return RunAsync((CommManager comm) => {
+            await Run(async (CommManager comm) => {
                 if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode for manual control");
                 if (comm.CellOn)
-                    return Task.CompletedTask;
-                return comm.SetCellOnAsync(true);
-            });
-        }
-
-        /// <summary>
-        /// Turns the cell off.
-        /// </summary>
-        /// <exception cref="System.NullReferenceException">Not connected to a device</exception>
-        /// <exception cref="System.Exception">Device must be in idle mode for manual control</exception>
-        public void TurnCellOff()
-        {
-            Run(() => {
-                if (_comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode for manual control");
-                if (!_comm.CellOn)
                     return;
-                _comm.CellOn = false;
-            });
+                await comm.SetCellOnAsync(true);
+            });            
         }
 
         /// <summary>
@@ -541,14 +528,14 @@ namespace PalmSens.Core.Simplified
         /// </summary>
         /// <exception cref="System.NullReferenceException">Not connected to a device</exception>
         /// <exception cref="System.Exception">Device must be in idle mode for manual control</exception>
-        public Task TurnCellOffAsync()
+        public async Task TurnCellOff()
         {
-            return RunAsync((CommManager comm) => {
+            await Run(async (CommManager comm) => {
                 if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode for manual control");
                 if (!comm.CellOn)
-                    return Task.CompletedTask;
-                return comm.SetCellOnAsync(false);
+                    return;
+                await comm.SetCellOnAsync(false);
             });
         }
 
@@ -558,27 +545,12 @@ namespace PalmSens.Core.Simplified
         /// <param name="potential">The potential.</param>
         /// <exception cref="System.NullReferenceException">Not connected to a device</exception>
         /// <exception cref="System.Exception">Device must be in idle mode for manual control</exception>
-        public void SetCellPotential(float potential)
+        public async Task SetCellPotential(float potential)
         {
-            Run(() => {
-                if (_comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode for manual control");
-                _comm.Potential = potential;
-            });
-        }
-
-        /// <summary>
-        /// Sets the cell potential.
-        /// </summary>
-        /// <param name="potential">The potential.</param>
-        /// <exception cref="System.NullReferenceException">Not connected to a device</exception>
-        /// <exception cref="System.Exception">Device must be in idle mode for manual control</exception>
-        public Task SetCellPotentialAsync(float potential)
-        {
-            return RunAsync((CommManager comm) => {
+            await Run(async (CommManager comm) => {
                 if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode for manual control");
-                return comm.SetPotentialAsync(potential);
+                await comm.SetPotentialAsync(potential);
             });
         }
 
@@ -588,27 +560,12 @@ namespace PalmSens.Core.Simplified
         /// <returns></returns>
         /// <exception cref="NullReferenceException">Not connected to a device</exception>
         /// <exception cref="Exception">Device must be in idle mode for manual control</exception>
-        public float ReadCellPotential()
+        public async Task<float> ReadCellPotential()
         {
-            return Run<float>(() => {
-                if (_comm.State != CommManager.DeviceState.Idle)
+            return await Run(async (CommManager comm) => {
+                if (comm.State != CommManager.DeviceState.Idle) 
                     throw new Exception("Device must be in idle mode for manual control");
-                return _comm.Potential;
-            });
-        }
-
-        /// <summary>
-        /// Reads the cell potential.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NullReferenceException">Not connected to a device</exception>
-        /// <exception cref="Exception">Device must be in idle mode for manual control</exception>
-        public Task<float> ReadCellPotentialAsync()
-        {
-            return RunAsync<float>((CommManager comm) => {
-                if (comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode for manual control");
-                return comm.GetPotentialAsync();
+                return await comm.GetPotentialAsync();
             });
         }
 
@@ -618,32 +575,14 @@ namespace PalmSens.Core.Simplified
         /// <param name="current">The current.</param>
         /// <exception cref="System.NullReferenceException">Not connected to a device</exception>
         /// <exception cref="System.Exception">Device must be in idle mode for manual control</exception>
-        public void SetCellCurrent(float current)
+        public async Task SetCellCurrent(float current)
         {
-            Run(() =>
-            {
-                if (_comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode for manual control");
-                if (!Capabilities.IsGalvanostat)
-                    throw new Exception("Device does not support Galvanostat mode");
-                _comm.Current = current;
-            });
-        }
-
-        /// <summary>
-        /// Sets the cell current.
-        /// </summary>
-        /// <param name="current">The current.</param>
-        /// <exception cref="System.NullReferenceException">Not connected to a device</exception>
-        /// <exception cref="System.Exception">Device must be in idle mode for manual control</exception>
-        public Task SetCellCurrentAsync(float current)
-        {
-            return RunAsync((CommManager comm) => {
+            await Run(async (CommManager comm) => {
                 if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode for manual control");
                 if (!comm.Capabilities.IsGalvanostat)
                     throw new Exception("Device does not support Galvanostat mode");
-                return comm.SetCurrentAsync(current);
+                await comm.SetCurrentAsync(current);
             });
         }
 
@@ -653,27 +592,12 @@ namespace PalmSens.Core.Simplified
         /// <returns></returns>
         /// <exception cref="NullReferenceException">Not connected to a device</exception>
         /// <exception cref="Exception">Device must be in idle mode for manual control</exception>
-        public float ReadCellCurrent()
+        public async Task<float> ReadCellCurrent()
         {
-            return Run<float>(() => {
-                if (_comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode for manual control");
-                return _comm.Current;
-            });
-        }
-
-        /// <summary>
-        /// Reads the cell current.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NullReferenceException">Not connected to a device</exception>
-        /// <exception cref="Exception">Device must be in idle mode for manual control</exception>
-        public Task<float> ReadCellCurrentAsync()
-        {
-            return RunAsync<float>((CommManager comm) => {
+            return await Run(async (CommManager comm) => {
                 if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode for manual control");
-                return comm.GetCurrentAsync();
+                return await comm.GetCurrentAsync();
             });
         }
 
@@ -683,27 +607,12 @@ namespace PalmSens.Core.Simplified
         /// <param name="currentRange">The current range.</param>
         /// <exception cref="System.NullReferenceException">Not connected to a device</exception>
         /// <exception cref="System.Exception">Device must be in idle mode for manual control</exception>
-        public void SetCurrentRange(CurrentRange currentRange)
+        public async Task SetCurrentRange(CurrentRange currentRange)
         {
-            Run(() => {
-                if (_comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode for manual control");
-                _comm.CurrentRange = currentRange;
-            });
-        }
-
-        /// <summary>
-        /// Sets the current range.
-        /// </summary>
-        /// <param name="currentRange">The current range.</param>
-        /// <exception cref="System.NullReferenceException">Not connected to a device</exception>
-        /// <exception cref="System.Exception">Device must be in idle mode for manual control</exception>
-        public Task SetCurrentRangeAsync(CurrentRange currentRange)
-        {
-            return RunAsync((CommManager comm) => {
+            await Run(async (CommManager comm) => {
                 if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode for manual control");
-                return comm.SetCurrentRangeAsync(currentRange);
+                await comm.SetCurrentRangeAsync(currentRange);
             });
         }
 
@@ -714,56 +623,15 @@ namespace PalmSens.Core.Simplified
         /// <param name="timeout">The timeout.</param>
         /// <exception cref="NullReferenceException">Not connected to a device</exception>
         /// <exception cref="Exception">Device must be in idle mode to run a MethodSCRIPT</exception>
-        public void StartSetterMethodScript(string script, int timeout = 500)
+        public async Task StartSetterMethodScriptAsync(string script, int timeout = 500)
         {
-            Run(() =>
-            {
-                if (_comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode to run a MethodSCRIPT");
-                if (Comm.ClientConnection is ClientConnectionMS connMS)
-                    connMS.StartSetterMethodScript(script, timeout);
-                else
-                    throw new Exception("Device does not support MethodSCRIPT");
-            });
-        }
-
-        /// <summary>
-        /// Runs a MethodSCRIPT on the device, ignoring any output returned by the script.
-        /// </summary>
-        /// <param name="script">The MethodSCRIPT.</param>
-        /// <param name="timeout">The timeout.</param>
-        /// <exception cref="NullReferenceException">Not connected to a device</exception>
-        /// <exception cref="Exception">Device must be in idle mode to run a MethodSCRIPT</exception>
-        public Task StartSetterMethodScriptAsync(string script, int timeout = 500)
-        {
-            return RunAsync((CommManager comm) => {
+            await Run(async (CommManager comm) => {
                 if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode to run a MethodSCRIPT");
                 if (comm.ClientConnection is ClientConnectionMS connMS)
-                    return connMS.StartSetterMethodScriptAsync(script, timeout);
-                else
-                    throw new Exception("Device does not support MethodSCRIPT");
-            });
-        }
-
-        /// <summary>
-        /// Runs a MethodSCRIPT on the device and returns the output.
-        /// A timeout exception will be thrown if no new data is received for longer than the timeout.
-        /// A timeout exception will be thrown for scripts that do not return anything.
-        /// </summary>
-        /// <param name="script">The MethodSCRIPT.</param>
-        /// <param name="timeout">The timeout.</param>
-        /// <returns></returns>
-        public string StartGetterMethodScript(string script, int timeout = 2500)
-        {
-            return Run(() =>
-            {
-                if (_comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode to run a MethodSCRIPT");
-                if (Comm.ClientConnection is ClientConnectionMS connMS)
-                    return connMS.StartGetterMethodScript(script, timeout);
-                else
-                    throw new Exception("Device does not support MethodSCRIPT");
+                    await connMS.StartSetterMethodScriptAsync(script, timeout);
+                    
+                throw new Exception("Device does not support MethodSCRIPT");
             });
         }
 
@@ -774,15 +642,15 @@ namespace PalmSens.Core.Simplified
         /// <param name="script">The MethodSCRIPT.</param>
         /// <param name="timeout">The timeout.</param>
         /// <returns></returns>
-        public Task<string> StartGetterMethodScriptAsync(string script, int timeout = 2500)
+        public async Task<string> StartGetterMethodScript(string script, int timeout = 2500)
         {
-            return RunAsync((CommManager comm) => {
+            return await Run(async (CommManager comm) => {
                 if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode to run a MethodSCRIPT");
                 if (comm.ClientConnection is ClientConnectionMS connMS)
-                    return connMS.StartGetterMethodScriptAsync(script, timeout);
-                else
-                    throw new Exception("Device does not support MethodSCRIPT");
+                    return await connMS.StartGetterMethodScriptAsync(script, timeout);
+                
+                throw new Exception("Device does not support MethodSCRIPT");
             });
         }
 
@@ -793,29 +661,12 @@ namespace PalmSens.Core.Simplified
         /// </summary>
         /// <param name="bitMask">A bitmask specifying which digital lines to read (0 = ignore, 1 = read).</param>
         /// <returns>Bitmask that represents the specified lines output signal (0 = low, 1 = high).</returns>
-        public uint ReadDigitalLine(byte bitMask)
+        public async Task<uint> ReadDigitalLine(byte bitMask)
         {
-            return Run(() =>
-            {
-                if (_comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode for manual control");
-                return Comm.ClientConnection.ReadDigitalLine(bitMask);
-            });
-        }
-
-        /// <summary>
-        /// Reads the specified digital line(s) state(s).
-        /// Which lines to read from are specified in a bitmask.
-        /// Bit 0 is for GPIO0, bit 1 for GPIO1, etc. Bits that are high correspond with a high output signal
-        /// </summary>
-        /// <param name="bitMask">A bitmask specifying which digital lines to read (0 = ignore, 1 = read).</param>
-        /// <returns>Bitmask that represents the specified lines output signal (0 = low, 1 = high).</returns>
-        public Task<uint> ReadDigitalLineAsync(byte bitMask)
-        {
-            return RunAsync((CommManager comm) => {
+            return await Run(async (CommManager comm) => {
                 if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode for manual control");
-                return comm.ClientConnection.ReadDigitalLineAsync(bitMask);
+                return await comm.ClientConnection.ReadDigitalLineAsync(bitMask);
             });
         }
 
@@ -825,28 +676,12 @@ namespace PalmSens.Core.Simplified
         /// Bit 0 is for GPIO0, bit 1 for GPIO1, etc. Bits that are high correspond with a high output signal
         /// </summary>
         /// <param name="bitMask">A bitmask specifying the output of the digital lines (0 = low, 1 = high).</param>
-        public void SetDigitalOutput(int bitMask)
+        public async Task SetDigitalOutput(int bitMask)
         {
-            Run(() =>
-            {
-                if (_comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode for manual control");
-                Comm.ClientConnection.SetDigitalOutput(bitMask);
-            });
-        }
-
-        /// <summary>
-        /// Sets the digital lines output signal high or low.
-        /// The output signal for the digital lines are defined in a bitmask.
-        /// Bit 0 is for GPIO0, bit 1 for GPIO1, etc. Bits that are high correspond with a high output signal
-        /// </summary>
-        /// <param name="bitMask">A bitmask specifying the output of the digital lines (0 = low, 1 = high).</param>
-        public Task SetDigitalOutputAsync(int bitMask)
-        {
-            return RunAsync((CommManager comm) => {
+            await Run(async (CommManager comm) => {
                 if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode for manual control");
-                return comm.ClientConnection.SetDigitalOutputAsync(bitMask);
+                await comm.ClientConnection.SetDigitalOutputAsync(bitMask);
             });
         }
 
@@ -857,29 +692,9 @@ namespace PalmSens.Core.Simplified
         /// </summary>
         /// <param name="bitMask">A bitmask specifying the output signal of the digital lines (0 = low, 1 = high).</param>
         /// <param name="configGPIO">A bitmask specifying the the mode of digital lines (0 = input, 1 = output).</param>
-        public void SetDigitalOutput(int bitMask, int configGPIO)
+        public Task SetDigitalOutput(int bitMask, int configGPIO)
         {
-            Run(() =>
-            {
-                if (_comm.State != CommManager.DeviceState.Idle)
-                    throw new Exception("Device must be in idle mode for manual control");
-                if (Comm.ClientConnection is ClientConnectionMS connMS)
-                    connMS.SetDigitalOutput(bitMask, configGPIO);
-                else
-                    throw new NotSupportedException("The connection does not support configuring GPIO.");
-            });
-        }
-
-        /// <summary>
-        /// Sets the specified digital lines to input/output and set the output signal of the lines set to output
-        /// The output signal for the digital lines are defined in a bitmask.
-        /// Bit 0 is for GPIO0, bit 1 for GPIO1, etc. Bits that are high correspond with a high output signal
-        /// </summary>
-        /// <param name="bitMask">A bitmask specifying the output signal of the digital lines (0 = low, 1 = high).</param>
-        /// <param name="configGPIO">A bitmask specifying the the mode of digital lines (0 = input, 1 = output).</param>
-        public Task SetDigitalOutputAsync(int bitMask, int configGPIO)
-        {
-            return RunAsync((CommManager comm) => {
+            return Run((CommManager comm) => {
                 if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode for manual control");
                 if (comm.ClientConnection is ClientConnectionMS connMS)
@@ -953,44 +768,12 @@ namespace PalmSens.Core.Simplified
         }
 
         /// <summary>
-        /// Safely run an Action delegate on the clientconnection.
-        /// </summary>
-        /// <param name="action">The action.</param>
-        private void Run(Action action)
-        {
-            if (_comm == null)
-                throw new NullReferenceException("Not connected to a device.");
-            if (TaskScheduler.Current == _comm.ClientConnection.TaskScheduler)
-                throw new Exception("The device can only execute one command at a time. Dead lock detected");
-            _comm.ClientConnection.Semaphore.Wait();
-            try { action(); }
-            finally { _comm.ClientConnection.Semaphore.Release(); }
-        }
-
-        /// <summary>
-        /// Safely run a Function delegate on the clientconnection.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="func">The function.</param>
-        /// <returns></returns>
-        private T Run<T>(Func<T> func)
-        {
-            if (_comm == null)
-                throw new NullReferenceException("Not connected to a device.");
-            if (TaskScheduler.Current == _comm.ClientConnection.TaskScheduler)
-                throw new Exception("The device can only execute one command at a time. Dead lock detected");
-            _comm.ClientConnection.Semaphore.Wait();
-            try { return func(); }
-            finally { _comm.ClientConnection.Semaphore.Release(); }
-        }
-
-        /// <summary>
         /// Runs an async Func delegate asynchronously on the clientconnections taskscheduler.
         /// </summary>
         /// <param name="func">The action.</param>
         /// <param name="comm">The connection to run the delegate on.</param>
         /// <returns></returns>
-        private async Task RunAsync(Func<CommManager, Task> func)
+        private async Task Run(Func<CommManager, Task> func)
         {
             await new SynchronizationContextRemover();
 
@@ -1008,7 +791,7 @@ namespace PalmSens.Core.Simplified
         /// <param name="func">The action.</param>
         /// <param name="comm">The connection to run the delegate on.</param>
         /// <returns></returns>
-        private async Task<T> RunAsync<T>(Func<CommManager, Task<T>> func)
+        private async Task<T> Run<T>(Func<CommManager, Task<T>> func)
         {
             await new SynchronizationContextRemover();
 
@@ -1034,25 +817,13 @@ namespace PalmSens.Core.Simplified
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="StatusEventArgs" /> instance containing the device status.</param>
         /// <exception cref="System.NullReferenceException">PlatformInvoker not set.</exception>
-        private void Comm_ReceiveStatus(object sender, StatusEventArgs e)
+        private async Task Comm_ReceiveStatus(object sender, StatusEventArgs e)
         {
             if (_platformInvoker == null)
                 throw new NullReferenceException("PlatformInvoker not set.");
-            if (_platformInvoker.InvokeIfRequired(new StatusEventHandler(Comm_ReceiveStatus), sender, e)) //Recast event to UI thread when necessary
+            if (_platformInvoker.InvokeIfRequired(new AsyncEventHandler<StatusEventArgsAsync>(Comm_ReceiveStatus), sender, e)) //Recast event to UI thread when necessary
                 return;
             ReceiveStatus?.Invoke(this, e);
-        }
-
-        /// <summary>
-        /// Casts ReceiveStatus events coming from a different thread to the UI thread when necessary.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="StatusEventArgs" /> instance containing the device status.</param>
-        /// <exception cref="System.NullReferenceException">PlatformInvoker not set.</exception>
-        private Task Comm_ReceiveStatusAsync(object sender, StatusEventArgs e)
-        {
-            Comm_ReceiveStatus(sender, e);
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -1064,27 +835,15 @@ namespace PalmSens.Core.Simplified
         /// Sets the ActiveMeasurement at the start of a measurement and casts BeginMeasurement events coming from a different thread to the UI thread when necessary.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="newMeasurement">The new measurement.</param>
+        /// <param name="e">The new measurement.</param>
         /// <exception cref="System.NullReferenceException">PlatformInvoker not set.</exception>
-        private void Comm_BeginMeasurement(object sender, ActiveMeasurement newMeasurement)
+        private async Task Comm_BeginMeasurement(object sender, BeginMeasurementEventArgsAsync e)
         {
             if (_platformInvoker == null)
                 throw new NullReferenceException("PlatformInvoker not set.");
-            if (_platformInvoker.InvokeIfRequired(new CommManager.BeginMeasurementEventHandler(Comm_BeginMeasurement), sender, newMeasurement)) //Recast event to UI thread when necessary
+            if (_platformInvoker.InvokeIfRequired(new AsyncEventHandler<BeginMeasurementEventArgsAsync>(Comm_BeginMeasurement), sender, e)) //Recast event to UI thread when necessary
                 return;
             MeasurementStarted?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        /// Sets the ActiveMeasurement at the start of a measurement and casts BeginMeasurement events coming from a different thread to the UI thread when necessary.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The new measurement.</param>
-        /// <exception cref="System.NullReferenceException">PlatformInvoker not set.</exception>
-        private Task Comm_BeginMeasurementAsync(object sender, CommManager.BeginMeasurementEventArgsAsync e)
-        {
-            Comm_BeginMeasurement(sender, e.NewMeasurement);
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -1098,7 +857,7 @@ namespace PalmSens.Core.Simplified
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         /// <exception cref="System.NullReferenceException">PlatformInvoker not set.</exception>
-        private void Comm_EndMeasurement(object _, EventArgs e)
+        private async Task Comm_EndMeasurement(object sender, EndMeasurementAsyncEventArgs e)
         {
             if (_platformInvoker == null)
                 throw new NullReferenceException("PlatformInvoker not set.");
@@ -1106,25 +865,13 @@ namespace PalmSens.Core.Simplified
             ActiveMeasurement = null;
 
             if (!_platformInvoker.InvokeIfRequired(
-                (EventHandler<Exception>)((sender, ex) =>
-                {
-                    MeasurementEnded?.Invoke(sender, ex);
-                }), this, _commErrorException)) //Recast event to UI thread when necessary
+                    (EventHandler<Exception>)((sender, ex) =>
+                    {
+                        MeasurementEnded?.Invoke(sender, ex);
+                    }), this, _commErrorException)) //Recast event to UI thread when necessary
             {
                 MeasurementEnded?.Invoke(this, _commErrorException);
             }
-        }
-
-        /// <summary>
-        /// Sets the ActiveMeasurement to null at the end of the measurement and casts EndMeasurement events coming from a different thread to the UI thread when necessary.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-        /// <exception cref="System.NullReferenceException">PlatformInvoker not set.</exception>
-        private Task Comm_EndMeasurementAsync(object sender, CommManager.EndMeasurementAsyncEventArgs e)
-        {
-            Comm_EndMeasurement(sender, e);
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -1165,22 +912,7 @@ namespace PalmSens.Core.Simplified
         /// <summary>
         /// Occurs when the devive's [state changed].
         /// </summary>
-        public event CommManager.StatusChangedEventHandler StateChanged;
-
-        /// <summary>
-        /// Casts StateChanged events coming from a different thread to the UI thread when necessary.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="CurrentState">State of the current.</param>
-        /// <exception cref="System.NullReferenceException">PlatformInvoker not set.</exception>
-        private void Comm_StateChanged(object sender, CommManager.DeviceState CurrentState)
-        {
-            if (_platformInvoker == null)
-                throw new NullReferenceException("PlatformInvoker not set.");
-            if (_platformInvoker.InvokeIfRequired(new CommManager.StatusChangedEventHandler(Comm_StateChanged), sender, CurrentState)) //Recast event to UI thread when necessary
-                return;
-            StateChanged?.Invoke(this, CurrentState);
-        }
+        public event StatusChangedEventHandler StateChanged;
 
         /// <summary>
         /// Casts StateChanged events coming from a different thread to the UI thread when necessary.
@@ -1188,10 +920,13 @@ namespace PalmSens.Core.Simplified
         /// <param name="sender">The sender.</param>
         /// <param name="e">State of the current.</param>
         /// <exception cref="System.NullReferenceException">PlatformInvoker not set.</exception>
-        private Task Comm_StateChangedAsync(object sender, CommManager.StateChangedAsyncEventArgs e)
+        private async Task Comm_StateChanged(object sender, StateChangedAsyncEventArgs e)
         {
-            Comm_StateChanged(sender, e.State);
-            return Task.CompletedTask;
+            if (_platformInvoker == null)
+                throw new NullReferenceException("PlatformInvoker not set.");
+            if (_platformInvoker.InvokeIfRequired(new AsyncEventHandler<StateChangedAsyncEventArgs>(Comm_StateChanged), sender, e)) //Recast event to UI thread when necessary
+                return;
+            StateChanged?.Invoke(this, e.State);
         }
 
         /// <summary>
@@ -1241,7 +976,7 @@ namespace PalmSens.Core.Simplified
 
             if (ActiveMeasurement != null)
             {
-                Comm_EndMeasurement(sender, EventArgs.Empty);
+                Comm_EndMeasurement(sender, null).Wait();
             }
         }
 #endregion

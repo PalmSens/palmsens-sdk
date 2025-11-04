@@ -10,10 +10,6 @@
         <VerticalStackLayout
             Padding="25,25"
             Spacing="15">
-            <Image
-                Source="banner.png"
-                HeightRequest="185"
-                Aspect="AspectFit" />
 
             <Label
                 Text="Basic example"

@@ -1,13 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net9.0-android</TargetFramework>
-    <AssemblyTitle>PalmSens.Core.Simplified.Android</AssemblyTitle>
-    <Product>PalmSens.Core.Simplified.Android</Product>
-    <Copyright>Copyright ©  2017</Copyright>
-    <AssemblyVersion>5.10.0316</AssemblyVersion>
-    <FileVersion>5.10.0316</FileVersion>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PalmSens.Core.Simplified\PalmSens.Core.Simplified.NET.csproj" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0-android</TargetFramework>
+		<SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<!--
+      Enable trim analyzers for Android class libraries.
+      To learn more, see: https://learn.microsoft.com/dotnet/core/deploying/trimming/prepare-libraries-for-trimming
+    -->
+		<IsTrimmable>true</IsTrimmable>
+	</PropertyGroup>
+	<ItemGroup>
+		<AndroidJavaSource Remove="Properties\**" />
+		<AndroidLibrary Remove="Properties\**" />
+		<AndroidNativeLibrary Remove="Properties\**" />
+		<Compile Remove="Properties\**" />
+		<EmbeddedResource Remove="Properties\**" />
+		<JavaSourceJar Remove="Properties\**" />
+		<None Remove="Properties\**" />
+		<ProguardConfiguration Remove="Properties\**" />
+		<TransformFile Remove="Properties\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Remove="PSCommSimpleAndroidBackwardsCompatible.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="PalmSens.Core.Android" Version="5.12.1610" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PalmSens.Core.Simplified\PalmSens.Core.Simplified.csproj" />
+	</ItemGroup>
 </Project>

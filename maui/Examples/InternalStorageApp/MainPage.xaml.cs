@@ -3,22 +3,30 @@ using PalmSens.Core.Simplified;
 using PalmSens.Core.Simplified.InternalStorage;
 using PalmSens.Data;
 using System.Collections.ObjectModel;
+using PalmSens.Core.Simplified.MAUI;
 using Device = PalmSens.Devices.Device;
 
 namespace PalmSensInternalStorage
 {
     public partial class MainPage : ContentPage
     {
+        public IPlatformInvoker PlatformInvoker { get; }
         private IReadOnlyList<Device> _availableDevices;
         private Device _selectedDevice;
         private readonly PSCommSimple _psCommSimple;
         private string _selectedFile;
 
-        public MainPage(PSCommSimple psCommSimple)
+        public MainPage(
+            PSCommSimpleMaui psCommSimple,
+            IPlatformInvoker platformInvoker)
         {
+            PlatformInvoker = platformInvoker;
             InitializeComponent();
             BindingContext = this;
+
+            psCommSimple.Initialize();  // This needs to be called after the main page has been initialized
             this._psCommSimple = psCommSimple;
+
             _contents = new Dictionary<string, IInternalStorageItem>();
         }
 
@@ -77,7 +85,7 @@ namespace PalmSensInternalStorage
             DiscoverBtn.IsEnabled = false;
             try
             {
-                AvailableDevices = await _psCommSimple.GetAvailableDevicesAsync();
+                AvailableDevices = await _psCommSimple.GetAvailableDevices();
                 SelectedDevice = AvailableDevices.FirstOrDefault();
             }
             finally
@@ -94,14 +102,14 @@ namespace PalmSensInternalStorage
 
             if (_psCommSimple.Connected)
             {
-                await _psCommSimple.DisconnectAsync();
+                await _psCommSimple.Disconnect();
 
             }
             else
             {
                 try
                 {
-                    await _psCommSimple.ConnectAsync(SelectedDevice);
+                    await _psCommSimple.Connect(SelectedDevice);
                 }
                 catch (Exception ex)
                 {
@@ -136,7 +144,8 @@ namespace PalmSensInternalStorage
             Log.Add("Reading contents from: Root");
 
             var browser = _psCommSimple.GetInternalStorageBrowser();
-            _root = await browser.GetRootAsync();
+
+            _root = browser.GetRoot();
 
             LoadChildren(_root);
 

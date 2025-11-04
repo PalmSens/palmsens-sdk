@@ -12,7 +12,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
         public InternalStorageFileNormalLoader(DeviceFile rawData, ClientConnection clientConnection) : base(rawData, clientConnection)
         {
         }
-
+        
         /// <summary>
         ///     Load a method script measurement
         /// </summary>
@@ -21,7 +21,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
         {
             return m.ReceiveMeasurement(connection, muxChannel, measType, buff);
         }
-
+        
         /// <summary>
         ///     Load a method script measurement
         /// </summary>

@@ -10,20 +10,10 @@ using PalmSens.Comm;
 using PalmSens.Devices;
 using PalmSens.Windows.Devices;
 
-namespace PalmSens.Core.Simplified.WinForms
+namespace PalmSens.Core.Simplified.WinUi
 {
-    public class DeviceHandler : IPlatform
+    public class DeviceHandler : IPlatform, IPlatformMulti
     {
-        public DeviceHandler()
-        {}
-
-        public Device[] ConnectedDevices { get { return ScanDevices(); } }
-
-        public async Task<IReadOnlyList<Device>> GetAvailableDevices()
-        {
-            return await ScanDevicesAsync();
-        }
-
         public bool EnableBluetooth = false;
 
         public bool EnableSerialPort = false;
@@ -35,45 +25,7 @@ namespace PalmSens.Core.Simplified.WinForms
         /// Returns an array of connected devices
         /// </returns>
         /// <exception cref="System.ArgumentException">An error occured while attempting to scan for connected devices.</exception>
-        private Device[] ScanDevices()
-        {
-            Device[] devices = new Device[0];
-            string errors = "";
-
-            try //Attempt to find connected palmsens/emstat devices
-            {
-                List<DeviceList.DiscoverDevicesFunc> discFuncs = new List<DeviceList.DiscoverDevicesFunc>();
-                //Add delegates to list for finding devices on specific communication protocols
-                discFuncs.Add(USBCDCDevice.DiscoverDevices); //Default for PS4
-                discFuncs.Add(FTDIDevice.DiscoverDevices); //Default for Emstat + PS3
-                discFuncs.Add(WinUSBDevice.DiscoverDevices); //Default for ES4X
-                if(EnableSerialPort)
-                    discFuncs.Add(SerialPortDevice.DiscoverDevices); //Devices connected via serial port
-                if (EnableBluetooth)
-                {
-                    //discFuncs.Add(BluetoothDevice.DiscoverDevices); //BLC not yet supported needs to be ported to use NET Core instead of Framework package
-                    discFuncs.Add(BLEDevice.DiscoverDevices);
-                }
-
-                //Return a new array of connected devices found with the included delegate functions
-                devices = new DeviceList(discFuncs).GetAvailableDevices(out errors, EnableBluetooth);
-                AvailableDevices = devices;
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException($"An error occured while attempting to scan for connected devices. {Environment.NewLine} {errors}");
-            }
-            return devices;
-        }
-
-        /// <summary>
-        /// Scans for connected devices.
-        /// </summary>
-        /// <returns>
-        /// Returns an array of connected devices
-        /// </returns>
-        /// <exception cref="System.ArgumentException">An error occured while attempting to scan for connected devices.</exception>
-        private async Task<Device[]> ScanDevicesAsync()
+        public async Task<IReadOnlyList<Device>> GetAvailableDevices()
         {
             List<Device> devices = new List<Device>();
             string errors = "";
@@ -93,12 +45,12 @@ namespace PalmSens.Core.Simplified.WinForms
                         discFuncs.Add(SerialPortDevice.DiscoverDevicesAsync()); //Devices connected via serial port
                     if (EnableBluetooth)
                     {
-                        //discFuncs.Add(BluetoothDevice
-                        //    .DiscoverDevicesAsync()); //BLC not yet supported needs to be ported to use NET Core instead of Framework package
-                        discFuncs.Add(BLEDevice.DiscoverDevicesAsync());
+                        discFuncs.Add(BluetoothDevice
+                            .DiscoverDevicesAsync()); //Bluetooth devices (PS4, PS3, Emstat Blue)
+                        discFuncs.Add(BLEDevice.DiscoverDevicesAsync()); //BLEDevices requires adding a reference to the PalmSens.Core.Windows.BLE.dll
                     }
 
-                    //Return a new array of connected devices found with the included delegate functions
+                    //Return a new array of connected devices found with the included delegate functions 
                     return await Task.WhenAll(discFuncs);
                 });
                 foreach (List<Device> discDevices in discResults)
@@ -108,50 +60,10 @@ namespace PalmSens.Core.Simplified.WinForms
             {
                 throw new ArgumentException($"An error occured while attempting to scan for connected devices. {Environment.NewLine} {errors}");
             }
-
-            AvailableDevices = devices;
             return devices.ToArray();
         }
 
         /// <summary>
-        /// Connects to the first device in the connected devices array and returns its CommManager.
-        /// </summary>
-        /// <returns>
-        /// The CommManager of the device it connected to or null
-        /// </returns>
-        /// <exception cref="System.Exception">Could not find a device to connect to.</exception>
-        public CommManager Connect()
-        {
-            CommManager comm = null;
-            Device[] devices = ScanDevices();
-            if (devices.Length == 0)
-                throw new Exception("Could not find a device to connect to.");
-            else
-                comm = Connect(devices[0]);
-            return comm;
-        }
-
-        /// <summary>
-        /// Connects to the first device in the connected devices array and returns its CommManager.
-        /// </summary>
-        /// <returns>
-        /// The CommManager of the device it connected to or null
-        /// </returns>
-        /// <exception cref="System.Exception">Could not find a device to connect to.</exception>
-        public async Task<CommManager> ConnectAsync()
-        {
-            CommManager comm = null;
-            Device[] devices = await ScanDevicesAsync();
-            if (devices.Length == 0)
-                throw new Exception("Could not find a device to connect to.");
-            else
-                (comm, _, _) = await ConnectAsync(devices[0], -1, true);
-            return comm;
-        }
-
-        public IReadOnlyList<Device> AvailableDevices { get; private set; }
-
-        /// <summary>
         /// Connects to the specified device and returns its CommManager.
         /// </summary>
         /// <param name="device">The device.</param>
@@ -160,36 +72,7 @@ namespace PalmSens.Core.Simplified.WinForms
         /// </returns>
         /// <exception cref="System.ArgumentNullException">The specified device cannot be null.</exception>
         /// <exception cref="System.Exception">Could not connect to the specified device.</exception>
-        public CommManager Connect(Device device)
-        {
-            if (device == null)
-                throw new ArgumentNullException("The specified device cannot be null.");
-            CommManager comm = null;
-
-            try
-            {
-                device.Open(); //Open the device to allow a connection
-                comm = new CommManager(device); //Connect to the selected device
-            }
-            catch (Exception ex)
-            {
-                device.Close();
-                throw new Exception($"Could not connect to the specified device. {ex.Message}");
-            }
-
-            return comm;
-        }
-
-        /// <summary>
-        /// Connects to the specified device and returns its CommManager.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        /// <returns>
-        /// The CommManager of the device or null
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">The specified device cannot be null.</exception>
-        /// <exception cref="System.Exception">Could not connect to the specified device.</exception>
-        public async Task<CommManager> ConnectAsync(Device device)
+        public async Task<CommManager> Connect(Device device)
         {
             return (await ConnectAsync(device, channel: -1, throwExceptions: true)).Comm;
         }
@@ -243,7 +126,7 @@ namespace PalmSens.Core.Simplified.WinForms
         /// The CommManagers
         /// </returns>
         /// <exception cref="ArgumentNullException">The specified devices cannot be null.</exception>
-        internal Task<IList<(CommManager Comm, int ChannelIndex, Exception Exception)>> ConnectAsync(IList<Device> devices, IList<int> channelIndices)
+        public Task<IReadOnlyList<(CommManager Comm, int ChannelIndex, Exception Exception)>> Connect(IReadOnlyList<Device> devices, IList<int> channelIndices = null)
         {
             if (devices == null)
                 throw new ArgumentNullException("The specified devices cannot be null.");
@@ -262,27 +145,9 @@ namespace PalmSens.Core.Simplified.WinForms
         /// <summary>
         /// Disconnects the device using its CommManager.
         /// </summary>
-        /// <param name="comm">The device's CommManager.</param>
-        /// <exception cref="System.ArgumentNullException">The specified CommManager cannot be null.</exception>
-        public void Disconnect(CommManager comm)
-        {
-            if (comm == null)
-                throw new ArgumentNullException("The specified CommManager cannot be null.");
-
-            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            EventHandler disconnected = (sender, args) => tcs.SetResult(true);
-            comm.Disconnected += disconnected;
-            comm.DisconnectAsync();
-            tcs.Task.Wait();
-            comm.Disconnected -= disconnected;
-        }
-
-        /// <summary>
-        /// Disconnects the device using its CommManager.
-        /// </summary>
         /// <param name="comm"></param>
         /// <returns></returns>
-        public async Task DisconnectAsync(CommManager comm)
+        public async Task Disconnect(CommManager comm)
         {
             await DisconnectAsync(comm, throwException: true);
         }
@@ -323,14 +188,14 @@ namespace PalmSens.Core.Simplified.WinForms
         /// </summary>
         /// <param name="comms">The comms.</param>
         /// <exception cref="System.ArgumentNullException">The specified CommManager array cannot be null.</exception>
-        internal async Task<IList<(int channelIndex, Exception ex)>> Disconnect(IEnumerable<CommManager> comms, bool throwExceptions = true)
+        public async Task<IReadOnlyList<(int ChannelIndex, Exception Exception)>> Disconnect(IReadOnlyList<CommManager> comms)
         {
             if (comms == null)
                 throw new ArgumentNullException("The specified CommManager array cannot be null.");
             List<Task<(int, Exception)>> disconnectTasks = new List<Task<(int, Exception)>>();
             foreach (CommManager comm in comms)
                 disconnectTasks.Add(DisconnectAsync(comm, false));
-            IList<(int channelIndex, Exception exception)> result = await Task.WhenAll(disconnectTasks);
+            IReadOnlyList<(int channelIndex, Exception exception)> result = await Task.WhenAll(disconnectTasks);
 
             List<Exception> exceptions = new List<Exception>();
             foreach (var channel in result)
@@ -339,10 +204,12 @@ namespace PalmSens.Core.Simplified.WinForms
                     exceptions.Add(new Exception(string.Format("Failed to disconnect{0}.", channel.channelIndex == -1 ? "" : "to channel " + channel.channelIndex.ToString()), channel.exception));
             }
 
-            if (throwExceptions && exceptions.Count > 0)
-                throw new AggregateException(exceptions);
-
             return result;
+        }
+
+        public Task<Device> MatchDevices(Device deviceInErrorState)
+        {
+            throw new NotImplementedException();
         }
     }
 }

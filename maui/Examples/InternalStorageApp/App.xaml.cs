@@ -4,6 +4,7 @@
     {
         public App()
         {
+            this.UserAppTheme = AppTheme.Light;
             InitializeComponent();
         }
 

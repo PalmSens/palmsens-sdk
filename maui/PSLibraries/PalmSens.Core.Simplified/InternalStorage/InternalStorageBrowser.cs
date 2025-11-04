@@ -233,7 +233,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
         {
             return deviceFiles.Select(d => d.Type == DeviceFileType.Folder ? (IInternalStorageItem) new InternalStorageFolderLazy(parent, d.Name, this) : new InternalStorageFile(parent, d.Name, this)).ToList();
         }
-
+        
         /// <summary>
         /// Get the device files for the path.
         /// </summary>

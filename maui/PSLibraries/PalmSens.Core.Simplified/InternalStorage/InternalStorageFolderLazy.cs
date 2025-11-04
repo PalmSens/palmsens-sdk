@@ -23,7 +23,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
         }
 
         #region IInternalStorageFolder Members
-
+        
         /// <summary>
         ///     Add a file to this folder.
         /// </summary>
@@ -32,7 +32,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
         {
             _files.Value.Add(file);
         }
-
+        
         /// <summary>
         ///     Add a sub folder to this folder.
         /// </summary>
@@ -41,7 +41,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
         {
             _subFolders.Value.Add(folder);
         }
-
+        
         /// <summary>
         ///     Get a list of files for this folder.
         /// </summary>
@@ -50,7 +50,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
         {
             return _files.Value;
         }
-
+        
         /// <summary>
         ///     Get a list of files for this folder.
         /// </summary>
@@ -61,7 +61,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
 
             return _files.Value;
         }
-
+        
         /// <summary>
         /// Get a list of subfolders for this folder
         /// </summary>
@@ -70,7 +70,7 @@ namespace PalmSens.Core.Simplified.InternalStorage
         {
             return _subFolders.Value;
         }
-
+        
         /// <summary>
         /// Get a list of subfolders for this folder
         /// </summary>

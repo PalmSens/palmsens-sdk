@@ -1,4 +1,5 @@
 using OxyPlot;
+using PalmSens.Core.Simplified;
 
 namespace SDKPlot.Maui;
 
@@ -38,7 +39,8 @@ public partial class PlotView : ContentView, IPlotInvoker, IDisposable
             method.DynamicInvoke(args);
         });
     }
-    public static bool InvokeIfRequired(Action action)
+
+    public bool InvokeIfRequired(Action action)
     {
         if (MainThread.IsMainThread)
         {
@@ -59,11 +61,7 @@ public partial class PlotView : ContentView, IPlotInvoker, IDisposable
         return MainThread.InvokeOnMainThreadAsync(action);
     }
 
-    public void DoEvents()
-    {
-        //Application.Current.Dispatcher.Invoke(DispatcherPriority.Background,
-        //    new Action(delegate { }));
-    }
+    public void DoEvents() { }
 
     public void Dispose()
     {

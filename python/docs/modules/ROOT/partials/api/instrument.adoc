@@ -1,4 +1,4 @@
-== `pypalmsens`
+== pypalmsens
 
 *Classes:*
 
@@ -13,7 +13,7 @@ instrument.
 InstrumentManager.
 * link:#pypalmsens.discover[*discover*] – Discover instruments.
 
-=== `InstrumentManager`
+=== InstrumentManager
 
 [source,python]
 ----
@@ -26,47 +26,47 @@ Instrument manager for PalmSens instruments.
 
 * *instrument*
 (link:#pypalmsens._instruments._common.Instrument[Instrument]) –
-Instrument to connect to, use `discover()` to find connected
+Instrument to connect to, use `+discover()+` to find connected
 instruments.
 * *callback*
-(link:#typing.Optional[Optional]++[++link:#pypalmsens._instruments._common.Callback[Callback]++]++)
+(link:#typing.Optional[Optional][link:#pypalmsens._instruments._common.Callback[Callback]])
 – If specified, call this function on every new set of data points. New
 data points are batched, and contain all points since the last time it
-was called. Each point is a dictionary containing `frequency`,
-`z++_++re`, `z++_++im` for impedimetric techniques and `index`, `x`,
-`x++_++unit`, `x++_++type`, `y`, `y++_++unit` and `y++_++type` for
+was called. Each point is a dictionary containing `+frequency+`,
+`+z_re+`, `+z_im+` for impedimetric techniques and `+index+`, `+x+`,
+`+x_unit+`, `+x_type+`, `+y+`, `+y_unit+` and `+y_type+` for
 non-impedimetric techniques.
 
 *Functions:*
 
-* link:#pypalmsens.InstrumentManager.is_connected[*is++_++connected*] –
+* link:#pypalmsens.InstrumentManager.is_connected[*is_connected*] –
 Return True if an instrument connection exists.
 * link:#pypalmsens.InstrumentManager.connect[*connect*] – Connect to
 instrument.
-* link:#pypalmsens.InstrumentManager.set_cell[*set++_++cell*] – Turn the
+* link:#pypalmsens.InstrumentManager.set_cell[*set_cell*] – Turn the
 cell on or off.
-* link:#pypalmsens.InstrumentManager.set_potential[*set++_++potential*]
-– Set the potential of the cell.
-* link:#pypalmsens.InstrumentManager.set_current_range[*set++_++current++_++range*]
+* link:#pypalmsens.InstrumentManager.set_potential[*set_potential*] –
+Set the potential of the cell.
+* link:#pypalmsens.InstrumentManager.set_current_range[*set_current_range*]
 – Set the current range for the cell.
-* link:#pypalmsens.InstrumentManager.read_current[*read++_++current*] –
-Read the current in µA.
-* link:#pypalmsens.InstrumentManager.read_potential[*read++_++potential*]
-– Read the potential in V.
-* link:#pypalmsens.InstrumentManager.get_instrument_serial[*get++_++instrument++_++serial*]
+* link:#pypalmsens.InstrumentManager.read_current[*read_current*] – Read
+the current in µA.
+* link:#pypalmsens.InstrumentManager.read_potential[*read_potential*] –
+Read the potential in V.
+* link:#pypalmsens.InstrumentManager.get_instrument_serial[*get_instrument_serial*]
 – Return instrument serial number.
-* link:#pypalmsens.InstrumentManager.validate_method[*validate++_++method*]
+* link:#pypalmsens.InstrumentManager.validate_method[*validate_method*]
 – Validate method.
 * link:#pypalmsens.InstrumentManager.measure[*measure*] – Start
 measurement using given method parameters.
-* link:#pypalmsens.InstrumentManager.wait_digital_trigger[*wait++_++digital++_++trigger*]
+* link:#pypalmsens.InstrumentManager.wait_digital_trigger[*wait_digital_trigger*]
 – Wait for digital trigger.
 * link:#pypalmsens.InstrumentManager.abort[*abort*] – Abort measurement.
-* link:#pypalmsens.InstrumentManager.initialize_multiplexer[*initialize++_++multiplexer*]
+* link:#pypalmsens.InstrumentManager.initialize_multiplexer[*initialize_multiplexer*]
 – Initialize the multiplexer.
-* link:#pypalmsens.InstrumentManager.set_mux8r2_settings[*set++_++mux8r2++_++settings*]
+* link:#pypalmsens.InstrumentManager.set_mux8r2_settings[*set_mux8r2_settings*]
 – Set the settings for the Mux8R2 multiplexer.
-* link:#pypalmsens.InstrumentManager.set_multiplexer_channel[*set++_++multiplexer++_++channel*]
+* link:#pypalmsens.InstrumentManager.set_multiplexer_channel[*set_multiplexer_channel*]
 – Sets the multiplexer channel.
 * link:#pypalmsens.InstrumentManager.disconnect[*disconnect*] –
 Disconnect from the instrument.
@@ -78,7 +78,7 @@ callback is called on every data point.
 * link:#pypalmsens.InstrumentManager.instrument[*instrument*] –
 Instrument to connect to.
 
-==== `callback`
+==== callback
 
 [source,python]
 ----
@@ -87,7 +87,7 @@ callback = callback
 
 This callback is called on every data point.
 
-==== `instrument`
+==== instrument
 
 [source,python]
 ----
@@ -96,7 +96,7 @@ instrument = instrument
 
 Instrument to connect to.
 
-==== `is++_++connected`
+==== is_connected
 
 [source,python]
 ----
@@ -105,7 +105,7 @@ is_connected()
 
 Return True if an instrument connection exists.
 
-==== `connect`
+==== connect
 
 [source,python]
 ----
@@ -114,7 +114,7 @@ connect()
 
 Connect to instrument.
 
-==== `set++_++cell`
+==== set_cell
 
 [source,python]
 ----
@@ -125,9 +125,9 @@ Turn the cell on or off.
 
 *Parameters:*
 
-* *cell++_++on* (link:#bool[bool]) – If true, turn on the cell
+* *cell_on* (link:#bool[bool]) – If true, turn on the cell
 
-==== `set++_++potential`
+==== set_potential
 
 [source,python]
 ----
@@ -140,7 +140,7 @@ Set the potential of the cell.
 
 * *potential* (link:#float[float]) – Potential in V
 
-==== `set++_++current++_++range`
+==== set_current_range
 
 [source,python]
 ----
@@ -151,11 +151,11 @@ Set the current range for the cell.
 
 *Parameters:*
 
-* *current++_++range*
-(link:#pypalmsens._methods.CURRENT_RANGE[CURRENT++_++RANGE]) – Set the
-current range, use `pypalmsens.settings.CURRENT++_++RANGE`.
+* *current_range*
+(link:#pypalmsens._methods.CURRENT_RANGE[CURRENT_RANGE]) – Set the
+current range, use `+pypalmsens.settings.CURRENT_RANGE+`.
 
-==== `read++_++current`
+==== read_current
 
 [source,python]
 ----
@@ -168,7 +168,7 @@ Read the current in µA.
 
 * link:#float[float] – Current in µA.”
 
-==== `read++_++potential`
+==== read_potential
 
 [source,python]
 ----
@@ -181,7 +181,7 @@ Read the potential in V.
 
 * link:#float[float] – Potential in V.
 
-==== `get++_++instrument++_++serial`
+==== get_instrument_serial
 
 [source,python]
 ----
@@ -194,7 +194,7 @@ Return instrument serial number.
 
 * link:#str[str] – Instrument serial.
 
-==== `validate++_++method`
+==== validate_method
 
 [source,python]
 ----
@@ -203,7 +203,7 @@ validate_method(psmethod)
 
 Validate method.
 
-==== `measure`
+==== measure
 
 [source,python]
 ----
@@ -217,7 +217,7 @@ Start measurement using given method parameters.
 * *method* (link:#pypalmsens._methods.BaseTechnique[BaseTechnique]) –
 Method parameters for measurement
 
-==== `wait++_++digital++_++trigger`
+==== wait_digital_trigger
 
 [source,python]
 ----
@@ -228,9 +228,9 @@ Wait for digital trigger.
 
 *Parameters:*
 
-* *wait++_++for++_++high* – …
+* *wait_for_high* – …
 
-==== `abort`
+==== abort
 
 [source,python]
 ----
@@ -239,7 +239,7 @@ abort()
 
 Abort measurement.
 
-==== `initialize++_++multiplexer`
+==== initialize_multiplexer
 
 [source,python]
 ----
@@ -250,14 +250,14 @@ Initialize the multiplexer.
 
 *Parameters:*
 
-* *mux++_++model* (link:#int[int]) – The model of the multiplexer. 0 = 8
+* *mux_model* (link:#int[int]) – The model of the multiplexer. 0 = 8
 channel, 1 = 16 channel, 2 = 32 channel.
 
 *Returns:*
 
 * link:#int[int] – Number of available multiplexes channels
 
-==== `set++_++mux8r2++_++settings`
+==== set_mux8r2_settings
 
 [source,python]
 ----
@@ -268,21 +268,18 @@ Set the settings for the Mux8R2 multiplexer.
 
 *Parameters:*
 
-* *connect++_++sense++_++to++_++working++_++electrode*
-(link:#bool[bool]) – Connect the sense electrode to the working
-electrode. Default is False.
-* *combine++_++reference++_++and++_++counter++_++electrodes*
-(link:#bool[bool]) – Combine the reference and counter electrodes.
-Default is False.
-* *use++_++channel++_++1++_++reference++_++and++_++counter++_++electrodes*
-(link:#bool[bool]) – Use channel 1 reference and counter electrodes for
-all working electrodes. Default is False.
-* *set++_++unselected++_++channel++_++working++_++electrode*
-(link:#int[int]) – Set the unselected channel working electrode to
-disconnected/floating (0), ground (1), or standby potential (2). Default
-is 0.
+* *connect_sense_to_working_electrode* (link:#bool[bool]) – Connect the
+sense electrode to the working electrode. Default is False.
+* *combine_reference_and_counter_electrodes* (link:#bool[bool]) –
+Combine the reference and counter electrodes. Default is False.
+* *use_channel_1_reference_and_counter_electrodes* (link:#bool[bool]) –
+Use channel 1 reference and counter electrodes for all working
+electrodes. Default is False.
+* *set_unselected_channel_working_electrode* (link:#int[int]) – Set the
+unselected channel working electrode to disconnected/floating (0),
+ground (1), or standby potential (2). Default is 0.
 
-==== `set++_++multiplexer++_++channel`
+==== set_multiplexer_channel
 
 [source,python]
 ----
@@ -295,7 +292,7 @@ Sets the multiplexer channel.
 
 * *channel* (link:#int[int]) – Index of the channel to set.
 
-==== `disconnect`
+==== disconnect
 
 [source,python]
 ----
@@ -304,7 +301,7 @@ disconnect()
 
 Disconnect from the instrument.
 
-=== `InstrumentPool`
+=== InstrumentPool
 
 [source,python]
 ----
@@ -316,14 +313,14 @@ Manages a set of instrument.
 Most calls are run asynchronously in the background, which means that
 measurements are running in parallel.
 
-This is a thin wrapper around the `InstrumentManagerAsync`.
+This is a thin wrapper around the `+InstrumentManagerAsync+`.
 
 *Parameters:*
 
-* *devices++_++or++_++managers*
-(link:#list[list]++[++link:#pypalmsens._instruments._common.Instrument[Instrument]
-++|++
-link:#pypalmsens._instruments.instrument_manager_async.InstrumentManagerAsync[InstrumentManagerAsync]++]++)
+* *devices_or_managers*
+(link:#list[list][link:#pypalmsens._instruments._common.Instrument[Instrument]
+|
+link:#pypalmsens._instruments.instrument_manager_async.InstrumentManagerAsync[InstrumentManagerAsync]])
 – List of devices or managers.
 * *callback* (link:#typing.Callable[Callable]) – Optional callable to
 set on instrument managers
@@ -334,10 +331,10 @@ set on instrument managers
 instrument managers in the pool.
 * link:#pypalmsens.InstrumentPool.disconnect[*disconnect*] – Disconnect
 all instrument managers in the pool.
-* link:#pypalmsens.InstrumentPool.is_connected[*is++_++connected*] –
-Return true if all managers in the pool are connected.
-* link:#pypalmsens.InstrumentPool.is_disconnected[*is++_++disconnected*]
-– Return true if all managers in the pool are disconnected.
+* link:#pypalmsens.InstrumentPool.is_connected[*is_connected*] – Return
+true if all managers in the pool are connected.
+* link:#pypalmsens.InstrumentPool.is_disconnected[*is_disconnected*] –
+Return true if all managers in the pool are disconnected.
 * link:#pypalmsens.InstrumentPool.remove[*remove*] – Close and remove
 manager from pool.
 * link:#pypalmsens.InstrumentPool.add[*add*] – Open and add manager to
@@ -350,7 +347,7 @@ measurement on all managers in the pool.
 * link:#pypalmsens.InstrumentPool.managers[*managers*] – List of
 instruments managers in the pool.
 
-==== `managers`
+==== managers
 
 [source,python]
 ----
@@ -359,7 +356,7 @@ managers = self._async.managers
 
 List of instruments managers in the pool.
 
-==== `connect`
+==== connect
 
 [source,python]
 ----
@@ -368,7 +365,7 @@ connect()
 
 Connect all instrument managers in the pool.
 
-==== `disconnect`
+==== disconnect
 
 [source,python]
 ----
@@ -377,7 +374,7 @@ disconnect()
 
 Disconnect all instrument managers in the pool.
 
-==== `is++_++connected`
+==== is_connected
 
 [source,python]
 ----
@@ -386,7 +383,7 @@ is_connected()
 
 Return true if all managers in the pool are connected.
 
-==== `is++_++disconnected`
+==== is_disconnected
 
 [source,python]
 ----
@@ -395,7 +392,7 @@ is_disconnected()
 
 Return true if all managers in the pool are disconnected.
 
-==== `remove`
+==== remove
 
 [source,python]
 ----
@@ -410,7 +407,7 @@ Close and remove manager from pool.
 (link:#pypalmsens._instruments.instrument_manager_async.InstrumentManagerAsync[InstrumentManagerAsync])
 – Instance of an instrument manager.
 
-==== `add`
+==== add
 
 [source,python]
 ----
@@ -425,7 +422,7 @@ Open and add manager to the pool.
 (link:#pypalmsens._instruments.instrument_manager_async.InstrumentManagerAsync[InstrumentManagerAsync])
 – Instance of an instrument manager.
 
-==== `measure`
+==== measure
 
 [source,python]
 ----
@@ -434,8 +431,8 @@ measure(method)
 
 Concurrently run measurement on all managers in the pool.
 
-For hardware synchronization, set `use++_++hardware++_++sync` on the
-method. In addition, the pool must contain:
+For hardware synchronization, set `+use_hardware_sync+` on the method.
+In addition, the pool must contain:
 
 * channels from a single multi-channel instrument only
 * the first channel of the multi-channel instrument
@@ -449,7 +446,7 @@ measurements are started via a hardware sync trigger on channel 1.
 * *method* (link:#MethodSettings[MethodSettings]) – Method parameters
 for measurement.
 
-=== `connect`
+=== connect
 
 [source,python]
 ----
@@ -469,10 +466,10 @@ to the first instrument.
 
 * *manager*
 (link:#pypalmsens._instruments.instrument_manager.InstrumentManager[InstrumentManager])
-– Return instance of `InstrumentManager` connected to the given
+– Return instance of `+InstrumentManager+` connected to the given
 instrument. The connection will be terminated after the context ends.
 
-=== `discover`
+=== discover
 
 [source,python]
 ----
@@ -491,3 +488,8 @@ Discover instruments.
 * *bluetooth* (link:#bool[bool]) – If True, discover bluetooth devices
 (Windows only)
 * *serial* (link:#bool[bool]) – If True, discover serial devices
+
+Return
+
+discovered : listlink:#instrument[Instrument] List of dataclasses with
+discovered instruments.

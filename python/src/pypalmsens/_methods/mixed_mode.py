@@ -199,7 +199,7 @@ class Impedance(BaseStage):
     min_sampling_time: float = 0.5
     """Minimum sampling time in s.
 
-    The instrument will measure at leas 2 sine waves.
+    The instrument will measure at least 2 sine waves.
     The sampling time will be automatically adjusted when necessary."""
 
     max_equilibration_time: float = 5.0

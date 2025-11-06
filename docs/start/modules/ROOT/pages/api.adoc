@@ -578,10 +578,7 @@ applied during MaxEqTime only to reach the stationary state. The maximum number 
 
 === Time Scan
 
-In a Time Scan impedance spectroscopy measurements are repeated for a
-specific amount of time at a specific interval.
-
-NOTE: The SDK does not support this feature fully, we recommend you to design your own implementation for this that suits your demands.
+In a Time Scan impedance spectroscopy measurements are repeated for a specific amount of time at a specific interval.
 
 |===
 |Property |Description |Type
@@ -597,10 +594,7 @@ NOTE: The SDK does not support this feature fully, we recommend you to design yo
 
 === Potential Scan
 
-In a Potential Scan impedance spectroscopy measurements are repeated
-over a range of DC potential values.
-
-NOTE: The SDK does not support this feature fully, we recommend you to design your own implementation for this that suits your demands.
+In a Potential Scan impedance spectroscopy measurements are repeated over a range of DC potential values.
 
 |===
 |Property |Description |Type

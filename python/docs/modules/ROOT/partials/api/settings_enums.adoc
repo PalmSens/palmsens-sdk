@@ -1,16 +1,16 @@
-== `pypalmsens.settings`
+== pypalmsens.settings
 
 This module contains the public api for classes for method
 configuration.
 
 *Classes:*
 
-* link:#pypalmsens.settings.CURRENT_RANGE[*CURRENT++_++RANGE*] – Get the
+* link:#pypalmsens.settings.CURRENT_RANGE[*CURRENT_RANGE*] – Get the id
+for a given current range.
+* link:#pypalmsens.settings.POTENTIAL_RANGE[*POTENTIAL_RANGE*] – Get the
 id for a given current range.
-* link:#pypalmsens.settings.POTENTIAL_RANGE[*POTENTIAL++_++RANGE*] – Get
-the id for a given current range.
 
-=== `CURRENT++_++RANGE`
+=== CURRENT_RANGE
 
 Get the id for a given current range.
 
@@ -18,59 +18,42 @@ Use these when defining a current range.
 
 *Attributes:*
 
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_100_pA[*cr++_++100++_++pA*]
-– 100 pA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_1_nA[*cr++_++1++_++nA*] – 1
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_100_pA[*cr_100_pA*] – 100
+pA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_1_nA[*cr_1_nA*] – 1 nA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_10_nA[*cr_10_nA*] – 10 nA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_100_nA[*cr_100_nA*] – 100
 nA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_10_nA[*cr++_++10++_++nA*] –
-10 nA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_100_nA[*cr++_++100++_++nA*]
-– 100 nA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_1_uA[*cr++_++1++_++uA*] – 1
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_1_uA[*cr_1_uA*] – 1 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_10_uA[*cr_10_uA*] – 10 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_100_uA[*cr_100_uA*] – 100
 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_10_uA[*cr++_++10++_++uA*] –
-10 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_100_uA[*cr++_++100++_++uA*]
-– 100 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_1_mA[*cr++_++1++_++mA*] – 1
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_1_mA[*cr_1_mA*] – 1 mA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_10_mA[*cr_10_mA*] – 10 mA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_100_mA[*cr_100_mA*] – 100
 mA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_10_mA[*cr++_++10++_++mA*] –
-10 mA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_100_mA[*cr++_++100++_++mA*]
-– 100 mA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_2_uA[*cr++_++2++_++uA*] – 2
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_2_uA[*cr_2_uA*] – 2 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_4_uA[*cr_4_uA*] – 4 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_8_uA[*cr_8_uA*] – 8 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_16_uA[*cr_16_uA*] – 16 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_32_uA[*cr_32_uA*] – 32 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_63_uA[*cr_63_uA*] – 63 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_125_uA[*cr_125_uA*] – 125
 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_4_uA[*cr++_++4++_++uA*] – 4
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_250_uA[*cr_250_uA*] – 250
 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_8_uA[*cr++_++8++_++uA*] – 8
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_500_uA[*cr_500_uA*] – 500
 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_16_uA[*cr++_++16++_++uA*] –
-16 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_32_uA[*cr++_++32++_++uA*] –
-32 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_63_uA[*cr++_++63++_++uA*] –
-63 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_125_uA[*cr++_++125++_++uA*]
-– 125 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_250_uA[*cr++_++250++_++uA*]
-– 250 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_500_uA[*cr++_++500++_++uA*]
-– 500 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_5_mA[*cr++_++5++_++mA*] – 5
-mA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_6_uA[*cr++_++6++_++uA*] – 6
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_5_mA[*cr_5_mA*] – 5 mA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_6_uA[*cr_6_uA*] – 6 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_13_uA[*cr_13_uA*] – 13 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_25_uA[*cr_25_uA*] – 25 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_50_uA[*cr_50_uA*] – 50 μA
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_200_uA[*cr_200_uA*] – 200
 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_13_uA[*cr++_++13++_++uA*] –
-13 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_25_uA[*cr++_++25++_++uA*] –
-25 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_50_uA[*cr++_++50++_++uA*] –
-50 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_200_uA[*cr++_++200++_++uA*]
-– 200 μA
-* link:#pypalmsens.settings.CURRENT_RANGE.cr_1_A[*cr++_++1++_++A*] – 1 A
+* link:#pypalmsens.settings.CURRENT_RANGE.cr_1_A[*cr_1_A*] – 1 A
 
-==== `cr++_++100++_++pA`
+==== cr_100_pA
 
 [source,python]
 ----
@@ -79,7 +62,7 @@ cr_100_pA = 0
 
 100 pA
 
-==== `cr++_++1++_++nA`
+==== cr_1_nA
 
 [source,python]
 ----
@@ -88,7 +71,7 @@ cr_1_nA = 1
 
 1 nA
 
-==== `cr++_++10++_++nA`
+==== cr_10_nA
 
 [source,python]
 ----
@@ -97,7 +80,7 @@ cr_10_nA = 2
 
 10 nA
 
-==== `cr++_++100++_++nA`
+==== cr_100_nA
 
 [source,python]
 ----
@@ -106,7 +89,7 @@ cr_100_nA = 3
 
 100 nA
 
-==== `cr++_++1++_++uA`
+==== cr_1_uA
 
 [source,python]
 ----
@@ -115,7 +98,7 @@ cr_1_uA = 4
 
 1 μA
 
-==== `cr++_++10++_++uA`
+==== cr_10_uA
 
 [source,python]
 ----
@@ -124,7 +107,7 @@ cr_10_uA = 5
 
 10 μA
 
-==== `cr++_++100++_++uA`
+==== cr_100_uA
 
 [source,python]
 ----
@@ -133,7 +116,7 @@ cr_100_uA = 6
 
 100 μA
 
-==== `cr++_++1++_++mA`
+==== cr_1_mA
 
 [source,python]
 ----
@@ -142,7 +125,7 @@ cr_1_mA = 7
 
 1 mA
 
-==== `cr++_++10++_++mA`
+==== cr_10_mA
 
 [source,python]
 ----
@@ -151,7 +134,7 @@ cr_10_mA = 8
 
 10 mA
 
-==== `cr++_++100++_++mA`
+==== cr_100_mA
 
 [source,python]
 ----
@@ -160,7 +143,7 @@ cr_100_mA = 9
 
 100 mA
 
-==== `cr++_++2++_++uA`
+==== cr_2_uA
 
 [source,python]
 ----
@@ -169,7 +152,7 @@ cr_2_uA = 10
 
 2 μA
 
-==== `cr++_++4++_++uA`
+==== cr_4_uA
 
 [source,python]
 ----
@@ -178,7 +161,7 @@ cr_4_uA = 11
 
 4 μA
 
-==== `cr++_++8++_++uA`
+==== cr_8_uA
 
 [source,python]
 ----
@@ -187,7 +170,7 @@ cr_8_uA = 12
 
 8 μA
 
-==== `cr++_++16++_++uA`
+==== cr_16_uA
 
 [source,python]
 ----
@@ -196,7 +179,7 @@ cr_16_uA = 13
 
 16 μA
 
-==== `cr++_++32++_++uA`
+==== cr_32_uA
 
 [source,python]
 ----
@@ -205,7 +188,7 @@ cr_32_uA = 14
 
 32 μA
 
-==== `cr++_++63++_++uA`
+==== cr_63_uA
 
 [source,python]
 ----
@@ -214,7 +197,7 @@ cr_63_uA = 26
 
 63 μA
 
-==== `cr++_++125++_++uA`
+==== cr_125_uA
 
 [source,python]
 ----
@@ -223,7 +206,7 @@ cr_125_uA = 17
 
 125 μA
 
-==== `cr++_++250++_++uA`
+==== cr_250_uA
 
 [source,python]
 ----
@@ -232,7 +215,7 @@ cr_250_uA = 18
 
 250 μA
 
-==== `cr++_++500++_++uA`
+==== cr_500_uA
 
 [source,python]
 ----
@@ -241,7 +224,7 @@ cr_500_uA = 19
 
 500 μA
 
-==== `cr++_++5++_++mA`
+==== cr_5_mA
 
 [source,python]
 ----
@@ -250,7 +233,7 @@ cr_5_mA = 20
 
 5 mA
 
-==== `cr++_++6++_++uA`
+==== cr_6_uA
 
 [source,python]
 ----
@@ -259,7 +242,7 @@ cr_6_uA = 21
 
 6 μA
 
-==== `cr++_++13++_++uA`
+==== cr_13_uA
 
 [source,python]
 ----
@@ -268,7 +251,7 @@ cr_13_uA = 22
 
 13 μA
 
-==== `cr++_++25++_++uA`
+==== cr_25_uA
 
 [source,python]
 ----
@@ -277,7 +260,7 @@ cr_25_uA = 23
 
 25 μA
 
-==== `cr++_++50++_++uA`
+==== cr_50_uA
 
 [source,python]
 ----
@@ -286,7 +269,7 @@ cr_50_uA = 24
 
 50 μA
 
-==== `cr++_++200++_++uA`
+==== cr_200_uA
 
 [source,python]
 ----
@@ -295,7 +278,7 @@ cr_200_uA = 25
 
 200 μA
 
-==== `cr++_++1++_++A`
+==== cr_1_A
 
 [source,python]
 ----
@@ -304,7 +287,7 @@ cr_1_A = 30
 
 1 A
 
-=== `POTENTIAL++_++RANGE`
+=== POTENTIAL_RANGE
 
 Get the id for a given current range.
 
@@ -312,24 +295,19 @@ Use these when defining a potential range.
 
 *Attributes:*
 
-* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_1_mV[*pr++_++1++_++mV*] –
-1 mV
-* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_10_mV[*pr++_++10++_++mV*]
-– 10 mV
-* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_20_mV[*pr++_++20++_++mV*]
-– 20 mV
-* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_50_mV[*pr++_++50++_++mV*]
-– 50 mV
-* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_100_mV[*pr++_++100++_++mV*]
-– 100 mV
-* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_200_mV[*pr++_++200++_++mV*]
-– 200 mV
-* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_500_mV[*pr++_++500++_++mV*]
-– 500 mV
-* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_1_V[*pr++_++1++_++V*] – 1
-V
+* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_1_mV[*pr_1_mV*] – 1 mV
+* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_10_mV[*pr_10_mV*] – 10 mV
+* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_20_mV[*pr_20_mV*] – 20 mV
+* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_50_mV[*pr_50_mV*] – 50 mV
+* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_100_mV[*pr_100_mV*] – 100
+mV
+* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_200_mV[*pr_200_mV*] – 200
+mV
+* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_500_mV[*pr_500_mV*] – 500
+mV
+* link:#pypalmsens.settings.POTENTIAL_RANGE.pr_1_V[*pr_1_V*] – 1 V
 
-==== `pr++_++1++_++mV`
+==== pr_1_mV
 
 [source,python]
 ----
@@ -338,7 +316,7 @@ pr_1_mV = 0
 
 1 mV
 
-==== `pr++_++10++_++mV`
+==== pr_10_mV
 
 [source,python]
 ----
@@ -347,7 +325,7 @@ pr_10_mV = 1
 
 10 mV
 
-==== `pr++_++20++_++mV`
+==== pr_20_mV
 
 [source,python]
 ----
@@ -356,7 +334,7 @@ pr_20_mV = 2
 
 20 mV
 
-==== `pr++_++50++_++mV`
+==== pr_50_mV
 
 [source,python]
 ----
@@ -365,7 +343,7 @@ pr_50_mV = 3
 
 50 mV
 
-==== `pr++_++100++_++mV`
+==== pr_100_mV
 
 [source,python]
 ----
@@ -374,7 +352,7 @@ pr_100_mV = 4
 
 100 mV
 
-==== `pr++_++200++_++mV`
+==== pr_200_mV
 
 [source,python]
 ----
@@ -383,7 +361,7 @@ pr_200_mV = 5
 
 200 mV
 
-==== `pr++_++500++_++mV`
+==== pr_500_mV
 
 [source,python]
 ----
@@ -392,7 +370,7 @@ pr_500_mV = 6
 
 500 mV
 
-==== `pr++_++1++_++V`
+==== pr_1_V
 
 [source,python]
 ----

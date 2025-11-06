@@ -150,10 +150,9 @@ class VersusOCP(BaseSettings):
 class BiPot(BaseSettings):
     """Set the bipot settings for a given method."""
 
-    _mode_t = Literal['constant', 'offset']
-    _MODES: tuple[_mode_t, ...] = ('constant', 'offset')
+    _MODES: tuple[Literal['constant', 'offset'], ...] = ('constant', 'offset')
 
-    mode: _mode_t = 'constant'
+    mode: Literal['constant', 'offset'] = 'constant'
     """Set the bipotential mode.
 
     Possible values: `constant` or `offset`"""
@@ -494,10 +493,13 @@ class DelayTriggers(BaseSettings):
 class Multiplexer(BaseSettings):
     """Set the multiplexer settings for a given method."""
 
-    _mode_t = Literal['none', 'consecutive', 'alternate']
-    _MODES: tuple[_mode_t, ...] = ('none', 'consecutive', 'alternate')
+    _MODES: tuple[Literal['none', 'consecutive', 'alternate'], ...] = (
+        'none',
+        'consecutive',
+        'alternate',
+    )
 
-    mode: _mode_t = 'none'
+    mode: Literal['none', 'consecutive', 'alternate'] = 'none'
     """Set multiplexer mode.
 
     Possible values:

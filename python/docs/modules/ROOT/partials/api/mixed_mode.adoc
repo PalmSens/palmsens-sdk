@@ -1,4 +1,4 @@
-== `pypalmsens.mixed++_++mode`
+== pypalmsens.mixed_mode
 
 *Classes:*
 
@@ -14,28 +14,28 @@ impedance stage.
 * link:#pypalmsens.mixed_mode.MixedMode[*MixedMode*] – Create mixed mode
 method parameters.
 
-=== `ConstantE`
+=== ConstantE
 
 Amperometric detection stage.
 
 *Functions:*
 
-* link:#pypalmsens.mixed_mode.ConstantE.from_stage_type[*from++_++stage++_++type*]
+* link:#pypalmsens.mixed_mode.ConstantE.from_stage_type[*from_stage_type*]
 – Create new instance of appropriate stage from its type.
 
 *Attributes:*
 
-* link:#pypalmsens.mixed_mode.ConstantE.current_limits[*current++_++limits*]
+* link:#pypalmsens.mixed_mode.ConstantE.current_limits[*current_limits*]
 (link:#pypalmsens._methods.settings.CurrentLimits[CurrentLimits]) – Set
 the current limit settings.
 * link:#pypalmsens.mixed_mode.ConstantE.type[*type*]
-(link:#typing.Literal[Literal]++[++'`ConstantE`'++]++) –
+(link:#typing.Literal[Literal]['`ConstantE`']) –
 * link:#pypalmsens.mixed_mode.ConstantE.potential[*potential*]
 (link:#float[float]) – Potential in V.
-* link:#pypalmsens.mixed_mode.ConstantE.run_time[*run++_++time*]
+* link:#pypalmsens.mixed_mode.ConstantE.run_time[*run_time*]
 (link:#float[float]) – Run time in s.
 
-==== `current++_++limits`
+==== current_limits
 
 [source,python]
 ----
@@ -44,14 +44,14 @@ current_limits: settings.CurrentLimits = attrs.field(factory=(settings.CurrentLi
 
 Set the current limit settings.
 
-==== `type`
+==== type
 
 [source,python]
 ----
 type: Literal['ConstantE'] = 'ConstantE'
 ----
 
-==== `potential`
+==== potential
 
 [source,python]
 ----
@@ -60,7 +60,7 @@ potential: float = 0.0
 
 Potential in V.
 
-==== `run++_++time`
+==== run_time
 
 [source,python]
 ----
@@ -69,7 +69,7 @@ run_time: float = 1.0
 
 Run time in s.
 
-==== `from++_++stage++_++type`
+==== from_stage_type
 
 [source,python]
 ----
@@ -78,31 +78,31 @@ from_stage_type(id)
 
 Create new instance of appropriate stage from its type.
 
-=== `ConstantI`
+=== ConstantI
 
 Potentiometry stage.
 
 *Functions:*
 
-* link:#pypalmsens.mixed_mode.ConstantI.from_stage_type[*from++_++stage++_++type*]
+* link:#pypalmsens.mixed_mode.ConstantI.from_stage_type[*from_stage_type*]
 – Create new instance of appropriate stage from its type.
 
 *Attributes:*
 
-* link:#pypalmsens.mixed_mode.ConstantI.potential_limits[*potential++_++limits*]
+* link:#pypalmsens.mixed_mode.ConstantI.potential_limits[*potential_limits*]
 (link:#pypalmsens._methods.settings.PotentialLimits[PotentialLimits]) –
 Set the potential limit settings
 * link:#pypalmsens.mixed_mode.ConstantI.type[*type*]
-(link:#typing.Literal[Literal]++[++'`ConstantI`'++]++) –
+(link:#typing.Literal[Literal]['`ConstantI`']) –
 * link:#pypalmsens.mixed_mode.ConstantI.current[*current*]
 (link:#float[float]) – The current to apply in the given current range.
-* link:#pypalmsens.mixed_mode.ConstantI.applied_current_range[*applied++_++current++_++range*]
-(link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT++_++RANGE]) –
+* link:#pypalmsens.mixed_mode.ConstantI.applied_current_range[*applied_current_range*]
+(link:#pypalmsens._methods._shared.CURRENT_RANGE[CURRENT_RANGE]) –
 Applied current range.
-* link:#pypalmsens.mixed_mode.ConstantI.run_time[*run++_++time*]
+* link:#pypalmsens.mixed_mode.ConstantI.run_time[*run_time*]
 (link:#float[float]) – Run time in s.
 
-==== `potential++_++limits`
+==== potential_limits
 
 [source,python]
 ----
@@ -111,14 +111,14 @@ potential_limits: settings.PotentialLimits = attrs.field(factory=(settings.Poten
 
 Set the potential limit settings
 
-==== `type`
+==== type
 
 [source,python]
 ----
 type: Literal['ConstantI'] = 'ConstantI'
 ----
 
-==== `current`
+==== current
 
 [source,python]
 ----
@@ -132,7 +132,7 @@ Note that this value acts as a multiplier in the applied current range.
 So if 10 uA is the applied current range and 1.5 is given as current
 value, the applied current will be 15 uA.
 
-==== `applied++_++current++_++range`
+==== applied_current_range
 
 [source,python]
 ----
@@ -141,9 +141,9 @@ applied_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_100_uA
 
 Applied current range.
 
-Use `CURRENT++_++RANGE` to define the range.
+Use `+CURRENT_RANGE+` to define the range.
 
-==== `run++_++time`
+==== run_time
 
 [source,python]
 ----
@@ -152,7 +152,7 @@ run_time: float = 1.0
 
 Run time in s.
 
-==== `from++_++stage++_++type`
+==== from_stage_type
 
 [source,python]
 ----
@@ -161,32 +161,32 @@ from_stage_type(id)
 
 Create new instance of appropriate stage from its type.
 
-=== `SweepE`
+=== SweepE
 
 Linear sweep detection stage.
 
 *Functions:*
 
-* link:#pypalmsens.mixed_mode.SweepE.from_stage_type[*from++_++stage++_++type*]
+* link:#pypalmsens.mixed_mode.SweepE.from_stage_type[*from_stage_type*]
 – Create new instance of appropriate stage from its type.
 
 *Attributes:*
 
-* link:#pypalmsens.mixed_mode.SweepE.current_limits[*current++_++limits*]
+* link:#pypalmsens.mixed_mode.SweepE.current_limits[*current_limits*]
 (link:#pypalmsens._methods.settings.CurrentLimits[CurrentLimits]) – Set
 the current limit settings.
 * link:#pypalmsens.mixed_mode.SweepE.type[*type*]
-(link:#typing.Literal[Literal]++[++'`SweepE`'++]++) –
-* link:#pypalmsens.mixed_mode.SweepE.begin_potential[*begin++_++potential*]
+(link:#typing.Literal[Literal]['`SweepE`']) –
+* link:#pypalmsens.mixed_mode.SweepE.begin_potential[*begin_potential*]
 (link:#float[float]) – Begin potential in V.
-* link:#pypalmsens.mixed_mode.SweepE.end_potential[*end++_++potential*]
+* link:#pypalmsens.mixed_mode.SweepE.end_potential[*end_potential*]
 (link:#float[float]) – End potential in V.
-* link:#pypalmsens.mixed_mode.SweepE.step_potential[*step++_++potential*]
+* link:#pypalmsens.mixed_mode.SweepE.step_potential[*step_potential*]
 (link:#float[float]) – Step potential in V.
 * link:#pypalmsens.mixed_mode.SweepE.scanrate[*scanrate*]
 (link:#float[float]) – Scan rate in V/s.
 
-==== `current++_++limits`
+==== current_limits
 
 [source,python]
 ----
@@ -195,14 +195,14 @@ current_limits: settings.CurrentLimits = attrs.field(factory=(settings.CurrentLi
 
 Set the current limit settings.
 
-==== `type`
+==== type
 
 [source,python]
 ----
 type: Literal['SweepE'] = 'SweepE'
 ----
 
-==== `begin++_++potential`
+==== begin_potential
 
 [source,python]
 ----
@@ -211,7 +211,7 @@ begin_potential: float = -0.5
 
 Begin potential in V.
 
-==== `end++_++potential`
+==== end_potential
 
 [source,python]
 ----
@@ -220,7 +220,7 @@ end_potential: float = 0.5
 
 End potential in V.
 
-==== `step++_++potential`
+==== step_potential
 
 [source,python]
 ----
@@ -229,7 +229,7 @@ step_potential: float = 0.1
 
 Step potential in V.
 
-==== `scanrate`
+==== scanrate
 
 [source,python]
 ----
@@ -238,7 +238,7 @@ scanrate: float = 1.0
 
 Scan rate in V/s.
 
-==== `from++_++stage++_++type`
+==== from_stage_type
 
 [source,python]
 ----
@@ -247,26 +247,26 @@ from_stage_type(id)
 
 Create new instance of appropriate stage from its type.
 
-=== `OpenCircuit`
+=== OpenCircuit
 
 Ocp stage.
 
 *Functions:*
 
-* link:#pypalmsens.mixed_mode.OpenCircuit.from_stage_type[*from++_++stage++_++type*]
+* link:#pypalmsens.mixed_mode.OpenCircuit.from_stage_type[*from_stage_type*]
 – Create new instance of appropriate stage from its type.
 
 *Attributes:*
 
-* link:#pypalmsens.mixed_mode.OpenCircuit.potential_limits[*potential++_++limits*]
+* link:#pypalmsens.mixed_mode.OpenCircuit.potential_limits[*potential_limits*]
 (link:#pypalmsens._methods.settings.PotentialLimits[PotentialLimits]) –
 Set the potential limit settings
 * link:#pypalmsens.mixed_mode.OpenCircuit.type[*type*]
-(link:#typing.Literal[Literal]++[++'`OpenCircuit`'++]++) –
-* link:#pypalmsens.mixed_mode.OpenCircuit.run_time[*run++_++time*]
+(link:#typing.Literal[Literal]['`OpenCircuit`']) –
+* link:#pypalmsens.mixed_mode.OpenCircuit.run_time[*run_time*]
 (link:#float[float]) – Run time in s.
 
-==== `potential++_++limits`
+==== potential_limits
 
 [source,python]
 ----
@@ -275,14 +275,14 @@ potential_limits: settings.PotentialLimits = attrs.field(factory=(settings.Poten
 
 Set the potential limit settings
 
-==== `type`
+==== type
 
 [source,python]
 ----
 type: Literal['OpenCircuit'] = 'OpenCircuit'
 ----
 
-==== `run++_++time`
+==== run_time
 
 [source,python]
 ----
@@ -291,7 +291,7 @@ run_time: float = 1.0
 
 Run time in s.
 
-==== `from++_++stage++_++type`
+==== from_stage_type
 
 [source,python]
 ----
@@ -300,40 +300,40 @@ from_stage_type(id)
 
 Create new instance of appropriate stage from its type.
 
-=== `Impedance`
+=== Impedance
 
 Electostatic impedance stage.
 
 *Functions:*
 
-* link:#pypalmsens.mixed_mode.Impedance.from_stage_type[*from++_++stage++_++type*]
+* link:#pypalmsens.mixed_mode.Impedance.from_stage_type[*from_stage_type*]
 – Create new instance of appropriate stage from its type.
 
 *Attributes:*
 
 * link:#pypalmsens.mixed_mode.Impedance.type[*type*]
-(link:#typing.Literal[Literal]++[++'`Impedance`'++]++) –
-* link:#pypalmsens.mixed_mode.Impedance.run_time[*run++_++time*]
+(link:#typing.Literal[Literal]['`Impedance`']) –
+* link:#pypalmsens.mixed_mode.Impedance.run_time[*run_time*]
 (link:#float[float]) – Run time in s.
-* link:#pypalmsens.mixed_mode.Impedance.dc_potential[*dc++_++potential*]
+* link:#pypalmsens.mixed_mode.Impedance.dc_potential[*dc_potential*]
 (link:#float[float]) – DC potential in V.
-* link:#pypalmsens.mixed_mode.Impedance.ac_potential[*ac++_++potential*]
+* link:#pypalmsens.mixed_mode.Impedance.ac_potential[*ac_potential*]
 (link:#float[float]) – AC potential in V RMS.
 * link:#pypalmsens.mixed_mode.Impedance.frequency[*frequency*]
 (link:#float[float]) – Frequency in Hz.
-* link:#pypalmsens.mixed_mode.Impedance.min_sampling_time[*min++_++sampling++_++time*]
+* link:#pypalmsens.mixed_mode.Impedance.min_sampling_time[*min_sampling_time*]
 (link:#float[float]) – Minimum sampling time in s.
-* link:#pypalmsens.mixed_mode.Impedance.max_equilibration_time[*max++_++equilibration++_++time*]
+* link:#pypalmsens.mixed_mode.Impedance.max_equilibration_time[*max_equilibration_time*]
 (link:#float[float]) – Max equilibration time in s.
 
-==== `type`
+==== type
 
 [source,python]
 ----
 type: Literal['Impedance'] = 'Impedance'
 ----
 
-==== `run++_++time`
+==== run_time
 
 [source,python]
 ----
@@ -342,7 +342,7 @@ run_time: float = 10.0
 
 Run time in s.
 
-==== `dc++_++potential`
+==== dc_potential
 
 [source,python]
 ----
@@ -351,7 +351,7 @@ dc_potential: float = 0.0
 
 DC potential in V.
 
-==== `ac++_++potential`
+==== ac_potential
 
 [source,python]
 ----
@@ -360,7 +360,7 @@ ac_potential: float = 0.01
 
 AC potential in V RMS.
 
-==== `frequency`
+==== frequency
 
 [source,python]
 ----
@@ -369,7 +369,7 @@ frequency: float = 50000.0
 
 Frequency in Hz.
 
-==== `min++_++sampling++_++time`
+==== min_sampling_time
 
 [source,python]
 ----
@@ -378,10 +378,10 @@ min_sampling_time: float = 0.5
 
 Minimum sampling time in s.
 
-The instrument will measure at leas 2 sine waves. The sampling time will
-be automatically adjusted when necessary.
+The instrument will measure at least 2 sine waves. The sampling time
+will be automatically adjusted when necessary.
 
-==== `max++_++equilibration++_++time`
+==== max_equilibration_time
 
 [source,python]
 ----
@@ -393,7 +393,7 @@ Max equilibration time in s.
 Used as a guard when the frequency drops below 1/max. equilibration
 time.
 
-==== `from++_++stage++_++type`
+==== from_stage_type
 
 [source,python]
 ----
@@ -402,49 +402,49 @@ from_stage_type(id)
 
 Create new instance of appropriate stage from its type.
 
-=== `MixedMode`
+=== MixedMode
 
 Create mixed mode method parameters.
 
 *Functions:*
 
-* link:#pypalmsens.mixed_mode.MixedMode.to_dict[*to++_++dict*] – Return
-the technique instance as a new key/value dictionary mapping.
-* link:#pypalmsens.mixed_mode.MixedMode.from_dict[*from++_++dict*] –
+* link:#pypalmsens.mixed_mode.MixedMode.to_dict[*to_dict*] – Return the
+technique instance as a new key/value dictionary mapping.
+* link:#pypalmsens.mixed_mode.MixedMode.from_dict[*from_dict*] –
 Structure technique instance from dict.
-* link:#pypalmsens.mixed_mode.MixedMode.from_method_id[*from++_++method++_++id*]
+* link:#pypalmsens.mixed_mode.MixedMode.from_method_id[*from_method_id*]
 – Create new instance of appropriate technique from method ID.
 
 *Attributes:*
 
-* link:#pypalmsens.mixed_mode.MixedMode.current_range[*current++_++range*]
+* link:#pypalmsens.mixed_mode.MixedMode.current_range[*current_range*]
 (link:#pypalmsens._methods.settings.CurrentRange[CurrentRange]) – Set
 the autoranging current.
 * link:#pypalmsens.mixed_mode.MixedMode.pretreatment[*pretreatment*]
 (link:#pypalmsens._methods.settings.Pretreatment[Pretreatment]) – Set
 the pretreatment settings.
-* link:#pypalmsens.mixed_mode.MixedMode.post_measurement[*post++_++measurement*]
+* link:#pypalmsens.mixed_mode.MixedMode.post_measurement[*post_measurement*]
 (link:#pypalmsens._methods.settings.PostMeasurement[PostMeasurement]) –
 Set the post measurement settings.
-* link:#pypalmsens.mixed_mode.MixedMode.data_processing[*data++_++processing*]
+* link:#pypalmsens.mixed_mode.MixedMode.data_processing[*data_processing*]
 (link:#pypalmsens._methods.settings.DataProcessing[DataProcessing]) –
 Set the data processing settings.
 * link:#pypalmsens.mixed_mode.MixedMode.general[*general*]
 (link:#pypalmsens._methods.settings.General[General]) – Sets
 general/other settings.
-* link:#pypalmsens.mixed_mode.MixedMode.interval_time[*interval++_++time*]
+* link:#pypalmsens.mixed_mode.MixedMode.interval_time[*interval_time*]
 (link:#float[float]) – Interval time in s.
 * link:#pypalmsens.mixed_mode.MixedMode.cycles[*cycles*]
 (link:#int[int]) – Number of times to go through all stages.
 * link:#pypalmsens.mixed_mode.MixedMode.stages[*stages*]
-(link:#list[list]++[++link:#pypalmsens._methods.mixed_mode.ConstantE[ConstantE]
-++|++ link:#pypalmsens._methods.mixed_mode.ConstantI[ConstantI] ++|++
-link:#pypalmsens._methods.mixed_mode.SweepE[SweepE] ++|++
-link:#pypalmsens._methods.mixed_mode.OpenCircuit[OpenCircuit] ++|++
-link:#pypalmsens._methods.mixed_mode.Impedance[Impedance]++]++) – List
-of stages to run through.
+(link:#list[list][link:#pypalmsens._methods.mixed_mode.ConstantE[ConstantE]
+| link:#pypalmsens._methods.mixed_mode.ConstantI[ConstantI] |
+link:#pypalmsens._methods.mixed_mode.SweepE[SweepE] |
+link:#pypalmsens._methods.mixed_mode.OpenCircuit[OpenCircuit] |
+link:#pypalmsens._methods.mixed_mode.Impedance[Impedance]]) – List of
+stages to run through.
 
-==== `current++_++range`
+==== current_range
 
 [source,python]
 ----
@@ -453,7 +453,7 @@ current_range: settings.CurrentRange = attrs.field(factory=(settings.CurrentRang
 
 Set the autoranging current.
 
-==== `pretreatment`
+==== pretreatment
 
 [source,python]
 ----
@@ -462,7 +462,7 @@ pretreatment: settings.Pretreatment = attrs.field(factory=(settings.Pretreatment
 
 Set the pretreatment settings.
 
-==== `post++_++measurement`
+==== post_measurement
 
 [source,python]
 ----
@@ -471,7 +471,7 @@ post_measurement: settings.PostMeasurement = attrs.field(factory=(settings.PostM
 
 Set the post measurement settings.
 
-==== `data++_++processing`
+==== data_processing
 
 [source,python]
 ----
@@ -480,7 +480,7 @@ data_processing: settings.DataProcessing = attrs.field(factory=(settings.DataPro
 
 Set the data processing settings.
 
-==== `general`
+==== general
 
 [source,python]
 ----
@@ -489,7 +489,7 @@ general: settings.General = attrs.field(factory=(settings.General))
 
 Sets general/other settings.
 
-==== `interval++_++time`
+==== interval_time
 
 [source,python]
 ----
@@ -498,7 +498,7 @@ interval_time: float = 0.1
 
 Interval time in s.
 
-==== `cycles`
+==== cycles
 
 [source,python]
 ----
@@ -507,7 +507,7 @@ cycles: int = 1
 
 Number of times to go through all stages.
 
-==== `stages`
+==== stages
 
 [source,python]
 ----
@@ -516,7 +516,7 @@ stages: list[ConstantE | ConstantI | SweepE | OpenCircuit | Impedance] = attrs.f
 
 List of stages to run through.
 
-==== `to++_++dict`
+==== to_dict
 
 [source,python]
 ----
@@ -525,7 +525,7 @@ to_dict()
 
 Return the technique instance as a new key/value dictionary mapping.
 
-==== `from++_++dict`
+==== from_dict
 
 [source,python]
 ----
@@ -534,9 +534,9 @@ from_dict(obj)
 
 Structure technique instance from dict.
 
-Opposite of `.to++_++dict()`
+Opposite of `+.to_dict()+`
 
-==== `from++_++method++_++id`
+==== from_method_id
 
 [source,python]
 ----

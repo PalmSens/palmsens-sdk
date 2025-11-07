@@ -3,8 +3,7 @@
 }
 
 .navbar img {
-    max-height: 64px;
-    padding: 8px;
+    height: 48px;
 }
 
 .navbar-dropdown a.navbar-item:hover {

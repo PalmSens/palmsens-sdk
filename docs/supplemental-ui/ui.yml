@@ -6,4 +6,4 @@ static_files:
   - favicon-32x32.png
   - favicon.ico
   - site.webmanifest
-  - header-icon.png
+  - banner_dark.svg

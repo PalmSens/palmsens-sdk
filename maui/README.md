@@ -1,8 +1,18 @@
-# .NET MAUI SDK for PalmSens devices
+<br>
 
 <p align="center">
-    <img src="./docs/modules/ROOT/images/banner.png" alt="Make your own Electrochemistry apps" width="66%"/>
+    <a href="https://sdk.palmsens.com/maui/latest" target="_blank">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="./docs/modules/ROOT/images/banner_dark.svg">
+          <source media="(prefers-color-scheme: light)" srcset="./docs/modules/ROOT/images/banner.svg">
+          <img alt="PalmSens banner" src="./docs/modules/ROOT/images/banner.svg" width="80%">
+        </picture>
+    </a>
 </p>
+
+<br>
+
+# .NET MAUI SDK for PalmSens devices
 
 **The .NET MAUI SDK is under active development and not ready for actual use.**
 

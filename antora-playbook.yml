@@ -1,5 +1,5 @@
 site:
-  title: PalmSens SDK docs
+  title: PalmSens for Developers
   start_page: start::index.adoc
   url: https://sdk.palmsens.com
 content:

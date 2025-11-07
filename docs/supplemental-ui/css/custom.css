@@ -1,0 +1,67 @@
+.navbar {
+    background: #01355C;
+}
+
+.navbar img {
+    max-height: 64px;
+    padding: 8px;
+}
+
+.navbar-dropdown a.navbar-item:hover {
+  background: #f1f5fb;
+  color: black;
+}
+
+@media screen and (min-width: 1024px) {
+    .navbar-end > a.navbar-item:hover,
+    .navbar-end .navbar-link:hover,
+    .navbar-end .navbar-item.has-dropdown:hover .navbar-link {
+    background: #01355C;
+    }
+}
+
+@media screen and (max-width: 1023.5px) {
+    .navbar-menu a.navbar-item:hover,
+    .navbar-menu .navbar-link:hover {
+        background: #f1f5fb;
+    }
+}
+
+.nav-menu {
+    background: #f1f5fb;
+}
+
+.toolbar {
+    background: #f1f5fb;
+}
+
+.doc h1 {
+     color: #008CCD;
+}
+
+.context {
+    background: #f1f5fb;
+}
+
+.title a {
+     color: #01355C;
+}
+
+.nav-panel-explore .components {
+    background: #e3ecf7;
+}
+
+.nav-panel-explore .component .is-current a {
+  background: #008CCD;
+  color: white;
+}
+
+footer.footer {
+    color: white;
+    background: #01233d;
+}
+
+footer.footer {
+    border-top: 0.5rem solid;
+    border-color: #008CCD;
+}

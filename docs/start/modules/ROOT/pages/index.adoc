@@ -1,6 +1,12 @@
-= PalmSens SDK
+= PalmSens Developer documentation
 
-image::banner.png[PalmSens banner]
+{empty} +
+{empty}
+
+image::banner.svg[PalmSens banner, width=80%]
+
+{empty} +
+{empty}
 
 Take full control of your PalmSens instruments and modules with the PalmSens Software Development Kits (SDKs) and code examples.
 

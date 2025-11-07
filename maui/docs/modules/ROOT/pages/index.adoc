@@ -1,6 +1,12 @@
-= .NET MAUI SDK for PalmSens devices
+= PalmSens .NET MAUI Documentation
 
-image::banner.png[Banner,role=half-view-width, width=65%]
+{empty} +
+{empty}
+
+image::banner.svg[PalmSens banner, width=80%]
+
+{empty} +
+{empty}
 
 With this PalmSens SDK you develop Windows applications in Visual Studio using https://dotnet.microsoft.com/en-us/apps/maui[.NET MAUI].
 

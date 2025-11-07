@@ -3,7 +3,7 @@ from __future__ import annotations
 from . import _libpalmsens
 
 __sdk_version__ = _libpalmsens.load()
-__version__ = '1.3.1'
+__version__ = '1.3.2'
 
 from . import (
     data,

@@ -14,8 +14,6 @@ DATA_DIFF_PULSE = DATA_DIR / 'PSDiffPulse.pssession'
 DATA_NOISE_TEST = DATA_DIR / 'PSNoiseTest.pssession'
 DATA_CV_1SCAN = DATA_DIR / 'cv_1scan.pssession'
 DATA_CV_3SCAN = DATA_DIR / 'cv_3scan.pssession'
-DATA_CV_1SCAN = DATA_DIR / 'cv_1scan.pssession'
-DATA_CV_3SCAN = DATA_DIR / 'cv_3scan.pssession'
 DATA_EIS_3CH_4SCAN_5FREQ = DATA_DIR / 'eis_3ch_4scan_5freq.pssession'
 DATA_EIS_5FREQ = DATA_DIR / 'eis_5freq.pssession'
 

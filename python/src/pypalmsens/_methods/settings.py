@@ -6,9 +6,9 @@ import attrs
 import PalmSens
 from PalmSens import Method as PSMethod
 from PalmSens import MuxMethod as PSMuxMethod
+from typing_extensions import override
 
-from pypalmsens._shared import single_to_double
-
+from .._shared import single_to_double
 from ._shared import (
     CURRENT_RANGE,
     POTENTIAL_RANGE,
@@ -37,11 +37,13 @@ class CurrentRange(BaseSettings):
 
     Use `CURRENT_RANGE` to define the range."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         psmethod.Ranging.MaximumCurrentRange = self.max._to_psobj()
         psmethod.Ranging.MinimumCurrentRange = self.min._to_psobj()
         psmethod.Ranging.StartCurrentRange = self.start._to_psobj()
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         self.max = CURRENT_RANGE._from_psobj(psmethod.Ranging.MaximumCurrentRange)
         self.min = CURRENT_RANGE._from_psobj(psmethod.Ranging.MinimumCurrentRange)
@@ -67,11 +69,13 @@ class PotentialRange(BaseSettings):
 
     Use `POTENTIAL_RANGE` to define the range."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         psmethod.RangingPotential.MaximumPotentialRange = self.max._to_psobj()
         psmethod.RangingPotential.MinimumPotentialRange = self.min._to_psobj()
         psmethod.RangingPotential.StartPotentialRange = self.start._to_psobj()
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         self.max = POTENTIAL_RANGE._from_psobj(psmethod.RangingPotential.MaximumPotentialRange)
         self.min = POTENTIAL_RANGE._from_psobj(psmethod.RangingPotential.MinimumPotentialRange)
@@ -94,12 +98,14 @@ class Pretreatment(BaseSettings):
     conditioning_time: float = 0.0
     """Conditioning time in s"""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         psmethod.DepositionPotential = self.deposition_potential
         psmethod.DepositionTime = self.deposition_time
         psmethod.ConditioningPotential = self.conditioning_potential
         psmethod.ConditioningTime = self.conditioning_time
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         self.deposition_potential = single_to_double(psmethod.DepositionPotential)
         self.deposition_time = single_to_double(psmethod.DepositionTime)
@@ -135,11 +141,13 @@ class VersusOCP(BaseSettings):
     If larger than 0, then the value is taken as the stability threshold.
     """
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         psmethod.OCPmode = self.mode
         psmethod.OCPMaxOCPTime = self.max_ocp_time
         psmethod.OCPStabilityCriterion = self.stability_criterion
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         self.mode = psmethod.OCPmode
         self.max_ocp_time = single_to_double(psmethod.OCPMaxOCPTime)
@@ -175,6 +183,7 @@ class BiPot(BaseSettings):
 
     Use `CURRENT_RANGE` to define the range."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         bipot_num = self._MODES.index(self.mode)
         psmethod.BipotModePS = PalmSens.Method.EnumPalmSensBipotMode(bipot_num)
@@ -183,6 +192,7 @@ class BiPot(BaseSettings):
         psmethod.BipotRanging.MinimumCurrentRange = self.current_range_min._to_psobj()
         psmethod.BipotRanging.StartCurrentRange = self.current_range_start._to_psobj()
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         self.mode = self._MODES[int(psmethod.BipotModePS)]
         self.potential = single_to_double(psmethod.BiPotPotential)
@@ -210,11 +220,13 @@ class PostMeasurement(BaseSettings):
     standby_time: float = 0.0
     """Standby time (s) for use with cell on after measurement."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         psmethod.CellOnAfterMeasurement = self.cell_on_after_measurement
         psmethod.StandbyPotential = self.standby_potential
         psmethod.StandbyTime = self.standby_time
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         self.cell_on_after_measurement = psmethod.CellOnAfterMeasurement
         self.standby_potential = single_to_double(psmethod.StandbyPotential)
@@ -237,6 +249,7 @@ class CurrentLimits(BaseSettings):
     min: None | float = None
     """Set limit current min in µA."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         if self.max is not None:
             psmethod.UseLimitMaxValue = True
@@ -250,6 +263,7 @@ class CurrentLimits(BaseSettings):
         else:
             psmethod.UseLimitMinValue = False
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         if psmethod.UseLimitMaxValue:
             self.max = single_to_double(psmethod.LimitMaxValue)
@@ -277,6 +291,7 @@ class PotentialLimits(BaseSettings):
     min: None | float = None
     """Set limit potential min in V."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         if self.max is not None:
             psmethod.UseLimitMaxValue = True
@@ -290,6 +305,7 @@ class PotentialLimits(BaseSettings):
         else:
             psmethod.UseLimitMinValue = False
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         if psmethod.UseLimitMaxValue:
             self.max = single_to_double(psmethod.LimitMaxValue)
@@ -312,6 +328,7 @@ class ChargeLimits(BaseSettings):
     min: None | float = None
     """Set limit charge min in µC."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         if self.max is not None:
             psmethod.UseChargeLimitMax = True
@@ -325,6 +342,7 @@ class ChargeLimits(BaseSettings):
         else:
             psmethod.UseChargeLimitMin = False
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         if psmethod.UseChargeLimitMax:
             self.max = single_to_double(psmethod.ChargeLimitMax)
@@ -344,6 +362,7 @@ class IrDropCompensation(BaseSettings):
     resistance: None | float = None
     """Set the iR compensation resistance in Ω"""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         if self.resistance:
             psmethod.UseIRDropComp = True
@@ -351,6 +370,7 @@ class IrDropCompensation(BaseSettings):
         else:
             psmethod.UseIRDropComp = False
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         if psmethod.UseIRDropComp:
             self.resistance = single_to_double(psmethod.IRDropCompRes)
@@ -378,6 +398,7 @@ class EquilibrationTriggers(BaseSettings):
     d3: bool = False
     """If True, enable trigger at d3 high."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         if any((self.d0, self.d1, self.d2, self.d3)):
             psmethod.UseTriggerOnEquil = True
@@ -387,6 +408,7 @@ class EquilibrationTriggers(BaseSettings):
         else:
             psmethod.UseTriggerOnEquil = False
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         if psmethod.UseTriggerOnEquil:
             self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(
@@ -418,6 +440,7 @@ class MeasurementTriggers(BaseSettings):
     d3: bool = False
     """If True, enable trigger at d3 high."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         if any((self.d0, self.d1, self.d2, self.d3)):
             psmethod.UseTriggerOnStart = True
@@ -427,6 +450,7 @@ class MeasurementTriggers(BaseSettings):
         else:
             psmethod.UseTriggerOnEquil = False
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         if psmethod.UseTriggerOnStart:
             self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(
@@ -464,6 +488,7 @@ class DelayTriggers(BaseSettings):
     d3: bool = False
     """If True, enable trigger at d3 high."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         psmethod.TriggerDelayPeriod = self.delay
 
@@ -475,6 +500,7 @@ class DelayTriggers(BaseSettings):
         else:
             psmethod.UseTriggerOnDelay = False
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         self.delay = single_to_double(psmethod.TriggerDelayPeriod)
 
@@ -529,6 +555,7 @@ class Multiplexer(BaseSettings):
     set_unselected_channel_working_electrode: int = 0
     """Set the unselected channel working electrode to 0 = Disconnected / floating, 1 = Ground, 2 = Standby potential. Default is 0."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         # Create a mux8r2 multiplexer settings settings object
         mux_mode = self._MODES.index(self.mode) - 1
@@ -549,6 +576,7 @@ class Multiplexer(BaseSettings):
             self.set_unselected_channel_working_electrode
         )
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         self.mode = self._MODES[int(psmethod.MuxMethod) + 1]
 
@@ -588,11 +616,13 @@ class DataProcessing(BaseSettings):
     The value is in the unit of the curves X axis (V).
     Peaks narrower than this value are neglected (default: 0.1 V)."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         psmethod.SmoothLevel = self.smooth_level
         psmethod.MinPeakHeight = self.min_height
         psmethod.MinPeakWidth = self.min_width
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         self.smooth_level = psmethod.SmoothLevel
         self.min_width = single_to_double(psmethod.MinPeakWidth)
@@ -618,12 +648,14 @@ class General(BaseSettings):
     Adjusts sampling on instrument to account for mains frequency.
     Set to 50 Hz or 60 Hz depending on your region (default: 50)."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         psmethod.SaveOnDevice = self.save_on_internal_storage
         psmethod.UseHWSync = self.use_hardware_sync
         psmethod.Notes = self.notes
         psmethod.PowerFreq = self.power_frequency
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         self.save_on_internal_storage = psmethod.SaveOnDevice
         self.use_hardware_sync = psmethod.UseHWSync

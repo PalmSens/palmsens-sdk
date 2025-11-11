@@ -205,3 +205,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# other
+pdocs-html
+pythonnet-stub-generator
+tmp

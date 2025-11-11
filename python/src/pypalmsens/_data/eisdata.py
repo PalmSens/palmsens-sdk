@@ -1,9 +1,15 @@
 from __future__ import annotations
 
 from enum import Enum
+from typing import TYPE_CHECKING, final
+
+from typing_extensions import override
 
 from .data_array import DataArray
 from .dataset import DataSet
+
+if TYPE_CHECKING:
+    from PalmSens.Plottables import EISData as PSEISData
 
 
 class EISValueType(Enum):
@@ -58,6 +64,7 @@ class EISValueType(Enum):
     """AuxInput values"""
 
 
+@final
 class EISData:
     """Python wrapper for .NET EISdata class.
 
@@ -67,9 +74,10 @@ class EISData:
         Reference to .NET EISdata object.
     """
 
-    def __init__(self, *, pseis):
+    def __init__(self, *, pseis: PSEISData):
         self._pseis = pseis
 
+    @override
     def __repr__(self):
         data = [
             f'title={self.title}',

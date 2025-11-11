@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from abc import abstractmethod
-from typing import ClassVar, Literal, Protocol, Type, runtime_checkable
+from typing import ClassVar, Literal, Protocol, runtime_checkable
 
 import attrs
 from PalmSens import Method as PSMethod
 from PalmSens.Techniques import MixedMode as PSMixedMode
+from typing_extensions import override
 
-from pypalmsens._shared import single_to_double
-
+from .._shared import single_to_double
 from . import mixins
 from ._shared import (
     CURRENT_RANGE,
@@ -21,7 +20,7 @@ class BaseStage(Protocol):
     """Protocol to provide base methods for stage classes."""
 
     __attrs_attrs__: ClassVar[list[attrs.Attribute]] = []
-    _registry: dict[str, Type[BaseStage]] = {}
+    _registry: dict[str, type[BaseStage]] = {}
     type: str
 
     def __init_subclass__(cls, **kwargs) -> None:
@@ -42,10 +41,9 @@ class BaseStage(Protocol):
         new._update_params_nested(psstage)
         return new
 
-    @abstractmethod
     def _update_params(self, psstage: PSMethod, /) -> None: ...
 
-    def _update_params_nested(self, psstage, /) -> None:
+    def _update_params_nested(self, psstage: PSMethod, /) -> None:
         """Retrieve and convert dotnet method for nested field parameters."""
         for field in self.__attrs_attrs__:
             attribute = getattr(self, field.name)
@@ -55,7 +53,7 @@ class BaseStage(Protocol):
             except AttributeError:
                 pass
 
-    def _update_psmethod(self, psmethod, /) -> PSMethod:
+    def _update_psmethod(self, psmethod: PSMethod, /) -> PSMethod:
         """Add stage to dotnet method, and update paramaters on dotnet stage."""
         stage_type = getattr(PSMixedMode.EnumMixedModeStageType, self.type)
         psstage = psmethod.AddStage(stage_type)
@@ -63,10 +61,9 @@ class BaseStage(Protocol):
         self._update_psstage_nested(psstage)
         return psstage
 
-    @abstractmethod
     def _update_psstage(self, psstage: PSMethod, /) -> None: ...
 
-    def _update_psstage_nested(self, psstage, /) -> None:
+    def _update_psstage_nested(self, psstage: PSMethod, /) -> None:
         """Convert and set field parameters on dotnet method."""
         for field in self.__attrs_attrs__:
             attribute = getattr(self, field.name)
@@ -89,11 +86,13 @@ class ConstantE(BaseStage, mixins.CurrentLimitsMixin):
     run_time: float = 1.0
     """Run time in s."""
 
-    def _update_psstage(self, psstage, /):
+    @override
+    def _update_psstage(self, psstage: PSMethod, /):
         psstage.Potential = self.potential
         psstage.RunTime = self.run_time
 
-    def _update_params(self, psstage, /):
+    @override
+    def _update_params(self, psstage: PSMethod, /):
         self.potential = single_to_double(psstage.Potential)
         self.run_time = single_to_double(psstage.RunTime)
 
@@ -120,12 +119,14 @@ class ConstantI(BaseStage, mixins.PotentialLimitsMixin):
     run_time: float = 1.0
     """Run time in s."""
 
-    def _update_psstage(self, psstage, /):
+    @override
+    def _update_psstage(self, psstage: PSMethod, /):
         psstage.AppliedCurrentRange = self.applied_current_range._to_psobj()
         psstage.Current = self.current
         psstage.RunTime = self.run_time
 
-    def _update_params(self, psstage, /):
+    @override
+    def _update_params(self, psstage: PSMethod, /):
         self.applied_current_range = CURRENT_RANGE._from_psobj(psstage.AppliedCurrentRange)
         self.current = single_to_double(psstage.Current)
         self.run_time = single_to_double(psstage.RunTime)
@@ -149,13 +150,15 @@ class SweepE(BaseStage, mixins.CurrentLimitsMixin):
     scanrate: float = 1.0
     """Scan rate in V/s."""
 
-    def _update_psstage(self, psstage, /):
+    @override
+    def _update_psstage(self, psstage: PSMethod, /):
         psstage.BeginPotential = self.begin_potential
         psstage.EndPotential = self.end_potential
         psstage.StepPotential = self.step_potential
         psstage.Scanrate = self.scanrate
 
-    def _update_params(self, psstage, /):
+    @override
+    def _update_params(self, psstage: PSMethod, /):
         self.begin_potential = single_to_double(psstage.BeginPotential)
         self.end_potential = single_to_double(psstage.EndPotential)
         self.step_potential = single_to_double(psstage.StepPotential)
@@ -171,10 +174,12 @@ class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin):
     run_time: float = 1.0
     """Run time in s."""
 
-    def _update_psstage(self, psstage, /):
+    @override
+    def _update_psstage(self, psstage: PSMethod, /):
         psstage.RunTime = self.run_time
 
-    def _update_params(self, psstage, /):
+    @override
+    def _update_params(self, psstage: PSMethod, /):
         self.run_time = single_to_double(psstage.RunTime)
 
 
@@ -207,7 +212,8 @@ class Impedance(BaseStage):
 
     Used as a guard when the frequency drops below 1/max. equilibration time."""
 
-    def _update_psstage(self, psstage, /):
+    @override
+    def _update_psstage(self, psstage: PSMethod, /):
         psstage.Potential = self.dc_potential
         psstage.Eac = self.ac_potential
 
@@ -217,7 +223,8 @@ class Impedance(BaseStage):
         psstage.SamplingTime = self.min_sampling_time
         psstage.MaxEqTime = self.max_equilibration_time
 
-    def _update_params(self, psstage, /):
+    @override
+    def _update_params(self, psstage: PSMethod, /):
         self.dc_potential = single_to_double(psstage.Potential)
         self.ac_potential = single_to_double(psstage.Eac)
 
@@ -252,14 +259,16 @@ class MixedMode(
     )
     """List of stages to run through."""
 
+    @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         """Update method with mixed mode settings."""
         psmethod.nCycles = self.cycles
         psmethod.IntervalTime = self.interval_time
 
         for stage in self.stages:
-            stage._update_psmethod(psmethod)
+            _ = stage._update_psmethod(psmethod)
 
+    @override
     def _update_params(self, psmethod: PSMethod, /):
         self.cycles = psmethod.nCycles
         self.interval_time = single_to_double(psmethod.IntervalTime)

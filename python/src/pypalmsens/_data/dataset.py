@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Mapping
-from typing import TYPE_CHECKING, Callable, Generator
+from collections.abc import Generator, Mapping
+from typing import TYPE_CHECKING, Callable, final
 
 import clr
 from PalmSens.Data import CurrentReading
 from PalmSens.Plottables import Curve as PSCurve
+from typing_extensions import override
 
 from ._shared import ArrayType
 from .curve import Curve
@@ -13,15 +14,16 @@ from .data_array import DataArray
 
 if TYPE_CHECKING:
     import pandas as pd
+    from PalmSens.Data import DataArray as PSDataArray
     from PalmSens.Data import DataSet as PSDataSet
 
 
 def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, DataArray]:
     """Suffix non-unique keys with integer. Keys are derived from the array type."""
-    arrays = [array for array in psdataset.GetDataArrays()]
+    arrays: list[PSDataArray] = [array for array in psdataset.GetDataArrays()]
     array_types = [ArrayType(array.ArrayType).name for array in arrays]
 
-    mapping = {}
+    mapping: dict[str, DataArray] = {}
 
     for array in arrays:
         array_type = ArrayType(array.ArrayType).name
@@ -40,7 +42,8 @@ def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, D
     return mapping
 
 
-class DataSet(Mapping):
+@final
+class DataSet(Mapping[str, DataArray]):
     """Python wrapper for .NET DataSet class.
 
     Parameters
@@ -53,21 +56,25 @@ class DataSet(Mapping):
         self._psdataset = psdataset
         self._mapping = _dataset_to_mapping_with_unique_keys(psdataset)
 
+    @override
     def __repr__(self):
         return f'{self.__class__.__name__}({list(self.keys())})'
 
+    @override
     def __getitem__(self, key: str):
         return self._mapping[key]
 
+    @override
     def __iter__(self) -> Generator[str, None, None]:
         # Note that iterating over self.psdataset also returns the 'hidden' debug arrays
         # `.GetDataArrays()` excludes those.
         yield from self._mapping
 
+    @override
     def __len__(self):
         return len(self._mapping)
 
-    def _filter(self, key: Callable) -> list[DataArray]:
+    def _filter(self, key: Callable[[DataArray], bool]) -> list[DataArray]:
         """Filter array list based on callable.
 
         Callable takes dotnet DataArray as its only argument.

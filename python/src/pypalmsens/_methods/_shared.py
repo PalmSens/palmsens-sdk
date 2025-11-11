@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Literal, Sequence
+from typing import Literal
 
 import PalmSens
 
@@ -99,12 +100,12 @@ class POTENTIAL_RANGE(Enum):
     pr_1_V = 7
     """1 V"""
 
-    def _to_psobj(self):
+    def _to_psobj(self) -> PalmSens.PotentialRange:
         """Get equivalent PS object."""
         return PalmSens.PotentialRange(PalmSens.PotentialRanges(self.value))
 
     @classmethod
-    def _from_psobj(cls, psobj, /):
+    def _from_psobj(cls, psobj: PalmSens.PotentialRanges, /):
         """Convert from PS object."""
         return cls(int(PalmSens.PotentialRange.get_PR(psobj)))
 
@@ -114,7 +115,7 @@ def convert_bools_to_int(lst: Sequence[bool]) -> int:
     return int(''.join('01'[set_high] for set_high in reversed(lst)), base=2)
 
 
-def convert_int_to_bools(val) -> tuple[bool, bool, bool, bool]:
+def convert_int_to_bools(val: int) -> tuple[bool, bool, bool, bool]:
     """Convert e.g. 5 to [True, False, True, False]."""
     lst = tuple([bool(int(_)) for _ in reversed(f'{val:04b}')])
     assert len(lst) == 4  # specify length to make mypy happy
@@ -122,7 +123,7 @@ def convert_int_to_bools(val) -> tuple[bool, bool, bool, bool]:
 
 
 def set_extra_value_mask(
-    obj,
+    obj: PalmSens.Method,
     *,
     enable_bipot_current: bool = False,
     record_auxiliary_input: bool = False,
@@ -150,7 +151,7 @@ def set_extra_value_mask(
     obj.ExtraValueMsk = PalmSens.ExtraValueMask(extra_values)
 
 
-def get_extra_value_mask(obj) -> dict[str, Any]:
+def get_extra_value_mask(obj: PalmSens.Method) -> dict[str, bool]:
     mask = obj.ExtraValueMsk
 
     ret = {
@@ -202,7 +203,7 @@ class ELevel:
 
         return use_limit_current_min or use_limit_current_max
 
-    def to_psobj(self):
+    def to_psobj(self) -> PalmSens.Techniques.ELevel:
         obj = PalmSens.Techniques.ELevel()
 
         obj.Level = self.level
@@ -279,7 +280,7 @@ class ILevel:
 
         return use_limit_potential_min or use_limit_potential_max
 
-    def to_psobj(self):
+    def to_psobj(self) -> PalmSens.Techniques.ELevel:
         obj = PalmSens.Techniques.ELevel()
 
         obj.Level = self.level

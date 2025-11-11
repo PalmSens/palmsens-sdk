@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from PalmSens.Data import DataArray as PSDataArray
 
 
 class ArrayType(Enum):
@@ -98,7 +101,7 @@ class Status(Enum):
     Underload = 2
 
 
-def _get_values_from_NETArray(array, start: int = 0, count: Optional[int] = None):
+def get_values_from_NETArray(array: PSDataArray, start: int = 0, count: int = 1):
     if not count:
         count = array.Count
 
@@ -106,30 +109,4 @@ def _get_values_from_NETArray(array, start: int = 0, count: Optional[int] = None
     for i in range(start, start + count):
         value = array.get_Item(i)
         values.append(float(value.Value))
-    return values
-
-
-def __get_currentranges_from_currentarray(
-    arraycurrents, start: int = 0, count: Optional[int] = None
-):
-    if not count:
-        count = arraycurrents.Count
-    values = []
-    if ArrayType(arraycurrents.ArrayType) == ArrayType.Current:
-        for i in range(start, count):
-            value = arraycurrents.get_Item(i)
-            values.append(str(value.CurrentRange.ToString()))
-    return values
-
-
-def __get_status_from_current_or_potentialarray(
-    array, start: int = 0, count: Optional[int] = None
-):
-    if not count:
-        count = array.Count
-
-    values = []
-    for i in range(start, count):
-        value = array.get_Item(i)
-        values.append(str(Status(value.ReadingStatus)))
     return values

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, final
 
 import PalmSens.Analysis as PSAnalysis
 import System
 from PalmSens.Plottables import Curve as PSCurve
+from typing_extensions import override
 
 from .data_array import DataArray
 from .peak import Peak
@@ -13,6 +14,7 @@ if TYPE_CHECKING:
     from matplotlib import axes, figure
 
 
+@final
 class Curve:
     """Python wrapper for .NET Curve class.
 
@@ -25,6 +27,7 @@ class Curve:
     def __init__(self, *, pscurve: PSCurve):
         self._pscurve = pscurve
 
+    @override
     def __repr__(self):
         return f'{self.__class__.__name__}(title={self.title}, n_points={self.n_points})'
 
@@ -168,14 +171,14 @@ class Curve:
         return self._pscurve.OCPValue
 
     @property
-    def reference_electrode_name(self) -> Union[None, str]:
+    def reference_electrode_name(self) -> None | str:
         """The name of the reference electrode. Return None if not set."""
         if ret := self._pscurve.ReferenceElectrodeName:
             return str(ret)
         return None
 
     @property
-    def reference_electrode_potential(self) -> Union[None, str]:
+    def reference_electrode_potential(self) -> None | str:
         """The reference electrode potential offset. Return None if not set."""
         if ret := self._pscurve.ReferenceElectrodePotential:
             return str(ret)
@@ -202,14 +205,14 @@ class Curve:
         return self._pscurve.YUnit.Quantity
 
     @property
-    def z_unit(self) -> Union[None, str]:
+    def z_unit(self) -> None | str:
         """Units for Z dimension. Returns None if not set."""
         if ret := self._pscurve.ZUnit:
             return ret.ToString()
         return None
 
     @property
-    def z_label(self) -> Union[None, str]:
+    def z_label(self) -> None | str:
         """Units for Z dimension. Returns None if not set."""
         if ret := self._pscurve.ZUnit:
             return ret.Quantity
@@ -249,7 +252,7 @@ class Curve:
         return DataArray(psarray=self._pscurve.YAxisDataArray)
 
     def linear_slope(
-        self, start: Optional[int] = None, stop: Optional[int] = None
+        self, start: None | int = None, stop: None | int = None
     ) -> tuple[float, float, float]:
         """Calculate linear line parameters for this curve between two indexes.
 
@@ -276,10 +279,10 @@ class Curve:
 
     def plot(
         self,
-        ax: Optional[axes.Axes] = None,
+        ax: None | axes.Axes = None,
         legend: bool = True,
         **plot_kwargs,
-    ) -> figure.Figure:
+    ) -> figure.Figure | figure.SubFigure:
         """Generate simple plot for this curve using matplotlib.
 
         Parameters
@@ -301,15 +304,15 @@ class Curve:
         if not ax:
             fig, ax = plt.subplots()
 
-        ax.plot(self.x_array, self.y_array, label=self.title, **plot_kwargs)
-        ax.set_xlabel(f'{self.x_label} ({self.x_unit})')
-        ax.set_ylabel(f'{self.y_label} ({self.y_unit})')
+        _ = ax.plot(self.x_array, self.y_array, label=self.title, **plot_kwargs)
+        _ = ax.set_xlabel(f'{self.x_label} ({self.x_unit})')
+        _ = ax.set_ylabel(f'{self.y_label} ({self.y_unit})')
 
         if peaks := self.peaks:
             x, y = list(zip(*((peak.x, peak.y) for peak in peaks)))
-            ax.scatter(x, y, label='Peaks')
+            _ = ax.scatter(x, y, label='Peaks')
 
         if legend:
-            ax.legend()
+            _ = ax.legend()
 
         return ax.figure

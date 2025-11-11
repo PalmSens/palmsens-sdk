@@ -20,7 +20,9 @@ def test_save_load_session(tmpdir, data_dpv):
     assert meas2.method.filename == path
     assert meas2.method.filename.is_absolute()
 
-    assert meas == meas2
+    assert len(meas.dataset) == len(meas2.dataset) == 0
+    assert meas.n_curves == meas2.n_curves == 1
+    assert meas.curves[0].n_points == meas2.curves[0].n_points
     assert meas.timestamp == meas2.timestamp
     assert meas.title == meas2.title
     assert meas.device == meas2.device

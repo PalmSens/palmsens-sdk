@@ -35,10 +35,12 @@ class InstrumentPool:
         *,
         callback: None | Callable = None,
     ):
-        self._async = InstrumentPoolAsync(devices_or_managers, callback=callback)
+        self._async: InstrumentPoolAsync = InstrumentPoolAsync(
+            devices_or_managers, callback=callback
+        )
         self._loop = asyncio.new_event_loop()
 
-        self.managers = self._async.managers
+        self.managers: list[InstrumentManagerAsync] = self._async.managers
         """List of instruments managers in the pool."""
 
     def __enter__(self):

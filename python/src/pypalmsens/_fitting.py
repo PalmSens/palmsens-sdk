@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Literal, Optional
+from typing import TYPE_CHECKING, Any, Literal
 
 from PalmSens import Fitting as PSFitting
 from System import Array
+from typing_extensions import override
 
 from ._data.curve import Curve
 from ._data.eisdata import EISData
@@ -20,13 +21,13 @@ class Parameter:
 
     symbol: str
     """Name of the parameter (not used in minimization)."""
-    value: Optional[float] = None
+    value: None | float = None
     """Initial value of the parameter."""
-    min: Optional[float] = None
+    min: None | float = None
     """Minimum (lower bound) for the parameter."""
-    max: Optional[float] = None
+    max: None | float = None
     """Maximum (upper bound) for the parameter."""
-    fixed: Optional[bool] = None
+    fixed: None | bool = None
     """If True, fix the value for this parameter."""
 
     @classmethod
@@ -52,7 +53,7 @@ class Parameter:
             psparameter.Fixed = self.fixed
 
 
-class Parameters(Sequence):
+class Parameters(Sequence[Any]):
     """Tuple-like container class for parameters.
 
     This class is instantiated from the CDC code and contains
@@ -67,7 +68,7 @@ class Parameters(Sequence):
     """
 
     def __init__(self, cdc: str):
-        self.cdc = cdc
+        self.cdc: str = cdc
         """CDC code used to generate parameter listing."""
 
         model = PSFitting.Models.CircuitModel()
@@ -76,15 +77,19 @@ class Parameters(Sequence):
             Parameter._from_psparameter(psparam) for psparam in model.InitialParameters
         )
 
+    @override
     def __len__(self):
         return len(self._parameters)
 
+    @override
     def __getitem__(self, key):
         return self._parameters[key]
 
+    @override
     def __repr__(self) -> str:
         return self._parameters.__repr__()
 
+    @override
     def __str__(self) -> str:
         return self._parameters.__str__()
 
@@ -223,10 +228,10 @@ class FitResult:
 
         calc, meas = self.get_nyquist(data=data)
         fig, ax = plt.subplots()
-        ax.set_title('Nyquist plot')
+        _ = ax.set_title('Nyquist plot')
 
-        calc.plot(ax=ax)
-        meas.plot(ax=ax, marker='^', linestyle='None')
+        _ = calc.plot(ax=ax)
+        _ = meas.plot(ax=ax, marker='^', linestyle='None')
 
         return fig
 
@@ -248,15 +253,15 @@ class FitResult:
         calc_z, meas_z = self.get_bode_z(data=data)
         calc_ph, meas_ph = self.get_bode_phase(data=data)
         fig, ax1 = plt.subplots()
-        ax1.set_title('Bode plot')
-        ax1.set_xscale('log')
+        _ = ax1.set_title('Bode plot')
+        _ = ax1.set_xscale('log')
 
-        calc_z.plot(ax=ax1, legend=False, color='C0')
-        meas_z.plot(ax=ax1, marker='^', linestyle='None', color='C0', legend=False)
+        _ = calc_z.plot(ax=ax1, legend=False, color='C0')
+        _ = meas_z.plot(ax=ax1, marker='^', linestyle='None', color='C0', legend=False)
 
         ax2 = ax1.twinx()
-        calc_ph.plot(ax=ax2, legend=False, color='C1')
-        meas_ph.plot(ax=ax2, marker='^', linestyle='None', color='C1', legend=False)
+        _ = calc_ph.plot(ax=ax2, legend=False, color='C1')
+        _ = meas_ph.plot(ax=ax2, marker='^', linestyle='None', color='C1', legend=False)
 
         fig.legend()
         return fig
@@ -316,10 +321,10 @@ class CircuitModel:
     Minimization converges if the difference in parameter values
         falls below this value (default = 1e-12)."""
 
-    min_freq: Optional[float] = None
+    min_freq: None | float = None
     """Minimum fitting frequency in Hz."""
 
-    max_freq: Optional[float] = None
+    max_freq: None | float = None
     """Maximum fitting frequency in Hz."""
 
     tolerance: float = 1e-4
@@ -331,8 +336,8 @@ class CircuitModel:
     lambda_factor: float = 10.00
     """Lambda Scaling Factor. Levenberg-Marquardt only (default = 10)."""
 
-    _last_result: Optional[FitResult] = field(default=None, repr=False)
-    _last_psfitter: Optional[PSFitting.FitAlgorithm] = field(default=None, repr=False)
+    _last_result: None | FitResult = field(default=None, repr=False)
+    _last_psfitter: None | PSFitting.FitAlgorithm = field(default=None, repr=False)
 
     def default_parameters(self) -> Parameters:
         """Get default parameters. Use this to modify parameter values.
@@ -348,7 +353,7 @@ class CircuitModel:
         self,
         data: EISData,
         *,
-        parameters: Optional[Sequence[float] | Parameters] = None,
+        parameters: None | Sequence[float] | Parameters = None,
     ) -> PSFitting.FitOptions:
         """Fit circuit model.
 
@@ -396,7 +401,7 @@ class CircuitModel:
             array = data.dataset.freq_arrays()[-1]
             sel = (self.min_freq < val < self.max_freq for val in array)
 
-            opts.SelectedDataPoints = Array[bool]((bool(_) for _ in sel))
+            opts.SelectedDataPoints = Array[bool]((bool(item) for item in sel))
 
         return opts
 
@@ -411,7 +416,7 @@ class CircuitModel:
         return self._last_psfitter
 
     def fit(
-        self, data: EISData, *, parameters: Optional[Sequence[float] | Parameters] = None
+        self, data: EISData, *, parameters: None | Sequence[float] | Parameters = None
     ) -> FitResult:
         """Fit circuit model.
 

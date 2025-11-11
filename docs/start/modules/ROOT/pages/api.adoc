@@ -635,6 +635,7 @@ psCommSimple.comm.AuxInputSelected = new PalmSens.AuxInput.AuxiliaryInputType(
 ----
 
 The can be ignored and set to true, the second argument is the name, third is the description, fourth the offset, fifth the slope and the final argument is an instance of one of the unit classes in the `PalmSens.Units` namespace.
+
 * Reverse, record reverse current as used by <<api-swv>>
 * PolyStatWE, not supported in the PalmSens SDK
 * DCcurrent, record the DC current as used with <<api-acv>>

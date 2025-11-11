@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from contextlib import contextmanager
 from pathlib import Path
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from PalmSens.Data import SessionManager
 from PalmSens.DataFiles import MethodFile, MethodFile2
@@ -36,7 +36,7 @@ def stream_writer(*args, **kwargs):
 
 
 def load_session_file(
-    path: Union[str, Path],
+    path: str | Path,
 ) -> list[Measurement]:
     """Load a session file (.pssession).
 
@@ -65,7 +65,7 @@ def load_session_file(
     return [Measurement(psmeasurement=m) for m in session]
 
 
-def save_session_file(path: Union[str, Path], measurements: list[Measurement]):
+def save_session_file(path: str | Path, measurements: list[Measurement]):
     """Load a session file (.pssession).
 
     Parameters
@@ -91,7 +91,7 @@ def save_session_file(path: Union[str, Path], measurements: list[Measurement]):
         session.Save(stream.BaseStream, str(path))
 
 
-def load_method_file(path: Union[str, Path], as_method: bool = False) -> BaseTechnique | Method:
+def load_method_file(path: str | Path, as_method: bool = False) -> BaseTechnique | Method:
     """Load a method file (.psmethod).
 
     Parameters
@@ -124,7 +124,7 @@ def load_method_file(path: Union[str, Path], as_method: bool = False) -> BaseTec
         return method.to_settings()
 
 
-def save_method_file(path: Union[str, Path], method: Union[Method, BaseTechnique]):
+def save_method_file(path: str | Path, method: Method | BaseTechnique):
     """Load a method file (.psmethod).
 
     Parameters
@@ -134,7 +134,7 @@ def save_method_file(path: Union[str, Path], method: Union[Method, BaseTechnique
     method : Method
         Method to save
     """
-    from pypalmsens import __sdk_version__
+    from . import __sdk_version__
 
     if isinstance(method, BaseTechnique):
         psmethod = method._to_psmethod()
@@ -149,7 +149,7 @@ def save_method_file(path: Union[str, Path], method: Union[Method, BaseTechnique
         MethodFile2.Save(psmethod, stream.BaseStream, str(path), True, __sdk_version__)
 
 
-def read_notes(path: Union[str, Path], n_chars: int = 3000):
+def read_notes(path: str | Path, n_chars: int = 3000):
     with open(path, encoding='utf16') as myfile:
         contents = myfile.read()
     raw_txt = contents[1:n_chars].split('\\r\\n')

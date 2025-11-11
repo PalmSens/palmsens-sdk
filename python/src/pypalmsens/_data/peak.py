@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, final
+
+from typing_extensions import override
 
 if TYPE_CHECKING:
     from PalmSens.Analysis import Peak as PSPeak
@@ -8,6 +10,7 @@ if TYPE_CHECKING:
     from .curve import Curve
 
 
+@final
 class Peak:
     """Python wrapper for .NET Peak class.
 
@@ -22,6 +25,7 @@ class Peak:
 
         self._curve: Curve | None = None
 
+    @override
     def __repr__(self):
         x_unit = self.x_unit
         y_unit = self.y_unit

@@ -19,7 +19,7 @@ keywords = [
     "potentiometry",
     "impedance-specroscopy",
 ]
-license= "LicenseRef-Modified-BSD-3-Clause-PalmSens"
+license = "LicenseRef-Modified-BSD-3-Clause-PalmSens"
 license-files = ["LICENSE"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -80,9 +80,11 @@ log_cli = false
 log_cli_level = "INFO"
 
 [tool.ruff]
-src=['src']
+src = ['src/pypalmsens']
 line-length = 96
 target-version = "py310"
+exclude = ["src/PalmSens-stubs"]
+
 
 [tool.ruff.lint]
 # Enable Pyflakes `E` and `F` codes by default.
@@ -95,6 +97,7 @@ select = [
 ignore = [
     "E501",  # line-too-long
 ]
+
 
 [tool.ruff.lint.isort]
 known-first-party=["pypalmsens"]
@@ -110,8 +113,19 @@ quote-style = "single"
 
 [tool.mypy]
 files = ["src", "tests", "examples"]
+ignore = ["typings", "scr/PalmSens-stubs"]
 allow_redefinition = true
 ignore_missing_imports = true
+
+[tool.pyright]
+include = ["src/pypalmsens", "tests", "examples"]
+ignore = ["src/PalmSens-stubs"]
+reportMissingModuleSource = false
+reportAttributeAccessIssue = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+reportPrivateUsage = false
 
 [tool.bumpversion]
 current_version = "1.3.2"

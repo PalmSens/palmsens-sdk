@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, final
 
-from PalmSens import Measurement as PSMeasurement
+from typing_extensions import override
 
 from .._fitting import FitResult
 from .._methods.method import Method
@@ -10,6 +11,9 @@ from .curve import Curve
 from .dataset import DataSet
 from .eisdata import EISData
 from .peak import Peak
+
+if TYPE_CHECKING:
+    from PalmSens import Measurement as PSMeasurement
 
 
 @dataclass(frozen=True)
@@ -36,7 +40,7 @@ class DeviceInfo:
         )
 
 
-@dataclass
+@final
 class Measurement:
     """Python wrapper for .NET Measurement class.
 
@@ -49,6 +53,7 @@ class Measurement:
     def __init__(self, *, psmeasurement: PSMeasurement):
         self._psmeasurement = psmeasurement
 
+    @override
     def __repr__(self):
         return f'{self.__class__.__name__}(title={self.title}, timestamp={self.timestamp}, device={self.device.type})'
 
@@ -141,7 +146,7 @@ class Measurement:
         peaks : list[Peak]
             List of peaks
         """
-        peaks = []
+        peaks: list[Peak] = []
         for curve in self.curves:
             peaks.extend(curve.peaks)
         return peaks
@@ -168,5 +173,4 @@ class Measurement:
         curves : list[Curve]
             List of curves
         """
-        curves = self._psmeasurement.GetCurveArray()
-        return [Curve(pscurve=curve) for curve in curves]
+        return [Curve(pscurve=curve) for curve in self._psmeasurement.GetCurveArray()]

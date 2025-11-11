@@ -71,6 +71,22 @@ To bypass the check, run:
 git commit --no-verify
 ```
 
+## Type stubs
+
+This will help type checking (mypy) and autocomplete using LSPs (e.g. pyright) for the dotnet libraries.
+
+The type stubs are distributed as a stub-only package alongside PyPalmSens according to the [python typing docs](https://typing.python.org/en/latest/spec/distributing.html#stub-only-packages).
+The type stubs should be updated every time a new version of the dlls are added.
+
+They were generated using this tool:
+https://github.com/bph-tuwien/pythonnet-stub-generator
+
+```bash
+powershell -File build_type_stubs.ps1
+```
+
+For more info on type stubs see the [mypy docs](https://mypy.readthedocs.io/en/stable/stubs.html).
+
 ## Documentation
 
 The documentation uses [griffe2md](https://mkdocstrings.github.io/griffe2md/) and pandoc to build the API documentation.

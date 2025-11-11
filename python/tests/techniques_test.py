@@ -775,7 +775,7 @@ class TestEIS_time_fixed:
         'min_frequency': 1e3,
         'scan_type': 'time',
         'frequency_type': 'fixed',
-        'run_time': 1.0,
+        'run_time': 1.3,
     }
 
     @pytest.mark.instrument

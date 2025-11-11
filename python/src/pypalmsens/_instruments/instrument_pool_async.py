@@ -31,7 +31,7 @@ class InstrumentPoolAsync:
         *,
         callback: None | Callable = None,
     ):
-        self.managers = []
+        self.managers: list[InstrumentManagerAsync] = []
         """List of instruments managers in the pool."""
 
         for item in devices_or_managers:
@@ -54,16 +54,12 @@ class InstrumentPoolAsync:
 
     async def connect(self) -> None:
         """Connect all instrument managers in the pool."""
-        tasks = []
-        for manager in self.managers:
-            tasks.append(manager.connect())
+        tasks = [manager.connect() for manager in self.managers]
         await asyncio.gather(*tasks)
 
     async def disconnect(self) -> None:
         """Disconnect all instrument managers in the pool."""
-        tasks = []
-        for manager in self.managers:
-            tasks.append(manager.disconnect())
+        tasks = [manager.disconnect() for manager in self.managers]
         await asyncio.gather(*tasks)
 
     def is_connected(self) -> bool:
@@ -83,7 +79,7 @@ class InstrumentPoolAsync:
             Instance of an instrument manager.
         """
         self.managers.remove(manager)
-        await manager.disconnect()
+        _ = await manager.disconnect()
 
     async def add(self, manager: InstrumentManagerAsync) -> None:
         """Open and add manager to the pool.
@@ -93,7 +89,7 @@ class InstrumentPoolAsync:
         manager : InstrumentManagerAsync
             Instance of an instrument manager.
         """
-        await manager.connect()
+        _ = await manager.connect()
         self.managers.append(manager)
 
     async def measure(self, method: BaseTechnique) -> list[Measurement]:
@@ -139,7 +135,7 @@ class InstrumentPoolAsync:
         tasks = []
 
         for manager in self.managers:
-            manager.validate_method(method._to_psmethod())
+            _ = manager.validate_method(method._to_psmethod())
 
         if len(self.managers) < 2:
             raise ValueError(
@@ -148,8 +144,10 @@ class InstrumentPoolAsync:
 
         if len(set(manager.instrument.name for manager in self.managers)) > 1:
             raise ValueError(
-                'Hardware synchronization is only supported when '
-                'a single multi-channel instrument is selected.'
+                (
+                    'Hardware synchronization is only supported when '
+                    'a single multi-channel instrument is selected.'
+                )
             )
 
         for manager in self.managers:
@@ -158,15 +156,17 @@ class InstrumentPoolAsync:
                 break
         else:
             raise ValueError(
-                'Hardware synchronization requires the first channel '
-                'of the multi-channel instrument to be in the pool.'
+                (
+                    'Hardware synchronization requires the first channel '
+                    'of the multi-channel instrument to be in the pool.'
+                )
             )
 
         for manager in self.managers:
             if manager is hw_sync_manager:
                 continue
 
-            sync_task, measure_task = manager.initiate_hardware_sync_follower_channel(method)
+            sync_task, measure_task = manager.initiate_hardware_sync_follower_channel(method)  # type: ignore
             follower_sync_tasks.append(sync_task)
             tasks.append(measure_task)
 

@@ -1,13 +1,18 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import TYPE_CHECKING, overload
 
 import numpy as np
+from typing_extensions import override
 
 from ._shared import ArrayType
 
+if TYPE_CHECKING:
+    from PalmSens.Data import DataArray as PSDataArray
 
-class DataArray(Sequence):
+
+class DataArray(Sequence[float]):
     """Python wrapper for .NET DataArray class.
 
     Parameters
@@ -16,9 +21,10 @@ class DataArray(Sequence):
         Reference to .NET DataArray object.
     """
 
-    def __init__(self, *, psarray):
-        self._psarray = psarray
+    def __init__(self, *, psarray: PSDataArray):
+        self._psarray: PSDataArray = psarray
 
+    @override
     def __repr__(self):
         return (
             f'{self.__class__.__name__}('
@@ -27,6 +33,13 @@ class DataArray(Sequence):
             f'n_points={len(self)})'
         )
 
+    @overload
+    def __getitem__(self, index: int) -> float: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> Sequence[float]: ...
+
+    @override
     def __getitem__(self, index):
         if isinstance(index, int):
             if index >= len(self) or index < -len(self):
@@ -36,7 +49,8 @@ class DataArray(Sequence):
 
         return self.to_list()[index]
 
-    def __len__(self):
+    @override
+    def __len__(self) -> int:
         return len(self._psarray)
 
     def copy(self) -> DataArray:

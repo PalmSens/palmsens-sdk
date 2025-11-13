@@ -1,4 +1,4 @@
-= API reference
+= Techniques
 
 All applicable parameters for each technique can be found here.
 For the inheritance hierarchy of the the techniques, see xref:core.adoc[].

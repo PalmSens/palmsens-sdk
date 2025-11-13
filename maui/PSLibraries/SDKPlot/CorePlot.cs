@@ -482,7 +482,7 @@ namespace SDKPlot
         /// <param name="update">if set to <c>true</c> the plot is [updated].</param>
         /// <exception cref="System.ArgumentNullException">The specified SimpleCurve cannot be null</exception>
         /// <exception cref="System.ArgumentException">Plot allready contains the specified SimpleCurve</exception>
-        public virtual void AddSimpleCurve(SimpleCurve simpleCurve, Method method = null, bool useSecondaryYAxis = false, bool update = true)
+        public virtual void AddSimpleCurve(SimpleCurve simpleCurve, Method? method = null, bool useSecondaryYAxis = false, bool update = true)
         {
             if (simpleCurve == null)
                 throw new ArgumentNullException("The specified SimpleCurve cannot be null");
@@ -579,7 +579,7 @@ namespace SDKPlot
         /// <param name="useSecondaryYAxis">if set to <c>true</c> [use secondary y axis].</param>
         /// <param name="update">if set to <c>true</c> the plot is [updated].</param>
         /// <exception cref="System.ArgumentNullException">The array of SimpleCurves cannot be null</exception>
-        public void AddSimpleCurves(IEnumerable<SimpleCurve> simpleCurves, Method method = null, bool useSecondaryYAxis = false, bool update = true)
+        public void AddSimpleCurves(IEnumerable<SimpleCurve> simpleCurves, Method? method = null, bool useSecondaryYAxis = false, bool update = true)
         {
             if (simpleCurves == null)
                 throw new ArgumentNullException("The array of SimpleCurves cannot be null");

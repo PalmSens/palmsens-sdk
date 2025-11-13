@@ -38,6 +38,14 @@ jobs:
       with:
         node-version: '22'
 
+    - name: Dotnet Setup
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.x
+
+    - name: Install docfx
+      run: dotnet tool update -g docfx
+
     - name: Install Antora
       run: npm clean-install
 

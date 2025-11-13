@@ -304,7 +304,7 @@ namespace PalmSens.Core.Simplified
                     {
                         await device.CloseAsync();
                         await Task.Delay(25 + (retries * retries * retries * 300), cancellationToken);
-                        
+
                         try
                         {
                             if (CommsByChannelIndex.ContainsKey(index))
@@ -592,11 +592,11 @@ namespace PalmSens.Core.Simplified
 
         /// <summary>
         /// Starts a measurement as specified in the method on the specified collection of channels.
+        /// No results will be returned if other measurements were started correctly.
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <param name="channels">The channels.</param>
         /// <param name="muxChannel">The mux channel to measure on.</param>
-        /// no results will be returned if other measurements were started correctly.</param>
         /// <returns>
         /// An array of ValueTuples containing:
         /// - An instance of the SimpleMeasurement instance containing all the data related to the measurement, null in the case of an exception
@@ -617,7 +617,7 @@ namespace PalmSens.Core.Simplified
                 return StartMeasurementWithHWSyncAsync(method, channels, muxChannel, n);
             }
 
-            //Barrier used to synchronize measurements (measurements initiate first and desynchronize slightly 
+            //Barrier used to synchronize measurements (measurements initiate first and desynchronize slightly
             //before the measurement is triggered on the channels, this barrier synchornizes the triggering on the channels)
             TaskBarrier taskBarrier = new TaskBarrier(n);
             return GetTaskResultsAndOrExceptions<SimpleMeasurement>(
@@ -677,26 +677,26 @@ namespace PalmSens.Core.Simplified
                     var channelsOrdered = channels.OrderBy(i => i).ToArray();
                     method.UseHWSync = true;
 
-                    var secondaryChannels = 
+                    var secondaryChannels =
                         (await GetTaskResultsAndOrExceptions<SimpleMeasurement>(
                             (int channel) => StartMeasurementTask(
-                                method, 
-                                channel, 
-                                muxChannel, 
-                                null, 
-                                false, 
+                                method,
+                                channel,
+                                muxChannel,
+                                null,
+                                false,
                                 true)
                             , channelsOrdered.Skip(1).ToArray())).ToList(); //Before starting the measurement on the primary channels
                                                                      //it needs to be started on the secondary channels
-                    var primaryChannel = 
+                    var primaryChannel =
                         await StartMeasurementTask(method,
-                            channelsOrdered.First(), 
-                            muxChannel, 
-                            null, 
+                            channelsOrdered.First(),
+                            muxChannel,
+                            null,
                             true,
                             true); //If the measurement is not started on the primary channel
                                     //it will not start on the secondary channels therefore the exception is thrown in this case
-                    
+
                     method.UseHWSync = false;
                     secondaryChannels.Insert(0, primaryChannel);
                     return secondaryChannels;
@@ -758,7 +758,7 @@ namespace PalmSens.Core.Simplified
         /// A SimpleMeasurement instance containing all the data related to the measurement.
         /// </returns>
         public Task<IReadOnlyList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> StartMeasurementAllChannelsAsync(Method method, bool useHWSync = false)
-        { 
+        {
             return StartMeasurementAsync(method, AllChannels, -1, useHWSync);
         }
 
@@ -916,11 +916,11 @@ namespace PalmSens.Core.Simplified
 
         /// <summary>
         /// Awaits a measurement as specified in the method until completion on the specified collection of channels.
+        /// No results will be returned if other measurements were started correctly.
         /// </summary>
         /// <param name="method">The method containing the measurement parameters.</param>
         /// <param name="channels">The channels.</param>
         /// <param name="muxChannel">The mux channel to measure on.</param>
-        /// no results will be returned if other measurements were started correctly.</param>
         /// <returns>
         /// An array of ValueTuples containing:
         /// - An instance of the SimpleMeasurement instance containing all the data related to the measurement, null in the case of an exception
@@ -935,7 +935,7 @@ namespace PalmSens.Core.Simplified
         public Task<IReadOnlyList<(SimpleMeasurement Measurement, int ChannelIndex, Exception Exception)>> MeasureAsync(Method method, int[] channels, int muxChannel)
         {
             int n = channels.Length;
-            //Barrier used to synchronize measurements (measurements initiate first and desynchronize slightly 
+            //Barrier used to synchronize measurements (measurements initiate first and desynchronize slightly
             //before the measurement is triggered on the channels, this barrier synchornizes the triggering on the channels)
             TaskBarrier taskBarrier = new TaskBarrier(n);
             return GetTaskResultsAndOrExceptions<SimpleMeasurement>(
@@ -1643,7 +1643,7 @@ namespace PalmSens.Core.Simplified
                 ex = e;
                 if (throwExceptions) throw ex;
             }
-            
+
             return (result, channel, ex);
         }
 

@@ -195,7 +195,7 @@ namespace PalmSens.Core.Simplified
         private Measurement _activeMeasurement;
 
         /// <summary>
-        /// Gets or sets the active measurement manages the subscription to its events, 
+        /// Gets or sets the active measurement manages the subscription to its events,
         /// the active simple measurement and the active curves.
         /// </summary>
         /// <value>
@@ -330,7 +330,7 @@ namespace PalmSens.Core.Simplified
                 {
                     tcs.SetException(exception);
                 }
-                
+
                 return await tcs.Task;
             }
             finally
@@ -520,7 +520,7 @@ namespace PalmSens.Core.Simplified
                 if (comm.CellOn)
                     return;
                 await comm.SetCellOnAsync(true);
-            });            
+            });
         }
 
         /// <summary>
@@ -563,7 +563,7 @@ namespace PalmSens.Core.Simplified
         public async Task<float> ReadCellPotential()
         {
             return await Run(async (CommManager comm) => {
-                if (comm.State != CommManager.DeviceState.Idle) 
+                if (comm.State != CommManager.DeviceState.Idle)
                     throw new Exception("Device must be in idle mode for manual control");
                 return await comm.GetPotentialAsync();
             });
@@ -630,7 +630,7 @@ namespace PalmSens.Core.Simplified
                     throw new Exception("Device must be in idle mode to run a MethodSCRIPT");
                 if (comm.ClientConnection is ClientConnectionMS connMS)
                     await connMS.StartSetterMethodScriptAsync(script, timeout);
-                    
+
                 throw new Exception("Device does not support MethodSCRIPT");
             });
         }
@@ -639,6 +639,7 @@ namespace PalmSens.Core.Simplified
         /// Runs a MethodSCRIPT on the device and returns the output.
         /// A timeout exception will be thrown if no new data is received for longer than the timeout.
         /// A timeout exception will be thrown for scripts that do not return anything.
+        /// </summary>
         /// <param name="script">The MethodSCRIPT.</param>
         /// <param name="timeout">The timeout.</param>
         /// <returns></returns>
@@ -649,7 +650,7 @@ namespace PalmSens.Core.Simplified
                     throw new Exception("Device must be in idle mode to run a MethodSCRIPT");
                 if (comm.ClientConnection is ClientConnectionMS connMS)
                     return await connMS.StartGetterMethodScriptAsync(script, timeout);
-                
+
                 throw new Exception("Device does not support MethodSCRIPT");
             });
         }

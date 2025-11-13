@@ -71,7 +71,7 @@ An example of connecting to and running measurements on multiple instruments/cha
 == Functions
 
 This is a list of the functions that are available in the Matlab SDK.
-These wrap some of the classes and functions in the xref:start:ROOT:api.adoc[.NET SDK] and make them accessible through Matlab.
+These wrap some of the classes and functions in the xref:start:ROOT:techniques.adoc[.NET SDK] and make them accessible through Matlab.
 Look at the function docstrings for usage and parameter descriptions.
 
 https://github.com/palmsens/palmsens_sdk/blob/main/matlab/GetConnectedDevices.m[`GetConnectedDevices.m`]::
@@ -101,7 +101,7 @@ Saves a method.
 == Classes
 
 This is a list of the classes that are available through the Matlab SDK.
-These wrap some of the Palmsens xref:start:ROOT:api.adoc[.NET internal data structures] to make them more accessible in Matlab.
+These wrap some of the Palmsens xref:start:ROOT:techniques.adoc[.NET internal data structures] to make them more accessible in Matlab.
 Look at the class and method docstrings for further information on the interfaces.
 
 https://github.com/palmsens/palmsens_sdk/blob/main/matlab/EquivalentCircuitFit.m[`EquivalentCircuitFit.m`]::

@@ -343,7 +343,7 @@ namespace PalmSens.Core.Simplified.Data
             circuitModel.SetEISdata(_simpleMeasurement.Measurement.EISdata[0]); //Sets reference to measured data
             try
             {
-                circuitModel.SetCircuit(cdc); //Sets the circuit defined in the CDC code string, in this case a Randles circuit 
+                circuitModel.SetCircuit(cdc); //Sets the circuit defined in the CDC code string, in this case a Randles circuit
             }
             catch
             {
@@ -459,20 +459,20 @@ namespace PalmSens.Core.Simplified.Data
 
             //Create a copy of the Y Axis data to prevent the raw measurement data from being overwritten
             DataArray diffArray = Curve.YAxisDataArray.Clone(true);
-            
+
             //Forward derivative of first point
-            diffArray[0].Value = 
-                (Curve.YAxisDataArray[1].Value - Curve.YAxisDataArray[0].Value) / 
+            diffArray[0].Value =
+                (Curve.YAxisDataArray[1].Value - Curve.YAxisDataArray[0].Value) /
                 (Curve.XAxisDataArray[1].Value - Curve.XAxisDataArray[0].Value);
             //Backward derivative of last point
-            diffArray[NDataPoints - 1].Value = 
-                (Curve.YAxisDataArray[NDataPoints - 1].Value - Curve.YAxisDataArray[NDataPoints - 2].Value) / 
+            diffArray[NDataPoints - 1].Value =
+                (Curve.YAxisDataArray[NDataPoints - 1].Value - Curve.YAxisDataArray[NDataPoints - 2].Value) /
                 (Curve.XAxisDataArray[NDataPoints - 1].Value - Curve.XAxisDataArray[NDataPoints - 2].Value);
             //Centered derivative of interior points
             for (int i = 1; i < NDataPoints - 1; i++)
             {
-                diffArray[i].Value = 
-                    (Curve.YAxisDataArray[i + 1].Value - Curve.YAxisDataArray[i - 1].Value) / 
+                diffArray[i].Value =
+                    (Curve.YAxisDataArray[i + 1].Value - Curve.YAxisDataArray[i - 1].Value) /
                     (Curve.XAxisDataArray[i + 1].Value - Curve.XAxisDataArray[i - 1].Value);
             }
             Curve differentiatedCurve = new Curve(Curve.XAxisDataArray, diffArray, $"{Title}, d{YUnit}/d{XUnit}");
@@ -777,7 +777,6 @@ namespace PalmSens.Core.Simplified.Data
         /// </summary>
         /// <param name="multiply">The multiply.</param>
         /// <param name="from">The index to start multiplying by.</param>
-        /// <returns>
         /// <param name="count">The number of datapoints in the range.</param>
         /// <returns>
         /// A new SimpleCurve with the result

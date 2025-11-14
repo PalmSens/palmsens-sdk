@@ -39,6 +39,7 @@ dependencies = [
     'numpy',
     'packaging',
     'pythonnet',
+    'typing-extensions',
 ]
 
 [project.urls]

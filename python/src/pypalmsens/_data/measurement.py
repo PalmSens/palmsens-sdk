@@ -92,7 +92,7 @@ class Measurement:
     @property
     def has_eis_data(self) -> bool:
         """Return True if EIS data are is available."""
-        return self._psmeasurement.ContainsEISData
+        return self._psmeasurement.ContainsEISdata
 
     @property
     def dataset(self) -> DataSet:

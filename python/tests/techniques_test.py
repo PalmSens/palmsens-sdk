@@ -5,7 +5,6 @@ import tempfile
 from pathlib import Path
 
 import pytest
-import System
 
 import pypalmsens as ps
 from pypalmsens._methods import BaseTechnique
@@ -96,7 +95,6 @@ class TestFCV:
         'current_range': 5,
     }
 
-    @pytest.mark.xfail(raises=AssertionError, reason='FCV only returns 1 scan with nScans>1')
     @pytest.mark.instrument
     def test_measurement(self, manager):
         method = BaseTechnique._registry[self.id].from_dict(self.kwargs)
@@ -269,10 +267,11 @@ class TestSCP:
         'applied_current_range': ps.settings.CURRENT_RANGE.cr_100_uA,
         'measurement_time': 1.0,
         'potential_range': 4,
+        'pretreatment': {'deposition_time': 1, 'deposition_potential': 0.1},
     }
 
     @pytest.mark.xfail(
-        raises=System.NotImplementedException,
+        raises=ValueError,
         reason='Not all devices support SCP.',
     )
     @pytest.mark.instrument

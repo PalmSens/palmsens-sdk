@@ -1,11 +1,11 @@
 import typing, clr, abc
 from PalmSens import Measurement, Method, ScanMethod, TimeMethod
 from System.IO import Stream, StreamReader, TextWriter, StreamWriter
+from System.Text import Encoding
 from System import Array_1, Exception, Version, IProgress_1
 from PalmSens.Plottables import EISData, Curve
 from System.Collections.Generic import Dictionary_2, List_1, IDictionary_2, ICollection_1, KeyValuePair_2, IEnumerator_1, IEnumerable_1
 from System.Data import DataTable
-from System.Text import Encoding
 from System.Threading.Tasks import Task_1, Task
 from System.Collections import IDictionary
 from System.Reflection import MethodBase
@@ -58,6 +58,15 @@ class CSVDataFile(DataFile):
     DefaultEISDataColumns : CSVDataFile.EnumEISDataColumns
     DialogFilter : str
     FileExtension : str
+    @classmethod
+    @property
+    def CsvEncoding(cls) -> Encoding: ...
+    @classmethod
+    @property
+    def CsvEncodingType(cls) -> EncodingType: ...
+    @classmethod
+    @CsvEncodingType.setter
+    def CsvEncodingType(cls, value: EncodingType) -> EncodingType: ...
     @staticmethod
     def GetColumnNames(columns: CSVDataFile.EnumEISDataColumns) -> Array_1[str]: ...
     @staticmethod
@@ -128,6 +137,22 @@ class EISDataFile(DataFile):
     def Save(source: str, eisdata: EISData, fileStream: Stream, fileName: str) -> None: ...
     @staticmethod
     def Serialize(source: str, eisdata: EISData, contents: TextWriter) -> None: ...
+
+
+class EncodingType(typing.SupportsInt):
+    @typing.overload
+    def __init__(self, value : int) -> None: ...
+    @typing.overload
+    def __init__(self, value : int, force_if_true: bool) -> None: ...
+    def __int__(self) -> int: ...
+
+    # Values:
+    UTF8BOM : EncodingType # 0
+    UTF16LE : EncodingType # 1
+    UTF16BE : EncodingType # 2
+    UTF16LEBOM : EncodingType # 3
+    UTF16BEBOM : EncodingType # 4
+    UTF8 : EncodingType # 5
 
 
 class InvalidJsonException(Exception):

@@ -1,7 +1,7 @@
 import typing, clr, abc
 from PalmSens.Plottables import Curve
 from PalmSens.Data import EnumDirection
-from System import DateTime, Array_1, Progress_1, IDisposable, Exception
+from System import DateTime, Array_1, Progress_1, IDisposable, Exception, ValueTuple_2
 from PalmSens.DataFiles import JsonBag
 from System.Collections.Generic import IList_1, List_1, Dictionary_2, IEnumerator_1, IEnumerable_1
 from System.Threading.Tasks import Task_1, Task
@@ -389,6 +389,11 @@ class PeakDetectProgressUpdate:
     NPeaksFound : int
     NRemainingCurves : int
     Progress : EnumPeakDetectProgress
+
+
+class PeakExtensions(abc.ABC):
+    @staticmethod
+    def GetFullWidthHalfMaximumIndices(p: Peak) -> ValueTuple_2[int, int]: ...
 
 
 class PeakList(IEnumerable_1[Peak]):

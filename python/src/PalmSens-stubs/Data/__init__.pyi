@@ -1071,6 +1071,8 @@ class SessionManager(IEnumerable_1[Measurement], IDisposable, ISessionManager):
         EisData : SessionManager.SelectableDataTypes # 1
         MeasurementData : SessionManager.SelectableDataTypes # 2
 
+    ActiveLevelDetectionProgress : Dictionary_2[Curve, List_1[LevelDetectProgress]]
+    ActivePeakDetectionProgress : Dictionary_2[Curve, List_1[PeakDetectProgress]]
     CurveCollection : Dictionary_2[Curve, Measurement]
     EISDataCollection : Dictionary_2[EISData, Measurement]
     FindPeakShoulders : bool

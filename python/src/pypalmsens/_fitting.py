@@ -394,6 +394,17 @@ class CircuitModel:
         opts.MinimumDeltaErrorTerm = self.min_delta_error
         opts.MinimumDeltaParameters = self.min_delta_step
 
+        if self.algorithm == 'leastsq':
+            opts.SelectedAlgorithm = PSFitting.Algorithm.LevenbergMarquardt
+        elif self.algorithm == 'nelder-mead':
+            opts.SelectedAlgorithm = PSFitting.Algorithm.NelderMead
+        else:
+            raise ValueError(f'{self.algorithm=}')
+
+        opts.ConvergenceTolerance = self.tolerance
+        opts.Lambda = self.lambda_start
+        opts.LambdaFactor = self.lambda_factor
+
         if self.min_freq or self.max_freq:
             self.min_freq = self.min_freq or 0
             self.max_freq = self.max_freq or 0

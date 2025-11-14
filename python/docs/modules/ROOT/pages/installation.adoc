@@ -1,6 +1,12 @@
 = Installation
 :experimental: true
 
+To install:
+
+```
+pip install pypalmsens
+```
+
 == Requirements (Windows)
 
 * https://python.org[Python version 3.10 or newer]
@@ -8,7 +14,7 @@
 * Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the https://github.com/PalmSens/PalmSens_SDK/releases/download/python-1.0.0/PalmSens.Drivers.exe[driver installer].
 
 [#req-linux]
-== Requirements (Linux)
+== Requirements (Linux and MacOS)
 
 * https://python.org[Python version 3.10 or newer]. Use your system's package manager to install Python.
 * .NET Runtime 9.0 or newer. This is called something like `dotnet-runtime-9.0` in your package manager.
@@ -18,6 +24,7 @@
   - https://learn.microsoft.com/en-us/dotnet/core/install/linux-fedora[Fedora]
   - https://learn.microsoft.com/en-us/dotnet/core/install/linux-rhel[Redhat]
   - https://learn.microsoft.com/en-us/dotnet/iot/deployment[Raspberry Pi and other single-board ARM computers]
+  - https://learn.microsoft.com/en-us/dotnet/core/install/macos[MacOS]
 * Optional: https://ftdichip.com/drivers/d2xx-drivers/[FTDI d2xx drivers].
   - Devices with an FTDI chip include the PalmSens 3 and the EmStat 1, 2, 3, 3+, Go, and Pico.
   - For Raspberry Pi 4 or 5 you need the ARMv8 driver.

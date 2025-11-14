@@ -72,6 +72,12 @@ measurement)
 |`System.Int`
 |===
 
+[WARNING]
+.Mains frequency
+====
+To eliminate noise induced by other electrical appliances it is highly recommended to set your regional mains frequency (50/60 Hz) in the static property `PalmSens.Method.PowerFreq`.
+====
+
 == Pretreatment settings
 
 The following properties specify the measurements pretreatment settings:

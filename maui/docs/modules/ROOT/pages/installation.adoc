@@ -24,8 +24,15 @@ Reference external libraries (`.dll` files) by selecting them via the
 'Browse' button and reference project files (.csproj) by xref#add-sdk-to-solution[adding them
 to your solution] and referencing the project.
 
-The `PalmSens.Core.dll` and `PalmSens.Core.Windows.dll` libraries should always be referenced.
 If you use the simplified wrapper to control your devices, reference the `PalmSens.Core.Simplified.csproj` and `PalmSens.Core.Simplified.MAUI.csproj` should be referenced.
 To use the plot helpers, reference the `SDKPlot.csproj`, `SDKPlot.Maui.csproj` projects.
+
+The `PalmSens.Core` libraries are available from nuget.org[https://nuget.org].
+
+- https://www.nuget.org/packages/PalmSens.Core[PalmSens.Core]
+- https://www.nuget.org/packages/PalmSens.Core.Android[PalmSens.Core.Android]
+- https://www.nuget.org/packages/PalmSens.Core.Windows[PalmSens.Core.Windows]
+
+The `PalmSens.Core` libraries are referenced by the Simplified wrapper, and do not need to be referenced explicitly.
 
 You can use `net9.0` as the target .NET runtime.

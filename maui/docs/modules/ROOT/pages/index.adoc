@@ -13,8 +13,6 @@ With this PalmSens SDK you develop Windows applications in Visual Studio using h
 ..NET MAUI is a multi-platform app UI framework that lets you build native, cross-platform desktop and mobile apps with one codebase.
 The PalmSens .NET MAUI SDK can be used with all PalmSens instruments and potentiostat modules.
 
-WARNING: The .NET MAUI SDK is under active development and not ready for use. 🚧
-
 Supported platforms:
 
 * Windows
@@ -24,12 +22,12 @@ Supported platforms:
 
 == Contents
 
-These projects contain an open source wrapper for the xref:start:ROOT:core.adoc[`PalmSens.Core`] libraries.
+These projects contain a simplified open source wrapper for the xref:start:ROOT:core.adoc[`PalmSens.Core`] libraries.
 
-* `PalmSens.Core.Simplified.NET`
+* `PalmSens.Core.Simplified`
 * `PalmSens.Core.Simplified.MAUI`
 * `PalmSens.Core.Simplified.Android`
-* `PalmSens.Core.Simplified.Windows.NET`
+* `PalmSens.Core.Simplified.WinUI`
 
 The simplified wrappers give you quick and easy access to all the basic functions of the PalmSens/EmStat devices and automatically handles most potential threading issues for you:
 

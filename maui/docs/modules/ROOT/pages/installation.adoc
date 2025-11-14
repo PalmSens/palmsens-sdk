@@ -1,6 +1,8 @@
 = Installation
 :experimental: true
 
+Download the latest release from https://github.com/PalmSens/PalmSens_SDK/releases[here].
+
 Developing native, cross-platform .NET Multi-platform App UI (.NET MAUI) apps requires Visual Studio 2022 17.12 or greater, or the latest Visual Studio Code with the .NET MAUI extension.
 
 See https://learn.microsoft.com/en-us/dotnet/maui/get-started/installation[this page] for installation instructions and how to get started with MAUI.
@@ -36,3 +38,11 @@ The `PalmSens.Core` libraries are available from nuget.org[https://nuget.org].
 The `PalmSens.Core` libraries are referenced by the Simplified wrapper, and do not need to be referenced explicitly.
 
 You can use `net9.0` as the target .NET runtime.
+
+== Making a new app
+
+1. Copy the directory you want to start from, e.g. `BasicExampleApp`
+2. Rename the directory, e.g. `MyNewApp`
+3. Rename the `BasicExampleApp.csproj` file to `MyNewApp.csproj`
+4. Right click Solution > Add > Existing Project, select `.csproj` file
+5. Update namespace (find-replace), `BasicExampleApp` -> `MyNewApp`

@@ -1,0 +1,36 @@
+name: Publish Maui
+
+on:
+  push:
+    tags:
+      - 'maui-*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Add maui zip to release
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+
+    - name: Zip maui directory
+      run: |
+        cd maui
+        zip -r ../${{ github.ref_name }}.zip *
+        cd ..
+
+    - name: Upload zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ github.ref_name }}.zip
+        path: ${{ github.ref_name }}.zip
+
+    # https://github.com/softprops/action-gh-release
+    - name: Add zip to tagged release
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/maui-')
+      with:
+        files: ${{ github.ref_name }}.zip

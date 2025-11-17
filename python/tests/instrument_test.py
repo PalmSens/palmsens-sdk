@@ -8,6 +8,7 @@ from PalmSens.Comm import enumDeviceType
 
 import pypalmsens
 from pypalmsens._instruments._common import firmware_warning
+from pypalmsens.data import Measurement
 
 
 @dataclass
@@ -94,6 +95,31 @@ def test_connect():
 async def test_connect_async():
     async with await pypalmsens.connect_async() as manager:
         assert isinstance(manager, pypalmsens.InstrumentManagerAsync)
+
+
+@pytest.mark.instrument
+def test_measure():
+    method = pypalmsens.LinearSweepVoltammetry(
+        begin_potential=0.0,
+        end_potential=0.5,
+        step_potential=0.1,
+        scanrate=10.0,
+    )
+    measurement = pypalmsens.measure(method)
+    assert isinstance(measurement, Measurement)
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_measure_async():
+    method = pypalmsens.LinearSweepVoltammetry(
+        begin_potential=0.0,
+        end_potential=0.5,
+        step_potential=0.1,
+        scanrate=10.0,
+    )
+    measurement = await pypalmsens.measure_async(method)
+    assert isinstance(measurement, Measurement)
 
 
 @pytest.mark.instrument

@@ -1,4 +1,5 @@
 = Connecting and Measuring
+:source-language: python
 
 The following chapter details how to connect to a device, read data from the device, manually controlling the potential, run measurements on the device and finally how to properly close a connection to a device.
 
@@ -11,11 +12,41 @@ The `InstrumentManager()` and `InstrumentManagerAsync()` class are wrappers arou
 To eliminate noise induced by other electrical appliances it is highly recommended to set your regional mains frequency (50/60 Hz) in the general settings when performing a measurement `ps.settings.General.power_frequency`.
 ====
 
+== Getting started
+
+The simplest way to run an expirement is to use the `ps.measure()` function.
+This function connects to any plugged-in USB device it can find and starts the given measurement.
+
+----
+>>> import pypalmsens as ps
+
+>>> method = ps.ChronoAmperometry(
+...     interval_time=0.01,
+...     potential=1.0,
+...     run_time=10.0,
+... )
+
+>>> ps.measure(method)  # <1>
+Measurement(title=Chronoamperometry, timestamp=17-Nov-25 13:42:16, device=EmStat4HR)
+----
+<1> `measure` discovers any plugged-in device to start the measurement. An error is raised when more than 1 instruments are connected.
+
+You can optionally pass the instrument to measure on if you have multiple connected.
+
+----
+>>> instruments = ps.discover()
+>>> first_instrument = instruments[0]
+
+>>> ps.measure(method, instrument=first_instrument)
+Measurement(title=Chronoamperometry, timestamp=17-Nov-25 14:12:02, device=EmStat4HR)
+----
+
 == Connecting to a device
 
-The recommended way to connect to a device for most workflows is to use the `ps.connect()` https://docs.python.org/3/library/stdtypes.html#typecontextmanager[context manager]. The contextmanager manages the connection, and closes the connection to the device if it is no longer needed. It returns an instance of `InstrumentManager()`, which can be used to control the instrument and start a measurement:
+The recommended way to connect to a device for most workflows is to use the `ps.connect()` https://docs.python.org/3/library/stdtypes.html#typecontextmanager[context manager].
+The contextmanager manages the connection, and closes the connection to the device if it is no longer needed.
+`ps.connect()` returns an instance of `InstrumentManager()`, which can be used to control the instrument and start a measurement:
 
-[,python]
 ----
 >>> import pypalmsens as ps
 
@@ -23,9 +54,11 @@ The recommended way to connect to a device for most workflows is to use the `ps.
 ...     measurement = manager.measure(method)
 ----
 
-By default, `connect()` connects to the first instrument it discovers. With only one device connected, this is fine. With more than one instrument connected, you can use `ps.discover()` to find all devices and manage them yourself. For example, this is how to get a list of all available devices, and how to connect to the first one.
+By default, `connect()` connects to any plugged-in USB instrument it discovers.
+It gives an error when multiple instruments are discovered.
+With more instruments connected, you can use `ps.discover()` to find all devices and manage them yourself.
+For example, this is how to get a list of all available devices, and how to connect to the first one.
 
-[,python]
 ----
 >>> available_instruments = ps.discover()
 >>> available_instruments
@@ -39,7 +72,6 @@ By default, `connect()` connects to the first instrument it discovers. With only
 
 Finally, you can set up the `InstrumentManager()` yourself.
 
-[,python]
 ----
 >>> available_instruments = ps.discover()
 >>> manager = ps.InstrumentManager()
@@ -48,7 +80,6 @@ Finally, you can set up the `InstrumentManager()` yourself.
 
 The `InstrumentManager.disconnect()` function disconnects from the device freeing it up for other things to connect to it.
 
-[,python]
 ----
 >>> manager.disconnect()
 ----
@@ -57,7 +88,6 @@ Currently PyPalmSens supports discovering instruments connected via FTDI, serial
 
 You can enable scanning with Bluetooth by setting:
 
-[,python]
 ----
 >>> ps.discover(bluetooth=True)
 ----
@@ -68,7 +98,6 @@ Depending on your device’s capabilities it can be used to set a potential/curr
 The potential can be set manually in potentiostatic mode and the current can be set in galvanostatic mode.
 The following example show how to manually set a potential, for more examples refer to the `ManualControlExample` and `ManualControlExampleAsync` scripts included with the SDK.
 
-[,python]
 ----
 >>> manager.set_potential(1)
 ----
@@ -81,7 +110,6 @@ For more information please refer to xref:start:ROOT:core.adoc[].
 
 The following example runs a chronoamperometry measurement on an instrument.
 
-[,python]
 ----
 >>> method = ps.ChronoAmperometry(
 ...     interval_time=0.01,
@@ -95,7 +123,6 @@ The following example runs a chronoamperometry measurement on an instrument.
 
 It is possible to process measurement results in real-time by specifying a callback on the `InstrumentManager`/`InstrumentManagerAsync` either by providing it as an override when it is created using the `new_data_callback` argument:
 
-[,python]
 ----
 >>> def new_data_callback(new_data):
 ...     for point in new_data:
@@ -108,7 +135,6 @@ It is possible to process measurement results in real-time by specifying a callb
 
 or by setting it on the `InstrumentManager`’s callback field.
 
-[,python]
 ----
 >>> with ps.connect() as manager:
 ...     manager.callback = stream_to_csv_callback(csv_writer)
@@ -179,7 +205,6 @@ This class manages a pool of instruments (`InstrumentManagerAsync`), so that one
 
 A basic multichannel measurement can be set up by passing a list of instruments, either from a multichannel device, or otherwise connected:
 
-[,python]
 ----
 >>> instruments = ps.discover()
 >>> instruments
@@ -201,7 +226,6 @@ The rest of the documentation here focuses on the async version of the instrumen
 This is more powerful and more flexible for more demanding use cases.
 Note that most of the functionality and method names are shared between `InstrumentPool` and `InstrumentPoolAsync`.
 
-[,python]
 ----
 >>> instruments = await ps.discover_async()
 
@@ -216,7 +240,6 @@ Note that most of the functionality and method names are shared between `Instrum
 
 The pool takes a <<Callback>>, just like a regular `InstrumentManager`.
 
-[,python]
 ----
 >>> async with ps.InstrumentPoolAsync(
 ...     instruments, callback=new_data_dallback
@@ -226,7 +249,6 @@ The pool takes a <<Callback>>, just like a regular `InstrumentManager`.
 
 You can add (`pool.add()`) and remove (`pool.remove()`) managers frem the pool:
 
-[,python]
 ----
 >>> serial_numbers = ['ES4HR20B0008', ...]
 
@@ -238,7 +260,6 @@ You can add (`pool.add()`) and remove (`pool.remove()`) managers frem the pool:
 
 You can also manage the pool yourself by passing the `InstrumentManagers` directly:
 
-[,python]
 ----
 >>> instruments = await ps.discover_async()
 
@@ -256,7 +277,6 @@ Any other keyword arguments will be passed on.
 
 For example to run two methods in sequence:
 
-[,python]
 ----
 >>> async def my_custom_function(manager, *, method1, method2):
 ...     measurement1 = await manager.measure(method1)
@@ -280,7 +300,6 @@ In addition, the pool must contain:
 All instruments are prepared and put in a waiting state.
 The measurements are started via a hardware sync trigger on channel 1.
 
-[,python]
 ----
 >>> method.general.use_hardware_sync = True
 

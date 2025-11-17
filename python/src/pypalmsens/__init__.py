@@ -15,11 +15,13 @@ from ._instruments.instrument_manager import (
     InstrumentManager,
     connect,
     discover,
+    measure,
 )
 from ._instruments.instrument_manager_async import (
     InstrumentManagerAsync,
     connect_async,
     discover_async,
+    measure_async,
 )
 from ._instruments.instrument_pool import InstrumentPool
 from ._instruments.instrument_pool_async import InstrumentPoolAsync
@@ -59,6 +61,8 @@ __all__ = [
     'connect_async',
     'discover',
     'discover_async',
+    'measure',
+    'measure_async',
     'load_method_file',
     'load_session_file',
     'save_method_file',

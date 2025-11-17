@@ -114,7 +114,7 @@ quote-style = "single"
 
 [tool.mypy]
 files = ["src", "tests", "examples"]
-ignore = ["typings", "scr/PalmSens-stubs"]
+exclude = ["typings", "scr/PalmSens-stubs"]
 allow_redefinition = true
 ignore_missing_imports = true
 

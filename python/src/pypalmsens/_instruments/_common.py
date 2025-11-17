@@ -15,7 +15,7 @@ from .. import __sdk_version__
 
 if TYPE_CHECKING:
     from PalmSens.Devices import Device as PSDevice
-    from PalmSens.Devices import PalmSensCapabilities
+    from PalmSens.Devices import DeviceCapabilities
 
 
 class Callback(Protocol):
@@ -26,7 +26,7 @@ class Callback(Protocol):
 
 def create_future(clr_task):
     loop = asyncio.get_running_loop()
-    future = asyncio.Future()
+    future = loop.create_future()
     callback = Action(lambda: on_completion(future, loop, clr_task))
 
     clr_task.GetAwaiter().OnCompleted(callback)
@@ -36,12 +36,12 @@ def create_future(clr_task):
 def on_completion(future, loop, task):
     if task.IsFaulted:
         clr_error = task.Exception.GetBaseException()
-        future.set_exception(clr_error)
+        loop.call_soon_threadsafe(lambda: future.set_exception(clr_error))
     else:
         loop.call_soon_threadsafe(lambda: future.set_result(task.GetAwaiter().GetResult()))
 
 
-def firmware_warning(capabilities: PalmSensCapabilities, /) -> None:
+def firmware_warning(capabilities: DeviceCapabilities, /) -> None:
     """Raise warning if firmware is not supported."""
 
     device_type = capabilities.DeviceType

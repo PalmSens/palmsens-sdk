@@ -116,6 +116,7 @@ pages = (
             'members': [
                 'connect',
                 'discover',
+                'measure',
                 'InstrumentManager',
                 'InstrumentPool',
             ]
@@ -129,6 +130,7 @@ pages = (
             'members': [
                 'connect_async',
                 'discover_async',
+                'measure_async',
                 'InstrumentManagerAsync',
                 'InstrumentPoolAsync',
             ]

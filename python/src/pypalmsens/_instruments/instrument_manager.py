@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 import clr
 import PalmSens
+import System
 from PalmSens import Method, MuxModel
 from PalmSens.Comm import CommManager, MuxType
 from PalmSens.Plottables import (
@@ -53,8 +54,11 @@ def discover(
     winusb: bool = True,
     bluetooth: bool = False,
     serial: bool = True,
+    ignore_errors: bool = False,
 ) -> list[Instrument]:
     """Discover instruments.
+
+    For PalmSens 3, EmStat 1/2/3/Go/Pico devices, use `ftdi=True`.
 
     Parameters
     ----------
@@ -68,6 +72,8 @@ def discover(
         If True, discover bluetooth devices (Windows only)
     serial : bool
         If True, discover serial devices
+    ignore_errors : False
+        Ignores errors in device discovery
 
     Return
     ------
@@ -83,8 +89,10 @@ def discover(
     if WINDOWS:
         if usbcdc:
             interfaces['usbcdc'] = USBCDCDevice
+
         if winusb:
             interfaces['winusb'] = WinUSBDevice
+
         if bluetooth:
             interfaces['bluetooth'] = BluetoothDevice
             interfaces['ble'] = BLEDevice
@@ -96,7 +104,19 @@ def discover(
     instruments: list[Instrument] = []
 
     for name, interface in interfaces.items():
-        devices = interface.DiscoverDevices(*args)
+        try:
+            devices = interface.DiscoverDevices(*args)
+        except System.DllNotFoundException as e:
+            if ignore_errors:
+                continue
+
+            if name == 'ftdi':
+                msg = (
+                    'FTDI drivers are missing, for more info see: '
+                    'https://sdk.palmsens.com/python/latest/installation.html#ftdisetup'
+                )
+                raise IOError(msg) from e
+            raise
 
         if WINDOWS:
             devices = devices[0]
@@ -120,31 +140,62 @@ def connect(
 ) -> InstrumentManager:
     """Connect to instrument and return InstrumentManager.
 
+    Connects to any plugged-in PalmSens USB device.
+    Error if multiple devices are plugged-in.
+
     Parameters
     ----------
     instrument : Instrument, optional
-        Connect to this instrument.
-        If not specified, automatically discover and connect to the first instrument.
+        Connect to a specific instrument.
+        Use `pypalmsens.discover()` to discover instruments.
 
     Returns
     -------
     manager : InstrumentManager
         Return instance of `InstrumentManager` connected to the given instrument.
-        The connection will be terminated after the context ends.
     """
-    # connect to first device if not specified
     if not instrument:
-        available_instruments = discover()
+        available_instruments = discover(ftdi=True, ignore_errors=True)
 
         if not available_instruments:
             raise ConnectionError('No instruments were discovered.')
 
-        # connect to first instrument
+        if len(available_instruments) > 1:
+            raise ConnectionError('More than one device discovered.')
+
         instrument = available_instruments[0]
 
     manager = InstrumentManager(instrument)
-    _ = manager.connect()
+    manager.connect()
     return manager
+
+
+def measure(
+    method: BaseTechnique,
+    instrument: None | Instrument = None,
+) -> Measurement:
+    """Run measurement.
+
+    Executes the given method on any plugged-in PalmSens USB device.
+    Error if multiple devices are plugged-in.
+
+    Parameters
+    ----------
+    instrument : Instrument, optional
+        Connect to and meassure on a specific instrument.
+        Use `pypalmsens.discover()` to discover instruments.
+
+    Returns
+    -------
+    measurement : Measurement
+        Finished measurement.
+    """
+    with connect(instrument=instrument) as manager:
+        measurement = manager.measure(method)
+
+    assert measurement
+
+    return measurement
 
 
 class InstrumentManager:
@@ -193,28 +244,24 @@ class InstrumentManager:
         """Return True if an instrument connection exists."""
         return self.__comm is not None
 
-    def connect(self):
+    def connect(self) -> None:
         """Connect to instrument."""
         if self.__comm is not None:
-            print(
+            raise ConnectionError(
                 'An instance of the InstrumentManager can only be connected to one instrument at a time'
             )
-            return 0
+
+        __instrument = self.instrument.device
         try:
-            __instrument = self.instrument.device
             __instrument.Open()
-            self.__comm = CommManager(__instrument)
+        except System.UnauthorizedAccessException as err:
+            raise ConnectionError(
+                f'Cannot open instrument connection (reason: {err.Message}). Check if the device is already in use.'
+            ) from err
 
-            firmware_warning(self.__comm.Capabilities)
+        self.__comm = CommManager(__instrument)
 
-            return 1
-        except Exception:
-            traceback.print_exc()
-            try:
-                __instrument.Close()
-            except Exception:
-                pass
-            return 0
+        firmware_warning(self.__comm.Capabilities)
 
     def set_cell(self, cell_on: bool):
         """Turn the cell on or off.
@@ -225,8 +272,7 @@ class InstrumentManager:
             If true, turn on the cell
         """
         if self.__comm is None:
-            print('Not connected to an instrument')
-            return 0
+            raise ConnectionError('Not connected to an instrument')
 
         self.__comm.ClientConnection.Semaphore.Wait()
 
@@ -249,8 +295,7 @@ class InstrumentManager:
             Potential in V
         """
         if self.__comm is None:
-            print('Not connected to an instrument')
-            return 0
+            raise ConnectionError('Not connected to an instrument')
 
         self.__comm.ClientConnection.Semaphore.Wait()
 
@@ -273,8 +318,7 @@ class InstrumentManager:
             Set the current range, use `pypalmsens.settings.CURRENT_RANGE`.
         """
         if self.__comm is None:
-            print('Not connected to an instrument')
-            return 0
+            raise ConnectionError('Not connected to an instrument')
 
         self.__comm.ClientConnection.Semaphore.Wait()
 
@@ -366,11 +410,10 @@ class InstrumentManager:
 
             return None
 
-    def validate_method(self, psmethod: PSMethod):
+    def validate_method(self, psmethod: PSMethod) -> tuple[bool, str | None]:
         """Validate method."""
         if self.__comm is None:
-            print('Not connected to an instrument')
-            return False, None
+            raise ConnectionError('Not connected to an instrument')
 
         errors = psmethod.Validate(self.__comm.Capabilities)
 
@@ -391,8 +434,7 @@ class InstrumentManager:
         """
         psmethod = method._to_psmethod()
         if self.__comm is None:
-            print('Not connected to an instrument')
-            return None
+            raise ConnectionError('Not connected to an instrument')
 
         self.__active_measurement_error = None
 
@@ -577,8 +619,7 @@ class InstrumentManager:
             Wait for digital line high before starting
         """
         if self.__comm is None:
-            print('Not connected to an instrument')
-            return 0
+            raise ConnectionError('Not connected to an instrument')
 
         try:
             # obtain lock on library (required when communicating with instrument)
@@ -601,8 +642,7 @@ class InstrumentManager:
     def abort(self):
         """Abort measurement."""
         if self.__comm is None:
-            print('Not connected to an instrument')
-            return 0
+            raise ConnectionError('Not connected to an instrument')
 
         if self.__measuring is False:
             return 0
@@ -631,8 +671,7 @@ class InstrumentManager:
             Number of available multiplexes channels
         """
         if self.__comm is None:
-            print('Not connected to an instrument')
-            return 0
+            raise ConnectionError('Not connected to an instrument')
 
         self.__comm.ClientConnection.Semaphore.Wait()
 
@@ -693,8 +732,7 @@ class InstrumentManager:
             Set the unselected channel working electrode to disconnected/floating (0), ground (1), or standby potential (2). Default is 0.
         """
         if self.__comm is None:
-            print('Not connected to an instrument')
-            return
+            raise ConnectionError('Not connected to an instrument')
 
         if self.__comm.Capabilities.MuxModel != MuxModel.MUX8R2:
             return
@@ -728,8 +766,7 @@ class InstrumentManager:
             Index of the channel to set.
         """
         if self.__comm is None:
-            print('Not connected to an instrument')
-            return 0
+            raise ConnectionError('Not connected to an instrument')
 
         self.__comm.ClientConnection.Semaphore.Wait()
 
@@ -746,12 +783,8 @@ class InstrumentManager:
     def disconnect(self):
         """Disconnect from the instrument."""
         if self.__comm is None:
-            return 0
-        try:
-            self.__comm.Disconnect()
-            self.__comm = None
-            self.__measuring = False
-            return 1
-        except Exception:
-            traceback.print_exc()
-            return 0
+            return
+
+        self.__comm.Disconnect()
+        self.__comm = None
+        self.__measuring = False

@@ -89,7 +89,7 @@ class InstrumentPoolAsync:
         manager : InstrumentManagerAsync
             Instance of an instrument manager.
         """
-        _ = await manager.connect()
+        await manager.connect()
         self.managers.append(manager)
 
     async def measure(self, method: BaseTechnique) -> list[Measurement]:

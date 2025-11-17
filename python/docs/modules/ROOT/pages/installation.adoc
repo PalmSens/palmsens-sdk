@@ -71,6 +71,8 @@ See https://github.com/PalmSens/PalmSens_SDK/issues/60[this issue] for an actual
 
 To set up your system to work with devices using the https://ftdichip.com/[FTDI chip], you need to follow a few additional steps.
 
+First, install the https://ftdichip.com/drivers/d2xx-drivers/[D2XX drivers].
+
 Set up https://wiki.archlinux.org/title/Udev[udev rules].
 `udev` manages permissions of the device to be accessible to non-root users and groups.
 Add the following lines to `/etc/udev/rules.d/50-ftdi.rules`:

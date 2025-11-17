@@ -1,4 +1,5 @@
 = PyPalmSens Documentation
+:source-language: python
 
 {empty} +
 {empty}
@@ -37,7 +38,6 @@ For specific installation instructions for your platform, see xref:installation.
 
 The following example shows how to set up and measure a simple chronoamperometry experiment:
 
-[,python]
 ----
 >>> import pypalmsens as ps
 
@@ -47,10 +47,10 @@ The following example shows how to set up and measure a simple chronoamperometry
 ...     run_time=10.0,
 ... )
 
->>> with ps.connect() as manager:  # <1>
-...     measurement = manager.measure(method)
+>>> ps.measure(method)  # <1>
+Measurement(title=Chronoamperometry, timestamp=17-Nov-25 13:42:16, device=EmStat4HR)
 ----
-<1> `connect()` tries to connect to the first instrument it finds
+<1> `measure` discovers any plugged-in device to start the measurement. An error is raised when more than 1 instruments are connected.
 
 [TIP]
 ====
@@ -59,13 +59,13 @@ We shorten the imported name from `pypalmsens` to `ps`. This is a widely adopted
 
 The following example shows how to discover devices and manually read out the current.
 
-[,python]
 ----
 >>> import pypalmsens as ps
 
 >>> instruments = ps.discover()
+>>> emstat4 = [inst for inst in instruments if inst.name.startswith('EmStat4')][0]
 
->>> with ps.connect(device=instruments[0]) as manager:
+>>> with ps.connect(instrument=emstat4) as manager:  # <1>
 ...     manager.set_cell(True)
 ...     manager.set_potential(1)
 ...     manager.set_current_range(ps.settings.CURRENT_RANGE.cr_1_mA)
@@ -76,10 +76,10 @@ The following example shows how to discover devices and manually read out the cu
 ...     manager.set_cell(False)
 current=92.8065 µA
 ----
+<1> The context manager opens and closes the connection
 
 Analyze a previous measurement with https://pandas.pydata.org/[pandas]:
 
-[,python]
 ----
 >>> import pandas as pd
 >>> import pypalmsens as ps

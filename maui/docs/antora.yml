@@ -3,3 +3,11 @@ version: '1.0.0'
 title: MAUI SDK
 nav:
 - modules/ROOT/nav.adoc
+- modules/api/nav.adoc
+ext:
+  collector:
+    run: docfx maui/docs/api/docfx.json
+    scan:
+      clean: true
+      dir: maui/docs/api/_site
+      into: modules/api/attachments/

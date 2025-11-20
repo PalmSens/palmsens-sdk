@@ -3,10 +3,3 @@ version: ~
 title: PalmSens SDK
 nav:
 - modules/ROOT/nav.adoc
-ext:
-  collector:
-    run: docfx dotnet/docfx.json
-    scan:
-      clean: true
-      dir: dotnet/_site
-      into: modules/ROOT/attachments/

@@ -4,7 +4,7 @@
     {
       "src": [
         {
-          "src": "../maui/PSLibraries",
+          "src": "../../PSLibraries",
           "files": [
             "PalmSens.Core.Simplified/*.csproj",
             // "PalmSens.Core.Simplified.MAUI/*.csproj",

@@ -1,1 +1,1 @@
-* xref:api:attachment$index.html[API reference]
+* xref:attachment$index.html[API reference]

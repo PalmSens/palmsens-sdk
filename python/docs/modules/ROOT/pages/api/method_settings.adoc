@@ -1,3 +1,0 @@
-= Method settings
-
-include::partial$api/settings.adoc[]

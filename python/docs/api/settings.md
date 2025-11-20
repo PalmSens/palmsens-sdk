@@ -1,0 +1,19 @@
+# Settings
+
+::: pypalmsens.settings.CurrentRange
+::: pypalmsens.settings.PotentialRange
+::: pypalmsens.settings.Pretreatment
+::: pypalmsens.settings.VersusOCP
+::: pypalmsens.settings.BiPot
+::: pypalmsens.settings.ELevel
+::: pypalmsens.settings.ILevel
+::: pypalmsens.settings.PostMeasurement
+::: pypalmsens.settings.CurrentLimits
+::: pypalmsens.settings.PotentialLimits
+::: pypalmsens.settings.ChargeLimits
+::: pypalmsens.settings.IrDropCompensation
+::: pypalmsens.settings.EquilibrationTriggers
+::: pypalmsens.settings.MeasurementTriggers
+::: pypalmsens.settings.Multiplexer
+::: pypalmsens.settings.DataProcessing
+::: pypalmsens.settings.General

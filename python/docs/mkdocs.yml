@@ -1,0 +1,169 @@
+site_name: PyPalmSens
+site_url: https://sdk.palmsens.com
+repo_url: https://github.com/palmsens/palmsens_sdk
+repo_name: GitHub
+docs_dir: api
+
+nav:
+  - Home: index.md
+  - data.md
+  - fitting.md
+  - io.md
+  - instrument.md
+  - instrument_async.md
+  - Methods:
+    - techniques.md
+    - mixed_mode.md
+    - settings.md
+    - settings_enums.md
+  - 🔗 Source code: https://github.com/palmsens/palmsens_sdk
+  - 🔗 Issues: https://github.com/palmsens/palmsens_sdk/issues
+
+theme:
+  name: material
+  logo: assets/header_icon.svg
+  favicon: assets/favicon.ico
+
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
+extra:
+  homepage: https://sdk.palmsens.com/python/latest
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features:es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+plugins:
+- search
+# - privacy
+# - offline
+- mkdocstrings:
+    # https://mkdocstrings.github.io/usage/
+    handlers:
+      python:
+        paths: [../src]
+        inventories:
+        - https://docs.python.org/3/objects.inv
+        - https://numpy.org/doc/stable/objects.inv
+        - https://matplotlib.org/stable/objects.inv
+        options:
+          # https://mkdocstrings.github.io/python/usage/#recommended-settings
+          docstring_style: numpy
+
+          # # DOCSTRINGS -------------------------------------------------------------
+          docstring_options:
+            # Discard first line of `__init__` method docstrings,
+            # useful when merging such docstrings into their parent class'.
+            ignore_init_summary: true
+
+          # Tables are generally too large, lists will fix this.
+          docstring_section_style: list
+
+          # CROSS-REFERENCES -------------------------------------------------------
+          # Enable relative crossrefs and scoped crossrefs, see Docstrings options.
+          relative_crossrefs: true
+          scoped_crossrefs: true
+
+          # Enable cross-references in signatures.
+          signature_crossrefs: true
+
+          # Unwrap actual types from `Annotated` type annotations.
+          unwrap_annotated: true
+
+          # MEMBERS ----------------------------------------------------------------
+          # Only render pulic symbols.
+          filters: public
+          # Comment the option otherwise to get the default filters.
+
+          # Show class inherited members.
+          inherited_members: true
+
+          # Render auto-generated summaries of attributes, functions, etc.
+          # at the start of each symbol's documentation.
+          summary: true
+
+          # HEADINGS ---------------------------------------------------------------
+          # For auto-generated pages, one module per page,
+          # make the module heading be the H1 heading of the page.
+          # heading_level: 1
+
+          # Render headings for parameters, making them linkable.
+          parameter_headings: true
+
+          # Render headings for type parameters too.
+          type_parameter_headings: true
+
+          # Always show the heading for the symbol you render with `::: id`.
+          show_root_heading: true
+
+          # Only show the name of the symbols you inject render `::: id`.
+          show_root_full_path: true
+
+          # Show the type of symbol (class, function, etc.) in the heading.
+          show_symbol_type_heading: true
+
+          # Show the type of symbol (class, function, etc.) in the table of contents.
+          show_symbol_type_toc: true
+
+          # SIGNATURES -------------------------------------------------------------
+          # Format code to 80 + 10% margin (Black and Ruff defaults)
+          # in signatures and attribute value code blocks.
+          # Needs Black/Ruff installed.
+          line_length: 96
+
+          # Merge signature and docstring of `__init__` methods
+          # into their parent class signature and docstring.
+          merge_init_into_class: true
+
+          # Render signatures and attribute values in a separate code block,
+          # below the symbol heading.
+          separate_signature: true
+
+          # Show type annotations in signatures.
+          show_signature_annotations: true
+
+          # Show type parameters in signatures.
+          show_signature_type_parameters: true
+
+          # OTHER ------------------------------------------------------------------
+          # Show backlinks to other documentation sections within each symbol.
+          backlinks: False  # crashes in linux
+
+          # Show base classes OR inheritance diagram.
+          show_bases: false
+          show_inheritance_diagram: true
+
+watch:
+  - ../src/
+  - api/

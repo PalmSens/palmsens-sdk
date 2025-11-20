@@ -46,6 +46,14 @@ jobs:
     - name: Install docfx
       run: dotnet tool update -g docfx
 
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
+
+    - name: Install mkdocs
+      run: pip install mkdocs-material mkdocstrings[python]
+
     - name: Install Antora
       run: npm clean-install
 

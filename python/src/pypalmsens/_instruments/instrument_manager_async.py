@@ -76,8 +76,8 @@ async def discover_async(
     ignore_errors : False
         Ignores errors in device discovery
 
-    Return
-    ------
+    Returns
+    -------
     discovered : list[Instrument]
         List of dataclasses with discovered instruments.
     """

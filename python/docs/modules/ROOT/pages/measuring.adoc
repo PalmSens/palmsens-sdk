@@ -1,10 +1,14 @@
 = Connecting and Measuring
 :source-language: python
+:api: api:attachment$index.html
+:api-inst: api:attachment$instrument/index.html
+:api-inst-async: api:attachment$instrument_async/index.html
+
 
 The following chapter details how to connect to a device, read data from the device, manually controlling the potential, run measurements on the device and finally how to properly close a connection to a device.
 
-The `pypalmsens` top-level module contains all the relevant functions and classes for discovering and controlling instruments.
-The `InstrumentManager()` and `InstrumentManagerAsync()` class are wrappers around our .NET libraries which make it possible to connect to and control PalmSens instruments from Python.
+The xref:{api}[`pypalmsens`] top-level module contains all the relevant functions and classes for discovering and controlling instruments.
+The xref:{api-inst}#pypalmsens.InstrumentManager[`InstrumentManager()`] and xref:{api-inst}#pypalmsens.InstrumentManagerAsync[`InstrumentManagerAsync()`] class are wrappers around our .NET libraries which make it possible to connect to and control PalmSens instruments from Python.
 
 [CAUTION]
 .Mains Frequency
@@ -14,7 +18,7 @@ To eliminate noise induced by other electrical appliances it is highly recommend
 
 == Getting started
 
-The simplest way to run an expirement is to use the `ps.measure()` function.
+The simplest way to run an expirement is to use the xref:{api-inst}#pypalmsens.measure[`measure()`] function.
 This function connects to any plugged-in USB device it can find and starts the given measurement.
 
 ----
@@ -45,7 +49,7 @@ Measurement(title=Chronoamperometry, timestamp=17-Nov-25 14:12:02, device=EmStat
 
 The recommended way to connect to a device for most workflows is to use the `ps.connect()` https://docs.python.org/3/library/stdtypes.html#typecontextmanager[context manager].
 The contextmanager manages the connection, and closes the connection to the device if it is no longer needed.
-`ps.connect()` returns an instance of `InstrumentManager()`, which can be used to control the instrument and start a measurement:
+xref:{api-inst}#pypalmsens.connect[`connect()`] returns an instance of xref:{api-inst}#pypalmsens.InstrumentManager[`InstrumentManager()`], which can be used to control the instrument and start a measurement:
 
 ----
 >>> import pypalmsens as ps
@@ -54,9 +58,9 @@ The contextmanager manages the connection, and closes the connection to the devi
 ...     measurement = manager.measure(method)
 ----
 
-By default, `connect()` connects to any plugged-in USB instrument it discovers.
+By default, xref:{api-inst}#pypalmsens.connect[`connect()`] connects to any plugged-in USB instrument it discovers.
 It gives an error when multiple instruments are discovered.
-With more instruments connected, you can use `ps.discover()` to find all devices and manage them yourself.
+With more instruments connected, you can use xref:{api-inst}#pypalmsens.discover[`discover()`] to find all devices and manage them yourself.
 For example, this is how to get a list of all available devices, and how to connect to the first one.
 
 ----
@@ -70,7 +74,7 @@ For example, this is how to get a list of all available devices, and how to conn
 ...    measurement = manager.measure(method)
 ----
 
-Finally, you can set up the `InstrumentManager()` yourself.
+Finally, you can set up the xref:{api-inst}#pypalmsens.InstrumentManager[`InstrumentManager()`] yourself.
 
 ----
 >>> available_instruments = ps.discover()
@@ -78,7 +82,7 @@ Finally, you can set up the `InstrumentManager()` yourself.
 >>> manager.connect(available_instruments[0])
 ----
 
-The `InstrumentManager.disconnect()` function disconnects from the device freeing it up for other things to connect to it.
+The xref:{api-inst}#pypalmsens.InstrumentManager.disconnect[`InstrumentManager.disconnect()`] function disconnects from the device freeing it up for other things to connect to it.
 
 ----
 >>> manager.disconnect()
@@ -96,7 +100,8 @@ You can enable scanning with Bluetooth by setting:
 
 Depending on your device’s capabilities it can be used to set a potential/current and to switch current ranges.
 The potential can be set manually in potentiostatic mode and the current can be set in galvanostatic mode.
-The following example show how to manually set a potential, for more examples refer to the `ManualControlExample` and `ManualControlExampleAsync` scripts included with the SDK.
+The following example show how to manually set a potential, for more examples refer to the xref:examples#_manual_control[`ManualControlExample`] and xref:examples#_manual_control_async[`ManualControlExampleAsync`]
+scripts included with the SDK.
 
 ----
 >>> manager.set_potential(1)
@@ -105,7 +110,7 @@ The following example show how to manually set a potential, for more examples re
 == Measuring
 
 Starting a measurement is done by sending method parameters to a PalmSens/Nexus/EmStat/Sensit device.
-The `InstrumentManager.measure()` method returns a `Measurement` objcet and also supports keeping a reference to the underlying .NET object.
+The xref:{api-inst}#pypalmsens.InstrumentManager.measure[`InstrumentManager.measure()`] method returns a `Measurement` objcet and also supports keeping a reference to the underlying .NET object.
 For more information please refer to xref:start:ROOT:core.adoc[].
 
 The following example runs a chronoamperometry measurement on an instrument.
@@ -121,7 +126,7 @@ The following example runs a chronoamperometry measurement on an instrument.
 
 === Callback
 
-It is possible to process measurement results in real-time by specifying a callback on the `InstrumentManager`/`InstrumentManagerAsync` either by providing it as an override when it is created using the `new_data_callback` argument:
+It is possible to process measurement results in real-time by specifying a callback on the xref:{api-inst}#pypalmsens.InstrumentManager[`InstrumentManager`]/xref:{api-inst}#pypalmsens.InstrumentManagerAsync[`InstrumentManagerAsync`] either by providing it as an override when it is created using the `new_data_callback` argument:
 
 ----
 >>> def new_data_callback(new_data):
@@ -133,7 +138,7 @@ It is possible to process measurement results in real-time by specifying a callb
 ... )
 ----
 
-or by setting it on the `InstrumentManager`’s callback field.
+Or by setting it on the `InstrumentManager`’s callback field.
 
 ----
 >>> with ps.connect() as manager:
@@ -199,9 +204,9 @@ image::method_script_editor.png[Graphical editor for MethodSCRIPT™]
 
 == Multichannel measurements
 
-PyPalmSens supports multichannel experiments via `InstrumentPool` and `InstrumentPoolAsync`.
+PyPalmSens supports multichannel experiments via xref:{api-inst}#pypalmsens.InstrumentPool[`InstrumentPool`] and xref:{api-inst}#pypalmsens.InstrumentPoolAsync[`InstrumentPoolAsync`].
 
-This class manages a pool of instruments (`InstrumentManagerAsync`), so that one method can be executed on all instruments at the same time.
+This class manages a pool of instruments (xref:{api-inst}#pypalmsens.InstrumentManagerAsync[`InstrumentManagerAsync`]), so that one method can be executed on all instruments at the same time.
 
 A basic multichannel measurement can be set up by passing a list of instruments, either from a multichannel device, or otherwise connected:
 
@@ -222,9 +227,9 @@ A basic multichannel measurement can be set up by passing a list of instruments,
 
 The above example uses blocking calls for the instrument pool.
 While this works well for many straightforward use-cases, the backend for multichannel measurements is asynchronous by necessity.
-The rest of the documentation here focuses on the async version of the instrument pool, `InstrumentPoolAsync`.
+The rest of the documentation here focuses on the async version of the instrument pool, xref:{api-inst}#pypalmsens.InstrumentPool[`InstrumentPool`].
 This is more powerful and more flexible for more demanding use cases.
-Note that most of the functionality and method names are shared between `InstrumentPool` and `InstrumentPoolAsync`.
+Note that most of the functionality and method names are shared between xref:{api-inst}#pypalmsens.InstrumentPool[`InstrumentPool`] and xref:{api-inst}#pypalmsens.InstrumentPoolAsync[`InstrumentPoolAsync`].
 
 ----
 >>> instruments = await ps.discover_async()
@@ -238,7 +243,7 @@ Note that most of the functionality and method names are shared between `Instrum
 [Measurment(...), Measurement(...)]
 ----
 
-The pool takes a <<Callback>>, just like a regular `InstrumentManager`.
+The pool takes a <<Callback>>, just like a regular xref:{api-inst}#pypalmsens.InstrumentManager[`InstrumentManager`].
 
 ----
 >>> async with ps.InstrumentPoolAsync(
@@ -247,7 +252,7 @@ The pool takes a <<Callback>>, just like a regular `InstrumentManager`.
 ...    results = await pool.measure(method)
 ----
 
-You can add (`pool.add()`) and remove (`pool.remove()`) managers frem the pool:
+You can add (xref:{api-inst}#pypalmsens.InstrumentPool.add[`pool.add()`]) and remove (xref:{api-inst}#pypalmsens.InstrumentPool.remove()`pool.remove()`]) managers from the pool:
 
 ----
 >>> serial_numbers = ['ES4HR20B0008', ...]
@@ -258,7 +263,7 @@ You can add (`pool.add()`) and remove (`pool.remove()`) managers frem the pool:
 ...             await pool.remove(manager)
 ----
 
-You can also manage the pool yourself by passing the `InstrumentManagers` directly:
+You can also manage the pool yourself by passing the _instrument managers_ directly:
 
 ----
 >>> instruments = await ps.discover_async()
@@ -268,11 +273,11 @@ You can also manage the pool yourself by passing the `InstrumentManagers` direct
 ... ]
 
 >>> async with ps.InstrumentPoolAsync(managers) as pool:
-    ...
+...     # pool operations
 ----
 
-To define your own measurement functions, you can use the `submit()` method.
-Pass a function that must take `InstrumentManagerAsync` as the first argument.
+To define your own measurement functions, you can use the xref:{api-inst}#pypalmsens.InstrumentPoolAsync[`submit()`] method.
+Pass a function that must take xref:{api-inst}#pypalmsens.InstrumentManagerAsync[`InstrumentManagerAsync`] as the first argument.
 Any other keyword arguments will be passed on.
 
 For example to run two methods in sequence:

@@ -1,7 +1,0 @@
-= Mixed Mode
-
-This sublmodule contains the Mixed Mode method and Stage classes.
-
-See xref:examples.adoc#_mixed_mode[this link] for an example how to set it up.
-
-include::partial$api/mixed_mode.adoc[]

@@ -1,4 +1,5 @@
 = Examples
+:source-language: python
 
 The following examples are also available in the https://github.com/PalmSens/PalmSens_SDK/tree/main/python[examples directory].
 
@@ -7,7 +8,6 @@ The following examples are also available in the https://github.com/PalmSens/Pal
 This example shows how to load/save methods and measurements and how to inspect the data.
 
 .load_save_data.py
-[,python]
 ----
 include::example$load_save_data.py[]
 ----
@@ -17,7 +17,6 @@ include::example$load_save_data.py[]
 This example shows how to discover devices, establish a connection and control an instrument manually.
 
 .manual_control.py
-[,python]
 ----
 include::example$manual_control.py[]
 ----
@@ -27,7 +26,6 @@ include::example$manual_control.py[]
 This example shows how to discover devices, establish a connection and control an instrument manually using the asynchronous instrument manager.
 
 .manual_control_async.py
-[,python]
 ----
 include::example$manual_control_async.py[]
 ----
@@ -37,7 +35,6 @@ include::example$manual_control_async.py[]
 This example shows how to set up and run a chronoamperometry measurement.
 
 .measurement_CA.py
-[,python]
 ----
 include::example$measurement_CA.py[]
 ----
@@ -47,7 +44,6 @@ include::example$measurement_CA.py[]
 This example shows how to set up and run a chronoamperometry measurement using the asynchronous instrument manager.
 
 .measurement_CA_async.py
-[,python]
 ----
 include::example$measurement_CA_async.py[]
 ----
@@ -57,7 +53,6 @@ include::example$measurement_CA_async.py[]
 This example shows how to set up and run a cyclic voltammetry measurement.
 
 .measurement_CV.py
-[,python]
 ----
 include::example$measurement_CV.py[]
 ----
@@ -67,7 +62,6 @@ include::example$measurement_CV.py[]
 This example shows how to set up and run a EIS measurement.
 
 .measurement_EIS.py
-[,python]
 ----
 include::example$measurement_EIS.py[]
 ----
@@ -78,7 +72,6 @@ This example shows how to set up a Mixed Mode measurement for a typicial charge 
 Note that the example has a reduced number of cycles and maximum run time.
 
 .mixed_mode.py
-[,python]
 ----
 include::example$mixed_mode.py[]
 ----
@@ -89,7 +82,6 @@ include::example$mixed_mode.py[]
 This example shows how to set up and run a MethodSCRIPT Sandbox measurement.
 
 .measurement_MethodSCRIPT_sandbox.py
-[,python]
 ----
 include::example$measurement_MethodSCRIPT_sandbox.py[]
 ----
@@ -99,7 +91,6 @@ include::example$measurement_MethodSCRIPT_sandbox.py[]
 This example shows how to set up and run a chronoamperometry measurement and write the results to a CSV file in real-time.
 
 .measurement_stream_to_csv.py
-[,python]
 ----
 include::example$measurement_stream_to_csv.py[]
 ----
@@ -109,7 +100,6 @@ include::example$measurement_stream_to_csv.py[]
 This example shows how to set up and run a square wave voltammetry measurement versus OCP.
 
 .measurement_SWV_vs_OCP.py
-[,python]
 ----
 include::example$measurement_SWV_vs_OCP.py[]
 ----
@@ -119,7 +109,6 @@ include::example$measurement_SWV_vs_OCP.py[]
 This example shows how to set up and control a multiplexer and run consecutive and alternating multiplexer measurments.
 
 .multiplexer.py
-[,python]
 ----
 include::example$multiplexer.py[]
 ----
@@ -130,7 +119,6 @@ include::example$multiplexer.py[]
 This example shows how to connect to a collection of instruments and run a chronoamperometry measurement on all channels simultaneously.
 
 .multichannel_measurement.py
-[,python]
 ----
 include::example$multichannel_measurement.py[]
 ----
@@ -141,7 +129,6 @@ include::example$multichannel_measurement.py[]
 This example shows how to connect to a how to use a callback to automatically store data to a csv file while collecting data from collection of instruments.
 
 .multichannel_csv_callback.py
-[,python]
 ----
 include::example$multichannel_csv_callback.py[]
 ----
@@ -152,7 +139,6 @@ include::example$multichannel_csv_callback.py[]
 This example shows how to run and set up a sequence of measurements on a collection of channels simultaneously.
 
 .multichannel_custom_loop.py
-[,python]
 ----
 include::example$multichannel_custom_loop.py[]
 ----
@@ -181,7 +167,6 @@ The measurements are started via a hardware sync trigger on channel 1.
 Only channel 1 (the main channel) has hardware required to trigger the other channels.
 
 .multichannel_HW_sync.py
-[,python]
 ----
 include::example$multichannel_HW_sync.py[]
 ----

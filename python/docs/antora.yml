@@ -3,10 +3,14 @@ version: '1.3.3'
 title: PyPalmSens
 nav:
 - modules/ROOT/nav.adoc
+- modules/api/nav.adoc
 ext:
   collector:
-  # - run: |
-  #     python python/build_python_api_docs.py
+  - run: mkdocs build -f python/docs/mkdocs.yml
+    scan:
+      clean: true
+      dir: python/docs/site
+      into: modules/api/attachments/
   - scan:
       dir: python/examples/
       into: modules/ROOT/examples

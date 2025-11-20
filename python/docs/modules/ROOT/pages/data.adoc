@@ -1,13 +1,14 @@
 = Working with data
+:source-language: python
+:api-data: api:attachment$data/index.html
 
 This page shows how to use `pypalmsens` to interface with your measurement data.
 
-The xref:api/data.adoc[`ps.data`] submodule contains wrappers for the PyPalmSens .NET SDK libraries.
+The xref:{api-data}[`ps.data`] submodule contains wrappers for the PyPalmSens .NET SDK libraries.
 These are the same libraries that power the https://www.palmsens.com/software/ps-trace/[PSTrace] software.
 
 == Measurement
 
-[,python]
 ----
 >>> import pypalmsens as ps
 >>> measurements = ps.load_session_file('Demo CV DPV EIS IS-C electrode.pssession')
@@ -19,14 +20,12 @@ These are the same libraries that power the https://www.palmsens.com/software/ps
 
 A `.pssession` file always contains a list of measurements, so we pick the first (DPV) one:
 
-[,python]
 ----
 >>> measurement = measurements[0]
 ----
 
 From there we can query the device info:
 
-[,python]
 ----
 >>> measurement.device
 DeviceInfo(type='PalmSens4', firmware='', serial='PS4A16A000003', id=9)
@@ -34,7 +33,6 @@ DeviceInfo(type='PalmSens4', firmware='', serial='PS4A16A000003', id=9)
 
 As well as other measurement metadata:
 
-[,python]
 ----
 >>> measurement.title
 'Differential Pulse Voltammetry'
@@ -49,13 +47,12 @@ There are two ways to access the data.
 `m.dataset` returns the raw data that were measured, analogous to the _Data_ tab in PSTrace.
 `m.curves` returns a list of <<Curve>> objects, which represent the plots.
 
-For more information, see the xref:api/data.adoc#_measurement[Measurement reference].
+For more information, see the xref:{api-data}#pypalmsens.data.Measurement[Measurement reference].
 
 == Curve
 
 A measurement can contain multiple curves, this measurement has only 1 with 219 data points:
 
-[,python]
 ----
 >>> curves = measurement.curves
 >>> curves
@@ -65,7 +62,6 @@ A measurement can contain multiple curves, this measurement has only 1 with 219 
 
 From here we can query some Curve metadata:
 
-[,python]
 ----
 >>> curve.title
 Curve
@@ -80,7 +76,6 @@ Curve
 Use the `.plot()` method to show a simple plot of the data.
 This depends on https://matplotlib.org/[matplotlib] being available.
 
-[,python]
 ----
 >>> fig = curve.plot() # <1>
 >>> fig.show()
@@ -93,7 +88,6 @@ image::dpv_figure_1.png[Image of DPV plot]
 
 The data has a single peak stored in the measurement. We can retrieve it using:
 
-[,python]
 ----
 >>> curve.peaks
 >>> peaks
@@ -102,7 +96,6 @@ The data has a single peak stored in the measurement. We can retrieve it using:
 
 To find the peak ourselves, use `.find_peaks()`:
 
-[,python]
 ----
 >>> peaks = curve.find_peaks()
 >>> peaks
@@ -116,19 +109,17 @@ For more info on this algorithm, see https://en.wikipedia.org/wiki/Neopolarogram
 .Peak finding
 ====
 Depending on your data, the peak finder may not always find peaks on the first try.
-Sometimes the parameters need to be tuned, see xref:api/data#_find_peaks[`.find_peaks()`] for more information.
+Sometimes the parameters need to be tuned, see xref:{api-data}#pypalmsens.data.Curve.find_peaks[`.find_peaks()`] for more information.
 ====
 
-You can do filtering using xref:api/data#_smooth[`.smooth()`]. Note that this updates the curve in-place.
+You can do filtering using xref:{api-data}#pypalmsens.data.Curve.smooth[`.smooth()`]. Note that this updates the curve in-place.
 
-[,python]
 ----
 >>> curve.smooth(smooth_level=1)
 ----
 
 Or alternatively using a https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter[Savitsky-Golay filter]:
 
-[,python]
 ----
 >>> curve.savitsky_golay(window_size=3)
 ----
@@ -137,7 +128,6 @@ To make your own plot or run your own data processing or analytics script,
 the raw x and y data can be accessed through `curve.x_array` and `curve.y_array`.
 These both return <<DataArray>> objects, which can be converted to floats or numpy arrays.
 
-[,python]
 ----
 >>> curve.x_array
 DataArray(name=potential, unit=V, n_points=219)
@@ -152,7 +142,7 @@ array([0.352146, 0.351192, ..., 0.19908 , 0.199557])
 <1> Convert to list...
 <2> ...or numpy array
 
-For more information, see the xref:api/data.adoc#_curve[Curve reference].
+For more information, see the xref:{api-data}#pypalmsens.data.Curve[Curve reference].
 
 == Peak
 
@@ -160,7 +150,6 @@ The peaks is a small dataclass containing peak propersies.
 
 Stored peaks can be retrieved from a <<Curve>> (e.g. if PSTrace stored peaks in the `.pssession file).
 
-[,python]
 ----
 >>> peaks = curve.peaks
 >>> peaks
@@ -169,7 +158,6 @@ Stored peaks can be retrieved from a <<Curve>> (e.g. if PSTrace stored peaks in 
 
 Many peak properties are accessible from this object.
 
-[,python]
 ----
 >>> peak.x, peak.y
 (0.179102, 3.42442)
@@ -184,13 +172,12 @@ Many peak properties are accessible from this object.
 ----
 <1> The peak value is the height of the peak relative to the baseline
 
-For more information, see the xref:api/data.adoc#_peak[Peak reference].
+For more information, see the xref:{api-data}#pypalmsens.data.Peak[Peak reference].
 
 == DataSet
 
 The raw data are stored in a dataset. The dataset contains all the raw data, including the data for the curves.
 
-[,python]
 ----
 >>> dataset = measurement.dataset
 >>> dataset
@@ -199,7 +186,6 @@ DataSet(['Time', 'Potential', 'Current'])
 
 A dataset is a mapping, so it acts like a Python dictionary:
 
-[,python]
 ----
 >>> dataset['Time']
 DataArray(name=time, unit=s, n_points=219)
@@ -209,7 +195,6 @@ DataArray(name=potential, unit=V, n_points=219)
 
 To list all arrays:
 
-[,python]
 ----
 >>> dataset.arrays()
 [DataArray(name=time, unit=s, n_points=219),
@@ -219,7 +204,6 @@ To list all arrays:
 
 Some commonly used arrays can be retrieved through a method:
 
-[,python]
 ----
 >>> dataset.current_arrays()
 [DataArray(name=current, unit=µA, n_points=219)]
@@ -230,7 +214,6 @@ Some commonly used arrays can be retrieved through a method:
 Datasets can be quite large and contain many arrays.
 Therefore, arrays can be selected by name...
 
-[,python]
 ----
 >>> dataset.array_names
 {'current', 'potential', 'time'}
@@ -240,7 +223,6 @@ Therefore, arrays can be selected by name...
 
 ...quantity...
 
-[,python]
 ----
 >>> dataset.array_quantities
 {'Current', 'Potential', 'Time'}
@@ -250,7 +232,6 @@ Therefore, arrays can be selected by name...
 
 ...or type:
 
-[,python]
 ----
 >>> dataset.array_types
 {<ArrayType.Current: 2>, <ArrayType.Potential: 1>, <ArrayType.Time: 0>}
@@ -266,7 +247,6 @@ If you have https://pandas.pydata.org/[pandas] installed,
 you can use easily convert the dataset into a
 https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html[DataFrame]:
 
-[,python]
 ----
 >>> df = dataset.to_dataframe()
 >>> df
@@ -284,7 +264,6 @@ https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html
 
 Any new <<Curve>> can be generated by passing the x and y keys to use:
 
-[,python]
 ----
 >>> list(dataset)
 ['Time', 'Potential', 'Current']  # <1>
@@ -294,7 +273,7 @@ Curve(title=My curve, n_points=219)
 ----
 <1> Any combination of these will work
 
-For more information, see the xref:api/data.adoc#_dataset[DataSet reference].
+For more information, see the xref:{api-data}#pypalmsens.data.DataSet[DataSet reference].
 
 == DataArray
 
@@ -302,7 +281,6 @@ Data arrays store a list of values, essentially representing a column in the PST
 
 Let's grab the first current array:
 
-[,python]
 ----
 >>> array = dataset.current_arrays()[0]
 >>> array
@@ -311,7 +289,6 @@ DataArray(name=current, unit=µA, n_points=219)
 
 An array stores some data about itself:
 
-[,python]
 ----
 >>> array.name
 'current'
@@ -327,7 +304,6 @@ Arrays act and behave like a
 Python https://docs.python.org/3/glossary.html#term-sequence[Sequence]
 (e.g. a list).
 
-[,python]
 ----
 >>> len(array)
 219
@@ -341,7 +317,6 @@ Python https://docs.python.org/3/glossary.html#term-sequence[Sequence]
 
 Arrays support complex slicing, but note that this returns a list.
 
-[,python]
 ----
 >>> array[:5]
 [0.352146, 0.351192, 0.3469, 0.345947, 0.344516]
@@ -354,7 +329,6 @@ Arrays support complex slicing, but note that this returns a list.
 
 Arrays can be converted to lists or numpy arrays:
 
-[,python]
 ----
 >>> list(array)
 [0.352146, 0.351192, ..., 0.19908, 0.199557]
@@ -362,7 +336,7 @@ Arrays can be converted to lists or numpy arrays:
 array([0.352146, 0.351192, ..., 0.19908 , 0.199557])
 ----
 
-For more information, see the xref:api/data.adoc#_dataarray[DataArray reference].
+For more information, see the xref:{api-data}#pypalmsens.data.DataArray[DataArray reference].
 
 == EISData
 
@@ -371,7 +345,6 @@ We can retrieve EIS data from an EIS measurement.
 Note that the EIS measurement can be multichannel, so `.eisdata` returns a list.
 If you don't use a multiplexer, we can pick the first (and only) item from the list.
 
-[,python]
 ----
 >>> eis_measurement = measurements[2]
 >>> eis_measurement
@@ -385,7 +358,6 @@ Measurement(title=Impedance Spectroscopy [2], timestamp=12-Jul-17 14:48:42, devi
 
 The EISData object can be queried for metadata:
 
-[,python]
 ----
 >>> eis.title
 'FixedPotential at 71 freqs [2]'
@@ -401,7 +373,6 @@ The EISData object can be queried for metadata:
 
 If previously fitted a circuit model in PSTrace, we can retrieve the CDC values:
 
-[,python]
 ----
 >>> eis_data.cdc
 'R([RT]Q)'
@@ -411,7 +382,6 @@ If previously fitted a circuit model in PSTrace, we can retrieve the CDC values:
 
 And use these to xref:circuit_fitting.adoc[fit a circuit model]:
 
-[,python]
 ----
 >>> model = ps.fitting.CircuitModel(cdc=eis_data.cdc)
 >>> result = model.fit(eis_data, parameters=eis_data.cdc_values)
@@ -428,7 +398,6 @@ FitResult(
 
 The raw data can be accessed via `.dataset`. This results in a <<DataSet>> object.
 
-[,python]
 ----
 >>> eis_data.dataset
 DataSet(['Current', 'Potential', 'Time', 'Frequency', 'ZRe', 'ZIm', 'Z', 'Phase', 'Iac', 'Unspecified_1', 'Unspecified_2', 'Unspecified_3', 'Unspecified_4', 'YRe', 'YIm', 'Y', 'Cs', 'CsRe', 'CsIm'])
@@ -436,7 +405,6 @@ DataSet(['Current', 'Potential', 'Time', 'Frequency', 'ZRe', 'ZIm', 'Z', 'Phase'
 
 Likewise, we can retrieve all the arrays:
 
-[,python]
 ----
 >>> eis_data.arrays()
 [DataArray(name=Idc, unit=µA, n_points=71),
@@ -452,7 +420,6 @@ Likewise, we can retrieve all the arrays:
 
 If an EIS dataset has subscans, this is shown in the repr:
 
-[,python]
 ----
 >>> eis
 EISData(title=CH 3: E dc scan at 5 freqs, n_points=20, n_frequencies=5, n_subscans=4)
@@ -464,7 +431,6 @@ True
 
 Subscans can be accessed via the `.subscans()` method.
 
-[,python]
 ----
 >>> eis.subscans
 [EISData(title=E=0.000 V, n_points=5, n_frequencies=5),
@@ -475,4 +441,4 @@ Subscans can be accessed via the `.subscans()` method.
 
 The subscans are themselves <<EISData>> objects.
 
-For more information, see the xref:api/data.adoc#_eisdata[EISData reference].
+For more information, see the xref:{api-data}#pypalmsens.data.EISData[EISData reference].

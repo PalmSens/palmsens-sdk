@@ -41,6 +41,7 @@
       "_appName": "",
       "_appTitle": "PalmSens.NET",
       "_appLogoPath": "images/banner.svg",
+      "_appLogoUrl": "https://sdk.palmsens.com/maui/latest",
       "_appFaviconPath": "favicon.ico",
       "_enableSearch": true,
       "_lang": "en",

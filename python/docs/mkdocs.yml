@@ -58,6 +58,11 @@ extra:
   homepage: https://sdk.palmsens.com/python/latest
 
 extra_css:
+  # Include a copy of mkdocstrings.css
+  # This is a work-around for Antora not publishing
+  # Underscore files (i.e. assets/_mkdocstrings.css)
+  # https://github.com/PalmSens/PalmSens_SDK/issues/176
+  - stylesheets/mkdocstrings.css
   - stylesheets/extra.css
 
 extra_javascript:
@@ -66,8 +71,6 @@ extra_javascript:
 
 plugins:
 - search
-# - privacy
-# - offline
 - mkdocstrings:
     # https://mkdocstrings.github.io/usage/
     handlers:

@@ -31,7 +31,7 @@ async def main():
         },
     ]
 
-    instruments = await ps.discover_async(ftdi=True)
+    instruments = await ps.discover_async()
 
     print(instruments)
 

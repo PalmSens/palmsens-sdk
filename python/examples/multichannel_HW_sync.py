@@ -10,7 +10,7 @@ async def main():
     )
     method.general.use_hardware_sync = True
 
-    instruments = await ps.discover_async(ftdi=True)
+    instruments = await ps.discover_async()
 
     print(instruments)
 

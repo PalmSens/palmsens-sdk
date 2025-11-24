@@ -98,27 +98,152 @@ Analyze a previous measurement with https://pandas.pydata.org/[pandas]:
 ----
 <1> Extract all arrays from the dataset into a https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html[pandas dataframe].
 
+[#compatibility]
 == Compatible devices and firmware
 
-The following devices and firmwares are supported:
+The table below lists the minimum supported firmwares versions and required drivers:
 
-[cols=",",options="header",]
+[cols=",,,",options="header",]
 |===
-|Device |Minimum required firmware version
-|EmStat |3.7
-|EmStat2 |7.7
-|EmStat3 |7.7
-|EmStat3{plus} |7.7
-|EmStat4, 4S, 4X |1.3
-|EmStat4T |1.4
-|EmStat Go |7.7
-|EmStat Pico |1.5
-|Sensit Smart |1.5
-|Sensit BT |1.5
-|Sensit Wearable |1.5
-|MultiEmStat3 |7.7
-|MultiEmStat4 |1.3
-|PalmSens3 |2.8
-|PalmSens4 |1.7
-|MultiPalmSens4 |1.7
+| Instrument | Firmware version | Windows drivers | Linux/MacOS drivers
+
+| Nexus
+| 1.100
+| palmsens_cdc.inf (optional) footnote:psdrivers[Drivers are installed with alongside the PSTrace desktop software or using https://github.com/PalmSens/PalmSens_SDK/releases/download/python-1.0.0/PalmSens.Drivers.exe[the driver installer].]
+| n/a footnote:linuxserial[The SDK communicates directly via the serial port. No drivers are necessary.]
+
+| Palmsens1
+| 4.4
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[See xref:installation.adoc#req-linux[the installation instructions] for more info.]
+
+| Palmsens2
+| 4.4
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[]
+
+| Palmsens3
+| 2.8
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[]
+
+| Palmsens4
+| 1.7
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| MultiPalmsens4
+| 1.7
+| Generic FTDI footnote:genericftdi[]
+| Generic FTDI footnote:genericftdi[]
+
+| EmStat1
+| 3.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[]
+
+| EmStat2
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[]
+
+| EmStat3
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[]
+
+| EmStat3+
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[]
+
+| MultiEmStat3
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[]
+
+| EmStat3 Blue
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[]
+
+| EmStat3+ Blue
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[]
+
+| EmStat3 Go
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[]
+
+| EmStat3+ Go
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:genericftdi[]
+
+| EmStat4S
+| 1.307
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| MultiEmStat4
+| 1.307
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| EmStat4X
+| 1.307
+| palmsens_winusb.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| EmStat4R
+| 1.307
+| Generic FTDI footnote:genericftdi[]
+| Generic FTDI footnote:genericftdi[]
+
+| EmStat4M
+| 1.307
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| EmStat4T
+| 1.406
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| EmStat4 Go
+| 1.307
+| Generic FTDI footnote:genericftdi[]
+| Generic FTDI footnote:genericftdi[]
+
+| EmStat Pico DevBoard
+| 1.601
+| Generic FTDI (optional) footnote:genericftdi[]
+| n/a footnote:linuxserial[]
+
+| EmStat Pico Module
+| 1.601
+| Generic FTDI (optional) footnote:genericftdi[]
+| n/a footnote:linuxserial[]
+
+| EmStat Pico Go
+| 1.601
+| Generic FTDI (optional) footnote:genericftdi[]
+| n/a footnote:linuxserial[]
+
+| Sensit Smart
+| 1.601
+| Generic FTDI (optional) footnote:genericftdi[]
+| n/a footnote:linuxserial[]
+
+| Sensit BT
+| 1.601
+| Generic FTDI (optional) footnote:genericftdi[]
+| n/a footnote:linuxserial[]
+
+| Sensit Wearable
+| 1.600
+| Generic FTDI (optional) footnote:genericftdi[]
+| n/a footnote:linuxserial[]
 |===

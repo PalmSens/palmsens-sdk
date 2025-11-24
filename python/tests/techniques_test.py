@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope='module')
 def manager():
-    with ps.connect() as mgr:
+    instruments = ps.discover()
+    with ps.connect(instruments[0]) as mgr:
         logger.warning('Connected to %s' % mgr.instrument.id)
         yield mgr
 

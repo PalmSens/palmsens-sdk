@@ -134,9 +134,6 @@ class InstrumentPoolAsync:
         follower_sync_tasks = []
         tasks = []
 
-        for manager in self.managers:
-            _ = manager.validate_method(method._to_psmethod())
-
         if len(self.managers) < 2:
             raise ValueError(
                 'Hardware synchronization requires two channels or more in the pool'
@@ -161,6 +158,9 @@ class InstrumentPoolAsync:
                     'of the multi-channel instrument to be in the pool.'
                 )
             )
+
+        for manager in self.managers:
+            _ = manager.validate_method(method._to_psmethod())
 
         for manager in self.managers:
             if manager is hw_sync_manager:

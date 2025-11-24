@@ -26,7 +26,7 @@ pip install pypalmsens
   - https://learn.microsoft.com/en-us/dotnet/iot/deployment[Raspberry Pi and other single-board ARM computers]
   - https://learn.microsoft.com/en-us/dotnet/core/install/macos[MacOS]
 * Optional: https://ftdichip.com/drivers/d2xx-drivers/[FTDI d2xx drivers].
-  - Devices with an FTDI chip include the PalmSens 3 and the EmStat 1, 2, 3, 3+, Go, and Pico.
+  - For a list of devices with an FTDI chip, see the xref:index.adoc#compatibility[Compatibility table].
   - For Raspberry Pi 4 or 5 you need the ARMv8 driver.
   - See xref:#ftdisetup[below] for how to set up your system for FTDI devices.
 
@@ -58,7 +58,7 @@ See https://github.com/PalmSens/PalmSens_SDK/issues/60[this issue] for an actual
 ====
 
 [#ftdisetup]
-=== FTDI devices (PS 3, ES 1/2/3/Go/Pico)
+=== FTDI devices
 
 // [,bash]
 // ----
@@ -70,6 +70,7 @@ See https://github.com/PalmSens/PalmSens_SDK/issues/60[this issue] for an actual
 // ----
 
 To set up your system to work with devices using the https://ftdichip.com/[FTDI chip], you need to follow a few additional steps.
+To see if your device needs the FTDI drivers, see the xref:index.adoc#compatibility[Compatibility table].
 
 First, install the https://ftdichip.com/drivers/d2xx-drivers/[D2XX drivers].
 
@@ -92,17 +93,6 @@ And restart `udevadm`.
 sudo udevadm control --reload
 sudo udevadm trigger
 ----
-
-Don't forget to enable scanning for FTDI devices.
-
-[,python]
-----
->>> import pypalmsens as ps
->>> instruments = ps.discover(ftdi=True)  <1>
->>> instruments
-[Instrument(name='EmStat3+Blue[ES93QFLP]', interface='ftdi')]
-----
-<1> Enable scanning for FTDI devices
 
 === RuntimeError: Failed to create a .NET runtime (coreclr)
 

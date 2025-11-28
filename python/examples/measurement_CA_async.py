@@ -13,8 +13,6 @@ async def main():
     print(instruments)
 
     async with await ps.connect_async(instruments[0]) as manager:
-        manager.callback = new_data_callback
-
         serial = await manager.get_instrument_serial()
         print(serial)
 
@@ -25,7 +23,7 @@ async def main():
             run_time=2.0,
         )
 
-        measurement = await manager.measure(method)
+        measurement = await manager.measure(method, callback=new_data_callback)
 
     print(measurement)
 

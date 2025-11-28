@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Callable, Sequence
+from typing import TYPE_CHECKING, Sequence
 
 from .._methods import BaseTechnique
-from ._common import Instrument
+from ._common import Callback, Instrument
 from .instrument_manager_async import InstrumentManagerAsync
 from .instrument_pool_async import InstrumentPoolAsync
 
@@ -33,11 +33,9 @@ class InstrumentPool:
         self,
         devices_or_managers: Sequence[Instrument | InstrumentManagerAsync],
         *,
-        callback: None | Callable = None,
+        callback: Callback | None = None,
     ):
-        self._async: InstrumentPoolAsync = InstrumentPoolAsync(
-            devices_or_managers, callback=callback
-        )
+        self._async: InstrumentPoolAsync = InstrumentPoolAsync(devices_or_managers)
         self._loop = asyncio.new_event_loop()
 
         self.managers: list[InstrumentManagerAsync] = self._async.managers
@@ -89,7 +87,7 @@ class InstrumentPool:
         """
         self._loop.run_until_complete(self._async.add(manager))
 
-    def measure(self, method: BaseTechnique) -> list[Measurement]:
+    def measure(self, method: BaseTechnique, **kwargs) -> list[Measurement]:
         """Concurrently run measurement on all managers in the pool.
 
         For hardware synchronization, set `use_hardware_sync` on the method.
@@ -105,5 +103,7 @@ class InstrumentPool:
         ----------
         method : MethodSettings
             Method parameters for measurement.
+        **kwargs
+            These keyword arguments are passed to the measure method.
         """
-        return self._loop.run_until_complete(self._async.measure(method=method))
+        return self._loop.run_until_complete(self._async.measure(method=method, **kwargs))

@@ -17,7 +17,7 @@ instruments = ps.discover()
 print(instruments)
 
 # run multichannel experiment with callback
-with ps.InstrumentPool(instruments, callback=new_data_callback) as pool:
-    results = pool.measure(method=method)
+with ps.InstrumentPool(instruments) as pool:
+    results = pool.measure(method=method, callback=new_data_callback)
 
 print(results)

@@ -6,8 +6,7 @@ from pathlib import Path
 
 import pytest
 
-ROOT_DIR = Path(__file__).parents[1]
-EXAMPLES_DIR = ROOT_DIR / 'examples'
+EXAMPLES_DIR = Path(__file__).parent
 EXAMPLES = [pytest.param(path, id=path.stem) for path in EXAMPLES_DIR.glob('*.py')]
 
 

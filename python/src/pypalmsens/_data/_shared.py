@@ -1,10 +1,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from PalmSens.Data import DataArray as PSDataArray
 
 
 class ArrayType(Enum):
@@ -99,14 +95,3 @@ class Status(Enum):
     OK = 0
     Overload = 1
     Underload = 2
-
-
-def get_values_from_NETArray(array: PSDataArray, start: int = 0, count: int = 1):
-    if not count:
-        count = array.Count
-
-    values = []
-    for i in range(start, start + count):
-        value = array.get_Item(i)
-        values.append(float(value.Value))
-    return values

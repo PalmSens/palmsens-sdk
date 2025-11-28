@@ -57,11 +57,9 @@ method = ps.mixed_mode.MixedMode(
 
 
 with ps.connect(instruments[0]) as manager:
-    manager.callback = new_data_callback
-
     serial = manager.get_instrument_serial()
     print(serial)
 
-    measurement = manager.measure(method)
+    measurement = manager.measure(method, callback=new_data_callback)
 
 print(measurement)

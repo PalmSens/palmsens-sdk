@@ -17,7 +17,6 @@ repos:
       - id: check-merge-conflict
       - id: debug-statements
       - id: no-commit-to-branch
-      - id: name-tests-test
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.14.2
     hooks:

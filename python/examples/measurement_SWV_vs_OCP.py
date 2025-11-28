@@ -10,8 +10,6 @@ instruments = ps.discover()
 print(instruments)
 
 with ps.connect(instruments[0]) as manager:
-    manager.callback = new_data_callback
-
     method = ps.SquareWaveVoltammetry(
         pretreatment=ps.settings.Pretreatment(
             conditioning_potential=2.0,  # V
@@ -28,7 +26,7 @@ with ps.connect(instruments[0]) as manager:
         frequency=50,  # Hz
     )
 
-    measurement = manager.measure(method)
+    measurement = manager.measure(method, callback=new_data_callback)
 
 print(measurement)
 print(f'ocp: {measurement.ocp_value}')

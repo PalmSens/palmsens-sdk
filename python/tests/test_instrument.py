@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import pytest
 from PalmSens.Comm import enumDeviceType
 
-import pypalmsens
+import pypalmsens as ps
 from pypalmsens._instruments._common import firmware_warning
 from pypalmsens.data import Measurement
 
@@ -86,50 +86,50 @@ def test_firmware_warning_fail(cap):
 
 @pytest.mark.instrument
 def test_connect():
-    with pypalmsens.connect() as manager:
-        assert isinstance(manager, pypalmsens.InstrumentManager)
+    with ps.connect() as manager:
+        assert isinstance(manager, ps.InstrumentManager)
 
 
 @pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_connect_async():
-    async with await pypalmsens.connect_async() as manager:
-        assert isinstance(manager, pypalmsens.InstrumentManagerAsync)
+    async with await ps.connect_async() as manager:
+        assert isinstance(manager, ps.InstrumentManagerAsync)
 
 
 @pytest.mark.instrument
 def test_measure():
-    method = pypalmsens.LinearSweepVoltammetry(
+    method = ps.LinearSweepVoltammetry(
         begin_potential=0.0,
         end_potential=0.5,
         step_potential=0.1,
         scanrate=10.0,
     )
-    measurement = pypalmsens.measure(method)
+    measurement = ps.measure(method)
     assert isinstance(measurement, Measurement)
 
 
 @pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_measure_async():
-    method = pypalmsens.LinearSweepVoltammetry(
+    method = ps.LinearSweepVoltammetry(
         begin_potential=0.0,
         end_potential=0.5,
         step_potential=0.1,
         scanrate=10.0,
     )
-    measurement = await pypalmsens.measure_async(method)
+    measurement = await ps.measure_async(method)
     assert isinstance(measurement, Measurement)
 
 
 @pytest.mark.instrument
 def test_discover():
-    instruments = pypalmsens.discover()
+    instruments = ps.discover()
     assert len(instruments) >= 0
 
 
 @pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_discover_async():
-    instruments = await pypalmsens.discover_async()
+    instruments = await ps.discover_async()
     assert len(instruments) >= 0

@@ -28,18 +28,14 @@ class InstrumentPoolAsync:
     def __init__(
         self,
         devices_or_managers: Sequence[Instrument | InstrumentManagerAsync],
-        *,
-        callback: None | Callable = None,
     ):
         self.managers: list[InstrumentManagerAsync] = []
         """List of instruments managers in the pool."""
 
         for item in devices_or_managers:
             if isinstance(item, Instrument):
-                self.managers.append(InstrumentManagerAsync(item, callback=callback))
+                self.managers.append(InstrumentManagerAsync(item))
             else:
-                if callback:
-                    item.callback = callback
                 self.managers.append(item)
 
     async def __aenter__(self):
@@ -92,7 +88,11 @@ class InstrumentPoolAsync:
         await manager.connect()
         self.managers.append(manager)
 
-    async def measure(self, method: BaseTechnique) -> list[Measurement]:
+    async def measure(
+        self,
+        method: BaseTechnique,
+        **kwargs,
+    ) -> list[Measurement]:
         """Concurrently start measurement on all managers in the pool.
 
         For hardware synchronization, set `use_hardware_sync` on the method.
@@ -108,6 +108,8 @@ class InstrumentPoolAsync:
         ----------
         method : MethodSettings
             Method parameters for measurement.
+        **kwargs
+            These keyword parameters are passed to the measure function.
         """
         tasks: list[Awaitable[Measurement]] = []
 
@@ -115,7 +117,7 @@ class InstrumentPoolAsync:
             tasks = await self._measure_hw_sync(method)
         else:
             for manager in self.managers:
-                tasks.append(manager.measure(method))
+                tasks.append(manager.measure(method, **kwargs))
 
         results = await asyncio.gather(*tasks)
         return results
@@ -123,6 +125,7 @@ class InstrumentPoolAsync:
     async def _measure_hw_sync(
         self,
         method: BaseTechnique,
+        **kwargs,
     ) -> list[Awaitable[Measurement]]:
         """Concurrently start measurement on all managers in the pool.
 
@@ -130,9 +133,11 @@ class InstrumentPoolAsync:
         ----------
         method : MethodSettings
             Method parameters for measurement.
+        **kwargs
+            These keyword arguments are passed to the measurement function.
         """
         follower_sync_tasks = []
-        tasks = []
+        tasks: list[Awaitable[Measurement]] = []
 
         if len(self.managers) < 2:
             raise ValueError(
@@ -160,19 +165,21 @@ class InstrumentPoolAsync:
             )
 
         for manager in self.managers:
-            _ = manager.validate_method(method._to_psmethod())
+            manager.validate_method(method._to_psmethod())
 
         for manager in self.managers:
             if manager is hw_sync_manager:
                 continue
 
-            sync_task, measure_task = manager.initiate_hardware_sync_follower_channel(method)  # type: ignore
+            sync_task, measure_task = manager._initiate_hardware_sync_follower_channel(
+                method=method, **kwargs
+            )
             follower_sync_tasks.append(sync_task)
             tasks.append(measure_task)
 
-        await asyncio.gather(*follower_sync_tasks)
+        _ = await asyncio.gather(*follower_sync_tasks)
 
-        tasks.append(hw_sync_manager.measure(method))
+        tasks.append(hw_sync_manager.measure(method=method, **kwargs))
         return tasks
 
     async def submit(self, func: Callable, **kwargs: Any) -> list[Any]:

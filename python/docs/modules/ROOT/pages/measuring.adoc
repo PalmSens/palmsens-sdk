@@ -126,26 +126,32 @@ The following example runs a chronoamperometry measurement on an instrument.
 
 === Callback
 
-It is possible to process measurement results in real-time by specifying a callback on the xref:{api-inst}#pypalmsens.InstrumentManager[`InstrumentManager`]/xref:{api-inst}#pypalmsens.InstrumentManagerAsync[`InstrumentManagerAsync`] either by providing it as an override when it is created using the `new_data_callback` argument:
+You process measurement results in real-time by specifying a callback function as argument.
+In the example below we use `print` to simply log the data to the console:
+
+----
+>>> manager.measure(method, callback=print)
+[{'index': 1, 'x': 0.0,  'x_unit': 's', 'x_type': 'Time', 'y': -305.055, 'y_unit': 'µA', 'y_type': 'Current'}]
+[{'index': 2, 'x': 0.01, 'x_unit': 's', 'x_type': 'Time', 'y': -731.741, 'y_unit': 'µA', 'y_type': 'Current'}]
+[{'index': 3, 'x': 0.02, 'x_unit': 's', 'x_type': 'Time', 'y': -751.552, 'y_unit': 'µA', 'y_type': 'Current'}]
+...
+----
+
+The callback is passed a collection of points that have been added since the last time it was called.
+Thus, `new_data` below is a batched list of points, so we can expand the `print` example to print each point on a new line:
 
 ----
 >>> def new_data_callback(new_data):
 ...     for point in new_data:
 ...         print(point)
 ...
->>> manager = instruments.InstrumentManager(
-...     callback=new_data_callback
-... )
+>>> manager.measure(method, callback=new_data_callback)
+{'index': 1, 'x': 0.00, 'x_unit': 's', 'x_type': 'Time', 'y': -305.055, 'y_unit': 'µA', 'y_type': 'Current'}
+{'index': 2, 'x': 0.01, 'x_unit': 's', 'x_type': 'Time', 'y': -740.935, 'y_unit': 'µA', 'y_type': 'Current'}
+{'index': 3, 'x': 0.02, 'x_unit': 's', 'x_type': 'Time', 'y': -750.604, 'y_unit': 'µA', 'y_type': 'Current'}
+...
 ----
 
-Or by setting it on the `InstrumentManager`’s callback field.
-
-----
->>> with ps.connect() as manager:
-...     manager.callback = stream_to_csv_callback(csv_writer)
-----
-
-The callback is passed a collection of points that have been added since the last time it was called.
 Points contain a dictionary with the following information:
 
 Non-impedimetric techniques::
@@ -153,20 +159,21 @@ Non-impedimetric techniques::
   Techniques such as linear sweep voltammetry or chronopotentiometry return a dictionary containing the following values:
 
   * `index`: the index of the point
-  * `x`, `x_unit` and `x_type`; depending on the technique this
-    will be:
+  * `x`, `x_unit` and `x_type`, depending on the technique this will be:
+
     ** Time in seconds for amperometry and potentiometry techniques that do
-    not specify a begin and an end potential
+       not specify a begin and an end potential
     ** Potential in volts for voltammetry techniques such as linear sweep,
-    cyclic and square-wave voltammetry
+       cyclic and square-wave voltammetry
     ** Current in micro amperes for linear sweep potentiometry
-  * `y`, `y_unit` and `y_type`; depending on the techniques this
-    will be:
+
+  * `y`, `y_unit` and `y_type`; depending on the techniques this will be:
+
     ** Current in micro amperes for all potentiometric techniques such as
-      linear sweep and cyclic voltammetry and chronoamperometry and multistep
-      amperometry
+       linear sweep and cyclic voltammetry and chronoamperometry and multistep
+       amperometry
     ** Potential in volts for all galvanostatic techniques such as
-      chronopotentiometry and linear sweep potentiometry
+       chronopotentiometry and linear sweep potentiometry
 
 Impedimetric techniques::
 
@@ -243,13 +250,11 @@ Note that most of the functionality and method names are shared between xref:{ap
 [Measurment(...), Measurement(...)]
 ----
 
-The pool takes a <<Callback>>, just like a regular xref:{api-inst}#pypalmsens.InstrumentManager[`InstrumentManager`].
+The pool takes a <<Callback>> in its `measure()` method, just like a regular xref:{api-inst}#pypalmsens.InstrumentManager[`InstrumentManager`].
 
 ----
->>> async with ps.InstrumentPoolAsync(
-...     instruments, callback=new_data_dallback
-... ) as pool:
-...    results = await pool.measure(method)
+>>> async with ps.InstrumentPoolAsync(instruments) as pool:
+...    results = await pool.measure(method, callback=new_data_callback)
 ----
 
 You can add (xref:{api-inst}#pypalmsens.InstrumentPool.add[`pool.add()`]) and remove (xref:{api-inst}#pypalmsens.InstrumentPool.remove()`pool.remove()`]) managers from the pool:

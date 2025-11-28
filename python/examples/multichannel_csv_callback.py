@@ -17,9 +17,8 @@ async def stream_to_csv(manager, *, method):
         csv_writer = csv.writer(csv_file, delimiter=' ')
 
         callback = functools.partial(stream_to_csv_callback, csv_writer=csv_writer)
-        manager.callback = callback
 
-        measurement = await manager.measure(method)
+        measurement = await manager.measure(method, callback=callback)
 
     print(f'Wrote data to {csv_file.name}')
 

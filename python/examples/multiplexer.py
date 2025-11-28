@@ -10,8 +10,6 @@ instruments = ps.discover()
 print(instruments)
 
 with ps.connect(instruments[0]) as manager:
-    manager.callback = new_data_callback
-
     n_multiplexer_channels = manager.initialize_multiplexer(2)
     manager.set_mux8r2_settings()
 
@@ -32,7 +30,7 @@ with ps.connect(instruments[0]) as manager:
             set_unselected_channel_working_electrode=0,
         ),
     )
-    measurement = manager.measure(altnernating_multiplexer_method)
+    measurement = manager.measure(altnernating_multiplexer_method, callback=new_data_callback)
     print(measurement)
 
     consecutive_multiplexer_method = ps.SquareWaveVoltammetry(
@@ -51,5 +49,5 @@ with ps.connect(instruments[0]) as manager:
         ),
     )
 
-    measurement = manager.measure(consecutive_multiplexer_method)
+    measurement = manager.measure(consecutive_multiplexer_method, callback=new_data_callback)
     print(measurement)

@@ -14,7 +14,7 @@ with ps.connect(instruments[0]) as manager:
     print('set cell to to 1mA currrent range')
 
     current = manager.read_current()
-    print('current = ' + str(current) + ' µA')
+    print(f'current = {current} µA')
 
     manager.set_cell(False)
     print('cell disabled')

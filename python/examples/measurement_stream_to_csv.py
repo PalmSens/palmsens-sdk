@@ -16,19 +16,17 @@ instruments = ps.discover()
 print(instruments)
 
 with ps.connect(instruments[0]) as manager:
-    manager.callback = stream_to_csv_callback
-
     serial = manager.get_instrument_serial()
     print(serial)
 
     # Chronoamperometry measurement using helper class
     method = ps.ChronoAmperometry(
-        interval_time=0.0004,
+        interval_time=0.004,
         potential=1.0,
         run_time=10.0,
     )
 
-    measurement = manager.measure(method)
+    measurement = manager.measure(method, callback=stream_to_csv_callback)
 
 print(measurement)
 

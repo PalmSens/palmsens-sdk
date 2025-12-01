@@ -76,15 +76,17 @@ class BaseStage(Protocol):
 
 @attrs.define(slots=False)
 class ConstantE(BaseStage, mixins.CurrentLimitsMixin):
-    """Amperometric detection stage."""
+    """Amperometric detection stage.
+
+    Apply constant potential during this stage."""
 
     type: Literal['ConstantE'] = 'ConstantE'
 
     potential: float = 0.0
-    """Potential in V."""
+    """Potential during measurement in V."""
 
     run_time: float = 1.0
-    """Run time in s."""
+    """Run time of the stage in s."""
 
     @override
     def _update_psstage(self, psstage: PSMethod, /):
@@ -99,7 +101,9 @@ class ConstantE(BaseStage, mixins.CurrentLimitsMixin):
 
 @attrs.define(slots=False)
 class ConstantI(BaseStage, mixins.PotentialLimitsMixin):
-    """Potentiometry stage."""
+    """Potentiometry stage.
+
+    Apply constant fixed current during this stage."""
 
     type: Literal['ConstantI'] = 'ConstantI'
 
@@ -117,7 +121,7 @@ class ConstantI(BaseStage, mixins.PotentialLimitsMixin):
     Use `CURRENT_RANGE` to define the range."""
 
     run_time: float = 1.0
-    """Run time in s."""
+    """Run time of the stage in s."""
 
     @override
     def _update_psstage(self, psstage: PSMethod, /):
@@ -134,21 +138,28 @@ class ConstantI(BaseStage, mixins.PotentialLimitsMixin):
 
 @attrs.define(slots=False)
 class SweepE(BaseStage, mixins.CurrentLimitsMixin):
-    """Linear sweep detection stage."""
+    """Linear sweep detection stage.
+
+    Ramp the voltage from `begin_potential` to `end_potential` during this stage."""
 
     type: Literal['SweepE'] = 'SweepE'
 
     begin_potential: float = -0.5
-    """Begin potential in V."""
+    """Potential where the scan starts in V."""
 
     end_potential: float = 0.5
-    """End potential in V."""
+    """Potential where the scan stops in V."""
 
     step_potential: float = 0.1
-    """Step potential in V."""
+    """Potential step in V."""
 
     scanrate: float = 1.0
-    """Scan rate in V/s."""
+    """The applied scan rate.  in V/s.
+
+    The applicable range depends on the value of `step_potential`
+    since the data acquisition rate is limited by the connected
+    instrument.
+    """
 
     @override
     def _update_psstage(self, psstage: PSMethod, /):
@@ -167,12 +178,14 @@ class SweepE(BaseStage, mixins.CurrentLimitsMixin):
 
 @attrs.define(slots=False)
 class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin):
-    """Ocp stage."""
+    """Open Circuit stage.
+
+    Measure the open circuit potential during this stage."""
 
     type: Literal['OpenCircuit'] = 'OpenCircuit'
 
     run_time: float = 1.0
-    """Run time in s."""
+    """Run time of the stage in s."""
 
     @override
     def _update_psstage(self, psstage: PSMethod, /):
@@ -185,32 +198,61 @@ class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin):
 
 @attrs.define(slots=False)
 class Impedance(BaseStage):
-    """Electostatic impedance stage."""
+    """Electostatic impedance stage.
+
+    This is like EIS with a single frequency step
+    (`scan_type = 'fixed'`, `freq_type = 'fixed'`).
+    """
 
     type: Literal['Impedance'] = 'Impedance'
 
     run_time: float = 10.0
-    """Run time in s."""
+    """Run time of the scan in s."""
 
     dc_potential: float = 0.0
-    """DC potential in V."""
+    """DC potential applied during the scan in V."""
 
     ac_potential: float = 0.01
-    """AC potential in V RMS."""
+    """AC potential in V RMS.
+
+    The amplitude of the AC signal has a range of 0.0001 V to 0.25 V
+    (RMS). In many applications, a value of 0.010 V (RMS) is used. The
+    actual amplitude must be small enough to prevent a current response
+    with considerable higher harmonics of the applied ac frequency.
+    """
 
     frequency: float = 50000.0
-    """Frequency in Hz."""
+    """Fixed frequency in Hz."""
 
     min_sampling_time: float = 0.5
     """Minimum sampling time in s.
 
-    The instrument will measure at least 2 sine waves.
-    The sampling time will be automatically adjusted when necessary."""
+    Each measurement point of the impedance spectrum is performed
+    during the period specified by `min_sampling_time`.
+
+    This means that the number of measured sine waves is equal to `min_sampling_time * frequency`.
+    If this value is less than 1 sine wave, the sampling is extended to `1 / frequency`.
+
+    So for a measurement at a `frequency`, at least one complete sine wave is measured.
+    Reasonable values for the sampling are in the range of 0.1 to 1 s."""
 
     max_equilibration_time: float = 5.0
     """Max equilibration time in s.
 
-    Used as a guard when the frequency drops below 1/max. equilibration time."""
+    The EIS measurement requires a stationary state.
+    This means that before the actual measurement starts, the sine wave is
+    applied during `max_equilibration_time` only to reach the stationary state.
+
+    The maximum number of equilibration sine waves is however 5.
+
+    The minimum number of equilibration sines is set to 1, but for very
+    low frequencies, this time is limited by `max_equilibration_time`.
+
+    The maximum time to wait for stationary state is determined by the
+    value of this parameter. A reasonable value might be 5 seconds.
+    In this case this parameter is only relevant when the lowest frequency
+    is less than 1/5 s so 0.2 Hz.
+    """
 
     @override
     def _update_psstage(self, psstage: PSMethod, /):
@@ -244,12 +286,37 @@ class MixedMode(
     mixins.DataProcessingMixin,
     mixins.GeneralMixin,
 ):
-    """Create mixed mode method parameters."""
+    """Create mixed mode method parameters.
+
+    Mixed mode is a flexible technique that allows for switching between potentiostatic,
+    galvanostatic, and open circuit measurements during a single run.
+
+    The mixed mode uses different stages similar to the levels during Multistep Amperometry or
+    Potentiometry, but each stage can be galvanostatic or potentiostatic independent of the
+    previous stage.
+
+    The available stage types are `ConstantE`, `ConstantI`, `SweepE`, `OpenCircuit` and `Impedance`.
+
+    - `ConstantE`: Apply constant potential
+    - `ConstantI`: Apply constant current
+    - `SweepE`: potential linear sweep (ramp) similar to a regular LSV step
+    - `OpenCircuit`: Measure the OCP value
+    - `Impedance`: the impedance is measured by applying a small AC potential superimposed with a DC
+    potential. This corresponds to an EIS single frequency step (`scan_type = 'fixed'`, `freq_type = 'fixed'`)
+
+    Each stage can use the previous stage’s potential as a reference point, for example, a constant
+    current is applied for a fixed period and afterward, the reached potential is kept constant for a
+    fixed period.
+
+    Furthermore, each stage can end because a fixed period has elapsed, or certain criteria are
+    met. Available criteria include reaching a maximum current, minimum current, maximum
+    potential, and minimum potential.
+    """
 
     _id = 'mm'
 
     interval_time: float = 0.1
-    """Interval time in s."""
+    """Time between two samples in s."""
 
     cycles: int = 1
     """Number of times to go through all stages."""

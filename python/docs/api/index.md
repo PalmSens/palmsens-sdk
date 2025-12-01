@@ -7,7 +7,7 @@ PyPalmSens is a Python library that lets you control your PalmSens device using 
     The most-used functions and classes are available from the root module.
 
     - [Saving and loading files](./io.md)
-    - [Setting up measurements](./techniques.md)
+    - [Setting up methods](./methods/index.md)
     - [Connecting to and managing an instrument](./instrument.md)
 
 - `pypalmsens.settings`

@@ -7,83 +7,83 @@ class ArrayType(Enum):
     """Data array type for standard arrays."""
 
     Unspecified = -1
-    """Unspecified"""
+    """Unspecified."""
     Time = 0
-    """Time / s"""
+    """Time / s."""
     Potential = 1
-    """Potential / V"""
+    """Potential / V."""
     Current = 2
-    """Current / μA"""
+    """Current / μA."""
     Charge = 3
-    """Charge"""
+    """Charge."""
     ExtraValue = 4
-    """ExtraValue"""
+    """ExtraValue."""
     Frequency = 5
-    """Frequency"""
+    """Frequency."""
     Phase = 6
-    """Phase"""
+    """Phase."""
     ZRe = 7
-    """Z real"""
+    """Z real."""
     ZIm = 8
-    """Z imaginary"""
+    """Z imaginary."""
     Iac = 9
-    """I AC values"""
+    """I AC values."""
     Z = 10
-    """Z"""
+    """Z."""
     Y = 11
-    """Y"""
+    """Y."""
     YRe = 12
-    """Y real"""
+    """Y real."""
     YIm = 13
-    """Y imaginary"""
+    """Y imaginary."""
     Cs = 14
-    """Cs"""
+    """Cs."""
     CsRe = 15
-    """Cs real"""
+    """Cs real."""
     CsIm = 16
-    """Cs imaginary"""
+    """Cs imaginary."""
     Index = 17
-    """Index"""
+    """Index."""
     Admittance = 18
-    """Admittance"""
+    """Admittance."""
     Concentration = 19
-    """Concentration"""
+    """Concentration."""
     Signal = 20
-    """Signal"""
+    """Signal."""
     Func = 21
-    """Func"""
+    """Func."""
     Integral = 22
-    """Integral"""
+    """Integral."""
     AuxInput = 23
-    """Auxillary input"""
+    """Auxillary input."""
     BipotCurrent = 24
-    """Bipot current"""
+    """Bipot current."""
     BipotPotential = 25
-    """Bipot potential"""
+    """Bipot potential."""
     ReverseCurrent = 26
-    """Reverse current"""
+    """Reverse current."""
     CEPotential = 27
-    """CE potential"""
+    """CE potential."""
     DCCurrent = 28
-    """DC current"""
+    """DC current."""
     ForwardCurrent = 29
-    """Forward current"""
+    """Forward current."""
     PotentialExtraRE = 30
-    """Potential setpoint measured back on RE"""
+    """Potential setpoint measured back on RE."""
     CurrentExtraWE = 31
-    """Current setpoint measured back on WE"""
+    """Current setpoint measured back on WE."""
     InverseDerative_dtdE = 32
-    """Inverse derivative dt/dE"""
+    """Inverse derivative dt/dE."""
     mEdc = 33
-    """Measured applied DC"""
+    """Measured applied DC."""
     Eac = 34
-    """E AC values"""
+    """E AC values."""
     MeasuredStepStartIndex = 35
-    """MeasuredStepStartIndex"""
+    """MeasuredStepStartIndex."""
     miDC = 36
-    """Measured I DC values"""
+    """Measured I DC values."""
     SE2vsXPotential = 37
-    """SE2 vs XPotential"""
+    """SE2 vs XPotential."""
 
     @classmethod
     def _missing_(cls, value):

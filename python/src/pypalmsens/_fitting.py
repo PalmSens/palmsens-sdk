@@ -147,7 +147,7 @@ class FitResult:
         )
 
     def get_psmodel(self, data: EISData) -> PSFitting.Models.CircuitModel:
-        """Get SDK Circuit model object"""
+        """Get SDK Circuit model object."""
         psmodel = PSFitting.Models.CircuitModel()
         psmodel.SetEISdata(data._pseis)
         psmodel.SetCircuit(self.cdc)

@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 class Callback(Protocol):
-    """Type signature for callback"""
+    """Type signature for callback."""
 
     def __call__(self, new_data: Sequence[dict[str, Any]]): ...
 

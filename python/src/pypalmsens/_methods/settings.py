@@ -20,7 +20,7 @@ from .base import BaseSettings
 
 @attrs.define
 class CurrentRange(BaseSettings):
-    """Set the autoranging current for a given method."""
+    """Set the autoranging current."""
 
     max: CURRENT_RANGE = CURRENT_RANGE.cr_10_mA
     """Maximum current range.
@@ -52,7 +52,7 @@ class CurrentRange(BaseSettings):
 
 @attrs.define
 class PotentialRange(BaseSettings):
-    """Set the autoranging potential for a given method."""
+    """Set the autoranging potential."""
 
     max: POTENTIAL_RANGE = POTENTIAL_RANGE.pr_1_V
     """Maximum potential range.
@@ -84,19 +84,19 @@ class PotentialRange(BaseSettings):
 
 @attrs.define
 class Pretreatment(BaseSettings):
-    """Set the pretreatment settings for a given method."""
+    """Set the measurement pretreatment settings."""
 
     deposition_potential: float = 0.0
-    """Deposition potential in V"""
+    """Deposition potential in V."""
 
     deposition_time: float = 0.0
-    """Deposition time in s"""
+    """Deposition time in s."""
 
     conditioning_potential: float = 0.0
-    """Conditioning potential in V"""
+    """Conditioning potential in V."""
 
     conditioning_time: float = 0.0
-    """Conditioning time in s"""
+    """Conditioning time in s."""
 
     @override
     def _update_psmethod(self, psmethod: PSMethod, /):
@@ -115,7 +115,7 @@ class Pretreatment(BaseSettings):
 
 @attrs.define
 class VersusOCP(BaseSettings):
-    """Set the versus OCP settings for a given method."""
+    """Set the versus OCP settings."""
 
     mode: int = 0
     """Set versus OCP mode.
@@ -132,7 +132,7 @@ class VersusOCP(BaseSettings):
     """
 
     max_ocp_time: float = 20.0
-    """Maximum OCP time in s"""
+    """Maximum OCP time in s."""
 
     stability_criterion: float = 0.0
     """Stability criterion (potential/time) in mV/s.
@@ -156,7 +156,7 @@ class VersusOCP(BaseSettings):
 
 @attrs.define
 class BiPot(BaseSettings):
-    """Set the bipot settings for a given method."""
+    """Set the bipot settings."""
 
     _MODES: tuple[Literal['constant', 'offset'], ...] = ('constant', 'offset')
 
@@ -166,7 +166,7 @@ class BiPot(BaseSettings):
     Possible values: `constant` or `offset`"""
 
     potential: float = 0.0
-    """Set the bipotential in V"""
+    """Set the bipotential in V."""
 
     current_range_max: CURRENT_RANGE = CURRENT_RANGE.cr_10_mA
     """Maximum bipotential current range in mA.
@@ -209,7 +209,7 @@ class BiPot(BaseSettings):
 
 @attrs.define
 class PostMeasurement(BaseSettings):
-    """Set the post measurement settings for a given method."""
+    """Set the post measurement settings."""
 
     cell_on_after_measurement: bool = False
     """Enable/disable cell after measurement."""
@@ -235,7 +235,7 @@ class PostMeasurement(BaseSettings):
 
 @attrs.define
 class CurrentLimits(BaseSettings):
-    """Set the limit settings for a given method.
+    """Set the limit settings.
 
     Depending on the method, this will:
     - Abort the measurement
@@ -278,7 +278,7 @@ class CurrentLimits(BaseSettings):
 
 @attrs.define
 class PotentialLimits(BaseSettings):
-    """Set the limit settings for a given method.
+    """Set the limit settings.
 
     Depending on the method, this will:
     - Abort the measurement
@@ -320,7 +320,7 @@ class PotentialLimits(BaseSettings):
 
 @attrs.define
 class ChargeLimits(BaseSettings):
-    """Set the charge limit settings for a given method."""
+    """Set the charge limit settings."""
 
     max: None | float = None
     """Set limit charge max in µC."""
@@ -357,7 +357,7 @@ class ChargeLimits(BaseSettings):
 
 @attrs.define
 class IrDropCompensation(BaseSettings):
-    """Set the iR drop compensation settings for a given method."""
+    """Set the iR drop compensation settings."""
 
     resistance: None | float = None
     """Set the iR compensation resistance in Ω"""
@@ -380,7 +380,7 @@ class IrDropCompensation(BaseSettings):
 
 @attrs.define
 class EquilibrationTriggers(BaseSettings):
-    """Set the trigger at equilibration settings for a given method.
+    """Set the trigger at equilibration settings.
 
     If enabled, set one or more digital outputs at the start of
     the equilibration period.
@@ -423,7 +423,7 @@ class EquilibrationTriggers(BaseSettings):
 
 @attrs.define
 class MeasurementTriggers(BaseSettings):
-    """Set the trigger at measurement settings for a given method.
+    """Set the trigger at measurement settings.
 
     If enabled, set one or more digital outputs at the start measurement,
     """
@@ -465,7 +465,7 @@ class MeasurementTriggers(BaseSettings):
 
 @attrs.define
 class DelayTriggers(BaseSettings):
-    """Set the delayed trigger at measurement settings for a given method.
+    """Set the delayed trigger at measurement settings.
 
     If enabled, set one or more digital outputs at the start measurement after a delay,
     """
@@ -517,7 +517,7 @@ class DelayTriggers(BaseSettings):
 
 @attrs.define
 class Multiplexer(BaseSettings):
-    """Set the multiplexer settings for a given method."""
+    """Set the multiplexer settings."""
 
     _MODES: tuple[Literal['none', 'consecutive', 'alternate'], ...] = (
         'none',
@@ -592,29 +592,31 @@ class Multiplexer(BaseSettings):
 
 @attrs.define
 class DataProcessing(BaseSettings):
-    """Set the data processing settings for a given method."""
+    """Set the data processing settings."""
 
     smooth_level: int = 0
     """Set the default curve post processing filter.
 
     Possible values:
-    * -1 = no filter
-    *  0 = spike rejection
-    *  1 = spike rejection + Savitsky-golay window 5
-    *  2 = spike rejection + Savitsky-golay window 9
-    *  3 = spike rejection + Savitsky-golay window 15
-    *  4 = spike rejection + Savitsky-golay window 25
+
+    - -1: no filter
+    - 0: spike rejection
+    - 1: spike rejection + Savitsky-golay window 5
+    - 2: spike rejection + Savitsky-golay window 9
+    - 3: spike rejection + Savitsky-golay window 15
+    - 4: spike rejection + Savitsky-golay window 25
     """
 
     min_height: float = 0.0
     """Determines the minimum peak height in µA for peak finding.
 
-    Peaks lower than this value are neglected."""
+    Peaks lower than this value are rejected."""
+
     min_width: float = 0.1
     """The minimum peak width for peak finding.
 
     The value is in the unit of the curves X axis (V).
-    Peaks narrower than this value are neglected (default: 0.1 V)."""
+    Peaks narrower than this value are rejected (default: 0.1 V)."""
 
     @override
     def _update_psmethod(self, psmethod: PSMethod, /):
@@ -631,7 +633,7 @@ class DataProcessing(BaseSettings):
 
 @attrs.define
 class General(BaseSettings):
-    """Sets general/other settings for a given method."""
+    """Sets general/other settings."""
 
     save_on_internal_storage: bool = False
     """Save on internal storage."""

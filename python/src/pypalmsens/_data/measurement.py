@@ -21,13 +21,13 @@ class DeviceInfo:
     """Dataclass for device information."""
 
     type: str
-    """Device type"""
+    """Device type."""
     firmware: str
-    """Firmware version"""
+    """Firmware version."""
     serial: str
-    """Serial number"""
+    """Serial number."""
     id: int
-    """Device ID"""
+    """Device ID."""
 
     @classmethod
     def _from_psmeasurement(cls, obj: PSMeasurement) -> DeviceInfo:
@@ -64,7 +64,7 @@ class Measurement:
 
     @property
     def timestamp(self) -> str:
-        """Date and time of the start of this measurement.."""
+        """Date and time of the start of this measurement."""
         return str(self._psmeasurement.TimeStamp)
 
     @property

@@ -1,0 +1,3 @@
+# Fast Amperometry
+
+::: pypalmsens.FastAmperometry

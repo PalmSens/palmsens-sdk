@@ -51,7 +51,7 @@ class VersusOCPMixin:
 @attrs.define(slots=False)
 class BiPotMixin:
     bipot: settings.BiPot = attrs.field(factory=settings.BiPot)
-    """Set the bipot settings"""
+    """Set the bipot settings."""
 
 
 @attrs.define(slots=False)
@@ -69,13 +69,13 @@ class CurrentLimitsMixin:
 @attrs.define(slots=False)
 class PotentialLimitsMixin:
     potential_limits: settings.PotentialLimits = attrs.field(factory=settings.PotentialLimits)
-    """Set the potential limit settings"""
+    """Set the potential limit settings."""
 
 
 @attrs.define(slots=False)
 class ChargeLimitsMixin:
     charge_limits: settings.ChargeLimits = attrs.field(factory=settings.ChargeLimits)
-    """Set the charge limit settings"""
+    """Set the charge limit settings."""
 
 
 @attrs.define(slots=False)
@@ -111,7 +111,7 @@ class DelayTriggersMixin:
 @attrs.define(slots=False)
 class MultiplexerMixin:
     multiplexer: settings.Multiplexer = attrs.field(factory=settings.Multiplexer)
-    """Set the multiplexer settings"""
+    """Set the multiplexer settings."""
 
 
 @attrs.define(slots=False)

@@ -55,12 +55,12 @@ class Peak:
 
     @property
     def x_unit(self) -> str:
-        """Units of X axis"""
+        """Units of X axis."""
         return self.curve.x_unit
 
     @property
     def y_unit(self) -> str:
-        """Units for Y axis"""
+        """Units for Y axis."""
         return self.curve.y_unit
 
     @property

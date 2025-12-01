@@ -1,5 +1,5 @@
 = Methods
-:api-techniques: api:attachment$techniques/index.html
+:api-techniques: api:attachment$methods
 
 == Supported methods
 
@@ -7,45 +7,45 @@ The following methods are supported in PyPalmSens:
 
 Voltammetric Techniques::
 
-- xref:{api-techniques}#pypalmsens.LinearSweepVoltammetry[Linear Sweep Voltammetry]
-- xref:{api-techniques}#pypalmsens.CyclicVoltammetry[Cyclic Voltammetry]
-- xref:{api-techniques}#pypalmsens.FastCyclicVoltammetry[Fast Cyclic Voltammetry]
-- xref:{api-techniques}#pypalmsens.AcVoltammetry[AC Voltammetry]
+- xref:{api-techniques}/linear_sweep_voltammetry/index.html[Linear Sweep Voltammetry]
+- xref:{api-techniques}/cyclic_voltammetry/index.html[Cyclic Voltammetry]
+- xref:{api-techniques}/fast_cyclic_voltammetry/index.html[Fast Cyclic Voltammetry]
+- xref:{api-techniques}/a_c_voltammetry/index.html[AC Voltammetry]
 
 Pulsed Techniques::
 
-- xref:{api-techniques}#pypalmsens.DifferentialPulseVoltammetry[Differential Pulse Voltammetry]
-- xref:{api-techniques}#pypalmsens.SquareWaveVoltammetry[Square Wave Voltammetry]
-- xref:{api-techniques}#pypalmsens.NormalPulseVoltammetry[Normal Pulse Voltammetry]
+- xref:{api-techniques}/differential_pulse_voltammetry/index.html[Differential Pulse Voltammetry]
+- xref:{api-techniques}/square_wave_voltammetry/index.html[Square Wave Voltammetry]
+- xref:{api-techniques}/normal_pulse_voltammetry/index.html[Normal Pulse Voltammetry]
 
 Amperometric Techniques::
 
-- xref:{api-techniques}#pypalmsens.Chronoamperometry[Chronoamperometry]
-- xref:{api-techniques}#pypalmsens.MultistepAmperometry[Multistep Amperometry]
-- xref:{api-techniques}#pypalmsens.FastAmperometry[Fast Amperometry]
-- xref:{api-techniques}#pypalmsens.PulsedAmperometricDetection[Pulsed Amperometric Detection]
-- xref:{api-techniques}#pypalmsens.MultiplePulseAmperometry[Multiple Pulse Amperometry]
+- xref:{api-techniques}/chrono_amperometry/index.html[Chronoamperometry]
+- xref:{api-techniques}/multi_step_amperometry/index.html[Multistep Amperometry]
+- xref:{api-techniques}/fast_amperometry/index.html[Fast Amperometry]
+- xref:{api-techniques}/pulsed_amperometric_detection/index.html[Pulsed Amperometric Detection]
+- xref:{api-techniques}/multiple_pulse_amperometry/index.html[Multiple Pulse Amperometry]
 
 Potentiometric Techniques::
 
-- xref:{api-techniques}#pypalmsens.OpenCircuitPotentiometry[Open Circuit Potentiometry]
-- xref:{api-techniques}#pypalmsens.Chronopotentiometry[Chronopotentiometry]
-- xref:{api-techniques}#pypalmsens.LinearSweepPotentiometry[Linear Sweep Potentiometry]
-- xref:{api-techniques}#pypalmsens.MultistepPotentiometry[Multistep Potentiometry]
-- xref:{api-techniques}#pypalmsens.StrippingChronopotentiometry[Stripping Chronopotentiometry]
+- xref:{api-techniques}/open_circuit_potentiometry/index.html[Open Circuit Potentiometry]
+- xref:{api-techniques}/chrono_potentiometry/index.html[Chronopotentiometry]
+- xref:{api-techniques}/linear_sweep_potentiometry/index.html[Linear Sweep Potentiometry]
+- xref:{api-techniques}/multi_step_potentiometry/index.html[Multistep Potentiometry]
+- xref:{api-techniques}/stripping_chrono_potentiometry/index.html[Stripping Chronopotentiometry]
 
 Coulometric techniques::
 
-- xref:{api-techniques}#pypalmsens.Chronocoulometry[Chronocoulometry]
+- xref:{api-techniques}/chrono_coulometry/index.html[Chronocoulometry]
 
 Other::
 
-- xref:{api-techniques}#pypalmsens.ImpedanceSpectroscopy[Impedance Spectroscopy]
-- xref:{api-techniques}#pypalmsens.FastImpedanceSpectroscopy[Fast Impedance Spectroscopy]
-- xref:{api-techniques}#pypalmsens.GalvanostaticImpedanceSpectroscopy[Galvanostatic Impedance Spectroscopy]
-- xref:{api-techniques}#pypalmsens.FastGalvanostaticImpedanceSpectroscopy[Fast Galvanostatic Impedance Spectroscopy]
-- xref:{api-techniques}#pypalmsens.MixedMode[Mixed Mode]
-- xref:{api-techniques}#pypalmsens.MethodScript[Method Script]
+- xref:{api-techniques}/impedance_spectroscopy/index.html[Impedance Spectroscopy]
+- xref:{api-techniques}/fast_impedance_spectroscopy/index.html[Fast Impedance Spectroscopy]
+- xref:{api-techniques}/galvanostatic_impedance_spectroscopy/index.html[Galvanostatic Impedance Spectroscopy]
+- xref:{api-techniques}/fast_galvanostatic_impedance_spectroscopy/index.html[Fast Galvanostatic Impedance Spectroscopy]
+- xref:{api-techniques}/mixed_mode/index.html[Mixed Mode]
+- xref:{api-techniques}/method_script/index.html[Method Script]
 
 == Setting up a method
 
@@ -68,7 +68,7 @@ This example creates a method for a square-wave voltammetry measurement versus t
 ...)
 ----
 
-Because methods are https://www.attrs.org/[attrs dataclasses], all attributes can be modified afterwards:
+Because methods are https://www.attrs.org/index.html[attrs dataclasses], all attributes can be modified afterwards:
 
 [,python]
 ----
@@ -115,7 +115,7 @@ image::ipython_autocomplete.png[Debug console in VSCode]
 === Common settings
 
 Many settings are shared between methods.
-For a full listing, see the xref:api:attachment$settings/index.html[method settings API reference].
+For a full listing, see the xref:{api-techniques}/settings/index.html[method settings API reference].
 
 If you don't specify any arguments, the default values are loaded.
 These are accessible via attributes on the methods.

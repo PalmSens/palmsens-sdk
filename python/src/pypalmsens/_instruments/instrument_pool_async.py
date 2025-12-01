@@ -21,8 +21,6 @@ class InstrumentPoolAsync:
     ----------
     devices_or_managers : list[Instrument | InstrumentManagerAsync]
         List of devices or managers.
-    callback : Callable, optional
-        Optional callable to set on instrument managers
     """
 
     def __init__(

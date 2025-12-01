@@ -4,7 +4,7 @@ import asyncio
 from typing import TYPE_CHECKING, Sequence
 
 from .._methods import BaseTechnique
-from ._common import Callback, Instrument
+from ._common import Instrument
 from .instrument_manager_async import InstrumentManagerAsync
 from .instrument_pool_async import InstrumentPoolAsync
 
@@ -25,15 +25,11 @@ class InstrumentPool:
     ----------
     devices_or_managers : list[Instrument | InstrumentManagerAsync]
         List of devices or managers.
-    callback : Callable, optional
-        Optional callable to set on instrument managers
     """
 
     def __init__(
         self,
         devices_or_managers: Sequence[Instrument | InstrumentManagerAsync],
-        *,
-        callback: Callback | None = None,
     ):
         self._async: InstrumentPoolAsync = InstrumentPoolAsync(devices_or_managers)
         self._loop = asyncio.new_event_loop()

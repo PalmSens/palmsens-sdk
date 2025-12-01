@@ -1,0 +1,24 @@
+# Who is using the PalmSens SDK?
+
+The list below is just a collection of projects that are using the PalmSens SDK.
+
+Check them out to discover some great examples of what the SDK can do for you.
+
+To add your project to the list, https://www.palmsens.com/contact/[let us know about it] or https://github.com/PalmSens/PalmSens_SDK/blob/main/docs/start/modules/ROOT/pages/projects.adoc[submit a pull request].
+
+|===
+| Project | SDK | Description
+
+| https://github.com/PalmSens/PalmSens_SDK/tree/main/python[PyPalmSens]
+| Python
+| Python SDK for PalmSens devices!
+
+| https://github.com/PalmSens/PalmSens_SDK[Cool project]
+| Maui
+| Electrochemistry! 🤘
+
+| https://github.com/PalmSens/PalmSens_SDK[Your project here?]
+| -
+| https://github.com/PalmSens/PalmSens_SDK/blob/main/docs/start/modules/ROOT/pages/projects.adoc[Submit a pull request!]
+
+|===

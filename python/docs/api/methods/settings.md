@@ -23,7 +23,7 @@ Or by setting the values on the attribute:
 ```python
 lsv = ps.LinearSweepVoltammetry()
 
-lsv.post_measurement.cell_on_after_measurement()
+lsv.post_measurement.cell_on_after_measurement = True
 lsv.post_measurement.standby_potential = 0.5
 lsv.post_measurement.standby_time = 30
 ```

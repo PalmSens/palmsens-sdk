@@ -12,33 +12,33 @@ nav:
   - instrument.md
   - instrument_async.md
   - Techniques:
-    - methods\index.md
-    - Shared settings: methods\settings.md
-    - methods\enums.md
-    - methods\a_c_voltammetry.md
-    - methods\chrono_amperometry.md
-    - methods\chrono_coulometry.md
-    - methods\chrono_potentiometry.md
-    - methods\cyclic_voltammetry.md
-    - methods\differential_pulse_voltammetry.md
-    - methods\electrochemical_impedance_spectroscopy.md
-    - methods\fast_amperometry.md
-    - methods\fast_cyclic_voltammetry.md
-    - methods\fast_galvanostatic_impedance_spectroscopy.md
-    - methods\fast_impedance_spectroscopy.md
-    - methods\galvanostatic_impedance_spectroscopy.md
-    - methods\linear_sweep_potentiometry.md
-    - methods\linear_sweep_voltammetry.md
-    - methods\method_script.md
-    - methods\mixed_mode.md
-    - methods\multi_step_amperometry.md
-    - methods\multi_step_potentiometry.md
-    - methods\multiple_pulse_amperometry.md
-    - methods\normal_pulse_voltammetry.md
-    - methods\open_circuit_potentiometry.md
-    - methods\pulsed_amperometric_detection.md
-    - methods\square_wave_voltammetry.md
-    - methods\stripping_chrono_potentiometry.md
+    - methods/index.md
+    - Shared settings: methods/settings.md
+    - methods/enums.md
+    - methods/a_c_voltammetry.md
+    - methods/chrono_amperometry.md
+    - methods/chrono_coulometry.md
+    - methods/chrono_potentiometry.md
+    - methods/cyclic_voltammetry.md
+    - methods/differential_pulse_voltammetry.md
+    - Impedance Spectroscopy: methods/impedance_spectroscopy.md
+    - methods/fast_amperometry.md
+    - methods/fast_cyclic_voltammetry.md
+    - methods/fast_galvanostatic_impedance_spectroscopy.md
+    - methods/fast_impedance_spectroscopy.md
+    - methods/galvanostatic_impedance_spectroscopy.md
+    - methods/linear_sweep_potentiometry.md
+    - methods/linear_sweep_voltammetry.md
+    - methods/method_script.md
+    - methods/mixed_mode.md
+    - methods/multi_step_amperometry.md
+    - methods/multi_step_potentiometry.md
+    - methods/multiple_pulse_amperometry.md
+    - methods/normal_pulse_voltammetry.md
+    - methods/open_circuit_potentiometry.md
+    - methods/pulsed_amperometric_detection.md
+    - methods/square_wave_voltammetry.md
+    - methods/stripping_chrono_potentiometry.md
   - 🔗 Source code: https://github.com/palmsens/palmsens_sdk
   - 🔗 Issues: https://github.com/palmsens/palmsens_sdk/issues
 

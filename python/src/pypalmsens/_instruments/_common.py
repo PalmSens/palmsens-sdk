@@ -4,11 +4,12 @@ import asyncio
 import warnings
 from collections.abc import Sequence
 from dataclasses import dataclass, field
+from functools import partial
 from math import floor
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar
 
+import System
 from PalmSens.Comm import enumDeviceType
-from System import Action
 from typing_extensions import override
 
 from .. import __sdk_version__
@@ -24,21 +25,28 @@ class Callback(Protocol):
     def __call__(self, new_data: Sequence[dict[str, Any]]): ...
 
 
-def create_future(clr_task):
+T = TypeVar('T')
+
+
+def create_future(clr_task: System.Task[T]) -> asyncio.Future[T]:
     loop = asyncio.get_running_loop()
     future = loop.create_future()
-    callback = Action(lambda: on_completion(future, loop, clr_task))
+    callback = System.Action(partial(on_completion, future, loop, clr_task))
 
     clr_task.GetAwaiter().OnCompleted(callback)
     return future
 
 
-def on_completion(future, loop, task):
+def on_completion(
+    future: asyncio.Future[T],
+    loop: asyncio.AbstractEventLoop,
+    task: System.Task[T],
+) -> None:
     if task.IsFaulted:
         clr_error = task.Exception.GetBaseException()
-        loop.call_soon_threadsafe(lambda: future.set_exception(clr_error))
+        _ = loop.call_soon_threadsafe(future.set_exception, clr_error)
     else:
-        loop.call_soon_threadsafe(lambda: future.set_result(task.GetAwaiter().GetResult()))
+        _ = loop.call_soon_threadsafe(future.set_result, task.GetAwaiter().GetResult())
 
 
 def firmware_warning(capabilities: DeviceCapabilities, /) -> None:

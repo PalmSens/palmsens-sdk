@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import sys
+import asyncio
 import warnings
 from contextlib import contextmanager
 from time import sleep
-from typing import Any, Generator
+from typing import Iterator
 
 import clr
 import PalmSens
@@ -16,22 +16,11 @@ from typing_extensions import override
 
 from .._methods import CURRENT_RANGE, BaseTechnique
 from ..data import Measurement
-from ._common import Callback, Instrument, firmware_warning
-from .measurement_manager import MeasurementManager
+from ._common import Callback, Instrument, create_future, firmware_warning
+from .instrument_manager_async import discover_async
+from .measurement_manager_async import MeasurementManagerAsync
 
-WINDOWS = sys.platform == 'win32'
-LINUX = not WINDOWS
-
-if WINDOWS:
-    from PalmSens.Windows.Devices import (
-        BLEDevice,
-        BluetoothDevice,
-        FTDIDevice,
-        USBCDCDevice,
-        WinUSBDevice,
-    )
-else:
-    from PalmSens.Core.Linux.Comm.Devices import FTDIDevice, SerialPortDevice
+warnings.simplefilter('default')
 
 
 def discover(
@@ -67,62 +56,16 @@ def discover(
     discovered : list[Instrument]
         List of dataclasses with discovered instruments.
     """
-    args = [''] if WINDOWS else []
-    interfaces: dict[str, Any] = {}
-
-    if ftdi:
-        interfaces['ftdi'] = FTDIDevice
-
-    if WINDOWS:
-        if usbcdc:
-            interfaces['usbcdc'] = USBCDCDevice
-
-        if winusb:
-            interfaces['winusb'] = WinUSBDevice
-
-        if bluetooth:
-            interfaces['bluetooth'] = BluetoothDevice
-            interfaces['ble'] = BLEDevice
-
-    if LINUX:
-        if serial:
-            interfaces['serial'] = SerialPortDevice
-
-    instruments: list[Instrument] = []
-
-    for name, interface in interfaces.items():
-        try:
-            devices = interface.DiscoverDevices(*args)
-        except System.DllNotFoundException:
-            if ignore_errors:
-                continue
-
-            if name == 'ftdi':
-                msg = (
-                    'Cannot discover FTDI devices (missing driver).'
-                    '\nfor more information see: '
-                    'https://sdk.palmsens.com/python/latest/installation.html#ftdisetup'
-                    '\nSet `ftdi=False` to hide this message.'
-                )
-                warnings.warn(msg, stacklevel=2)
-                continue
-            raise
-
-        if WINDOWS:
-            devices = devices[0]
-
-        for device in devices:
-            instruments.append(
-                Instrument(
-                    id=device.ToString(),
-                    interface=name,
-                    device=device,
-                )
-            )
-
-    instruments.sort(key=lambda instrument: instrument.id)
-
-    return instruments
+    return asyncio.run(
+        discover_async(
+            ftdi=ftdi,
+            usbcdc=usbcdc,
+            winusb=winusb,
+            bluetooth=bluetooth,
+            serial=serial,
+            ignore_errors=ignore_errors,
+        )
+    )
 
 
 def connect(
@@ -246,7 +189,7 @@ class InstrumentManager:
         return int(self._comm.State) == CommManager.DeviceState.Measurement
 
     @contextmanager
-    def _lock(self) -> Generator[CommManager, Any, Any]:
+    def _lock(self) -> Iterator[CommManager]:
         self.ensure_connection()
 
         self._comm.ClientConnection.Semaphore.Wait()
@@ -276,15 +219,21 @@ class InstrumentManager:
         if self.is_connected():
             return
 
-        psinstrument = self.instrument.device
-        try:
-            psinstrument.Open()
-        except System.UnauthorizedAccessException as err:
-            raise ConnectionError(
-                f'Cannot open instrument connection (reason: {err.Message}). Check if the device is already in use.'
-            ) from err
+        async def _connect(psinstrument: PalmSens.Devices.Device) -> CommManager:
+            try:
+                await create_future(psinstrument.OpenAsync())
+            except System.UnauthorizedAccessException as err:
+                raise ConnectionError(
+                    f'Cannot open instrument connection (reason: {err.Message}). Check if the device is already in use.'
+                ) from err
 
-        self._comm = CommManager(psinstrument)
+            return await create_future(CommManager.CommManagerAsync(psinstrument))
+
+        # The comm manager needs to open async, because the measurement is handled async.
+        # Opening the comm manager in async sets some handlers in ClientConnection
+        # that are sync or async specific. This affects the measurement,
+        # receive status, and device state change events.
+        self._comm = asyncio.run(_connect(self.instrument.device))
 
         firmware_warning(self._comm.Capabilities)
 
@@ -404,9 +353,11 @@ class InstrumentManager:
 
         self.validate_method(psmethod)
 
-        measurement_manager = MeasurementManager(comm=self._comm)
+        # note that the comm manager must be opened async so it sets the
+        # correct async event handlers
+        measurement_manager = MeasurementManagerAsync(comm=self._comm)
 
-        return measurement_manager.measure(psmethod, callback=callback)
+        return asyncio.run(measurement_manager.measure(psmethod, callback=callback))
 
     def wait_digital_trigger(self, wait_for_high: bool):
         """Wait for digital trigger.

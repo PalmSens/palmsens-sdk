@@ -4,7 +4,7 @@ import asyncio
 import sys
 import warnings
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Coroutine
+from typing import TYPE_CHECKING, Any, Coroutine
 
 import clr
 import PalmSens
@@ -12,7 +12,7 @@ import System
 from PalmSens import Method as PSMethod
 from PalmSens import MuxModel
 from PalmSens.Comm import CommManager, MuxType
-from typing_extensions import override
+from typing_extensions import AsyncIterator, override
 
 from .._methods import CURRENT_RANGE, BaseTechnique
 from ..data import Measurement
@@ -36,6 +36,8 @@ else:
 
 if TYPE_CHECKING:
     from PalmSens import Method as PSMethod
+
+warnings.simplefilter('default')
 
 
 async def discover_async(
@@ -95,7 +97,9 @@ async def discover_async(
 
     for name, interface in interfaces.items():
         try:
-            devices = await create_future(interface.DiscoverDevicesAsync())
+            devices: list[PalmSens.Devices.Device] = await create_future(
+                interface.DiscoverDevicesAsync()
+            )
         except System.DllNotFoundException:
             if ignore_errors:
                 continue
@@ -246,7 +250,7 @@ class InstrumentManagerAsync:
         return int(self._comm.State) == CommManager.DeviceState.Measurement
 
     @asynccontextmanager
-    async def _lock(self) -> AsyncGenerator[CommManager, Any]:
+    async def _lock(self) -> AsyncIterator[CommManager]:
         self.ensure_connection()
 
         await create_future(self._comm.ClientConnection.Semaphore.WaitAsync())
@@ -330,7 +334,7 @@ class InstrumentManagerAsync:
             Current in µA.
         """
         async with self._lock():
-            current = await create_future(self._comm.GetCurrentAsync())
+            current: float = await create_future(self._comm.GetCurrentAsync())
 
         return current
 
@@ -344,7 +348,7 @@ class InstrumentManagerAsync:
         """
 
         async with self._lock():
-            potential = await create_future(self._comm.GetPotentialAsync())  # in V
+            potential: float = await create_future(self._comm.GetPotentialAsync())
 
         return potential
 
@@ -357,7 +361,9 @@ class InstrumentManagerAsync:
             Instrument serial.
         """
         async with self._lock():
-            serial = await create_future(self._comm.GetDeviceSerialAsync())
+            serial: PalmSens.Comm.DeviceSerialV3 = await create_future(
+                self._comm.GetDeviceSerialAsync()
+            )
 
         return serial.ToString()
 

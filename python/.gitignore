@@ -211,3 +211,4 @@ pdocs-html
 pythonnet-stub-generator
 tmp
 docs/site
+typings/

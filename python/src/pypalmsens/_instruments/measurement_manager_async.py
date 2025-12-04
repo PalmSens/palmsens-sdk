@@ -174,7 +174,7 @@ class MeasurementManagerAsync:
         assert self.last_measurement
         return Measurement(psmeasurement=self.last_measurement)
 
-    def begin_measurement_callback(self, sender, args) -> Task:
+    def begin_measurement_callback(self, sender, args) -> Task.CompletedTask:
         """Called when the measurement begins."""
 
         def func(measurement: PSMeasurement):
@@ -184,7 +184,7 @@ class MeasurementManagerAsync:
         _ = self.loop.call_soon_threadsafe(func, args.NewMeasurement)
         return Task.CompletedTask
 
-    def end_measurement_callback(self, sender, args) -> Task:
+    def end_measurement_callback(self, sender, args) -> Task.CompletedTask:
         """Called when the measurement ends."""
         _ = self.loop.call_soon_threadsafe(self.end_measurement_event.set)
         return Task.CompletedTask

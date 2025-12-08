@@ -21,6 +21,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\PalmSens.Core.Simplified.Android\PalmSens.Core.Simplified.Android.csproj" Condition="'$(TargetFramework)'=='net9.0-android'" />
+	  <ProjectReference Include="..\PalmSens.Core.Simplified.iOS\PalmSens.Core.Simplified.iOS.csproj" Condition="'$(TargetFramework)'=='net9.0-ios'" />
 	  <ProjectReference Include="..\PalmSens.Core.Simplified.WinUi\PalmSens.Core.Simplified.WinUi.csproj" Condition="'$(TargetFramework)'=='net9.0-windows10.0.19041.0'" />
 	  <ProjectReference Include="..\PalmSens.Core.Simplified\PalmSens.Core.Simplified.csproj" />
 	</ItemGroup>

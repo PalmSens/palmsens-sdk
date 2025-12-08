@@ -26,7 +26,7 @@ namespace PalmSensPeakDetection
             InitializeComponent();
             BindingContext = this;
 
-            psCommSimple.Initialize();  // This needs to be called after the main page has been initialized
+            psCommSimple.Initialize(this);  // This needs to be called after the main page has been initialized
             this._psCommSimple = psCommSimple;
 
             _psCommSimple.StateChanged += OnStateChanged;

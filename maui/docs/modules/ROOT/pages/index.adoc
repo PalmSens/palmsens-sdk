@@ -17,9 +17,9 @@ https://github.com/PalmSens/PalmSens_SDK/releases[Click here to download the lat
 
 Supported platforms:
 
-* Windows
-* Android
-// * IOS
+* Windows (USB)
+* Android (USB, Bluetooth, BLE)
+* IOS (BLE)
 // * MacOS
 
 == Contents
@@ -30,6 +30,7 @@ These projects contain a simplified open source wrapper for the xref:start:ROOT:
 * `PalmSens.Core.Simplified.MAUI`
 * `PalmSens.Core.Simplified.Android`
 * `PalmSens.Core.Simplified.WinUI`
+* `PalmSens.Core.Simplified.iOS`
 
 The simplified wrappers give you quick and easy access to all the basic functions of the PalmSens/EmStat devices and automatically handles most potential threading issues for you:
 

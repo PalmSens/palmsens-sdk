@@ -16,6 +16,6 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="PalmSens.Core" Version="5.12.1610" />
+		<PackageReference Include="PalmSens.Core" Version="5.12.1624" />
 	</ItemGroup>
 </Project>

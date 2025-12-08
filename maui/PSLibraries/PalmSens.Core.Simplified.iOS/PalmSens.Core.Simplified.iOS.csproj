@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net9.0-ios</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>true</ImplicitUsings>
+
+		<!--
+      Enable trim analyzers for class libraries.
+      To learn more, see: https://learn.microsoft.com/dotnet/core/deploying/trimming/prepare-libraries-for-trimming
+    -->
+		<IsTrimmable>true</IsTrimmable>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		<FileVersion>5.10.4324.0</FileVersion>
+		<AssemblyVersion>5.10.4324.0</AssemblyVersion>
+		<Company>PalmSens BV</Company>
+		<Copyright>2021-2022 PalmSens BV</Copyright>
+	</PropertyGroup>
+	<ItemGroup>
+		<AtlasTexture Remove="Properties\**" />
+		<Compile Remove="Properties\**" />
+		<CoreMLModel Remove="Properties\**" />
+		<EmbeddedResource Remove="Properties\**" />
+		<ImageAsset Remove="Properties\**" />
+		<InterfaceDefinition Remove="Properties\**" />
+		<Metal Remove="Properties\**" />
+		<None Remove="Properties\**" />
+		<SceneKitAsset Remove="Properties\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="PalmSens.Core.iOS" Version="5.12.1626" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\PalmSens.Core.Simplified\PalmSens.Core.Simplified.csproj" />
+	</ItemGroup>
+</Project>

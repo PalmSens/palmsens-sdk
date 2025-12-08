@@ -1,5 +1,7 @@
 ﻿#if ANDROID
 using PalmSens.Core.Simplified.Android;
+#elif IOS
+using PalmSens.Core.Simplified.iOS;
 #elif WINDOWS
 using PalmSens.Core.Simplified.WinUi;
 #endif
@@ -17,7 +19,7 @@ namespace PalmSens.Core.Simplified.MAUI
 #if ANDROID
             return new PSCommSimpleMaui(new DeviceHandler(), new MauiPlatformInvoker());
 #elif IOS
-            return null;
+            return new PSCommSimpleMaui(new DeviceHandler(), new MauiPlatformInvoker());
 #elif WINDOWS
             return new PSCommSimpleMaui(new DeviceHandler(), new MauiPlatformInvoker());
 #endif
@@ -38,7 +40,7 @@ namespace PalmSens.Core.Simplified.MAUI
         /// Initialize the PalmSens SDK for MAUI. This method must be called before using any other functionality of the SDK.
         /// This method requires the MainPage to be have been initialized first.
         /// </summary>
-        public async void Initialize()
+        public async void Initialize(Page page)
         {
             if (_initialized)
             {
@@ -52,18 +54,18 @@ namespace PalmSens.Core.Simplified.MAUI
 #if ANDROID
             PalmSens.Core.Android.Utils.CoreDependencies.Init(Platform.CurrentActivity);
 #elif IOS
-            PowerManagement.Init(() => { }, () => { }); //TODO implement power management sleep prevention during measurement on iOS
+            PalmSens.Core.iOS.CoreDependencies.Init();
 #elif WINDOWS
             //TODO implement power management sleep prevention during measurement for WinUi?
             PalmSens.Windows.CoreDependencies.Init();
 #endif
 
 #if ANDROID || IOS
-            await RequestBluetoothPermissions();
+            await RequestBluetoothPermissions(page);
 #endif
         }
 
-        private async Task RequestBluetoothPermissions()
+        private async Task RequestBluetoothPermissions(Page page)
         {
             PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.Bluetooth>();
 
@@ -74,13 +76,13 @@ namespace PalmSens.Core.Simplified.MAUI
             {
                 // Prompt the user to turn on in settings
                 // On iOS once a permission has been denied it may not be requested again from the application
-                throw new NotImplementedException();
+                await page.DisplayAlert("Bluetooth Permission", "Please enable Bluetooth in settings", "OK");
             }
 
             if (Permissions.ShouldShowRationale<Permissions.Bluetooth>())
             {
                 // Prompt the user with additional information as to why the permission is needed
-                throw new NotImplementedException();
+                await page.DisplayAlert("Bluetooth Permission", "This app requires Bluetooth access to function properly.", "OK");
             }
 
             await Permissions.RequestAsync<Permissions.Bluetooth>();

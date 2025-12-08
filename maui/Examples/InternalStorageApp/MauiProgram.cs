@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using PalmSens.Core.Simplified;
 using static PalmSens.Core.Simplified.MAUI.PalmSensServiceCollectionExtensions;
 
 namespace PalmSensInternalStorage

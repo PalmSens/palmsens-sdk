@@ -24,7 +24,7 @@ namespace PalmSensInternalStorage
             InitializeComponent();
             BindingContext = this;
 
-            psCommSimple.Initialize();  // This needs to be called after the main page has been initialized
+            psCommSimple.Initialize(this);  // This needs to be called after the main page has been initialized
             this._psCommSimple = psCommSimple;
 
             _contents = new Dictionary<string, IInternalStorageItem>();
@@ -139,7 +139,7 @@ namespace PalmSensInternalStorage
             ListFilesBtn.IsEnabled = true;
         }
 
-        private async void ListFiles()
+        private void ListFiles()
         {
             Log.Add("Reading contents from: Root");
 

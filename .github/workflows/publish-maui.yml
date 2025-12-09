@@ -16,6 +16,28 @@ jobs:
       with:
         persist-credentials: false
 
+    - name: Set configuration
+      run: |
+        git config --global user.name "${GITHUB_ACTOR}"
+        git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+
+    - name: Get tag (strip maui prefix)
+      run: |
+        echo "TAG=${GITHUB_REF_NAME#maui-}" >> $GITHUB_ENV
+
+    - name: Bump version to new tag
+      run: |
+        cd maui
+        uvx bump-my-version bump --new-version ${{ env.TAG }} patch
+        git commit -am "Bump version to: ${{ env.TAG }}"
+
+    - name: Push back changes to main and tag
+      run: |
+        git tag --force $GITHUB_REF_NAME HEAD
+        git push --force --tags
+        git switch -C main
+        git push --set-upstream -f origin main
+
     - name: Zip maui directory
       run: |
         cd maui

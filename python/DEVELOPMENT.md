@@ -101,7 +101,7 @@ python build_python_api_docs.py
 
 ## Making a release
 
-PyPalmSens uses [SemVer](http://semver.org/) versioning scheme.
+PyPalmSens uses the [SemVer](http://semver.org/) versioning scheme.
 
 1. Bump the version (`major`/`minor`/`patch` as needed), see [bump-my-version](https://github.com/callowayproject/bump-my-version).
 

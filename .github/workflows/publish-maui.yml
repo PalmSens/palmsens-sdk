@@ -9,14 +9,11 @@ on:
 jobs:
   bump_version:
     permissions: write-all
-    name: Add maui zip to release
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/maui-')  # only bump on tag pushes
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        persist-credentials: false
 
     - name: Set up Python
       uses: actions/setup-python@v5

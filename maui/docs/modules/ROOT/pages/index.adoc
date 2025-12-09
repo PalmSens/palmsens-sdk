@@ -22,6 +22,8 @@ Supported platforms:
 * IOS (BLE)
 // * MacOS
 
+image::device_shots.svg[Device shot, width=80%]
+
 == Contents
 
 These projects contain a simplified open source wrapper for the xref:start:ROOT:core.adoc[`PalmSens.Core`] libraries.

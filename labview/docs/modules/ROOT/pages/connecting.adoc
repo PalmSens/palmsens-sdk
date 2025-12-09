@@ -39,7 +39,7 @@ To get a list of all available/connected instruments drag and drop the menu:List
 image::list_instruments_1.png[Discover instruments]
 
 The result of the `ListInstruments` function is an array of strings.
-For this example, we have added an indicator to show the results.
+For this example, an indicator shows the results.
 
 [cols=".^a,.^a", frame=none, grid=none]
 |===

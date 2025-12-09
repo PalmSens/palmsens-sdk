@@ -18,13 +18,13 @@ These are the same libraries that power the https://www.palmsens.com/software/ps
  Measurement(title=Impedance Spectroscopy [2], timestamp=12-Jul-17 14:48:42, device=PalmSens4)]
 ----
 
-A `.pssession` file always contains a list of measurements, so we pick the first (DPV) one:
+A `.pssession` file always contains a list of measurements, so you can pick the first (DPV) one:
 
 ----
 >>> measurement = measurements[0]
 ----
 
-From there we can query the device info:
+From there you can query the device info:
 
 ----
 >>> measurement.device
@@ -60,7 +60,7 @@ A measurement can contain multiple curves, this measurement has only 1 with 219 
 >>> curve = curves[0]
 ----
 
-From here we can query some Curve metadata:
+From here you can query some Curve metadata:
 
 ----
 >>> curve.title
@@ -86,7 +86,7 @@ This results in this plot:
 
 image::dpv_figure_1.png[Image of DPV plot]
 
-The data has a single peak stored in the measurement. We can retrieve it using:
+The data has a single peak stored in the measurement. You can retrieve it using:
 
 ----
 >>> curve.peaks
@@ -94,7 +94,7 @@ The data has a single peak stored in the measurement. We can retrieve it using:
 [Peak(x=0.179102 V, y=3.42442 µA, y_offset=0.26371 µA, area=0.818265 VµA, width=0.221563 V)]
 ----
 
-To find the peak ourselves, use `.find_peaks()`:
+To find the peak, use `.find_peaks()`:
 
 ----
 >>> peaks = curve.find_peaks()
@@ -340,10 +340,10 @@ For more information, see the xref:{api-data}#pypalmsens.data.DataArray[DataArra
 
 == EISData
 
-We can retrieve EIS data from an EIS measurement.
+You can retrieve EIS data from an EIS measurement.
 
 Note that the EIS measurement can be multichannel, so `.eisdata` returns a list.
-If you don't use a multiplexer, we can pick the first (and only) item from the list.
+If you don't use a multiplexer, you can pick the first (and only) item from the list.
 
 ----
 >>> eis_measurement = measurements[2]
@@ -371,7 +371,7 @@ The EISData object can be queried for metadata:
 5
 ----
 
-If previously fitted a circuit model in PSTrace, we can retrieve the CDC values:
+If you previously fitted a circuit model in PSTrace, you can retrieve the CDC values:
 
 ----
 >>> eis_data.cdc
@@ -403,7 +403,7 @@ The raw data can be accessed via `.dataset`. This results in a <<DataSet>> objec
 DataSet(['Current', 'Potential', 'Time', 'Frequency', 'ZRe', 'ZIm', 'Z', 'Phase', 'Iac', 'Unspecified_1', 'Unspecified_2', 'Unspecified_3', 'Unspecified_4', 'YRe', 'YIm', 'Y', 'Cs', 'CsRe', 'CsIm'])
 ----
 
-Likewise, we can retrieve all the arrays:
+Likewise, you can retrieve all the arrays:
 
 ----
 >>> eis_data.arrays()

@@ -91,7 +91,7 @@ The `SimpleCurve` class supports other basic operations such as:
 
 == Peak and level detection
 
-The `SimpleCurve` class contains functions for detecting peaks and levels using our algorithms.
+The `SimpleCurve` class contains functions for detecting peaks and levels.
 
 There are three peak detection algorithms.
 

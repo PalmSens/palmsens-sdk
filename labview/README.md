@@ -30,7 +30,7 @@ classes, controls and Vis in the PalmSens folder:
 
 - **PalmSens LabVIEW class**:
 
-    Class that implements the basic features required to use our instruments
+    This class implements the basic features required to use PalmSens instruments
     in LabVIEW.
 
     * `Initialise`: Initialises the class and .NET libraries.

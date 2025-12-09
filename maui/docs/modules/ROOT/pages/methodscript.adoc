@@ -1,6 +1,6 @@
 = MethodSCRIPT™
 
-The MethodSCRIPT™ scripting language is designed to integrate our OEM potentiostat (modules) effortlessly in your hardware setup or product.
+The MethodSCRIPT™ scripting language is designed to integrate PalmSens OEM potentiostat (modules) effortlessly in your hardware setup or product.
 
 MethodSCRIPT™ allows developers to program a human-readable script directly into the potentiostat module by means of a serial (TTL) connection.
 The simple script language allows for running all supported electrochemical techniques and makes it easy to combine different measurements and other tasks.

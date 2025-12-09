@@ -1,4 +1,4 @@
-= Installation
+= Getting Started
 :experimental: true
 
 Download the latest release from https://github.com/PalmSens/PalmSens_SDK/releases[here].
@@ -46,3 +46,5 @@ You can use `net9.0` as the target .NET runtime.
 3. Rename the `BasicExampleApp.csproj` file to `MyNewApp.csproj`
 4. Right click Solution > Add > Existing Project, select `.csproj` file
 5. Update namespace (find-replace), `BasicExampleApp` -> `MyNewApp`
+
+== Platform notices

@@ -8,7 +8,7 @@
 The following chapter details how to connect to a device, read data from the device, manually controlling the potential, run measurements on the device and finally how to properly close a connection to a device.
 
 The xref:{api}[`pypalmsens`] top-level module contains all the relevant functions and classes for discovering and controlling instruments.
-The xref:{api-inst}#pypalmsens.InstrumentManager[`InstrumentManager()`] and xref:{api-inst}#pypalmsens.InstrumentManagerAsync[`InstrumentManagerAsync()`] class are wrappers around our .NET libraries which make it possible to connect to and control PalmSens instruments from Python.
+The xref:{api-inst}#pypalmsens.InstrumentManager[`InstrumentManager()`] and xref:{api-inst}#pypalmsens.InstrumentManagerAsync[`InstrumentManagerAsync()`] class are wrappers around the PalmSens .NET libraries to connect to and control your instrument from Python.
 
 [CAUTION]
 .Mains Frequency
@@ -185,9 +185,9 @@ Impedimetric techniques::
 
 == MethodSCRIPT™
 
-The MethodSCRIPT™ scripting language is designed to integrate our OEM potentiostat (modules) effortlessly in your hardware setup or product.
+The MethodSCRIPT™ scripting language is designed to integrate PalmSens OEM potentiostat (modules) effortlessly in your hardware setup or product.
 
-MethodSCRIPT™ allows developers to program a human-readable script directly into the potentiostat module by means of a serial (TTL) connection.
+MethodSCRIPT™ allows you to program a human-readable script directly into the potentiostat module by means of a serial (TTL) connection.
 The simple script language allows for running all supported electrochemical techniques and makes it easy to combine different measurements and other tasks.
 
 More script features include:

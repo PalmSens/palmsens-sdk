@@ -12,14 +12,15 @@ Take full control of your PalmSens instruments and modules with the PalmSens Sof
 
 SDKs are available for the ecosystems below. See the links for installation instructions, code documentation, and examples.
 
-- xref:python:ROOT:index.adoc[]
-- xref:matlab:ROOT:index.adoc[]
-- xref:labview:ROOT:index.adoc[]
-- xref:maui:ROOT:index.adoc[]
+- xref:python:ROOT:index.adoc[PyPalmSens] (Python SDK)
+- xref:matlab:ROOT:index.adoc[Matlab SDK]
+- xref:labview:ROOT:index.adoc[Labview SDK]
+- xref:maui:ROOT:index.adoc[.NET MAUI SDK]
 
-== Which SDK should I use?
+== Which SDK should you use?
 
-For new projects, we recommend using xref:python:ROOT:index.adoc[PyPalmSens] for data science and prototyping projects, and the xref:maui:ROOT:index.adoc[.NET MAUI SDK] for native, cross-platform application development targeting Windows, Android, and iOS.
+For new projects, we recommend using xref:python:ROOT:index.adoc[PyPalmSens] for research, data analysis and prototyping, and the xref:maui:ROOT:index.adoc[.NET MAUI SDK] for native, cross-platform application development targeting Windows, Android, and iOS.
 Both of these SDKs are actively maintained and will continue to receive new features and updates.
 
-For existing codebases, we support the xref:matlab:ROOT:index.adoc[Matlab SDK] and xref:labview:ROOT:index.adoc[LabView SDK]. These SDKs will continue to receive occasional bug fixes but are no longer under active development.
+For existing codebases, we support the xref:matlab:ROOT:index.adoc[Matlab SDK] and xref:labview:ROOT:index.adoc[LabView SDK].
+These SDKs will continue to receive occasional bug fixes but are no longer under active development.

@@ -54,7 +54,7 @@ Measurement(title=Chronoamperometry, timestamp=17-Nov-25 13:42:16, device=EmStat
 
 [TIP]
 ====
-We shorten the imported name from `pypalmsens` to `ps`. This is a widely adopted convention for better readability of code.
+Shorten the imported name from `pypalmsens` to `ps`. This widely adopted convention helps with better readability of code.
 ====
 
 The following example shows how to discover devices and manually read out the current.

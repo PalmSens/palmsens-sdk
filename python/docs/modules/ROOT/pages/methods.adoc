@@ -133,7 +133,7 @@ CurrentRange(
 )
 ----
 
-There are two ways to modify the current ranges, for example, if we want so set the start current at 10 μA.
+There are two ways to modify the current ranges, for example, if you want so set the start current at 10 μA.
 
 1. By passing current ranges as an argument during initialization
 +
@@ -151,7 +151,7 @@ CurrentRange(
     start=<CURRENT_RANGE.cr_10_uA: 5>, # <1>
 )
 ----
-<1> We only gave the start value, so the min/max are populated with the defaults.
+<1> Only the start value was set, so the min/max are populated with the defaults.
 
 2. By updating the attributes (after initialization)
 +

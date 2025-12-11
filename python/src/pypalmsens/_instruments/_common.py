@@ -85,7 +85,10 @@ def firmware_warning(capabilities: DeviceCapabilities, /) -> None:
             (
                 f'Device firmware: {firmware_version} on {device_type} '
                 f'is not supported by SDK ({__sdk_version__}), '
-                f'minimum required firmware version: {min_version}'
+                f'minimum required firmware version: {min_version}.\n\n'
+                'Update the firmware using a recent version of PSTrace. '
+                'See chapter "Updating firmware" in the user manual: '
+                'https://www.palmsens.com/knowledgebase-article/pstrace-user-manual/'
             ),
             UserWarning,
             stacklevel=2,

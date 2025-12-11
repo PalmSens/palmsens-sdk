@@ -40,7 +40,11 @@ class BaseTechnique(Protocol):
         """Structure technique instance from dict.
 
         Opposite of `.to_dict()`"""
-        return cattrs.structure(obj, cls)
+        converter = cattrs.Converter(
+            forbid_extra_keys=True,
+            detailed_validation=False,
+        )
+        return converter.structure(obj, cls)
 
     @classmethod
     def from_method_id(cls, id: str) -> BaseTechnique:

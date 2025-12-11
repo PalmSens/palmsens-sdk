@@ -4,6 +4,7 @@ import logging
 import tempfile
 from pathlib import Path
 
+import cattrs
 import pytest
 
 import pypalmsens as ps
@@ -52,6 +53,12 @@ def test_read_potential(manager):
     val = manager.read_potential()
     assert abs(val) < 0.05
     manager.set_cell(False)
+
+
+def test_forbid_extra_keys():
+    with pytest.raises(cattrs.ForbiddenExtraKeysError):
+        params = {'foo': 123, 'bar': 678}
+        _ = ps.CyclicVoltammetry.from_dict(params)
 
 
 class CV:
@@ -665,7 +672,7 @@ class EIS_pot_fixed:
         'min_frequency': 1e3,
         'scan_type': 'potential',
         'frequency_type': 'fixed',
-        'start_potential': 0.0,
+        'begin_potential': 0.0,
         'end_potential': -0.1,
         'step_potential': 0.1,
     }
@@ -690,7 +697,7 @@ class EIS_pot_scan:
         'min_frequency': 1e3,
         'scan_type': 'potential',
         'frequency_type': 'scan',
-        'start_potential': 0.0,
+        'begin_potential': 0.0,
         'end_potential': -0.1,
         'step_potential': 0.1,
     }

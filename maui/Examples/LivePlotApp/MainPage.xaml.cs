@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using PalmSens.Core.Simplified.MAUI;
 using Device = PalmSens.Devices.Device;
 
-namespace PalmSensLivePlot
+namespace LivePlotApp
 {
     public partial class MainPage : ContentPage
     {

@@ -1,8 +1,8 @@
 ﻿<maui:MauiWinUIApplication
-    x:Class="PalmSensInternalStorage.WinUI.App"
+    x:Class="InternalStorageApp.WinUI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:maui="using:Microsoft.Maui"
-    xmlns:local="using:PalmSensInternalStorage.WinUI">
+    xmlns:local="using:InternalStorageApp.WinUI">
 
 </maui:MauiWinUIApplication>

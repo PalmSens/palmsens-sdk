@@ -1,4 +1,4 @@
-﻿namespace PalmSensEISFIt
+﻿namespace EISFitApp
 {
     public partial class App : Application
     {

@@ -51,7 +51,7 @@ async def discover_async(
     """Discover instruments.
 
     For a list of device interfaces, see:
-        https://sdk.palmsens.com/python/latest/#compatibility
+        https://sdk.palmsens.com/python/latest/installation.html#compatibility
 
     Parameters
     ----------

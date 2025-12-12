@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace PalmSensPeakDetection
+namespace PeakDetectionApp
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

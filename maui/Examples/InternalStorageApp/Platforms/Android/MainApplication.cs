@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace PalmSensInternalStorage
+namespace InternalStorageApp
 {
     [Application]
     public class MainApplication : MauiApplication

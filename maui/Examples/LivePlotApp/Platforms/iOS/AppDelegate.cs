@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace PalmSensLivePlot
+namespace LivePlotApp
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

@@ -2,8 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sdkplot="clr-namespace:SDKPlot.Maui;assembly=SDKPlot.Maui"
-             xmlns:local="clr-namespace:PalmSensPeakDetection"
-             x:Class="PalmSensPeakDetection.MainPage"
+             xmlns:local="clr-namespace:PeakDetectionApp"
+             x:Class="PeakDetectionApp.MainPage"
              x:DataType="local:MainPage">
 
     <ScrollView>
@@ -12,7 +12,7 @@
             Spacing="15">
 
             <Label
-                Text="Peak Detection example"
+                Text="Peak Detection App"
                 Style="{StaticResource Headline}"
                 SemanticProperties.HeadingLevel="Level1" />
 

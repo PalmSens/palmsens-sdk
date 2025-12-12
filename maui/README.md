@@ -25,8 +25,8 @@ For more information, see the [documentation](https://sdk.palmsens.com/maui/late
 
 ## Making a new app
 
-1. Copy the directory you want to start with, e.g. `BasicExampleApp`
+1. Copy the directory you want to start with, e.g. `MeasureApp`
 2. Rename the directory, e.g. `MyNewApp`
-3. Rename the `BasicExampleApp.csproj` file to `MyNewApp.csproj`
-4. Right click Solution > Add > Existing Project, select `.csproj` file
-5. Update namespace (find-replace), `BasicExampleApp` -> `MyNewApp`
+3. Rename the `MeasureApp.csproj` file to `MyNewApp.csproj`
+4. Right click Solution > Add > Existing Project, select `MyNewApp.csproj` file
+5. Update namespace (find-replace), `MeasureApp` -> `MyNewApp`

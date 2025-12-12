@@ -1,0 +1,49 @@
+= Reference
+
+This is a list of the functions and classes that are available in the Matlab SDK.
+
+== Functions
+
+These wrap some of the classes and functions in the xref:start:ROOT:techniques.adoc[.NET SDK] and make them accessible through Matlab.
+Look at the function docstrings for usage and parameter descriptions.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/GetConnectedDevices.m[`GetConnectedDevices.m`]::
+Returns a list of connected PalmSens and Emstat devices.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/LoadMethod.m[`LoadMethod.m`]::
+Loads a method from a `.psmethod` file.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/LoadPSSDK.m[`LoadPSSDK.m`]::
+Loads the PalmSens Matlab SDK.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/LoadSession.m[`LoadSession.m`]::
+Load (a) measurement(s) from a `.pssession` file.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MultiChannelMeasurementLoopHelper.m[`MultiChannelMeasurementLoopHelper.m`]::
+Waits for multiple instruments to finish their measurements
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/NewMethod.m[`NewMethod.m`]::
+Creates a new method.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/OpenConnection.m[`OpenConnection.m`]::
+Opens a connection to a device.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/SaveMethod.m[`SaveMethod.m`]::
+Saves a method.
+
+== Classes
+
+These wrap some of the Palmsens xref:start:ROOT:techniques.adoc[.NET internal data structures] to make them more accessible in Matlab.
+Look at the class and method docstrings for further information on the interfaces.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/EquivalentCircuitFit.m[`EquivalentCircuitFit.m`]::
+Handles the equivalent circuit fitting using the PalmSens.Core.Matlab.dll
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/Measurement.m[`Measurement.m`]::
+Returns data measured by a device as a variable, message in the command window and/or a plot in a figure.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MeasurementGUI.m[`MeasurementGUI.m`]::
+Version of the Measurement.m class that can be used with a Matlab GUIDE user interface.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MultiChannelMeasurement.m[`MultiChannelMeasurement.m`]::
+Used for running when connected to multiple instruments simultaneaously, please refer to the `MultiChannelMeasurementLoopExample`

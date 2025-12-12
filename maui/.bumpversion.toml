@@ -5,3 +5,8 @@ current_version = "1.2.3"
 filename = "docs/antora.yml"
 search = "version: '{current_version}'"
 replace = "version: '{new_version}'"
+
+[[tool.bumpversion.files]]
+filename = "/docs/modules/ROOT/nav.adoc"
+search = "maui-{current_version}"
+replace = "maui-{new_version}"

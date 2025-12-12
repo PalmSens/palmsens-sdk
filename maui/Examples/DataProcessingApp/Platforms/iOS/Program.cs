@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace DataProcessingExample
+namespace DataProcessingApp
 {
     public class Program
     {

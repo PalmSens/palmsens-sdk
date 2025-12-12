@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using PalmSens.Core.Simplified.MAUI;
 using Device = PalmSens.Devices.Device;
 
-namespace PalmSensInternalStorage
+namespace InternalStorageApp
 {
     public partial class MainPage : ContentPage
     {

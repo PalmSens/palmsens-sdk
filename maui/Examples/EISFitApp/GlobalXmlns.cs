@@ -1,2 +1,2 @@
-[assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "PalmSensEISFIt")]
-[assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "PalmSensEISFIt.Pages")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "EISFitApp")]
+[assembly: XmlnsDefinition("http://schemas.microsoft.com/dotnet/maui/global", "EISFitApp.Pages")]

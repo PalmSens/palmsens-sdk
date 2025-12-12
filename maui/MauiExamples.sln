@@ -7,23 +7,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalmSens.Core.Simplified", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalmSens.Core.Simplified.MAUI", "PSLibraries\PalmSens.Core.Simplified.MAUI\PalmSens.Core.Simplified.MAUI.csproj", "{D9949105-5E98-4C82-1A0E-8E92C0DEDC7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicExample", "Examples\BasicExampleApp\BasicExample.csproj", "{F6A6A78F-921C-9FB6-DFD1-D26375539BA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeasureApp", "Examples\MeasureApp\MeasureApp.csproj", "{F6A6A78F-921C-9FB6-DFD1-D26375539BA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiPotAuxExample", "Examples\BiPotAuxExampleApp\BiPotAuxExample.csproj", "{6D1CA250-949B-72B2-8828-C97CA2A311F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiPotAuxApp", "Examples\BiPotAuxApp\BiPotAuxApp.csproj", "{6D1CA250-949B-72B2-8828-C97CA2A311F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataProcessingExample", "Examples\DataProcessingApp\DataProcessingExample.csproj", "{5237E62B-CFF3-56D6-59C1-97FA5FDCB8AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataProcessingApp", "Examples\DataProcessingApp\DataProcessingApp.csproj", "{5237E62B-CFF3-56D6-59C1-97FA5FDCB8AB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDKPlot.Maui", "PSLibraries\SDKPlot.Maui\SDKPlot.Maui.csproj", "{DFDFD807-87C1-435E-A879-E9D43C2B944F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDKPlot.NET", "PSLibraries\SDKPlot\SDKPlot.NET.csproj", "{3D597950-312B-B4E3-920A-EE833FFC9D92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternalStorage", "Examples\InternalStorageApp\InternalStorage.csproj", "{77831193-C91A-D225-5EDD-E797F1BA5369}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternalStorageApp", "Examples\InternalStorageApp\InternalStorageApp.csproj", "{77831193-C91A-D225-5EDD-E797F1BA5369}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivePlot", "Examples\LivePlotApp\LivePlot.csproj", "{6B192B9C-A699-326B-E9A7-6394DA0D5E76}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivePlotApp", "Examples\LivePlotApp\LivePlotApp.csproj", "{6B192B9C-A699-326B-E9A7-6394DA0D5E76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeakDetection", "Examples\PeakDetectionApp\PeakDetection.csproj", "{F76669AA-B66E-24BF-09A4-DE69A8C1B355}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeakDetectionApp", "Examples\PeakDetectionApp\PeakDetectionApp.csproj", "{F76669AA-B66E-24BF-09A4-DE69A8C1B355}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EISFit", "Examples\EISFitApp\EISFit.csproj", "{27ECE1CA-0C13-6793-058B-54D640FB331E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EISFitApp", "Examples\EISFitApp\EISFitApp.csproj", "{27ECE1CA-0C13-6793-058B-54D640FB331E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalmSens.Core.Simplified.Android", "PSLibraries\PalmSens.Core.Simplified.Android\PalmSens.Core.Simplified.Android.csproj", "{290DD6B1-0E3D-0425-DE3F-29A757DA7E98}"
 EndProject

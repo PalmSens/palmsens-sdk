@@ -2,7 +2,7 @@ using System;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 
-namespace DataProcessingExample
+namespace DataProcessingApp
 {
     internal class Program : MauiApplication
     {

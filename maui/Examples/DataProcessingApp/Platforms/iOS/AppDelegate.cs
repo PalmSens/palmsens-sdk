@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace DataProcessingExample
+namespace DataProcessingApp
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

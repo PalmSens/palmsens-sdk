@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace PalmSensInternalStorage
+namespace InternalStorageApp
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

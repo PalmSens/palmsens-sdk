@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace PalmSensPeakDetection
+namespace PeakDetectionApp
 {
     [Application]
     public class MainApplication : MauiApplication

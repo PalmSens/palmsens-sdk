@@ -4,7 +4,7 @@ using PalmSens.Core.Simplified;
 using SkiaSharp.Views.Maui.Controls.Hosting;
 using static PalmSens.Core.Simplified.MAUI.PalmSensServiceCollectionExtensions;
 
-namespace PalmSensPeakDetection
+namespace PeakDetectionApp
 {
     public static class MauiProgram
     {

@@ -2,7 +2,7 @@ using System;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 
-namespace PalmSensPeakDetection
+namespace PeakDetectionApp
 {
     internal class Program : MauiApplication
     {

@@ -2,7 +2,7 @@ using System;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 
-namespace PalmSensLivePlot
+namespace LivePlotApp
 {
     internal class Program : MauiApplication
     {

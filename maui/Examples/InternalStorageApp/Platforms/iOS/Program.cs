@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace PalmSensInternalStorage
+namespace InternalStorageApp
 {
     public class Program
     {

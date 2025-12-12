@@ -4,6 +4,10 @@
 * xref:maui:ROOT:index.adoc[.NET MAUI]
 // * xref:projects.adoc[]
 
-.PalmSens .NET libraries
+* PalmSens .NET libraries
 ** xref:core.adoc[]
 ** xref:techniques.adoc[]
+
+* https://github.com/PalmSens/PalmSens_SDK[Source code ↗]
+* https://github.com/PalmSens/PalmSens_SDK/issues[Issues ↗]
+* https://github.com/PalmSens/PalmSens_SDK/releases[Releases ↗]

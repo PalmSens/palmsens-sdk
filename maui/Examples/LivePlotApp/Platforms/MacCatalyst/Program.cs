@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace PalmSensLivePlot
+namespace LivePlotApp
 {
     public class Program
     {

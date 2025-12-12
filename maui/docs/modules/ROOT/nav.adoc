@@ -1,4 +1,3 @@
-* xref:index.adoc[Overview]
 * xref:installation.adoc[]
 * xref:files.adoc[]
 * xref:data.adoc[]
@@ -6,3 +5,5 @@
 * xref:measuring.adoc[]
 * xref:methodscript.adoc[]
 * xref:examples.adoc[]
+* https://github.com/PalmSens/PalmSens_SDK/tree/main/maui[Source code ↗]
+* https://github.com/PalmSens/PalmSens_SDK/releases/tag/maui-1.2.3[Latest release ↗]

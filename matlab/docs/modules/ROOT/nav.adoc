@@ -1,1 +1,4 @@
-* xref:index.adoc[Overview]
+* xref:examples.adoc[]
+* xref:reference.adoc[]
+* https://github.com/PalmSens/PalmSens_SDK/tree/main/matlab[Source code ↗]
+* https://github.com/PalmSens/PalmSens_SDK/releases/tag/matlab-1.0.0[Latest release ↗]

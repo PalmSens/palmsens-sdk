@@ -26,7 +26,7 @@ pip install pypalmsens
   - https://learn.microsoft.com/en-us/dotnet/iot/deployment[Raspberry Pi and other single-board ARM computers]
   - https://learn.microsoft.com/en-us/dotnet/core/install/macos[MacOS]
 * Optional: https://ftdichip.com/drivers/d2xx-drivers/[FTDI d2xx drivers].
-  - For a list of devices with an FTDI chip, see the xref:index.adoc#compatibility[Compatibility table].
+  - For a list of devices with an FTDI chip, see the <<compatibility,Compatibility table>>.
   - For Raspberry Pi 4 or 5 you need the ARMv8 driver.
   - See xref:#ftdisetup[below] for how to set up your system for FTDI devices.
 
@@ -70,7 +70,7 @@ See https://github.com/PalmSens/PalmSens_SDK/issues/60[this issue] for an actual
 // ----
 
 To set up your system to work with devices using the https://ftdichip.com/[FTDI chip], you need to follow a few additional steps.
-To see if your device needs the FTDI drivers, see the xref:index.adoc#compatibility[Compatibility table].
+To see if your device needs the FTDI drivers, see the <<compatibility,Compatibility table>>.
 
 First, install the https://ftdichip.com/drivers/d2xx-drivers/[D2XX drivers].
 
@@ -180,3 +180,158 @@ pip install pypalmsens
 https://code.visualstudio.com/[VS Code] supports virtual environments. In combination with the Python, Python Debugger and Pylance extensions, VS code makes it easy to create virtual environments and load the python dependencies.
 
 See the https://code.visualstudio.com/docs/python/environments#_creating-environments[VSCode documentation] for how to set this up.
+
+[#compatibility]
+== Compatible devices and firmware
+
+The PalmSens SDK is based on PalmSens core version 5.12.
+
+The table below lists the minimum supported firmwares versions and required drivers.
+
+You can update the firmware using a recent version of PSTrace on a Windows PC
+See the chapter 'Updating firmware' in the https://www.palmsens.com/knowledgebase-article/pstrace-user-manual/[PSTrace user manual] for more information.
+
+[cols=",,,",options="header",]
+|===
+| Instrument | Firmware version | Windows drivers | Linux/MacOS drivers
+
+| Nexus
+| 1.100
+| palmsens_cdc.inf (optional) footnote:psdrivers[Drivers are installed with alongside the PSTrace desktop software or using https://github.com/PalmSens/PalmSens_SDK/releases/download/python-1.0.0/PalmSens.Drivers.exe[the driver installer].]
+| n/a footnote:linuxserial[The SDK communicates directly via the serial port. No drivers are necessary.]
+
+| Palmsens1
+| 4.4
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[See xref:installation.adoc#req-linux[the installation instructions] for more info.]
+
+| Palmsens2
+| 4.4
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[]
+
+| Palmsens3
+| 2.8
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[]
+
+| Palmsens4
+| 1.7
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| MultiPalmsens4
+| 1.7
+| Generic FTDI footnote:winftdi[Available from https://ftdichip.com/drivers/d2xx-drivers/]
+| Generic FTDI footnote:linuxftdi[]
+
+| EmStat1
+| 3.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[]
+
+| EmStat2
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[]
+
+| EmStat3
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[]
+
+| EmStat3+
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[]
+
+| MultiEmStat3
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[]
+
+| EmStat3 Blue
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[]
+
+| EmStat3+ Blue
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[]
+
+| EmStat3 Go
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[]
+
+| EmStat3+ Go
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+| Generic FTDI footnote:linuxftdi[]
+
+| EmStat4S
+| 1.307
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| MultiEmStat4
+| 1.307
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| EmStat4X
+| 1.307
+| palmsens_winusb.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| EmStat4R
+| 1.307
+| Generic FTDI footnote:winftdi[]
+| Generic FTDI footnote:linuxftdi[]
+
+| EmStat4M
+| 1.307
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| EmStat4T
+| 1.406
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+| n/a footnote:linuxserial[]
+
+| EmStat4 Go
+| 1.307
+| Generic FTDI footnote:winftdi[]
+| Generic FTDI footnote:linuxftdi[]
+
+| EmStat Pico DevBoard
+| 1.601
+| Generic FTDI (optional) footnote:winftdi[]
+| n/a footnote:linuxserial[]
+
+| EmStat Pico Module
+| 1.601
+| Generic FTDI (optional) footnote:winftdi[]
+| n/a footnote:linuxserial[]
+
+| EmStat Pico Go
+| 1.601
+| Generic FTDI (optional) footnote:winftdi[]
+| n/a footnote:linuxserial[]
+
+| Sensit Smart
+| 1.601
+| Generic FTDI (optional) footnote:winftdi[]
+| n/a footnote:linuxserial[]
+
+| Sensit BT
+| 1.601
+| Generic FTDI (optional) footnote:winftdi[]
+| n/a footnote:linuxserial[]
+
+| Sensit Wearable
+| 1.600
+| Generic FTDI (optional) footnote:winftdi[]
+| n/a footnote:linuxserial[]
+|===

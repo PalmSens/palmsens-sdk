@@ -2,7 +2,7 @@ using System;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 
-namespace PalmSensEISFIt
+namespace EISFitApp
 {
     internal class Program : MauiApplication
     {

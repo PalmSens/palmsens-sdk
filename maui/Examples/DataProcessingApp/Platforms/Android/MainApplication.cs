@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace DataProcessingExample
+namespace DataProcessingApp
 {
     [Application]
     public class MainApplication : MauiApplication

@@ -1,4 +1,4 @@
-﻿namespace DataProcessingExample
+﻿namespace DataProcessingApp
 {
     public partial class AppShell : Shell
     {

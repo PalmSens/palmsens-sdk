@@ -5,3 +5,5 @@
 * xref:methods.adoc[]
 * xref:circuit_fitting.adoc[]
 * xref:examples.adoc[]
+* https://github.com/PalmSens/PalmSens_SDK/tree/main/python[Source code ↗]
+* https://pypi.org/project/PyPalmSens/[Latest release ↗]

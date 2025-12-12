@@ -1,0 +1,27 @@
+= Examples
+
+The SDK contains the following examples and functions aimed to help you with using PalmSens and Emstat devices in Matlab.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/ConnectionExample.m[`ConnectionExample.m`]::
+Detailed explanation on how to detect and conect to your device.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/EquivalentCircuitFitExample.m[`EquivalentCircuitFitExample.m`]::
+An example of equivalent circuit fitting
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/GUIExample.m[`GUIExample.m`]::
+An example of a Matlab user interface for performing measurements with your device.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/ImportSessionExample.m[`ImportSessionExample.m`]::
+Detailed explanation on how to import and view measurements from a `.pssession` file created with PSTrace 5.x or MultiTrace 4.x.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/ManualControlExample.m[`ManualControlExample.m`]::
+An example of a Maltab user interface for manual control of your device.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MeasurementExample.m[`MeasurementExample.m`]::
+Detailed explanation on how to perform a measurement, specified in a method, with a connected PalmSens or Emstat device.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MethodExample.m[`MethodExample.m`]::
+Detailed explanation on how to load, edit and create new methods (methods are used to specify technique and the settings for a measurment).
+
+https://github.com/palmsens/palmsens_sdk/blob/main/matlab/MultiChannelMeasurementLoopExample.m[`MultiChannelMeasurementLoopExample.m`]::
+An example of connecting to and running measurements on multiple instruments/channels.

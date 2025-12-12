@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using static PalmSens.Core.Simplified.MAUI.PalmSensServiceCollectionExtensions;
 
-namespace PalmSensInternalStorage
+namespace InternalStorageApp
 {
     public static class MauiProgram
     {

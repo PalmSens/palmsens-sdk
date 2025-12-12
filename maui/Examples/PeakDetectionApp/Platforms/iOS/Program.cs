@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace PalmSensPeakDetection
+namespace PeakDetectionApp
 {
     public class Program
     {

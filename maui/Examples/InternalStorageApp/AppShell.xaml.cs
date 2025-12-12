@@ -1,4 +1,4 @@
-﻿namespace PalmSensInternalStorage
+﻿namespace InternalStorageApp
 {
     public partial class AppShell : Shell
     {

@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace PalmSensEISFIt
+namespace EISFitApp
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

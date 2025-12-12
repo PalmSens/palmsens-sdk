@@ -1,4 +1,4 @@
-﻿namespace PalmSensPeakDetection
+﻿namespace PeakDetectionApp
 {
     public partial class App : Application
     {

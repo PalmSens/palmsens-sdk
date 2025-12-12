@@ -22,9 +22,11 @@ Supported platforms:
 * IOS (BLE)
 // * MacOS
 
+The .NET MAUI SDK currently targets https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-9/overview[.NET 9].
+
 image::device_shots.svg[Device shot, width=80%]
 
-== Contents
+== Features
 
 These projects contain a simplified open source wrapper for the xref:start:ROOT:core.adoc[`PalmSens.Core`] libraries.
 
@@ -50,29 +52,4 @@ They are based on the open-source http://www.oxyplot.org/[OxyPlot library].
 * `SDKPlot.NET`
 * `SDKPlot.Maui`
 
-Click xref:examples.adoc[here] for a list of examples!
-
-== Compatible devices and firmware
-
-The PalmSens .NET MAUI SDK is based on PalmSens Core version 5.12 which is compatible with:
-
-[cols=",",options="header",]
-|===
-|Device |Minimum required firmware version
-|EmStat |3.7
-|EmStat2 |7.7
-|EmStat3 |7.7
-|EmStat3{plus} |7.7
-|EmStat4 |1.3
-|EmStat4T |1.4
-|EmStat Go |7.7
-|EmStat Pico |1.5
-|Sensit Smart |1.5
-|Sensit BT |1.5
-|Sensit Wearable |1.5
-|MultiEmStat3 |7.7
-|MultiEmStat4 |1.3
-|PalmSens3 |2.8
-|PalmSens4 |1.7
-|MultiPalmSens4 |1.7
-|===
+Click xref:examples.adoc[here for a list of example apps] to help you get started.

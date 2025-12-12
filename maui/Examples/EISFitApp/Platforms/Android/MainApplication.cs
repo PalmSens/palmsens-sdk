@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace PalmSensEISFIt
+namespace EISFitApp
 {
     [Application]
     public class MainApplication : MauiApplication

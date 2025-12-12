@@ -5,7 +5,7 @@ using SkiaSharp.Views.Maui.Controls.Hosting;
 using static PalmSens.Core.Simplified.MAUI.PalmSensServiceCollectionExtensions;
 
 
-namespace PalmSensLivePlot
+namespace LivePlotApp
 {
     public static class MauiProgram
     {

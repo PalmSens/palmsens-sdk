@@ -4,7 +4,7 @@ using SDKPlot;
 using System.Collections.ObjectModel;
 
 
-namespace DataProcessingExample
+namespace DataProcessingApp
 {
     public partial class MainPage : ContentPage
     {

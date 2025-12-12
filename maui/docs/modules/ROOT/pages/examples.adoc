@@ -28,7 +28,7 @@ https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/MeasureApp[Link
 --
 
 [#example-aux-bipot]
-== Auxilliary/BiPot
+== Auxiliary/BiPot
 [.float-group]
 --
 image:example_bipotaux.png[Linux,200,float="right"]

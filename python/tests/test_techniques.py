@@ -168,6 +168,39 @@ class LSV:
         assert dataset.array_quantities == {'Charge', 'Current', 'Potential', 'Time'}
 
 
+class LSV_aux:
+    id = 'lsv'
+    kwargs = {
+        'begin_potential': 0.0,
+        'end_potential': 1.0,
+        'step_potential': 0.2,
+        'scanrate': 8.0,
+        'record_auxiliary_input': True,
+    }
+
+    @staticmethod
+    def validate(measurement):
+        assert measurement
+        assert isinstance(measurement, ps.data.Measurement)
+
+        assert len(measurement.curves) == 2
+
+        for curve in measurement.curves:
+            assert curve.n_points >= 5
+
+        dataset = measurement.dataset
+        assert len(dataset) == 5
+
+        assert dataset.array_names == {
+            'charge',
+            'potential',
+            'current',
+            'time',
+            'Auxiliary input',
+        }
+        assert dataset.array_quantities == {'Charge', 'Current', 'Potential', 'Time'}
+
+
 class ACV:
     id = 'acv'
     kwargs = {
@@ -1092,6 +1125,7 @@ class MM:
         CV,
         FCV,
         LSV,
+        LSV_aux,
         ACV,
         SWV,
         CP,
@@ -1192,6 +1226,7 @@ def test_callback_eis(manager):
         CV,
         FCV,
         LSV,
+        LSV_aux,
         ACV,
         SWV,
         CP,

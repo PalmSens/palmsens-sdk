@@ -255,11 +255,15 @@ class InstrumentManagerAsync:
 
         await create_future(self._comm.ClientConnection.Semaphore.WaitAsync())
 
-        yield self._comm
+        try:
+            yield self._comm
 
-        if self._comm.ClientConnection.Semaphore.CurrentCount == 0:
-            # release lock on library (required when communicating with instrument)
-            _ = self._comm.ClientConnection.Semaphore.Release()
+        except Exception:
+            raise
+
+        finally:
+            if self._comm.ClientConnection.Semaphore.CurrentCount == 0:
+                _ = self._comm.ClientConnection.Semaphore.Release()
 
     def is_connected(self) -> bool:
         """Return True if an instrument connection exists."""

@@ -1,31 +1,28 @@
 from __future__ import annotations
 
-from typing import ClassVar, Literal, Protocol, runtime_checkable
+from abc import ABCMeta, abstractmethod
+from typing import Annotated, ClassVar, Literal
 
-import attrs
 from PalmSens import Method as PSMethod
 from PalmSens.Techniques import MixedMode as PSMixedMode
+from pydantic import Field
 from typing_extensions import override
 
 from .._shared import single_to_double
 from . import mixins
-from ._shared import (
-    CURRENT_RANGE,
-)
+from ._shared import CURRENT_RANGE
 from .base import BaseTechnique
+from .base_model import BaseModel
 
 
-@runtime_checkable
-class BaseStage(Protocol):
+class BaseStage(BaseModel, metaclass=ABCMeta):
     """Protocol to provide base methods for stage classes."""
 
-    __attrs_attrs__: ClassVar[list[attrs.Attribute]] = []
-    _registry: dict[str, type[BaseStage]] = {}
-    type: str
+    _registry: ClassVar[dict[str, type[BaseStage]]] = {}
 
     def __init_subclass__(cls, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
-        cls._registry[cls.type] = cls
+        cls._registry[cls.__name__] = cls
 
     @classmethod
     def from_stage_type(cls, id: str) -> BaseStage:
@@ -41,12 +38,13 @@ class BaseStage(Protocol):
         new._update_params_nested(psstage)
         return new
 
+    @abstractmethod
     def _update_params(self, psstage: PSMethod, /) -> None: ...
 
     def _update_params_nested(self, psstage: PSMethod, /) -> None:
         """Retrieve and convert dotnet method for nested field parameters."""
-        for field in self.__attrs_attrs__:
-            attribute = getattr(self, field.name)
+        for field in self.__class__.model_fields:
+            attribute = getattr(self, field)
             try:
                 # Update parameters if attribute has the `update_params` method
                 attribute._update_params(psstage)
@@ -55,18 +53,19 @@ class BaseStage(Protocol):
 
     def _update_psmethod(self, psmethod: PSMethod, /) -> PSMethod:
         """Add stage to dotnet method, and update paramaters on dotnet stage."""
-        stage_type = getattr(PSMixedMode.EnumMixedModeStageType, self.type)
+        stage_type = getattr(PSMixedMode.EnumMixedModeStageType, self.stage_type)
         psstage = psmethod.AddStage(stage_type)
         self._update_psstage(psstage)
         self._update_psstage_nested(psstage)
         return psstage
 
+    @abstractmethod
     def _update_psstage(self, psstage: PSMethod, /) -> None: ...
 
     def _update_psstage_nested(self, psstage: PSMethod, /) -> None:
         """Convert and set field parameters on dotnet method."""
-        for field in self.__attrs_attrs__:
-            attribute = getattr(self, field.name)
+        for field in self.__class__.model_fields:
+            attribute = getattr(self, field)
             try:
                 # Update parameters if attribute has the `update_params` method
                 attribute._update_psmethod(psstage)
@@ -74,13 +73,12 @@ class BaseStage(Protocol):
                 pass
 
 
-@attrs.define(slots=False)
 class ConstantE(BaseStage, mixins.CurrentLimitsMixin):
     """Amperometric detection stage.
 
     Apply constant potential during this stage."""
 
-    type: Literal['ConstantE'] = 'ConstantE'
+    stage_type: Literal['ConstantE'] = 'ConstantE'
 
     potential: float = 0.0
     """Potential during measurement in V."""
@@ -99,13 +97,12 @@ class ConstantE(BaseStage, mixins.CurrentLimitsMixin):
         self.run_time = single_to_double(psstage.RunTime)
 
 
-@attrs.define(slots=False)
 class ConstantI(BaseStage, mixins.PotentialLimitsMixin):
     """Potentiometry stage.
 
     Apply constant fixed current during this stage."""
 
-    type: Literal['ConstantI'] = 'ConstantI'
+    stage_type: Literal['ConstantI'] = 'ConstantI'
 
     current: float = 0.0
     """The current to apply in the given current range.
@@ -136,13 +133,12 @@ class ConstantI(BaseStage, mixins.PotentialLimitsMixin):
         self.run_time = single_to_double(psstage.RunTime)
 
 
-@attrs.define(slots=False)
 class SweepE(BaseStage, mixins.CurrentLimitsMixin):
     """Linear sweep detection stage.
 
     Ramp the voltage from `begin_potential` to `end_potential` during this stage."""
 
-    type: Literal['SweepE'] = 'SweepE'
+    stage_type: Literal['SweepE'] = 'SweepE'
 
     begin_potential: float = -0.5
     """Potential where the scan starts in V."""
@@ -176,13 +172,12 @@ class SweepE(BaseStage, mixins.CurrentLimitsMixin):
         self.scanrate = single_to_double(psstage.Scanrate)
 
 
-@attrs.define(slots=False)
 class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin):
     """Open Circuit stage.
 
     Measure the open circuit potential during this stage."""
 
-    type: Literal['OpenCircuit'] = 'OpenCircuit'
+    stage_type: Literal['OpenCircuit'] = 'OpenCircuit'
 
     run_time: float = 1.0
     """Run time of the stage in s."""
@@ -196,7 +191,6 @@ class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin):
         self.run_time = single_to_double(psstage.RunTime)
 
 
-@attrs.define(slots=False)
 class Impedance(BaseStage):
     """Electostatic impedance stage.
 
@@ -204,7 +198,7 @@ class Impedance(BaseStage):
     (`scan_type = 'fixed'`, `freq_type = 'fixed'`).
     """
 
-    type: Literal['Impedance'] = 'Impedance'
+    stage_type: Literal['Impedance'] = 'Impedance'
 
     run_time: float = 10.0
     """Run time of the scan in s."""
@@ -277,7 +271,12 @@ class Impedance(BaseStage):
         self.max_equilibration_time = single_to_double(psstage.MaxEqTime)
 
 
-@attrs.define
+StageType = Annotated[
+    ConstantE | ConstantI | SweepE | OpenCircuit | Impedance,
+    Field(discriminator='stage_type'),
+]
+
+
 class MixedMode(
     BaseTechnique,
     mixins.CurrentRangeMixin,
@@ -313,7 +312,7 @@ class MixedMode(
     potential, and minimum potential.
     """
 
-    _id = 'mm'
+    id: ClassVar[str] = 'mm'
 
     interval_time: float = 0.1
     """Time between two samples in s."""
@@ -321,8 +320,8 @@ class MixedMode(
     cycles: int = 1
     """Number of times to go through all stages."""
 
-    stages: list[ConstantE | ConstantI | SweepE | OpenCircuit | Impedance] = attrs.field(
-        factory=list
+    stages: list[StageType] = Field(
+        default_factory=list,
     )
     """List of stages to run through."""
 

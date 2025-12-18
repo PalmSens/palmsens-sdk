@@ -11,7 +11,6 @@ EXAMPLES = [pytest.param(path, id=path.stem) for path in EXAMPLES_DIR.glob('*.py
 
 
 @pytest.mark.parametrize('path', EXAMPLES)
-@pytest.mark.examples
 def test_examples(path: Path):
     assert path.exists(), f'Missing {path}'
 

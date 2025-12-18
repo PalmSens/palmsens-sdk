@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from abc import abstractmethod
-from typing import Any, ClassVar, Protocol, Type, runtime_checkable
+from abc import ABCMeta, abstractmethod
+from typing import Any, ClassVar
 
-import attrs
-import cattrs
 from PalmSens import Method as PSMethod
 
+from .base_model import BaseModel
 
-@runtime_checkable
-class BaseSettings(Protocol):
+
+class BaseSettings(BaseModel, metaclass=ABCMeta):
     """Protocol to provide generic methods for parameters."""
 
     @abstractmethod
@@ -19,32 +18,26 @@ class BaseSettings(Protocol):
     def _update_params(self, psmethod: PSMethod, /): ...
 
 
-@runtime_checkable
-class BaseTechnique(Protocol):
+class BaseTechnique(BaseModel, metaclass=ABCMeta):
     """Protocol to provide base methods for method classes."""
 
-    __attrs_attrs__: ClassVar[list[attrs.Attribute]] = []
-    _id: str
-    _registry: dict[str, Type[BaseTechnique]] = {}
+    id: ClassVar[str] = ''
+    _registry: ClassVar[dict[str, type[BaseTechnique]]] = {}
 
-    def __init_subclass__(cls, **kwargs) -> None:
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
-        cls._registry[cls._id] = cls
+        cls._registry[cls.id] = cls
 
     def to_dict(self) -> dict[str, Any]:
         """Return the technique instance as a new key/value dictionary mapping."""
-        return cattrs.unstructure(self)
+        return self.model_dump()
 
     @classmethod
     def from_dict(cls, obj: dict[str, Any]) -> BaseTechnique:
         """Structure technique instance from dict.
 
         Opposite of `.to_dict()`"""
-        converter = cattrs.Converter(
-            forbid_extra_keys=True,
-            detailed_validation=False,
-        )
-        return converter.structure(obj, cls)
+        return cls.model_validate(obj)
 
     @classmethod
     def from_method_id(cls, id: str) -> BaseTechnique:
@@ -65,8 +58,8 @@ class BaseTechnique(Protocol):
 
     def _update_params_nested(self, psmethod: PSMethod, /) -> None:
         """Retrieve and convert dotnet method for nested field parameters."""
-        for field in self.__attrs_attrs__:
-            attribute = getattr(self, field.name)
+        for field in self.__class__.model_fields:
+            attribute = getattr(self, field)
             try:
                 # Update parameters if attribute has the `update_params` method
                 attribute._update_params(psmethod)
@@ -75,7 +68,7 @@ class BaseTechnique(Protocol):
 
     def _to_psmethod(self) -> PSMethod:
         """Convert parameters to dotnet method."""
-        psmethod = PSMethod.FromMethodID(self._id)
+        psmethod = PSMethod.FromMethodID(self.id)
 
         self._update_psmethod(psmethod)
         self._update_psmethod_nested(psmethod)
@@ -86,8 +79,8 @@ class BaseTechnique(Protocol):
 
     def _update_psmethod_nested(self, psmethod: PSMethod, /) -> None:
         """Convert and set field parameters on dotnet method."""
-        for field in self.__attrs_attrs__:
-            attribute = getattr(self, field.name)
+        for field in self.__class__.model_fields:
+            attribute = getattr(self, field)
             try:
                 # Update parameters if attribute has the `update_params` method
                 attribute._update_psmethod(psmethod)

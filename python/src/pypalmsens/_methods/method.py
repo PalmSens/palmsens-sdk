@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Union
 
-from attrs import asdict
 from PalmSens import Method as PSMethod
 from PalmSens.Devices import PalmSens4Capabilities
 
@@ -71,4 +70,4 @@ class Method:
 
     def to_dict(self) -> dict[str, Any]:
         """Return dictionary with technique parameters."""
-        return asdict(self.to_settings())
+        return self.to_settings().model_dump()

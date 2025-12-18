@@ -34,10 +34,8 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    'attrs',
-    'cattrs',
+    'pydantic',
     'numpy',
-    'packaging',
     'pythonnet',
     'typing-extensions',
 ]

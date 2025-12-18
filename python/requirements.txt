@@ -1,4 +1,4 @@
-attrs
 numpy
-packaging
+pydantic
 pythonnet
+typing_extensions

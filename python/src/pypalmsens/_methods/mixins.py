@@ -1,126 +1,111 @@
 from __future__ import annotations
 
-import attrs
+from pydantic import Field, field_validator
 
 from . import settings
 from ._shared import CURRENT_RANGE, POTENTIAL_RANGE
+from .base_model import BaseModel
 
 
-def current_converter(value: CURRENT_RANGE | settings.CurrentRange) -> settings.CurrentRange:
-    if isinstance(value, CURRENT_RANGE):
-        return settings.CurrentRange(min=value, max=value, start=value)
-    return value
-
-
-@attrs.define(slots=False)
-class CurrentRangeMixin:
-    current_range: settings.CurrentRange = attrs.field(
-        factory=settings.CurrentRange, converter=current_converter
-    )
+class CurrentRangeMixin(BaseModel):
+    current_range: settings.CurrentRange = Field(default_factory=settings.CurrentRange)
     """Set the autoranging current."""
 
+    @field_validator('current_range', mode='before')
+    @classmethod
+    def current_converter(
+        cls, value: CURRENT_RANGE | settings.CurrentRange
+    ) -> settings.CurrentRange:
+        if isinstance(value, CURRENT_RANGE):
+            return settings.CurrentRange(min=value, max=value, start=value)
+        return value
 
-def potential_converter(
-    value: POTENTIAL_RANGE | settings.PotentialRange,
-) -> settings.PotentialRange:
-    if isinstance(value, POTENTIAL_RANGE):
-        return settings.PotentialRange(min=value, max=value, start=value)
-    return value
 
-
-@attrs.define(slots=False)
-class PotentialRangeMixin:
-    potential_range: settings.PotentialRange = attrs.field(
-        factory=settings.PotentialRange, converter=potential_converter
-    )
+class PotentialRangeMixin(BaseModel):
+    potential_range: settings.PotentialRange = Field(default_factory=settings.PotentialRange)
     """Set the autoranging potential."""
 
+    @field_validator('potential_range', mode='before')
+    @classmethod
+    def potential_converter(
+        cls, value: POTENTIAL_RANGE | settings.PotentialRange
+    ) -> settings.PotentialRange:
+        if isinstance(value, POTENTIAL_RANGE):
+            return settings.PotentialRange(min=value, max=value, start=value)
+        return value
 
-@attrs.define(slots=False)
-class PretreatmentMixin:
-    pretreatment: settings.Pretreatment = attrs.field(factory=settings.Pretreatment)
+
+class PretreatmentMixin(BaseModel):
+    pretreatment: settings.Pretreatment = Field(default_factory=settings.Pretreatment)
     """Set the pretreatment settings."""
 
 
-@attrs.define(slots=False)
-class VersusOCPMixin:
-    versus_ocp: settings.VersusOCP = attrs.field(factory=settings.VersusOCP)
+class VersusOCPMixin(BaseModel):
+    versus_ocp: settings.VersusOCP = Field(default_factory=settings.VersusOCP)
     """Set the versus OCP settings."""
 
 
-@attrs.define(slots=False)
-class BiPotMixin:
-    bipot: settings.BiPot = attrs.field(factory=settings.BiPot)
+class BiPotMixin(BaseModel):
+    bipot: settings.BiPot = Field(default_factory=settings.BiPot)
     """Set the bipot settings."""
 
 
-@attrs.define(slots=False)
-class PostMeasurementMixin:
-    post_measurement: settings.PostMeasurement = attrs.field(factory=settings.PostMeasurement)
+class PostMeasurementMixin(BaseModel):
+    post_measurement: settings.PostMeasurement = Field(default_factory=settings.PostMeasurement)
     """Set the post measurement settings."""
 
 
-@attrs.define(slots=False)
-class CurrentLimitsMixin:
-    current_limits: settings.CurrentLimits = attrs.field(factory=settings.CurrentLimits)
+class CurrentLimitsMixin(BaseModel):
+    current_limits: settings.CurrentLimits = Field(default_factory=settings.CurrentLimits)
     """Set the current limit settings."""
 
 
-@attrs.define(slots=False)
-class PotentialLimitsMixin:
-    potential_limits: settings.PotentialLimits = attrs.field(factory=settings.PotentialLimits)
+class PotentialLimitsMixin(BaseModel):
+    potential_limits: settings.PotentialLimits = Field(default_factory=settings.PotentialLimits)
     """Set the potential limit settings."""
 
 
-@attrs.define(slots=False)
-class ChargeLimitsMixin:
-    charge_limits: settings.ChargeLimits = attrs.field(factory=settings.ChargeLimits)
+class ChargeLimitsMixin(BaseModel):
+    charge_limits: settings.ChargeLimits = Field(default_factory=settings.ChargeLimits)
     """Set the charge limit settings."""
 
 
-@attrs.define(slots=False)
-class IrDropCompensationMixin:
-    ir_drop_compensation: settings.IrDropCompensation = attrs.field(
-        factory=settings.IrDropCompensation
+class IrDropCompensationMixin(BaseModel):
+    ir_drop_compensation: settings.IrDropCompensation = Field(
+        default_factory=settings.IrDropCompensation
     )
     """Set the iR drop compensation settings."""
 
 
-@attrs.define(slots=False)
-class EquilibrationTriggersMixin:
-    equilibrion_triggers: settings.EquilibrationTriggers = attrs.field(
-        factory=settings.EquilibrationTriggers
+class EquilibrationTriggersMixin(BaseModel):
+    equilibrion_triggers: settings.EquilibrationTriggers = Field(
+        default_factory=settings.EquilibrationTriggers
     )
     """Set the trigger at equilibration settings."""
 
 
-@attrs.define(slots=False)
-class MeasurementTriggersMixin:
-    measurement_triggers: settings.MeasurementTriggers = attrs.field(
-        factory=settings.MeasurementTriggers
+class MeasurementTriggersMixin(BaseModel):
+    measurement_triggers: settings.MeasurementTriggers = Field(
+        default_factory=settings.MeasurementTriggers
     )
     """Set the trigger at measurement settings."""
 
 
-@attrs.define(slots=False)
-class DelayTriggersMixin:
-    delay_triggers: settings.DelayTriggers = attrs.field(factory=settings.DelayTriggers)
+class DelayTriggersMixin(BaseModel):
+    delay_triggers: settings.DelayTriggers = Field(default_factory=settings.DelayTriggers)
     """Set the delayed trigger at measurement settings."""
 
 
-@attrs.define(slots=False)
-class MultiplexerMixin:
-    multiplexer: settings.Multiplexer = attrs.field(factory=settings.Multiplexer)
+class MultiplexerMixin(BaseModel):
+    multiplexer: settings.Multiplexer = Field(default_factory=settings.Multiplexer)
     """Set the multiplexer settings."""
 
 
-@attrs.define(slots=False)
-class DataProcessingMixin:
-    data_processing: settings.DataProcessing = attrs.field(factory=settings.DataProcessing)
+class DataProcessingMixin(BaseModel):
+    data_processing: settings.DataProcessing = Field(default_factory=settings.DataProcessing)
     """Set the data processing settings."""
 
 
-@attrs.define(slots=False)
-class GeneralMixin:
-    general: settings.General = attrs.field(factory=settings.General)
+class GeneralMixin(BaseModel):
+    general: settings.General = Field(default_factory=settings.General)
     """Sets general/other settings."""

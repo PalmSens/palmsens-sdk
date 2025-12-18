@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from dataclasses import dataclass, field
+from dataclasses import field
 from enum import Enum
 from typing import Literal
 
 import PalmSens
 
 from .._shared import single_to_double
+from .base_model import BaseModel
 
 
 class CURRENT_RANGE(Enum):
@@ -169,8 +170,7 @@ def get_extra_value_mask(obj: PalmSens.Method) -> dict[str, bool]:
     return ret
 
 
-@dataclass
-class ELevel:
+class ELevel(BaseModel):
     """Create a multi-step amperometry level method object."""
 
     level: float = 0.0
@@ -244,8 +244,7 @@ class ELevel:
         )
 
 
-@dataclass
-class ILevel:
+class ILevel(BaseModel):
     """Create a multi-step potentiometry level method object."""
 
     level: float = 0.0

@@ -4,8 +4,8 @@ import logging
 import tempfile
 from pathlib import Path
 
-import cattrs
 import pytest
+from pydantic import ValidationError
 
 import pypalmsens as ps
 from pypalmsens._methods import BaseTechnique
@@ -56,9 +56,8 @@ def test_read_potential(manager):
 
 
 def test_forbid_extra_keys():
-    with pytest.raises(cattrs.ForbiddenExtraKeysError):
-        params = {'foo': 123, 'bar': 678}
-        _ = ps.CyclicVoltammetry.from_dict(params)
+    with pytest.raises(ValidationError):
+        _ = ps.CyclicVoltammetry(foo=123, bar=678)
 
 
 class CV:
@@ -70,7 +69,11 @@ class CV:
         'step_potential': 0.25,
         'scanrate': 5,
         'n_scans': 2,
-        'current_range': {'max': 7, 'min': 3, 'start': 6},
+        'current_range': {
+            'max': ps.settings.CURRENT_RANGE(7),
+            'min': ps.settings.CURRENT_RANGE(3),
+            'start': ps.settings.CURRENT_RANGE(6),
+        },
     }
 
     @staticmethod
@@ -109,7 +112,7 @@ class FCV:
         'n_scans': 3,
         'n_avg_scans': 2,
         'n_equil_scans': 2,
-        'current_range': 5,
+        'current_range': ps.settings.CURRENT_RANGE(5),
     }
 
     @staticmethod
@@ -150,7 +153,11 @@ class LSV:
         'end_potential': 1.0,
         'step_potential': 0.1,
         'scanrate': 2.0,
-        'current_range': {'max': 7, 'min': 3, 'start': 6},
+        'current_range': {
+            'max': ps.settings.CURRENT_RANGE(7),
+            'min': ps.settings.CURRENT_RANGE(3),
+            'start': ps.settings.CURRENT_RANGE(6),
+        },
     }
 
     @staticmethod
@@ -210,7 +217,11 @@ class ACV:
         'ac_potential': 0.25,
         'frequency': 200.0,
         'scanrate': 0.2,
-        'current_range': {'max': 7, 'min': 3, 'start': 6},
+        'current_range': {
+            'max': ps.settings.CURRENT_RANGE(7),
+            'min': ps.settings.CURRENT_RANGE(3),
+            'start': ps.settings.CURRENT_RANGE(6),
+        },
     }
 
     @staticmethod
@@ -247,7 +258,11 @@ class SWV:
         'frequency': 10.0,
         'amplitude': 0.05,
         'record_forward_and_reverse_currents': True,
-        'current_range': {'max': 7, 'min': 3, 'start': 6},
+        'current_range': {
+            'max': ps.settings.CURRENT_RANGE(7),
+            'min': ps.settings.CURRENT_RANGE(3),
+            'start': ps.settings.CURRENT_RANGE(6),
+        },
     }
 
     @staticmethod
@@ -274,7 +289,11 @@ class CP:
         'applied_current_range': ps.settings.CURRENT_RANGE.cr_100_uA,
         'interval_time': 0.1,
         'run_time': 1.0,
-        'potential_range': {'max': 7, 'min': 1, 'start': 7},
+        'potential_range': {
+            'max': ps.settings.POTENTIAL_RANGE(7),
+            'min': ps.settings.POTENTIAL_RANGE(1),
+            'start': ps.settings.POTENTIAL_RANGE(7),
+        },
     }
 
     @staticmethod
@@ -298,7 +317,7 @@ class SCP:
         'current': 0.1,
         'applied_current_range': ps.settings.CURRENT_RANGE.cr_100_uA,
         'measurement_time': 1.0,
-        'potential_range': 4,
+        'potential_range': ps.settings.POTENTIAL_RANGE(4),
         'pretreatment': {'deposition_time': 1, 'deposition_potential': 0.1},
     }
 
@@ -323,7 +342,11 @@ class LSP:
         'applied_current_range': ps.settings.CURRENT_RANGE.cr_100_uA,
         'current_step': 0.1,
         'scan_rate': 8.0,
-        'potential_range': {'max': 7, 'min': 1, 'start': 7},
+        'potential_range': {
+            'max': ps.settings.POTENTIAL_RANGE(7),
+            'min': ps.settings.POTENTIAL_RANGE(1),
+            'start': ps.settings.POTENTIAL_RANGE(7),
+        },
     }
 
     @staticmethod
@@ -346,7 +369,11 @@ class OCP:
     kwargs = {
         'interval_time': 0.1,
         'run_time': 1.0,
-        'potential_range': {'max': 7, 'min': 1, 'start': 7},
+        'potential_range': {
+            'max': ps.settings.POTENTIAL_RANGE(7),
+            'min': ps.settings.POTENTIAL_RANGE(1),
+            'start': ps.settings.POTENTIAL_RANGE(7),
+        },
     }
 
     @staticmethod
@@ -875,7 +902,7 @@ class FIS:
 class GIS:
     id = 'gis'
     kwargs = {
-        'applied_current_range': 5,
+        'applied_current_range': ps.settings.CURRENT_RANGE(5),
         'equilibration_time': 0.0,
         'n_frequencies': 7,
         'max_frequency': 1e5,
@@ -934,7 +961,7 @@ class GIS:
 class FGIS:
     id = 'fgis'
     kwargs = {
-        'applied_current_range': 5,
+        'applied_current_range': ps.settings.CURRENT_RANGE(5),
         'run_time': 0.3,
     }
 
@@ -1029,28 +1056,28 @@ class MM:
         'interval_time': 0.02,
         'stages': [
             {
-                'type': 'ConstantE',
+                'stage_type': 'ConstantE',
                 'current_limits': {'max': 10.0, 'min': 1},
                 'potential': 0.5,
                 'run_time': 0.1,
             },
             {
-                'type': 'ConstantI',
+                'stage_type': 'ConstantI',
                 'potential_limits': {'max': 1, 'min': -1},
                 'current': 1.0,
-                'applied_current_range': 3,
+                'applied_current_range': ps.settings.CURRENT_RANGE(3),
                 'run_time': 0.1,
             },
             {
-                'type': 'SweepE',
+                'stage_type': 'SweepE',
                 'begin_potential': -0.5,
                 'end_potential': 0.5,
                 'step_potential': 0.25,
                 'scanrate': 20.0,
             },
-            {'type': 'OpenCircuit', 'run_time': 0.1},
+            {'stage_type': 'OpenCircuit', 'run_time': 0.1},
             {
-                'type': 'Impedance',
+                'stage_type': 'Impedance',
                 'run_time': 0.1,
                 'dc_potential': 0.0,
                 'ac_potential': 0.01,
@@ -1064,6 +1091,11 @@ class MM:
     def validate(measurement):
         assert measurement
         assert isinstance(measurement, ps.data.Measurement)
+
+        params = measurement.method.to_settings()
+        stages = [stage.stage_type for stage in params.stages]
+
+        assert stages == ['ConstantE', 'ConstantI', 'SweepE', 'OpenCircuit', 'Impedance']
 
         for curve in measurement.curves:
             assert curve.n_points >= 5

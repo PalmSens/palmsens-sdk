@@ -68,7 +68,7 @@ The following example shows how to discover devices and manually read out the cu
 >>> with ps.connect(instrument=emstat4) as manager:  # <1>
 ...     manager.set_cell(True)
 ...     manager.set_potential(1)
-...     manager.set_current_range(ps.settings.CURRENT_RANGE.cr_1_mA)
+...     manager.set_current_range('1mA')
 ...
 ...     current = manager.read_current()
 ...     print(f'{current=} µA')

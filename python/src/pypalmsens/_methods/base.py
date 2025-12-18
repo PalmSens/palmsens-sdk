@@ -81,6 +81,7 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
         """Convert and set field parameters on dotnet method."""
         for field in self.__class__.model_fields:
             attribute = getattr(self, field)
+
             try:
                 # Update parameters if attribute has the `update_params` method
                 attribute._update_psmethod(psmethod)

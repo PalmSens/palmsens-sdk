@@ -14,7 +14,7 @@ async def main():
         await manager.set_potential(1)
         print('set potential to 1V')
 
-        await manager.set_current_range(ps.settings.CURRENT_RANGE.cr_1_mA)
+        await manager.set_current_range('1mA')
         print('set cell to to 1mA currrent range')
 
         current = await manager.read_current()

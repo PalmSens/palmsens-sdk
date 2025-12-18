@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from ._methods._shared import (
-    CURRENT_RANGE,
-    POTENTIAL_RANGE,
+    AllowedCurrentRanges,
+    AllowedPotentialRanges,
     ELevel,
     ILevel,
 )
@@ -28,22 +28,22 @@ from ._methods.settings import (
 )
 
 __all__ = [
+    'AllowedCurrentRanges',
+    'AllowedPotentialRanges',
     'BiPot',
     'ChargeLimits',
-    'CURRENT_RANGE',
     'CurrentLimits',
     'CurrentRange',
     'DataProcessing',
     'DelayTriggers',
     'ELevel',
-    'ILevel',
     'EquilibrationTriggers',
     'General',
+    'ILevel',
     'IrDropCompensation',
     'MeasurementTriggers',
     'Multiplexer',
     'PostMeasurement',
-    'POTENTIAL_RANGE',
     'PotentialLimits',
     'PotentialRange',
     'Pretreatment',

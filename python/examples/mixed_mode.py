@@ -21,37 +21,42 @@ instruments = ps.discover()
 print(instruments)
 
 method = ps.mixed_mode.MixedMode(
-    current_range=ps.settings.CurrentRange(
-        min=ps.settings.CURRENT_RANGE.cr_1_mA,  # 1 mA range
-        max=ps.settings.CURRENT_RANGE.cr_100_mA,  # 100 mA range
-        start=ps.settings.CURRENT_RANGE.cr_100_mA,  # 100 mA range
-    ),
+    current_range={
+        'min': '1mA',  # 1 mA range
+        'max': '100mA',  # 100 mA range
+        'start': '100mA',  # 100 mA range
+    },
     interval_time=1.0,
     cycles=N_CYCLES,
     stages=[
-        ps.mixed_mode.OpenCircuit(
-            run_time=OCP_TIME,  # s
-        ),
-        ps.mixed_mode.ConstantI(
-            run_time=TIMEOUT,  # s
-            current=3.0,
-            applied_current_range=ps.settings.CURRENT_RANGE.cr_100_mA,
-            potential_limits=ps.settings.PotentialLimits(max=4.2),
-        ),
-        ps.mixed_mode.ConstantE(
-            run_time=TIMEOUT,  # s
-            potential=4.2,
-            current_limits=ps.settings.CurrentLimits(min=50000),  # mA
-        ),
-        ps.mixed_mode.OpenCircuit(
-            run_time=OCP_TIME,  # s
-        ),
-        ps.mixed_mode.ConstantI(
-            run_time=TIMEOUT,  # s
-            current=-3.0,
-            applied_current_range=ps.settings.CURRENT_RANGE.cr_100_mA,
-            potential_limits=ps.settings.PotentialLimits(min=2.5),
-        ),
+        {
+            'stage_type': 'OpenCircuit',
+            'run_time': OCP_TIME,  # s
+        },
+        {
+            'stage_type': 'ConstantI',
+            'run_time': TIMEOUT,  # s
+            'current': 3.0,
+            'applied_current_range': '100mA',
+            'potential_limits': {'max': 4.2},
+        },
+        {
+            'stage_type': 'ConstantE',
+            'run_time': TIMEOUT,  # s
+            'potential': 4.2,
+            'current_limits': {'min': 50000},  # mA
+        },
+        {
+            'stage_type': 'OpenCircuit',
+            'run_time': OCP_TIME,  # s
+        },
+        {
+            'stage_type': 'ConstantI',
+            'run_time': TIMEOUT,  # s
+            'current': -3.0,
+            'applied_current_range': '100mA',
+            'potential_limits': {'min': 2.5},
+        },
     ],
 )
 

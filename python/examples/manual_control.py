@@ -10,7 +10,7 @@ with ps.connect(instruments[0]) as manager:
     manager.set_potential(1)
     print('set potential to 1V')
 
-    manager.set_current_range(ps.settings.CURRENT_RANGE.cr_1_mA)
+    manager.set_current_range('1mA')
     print('set cell to to 1mA currrent range')
 
     current = manager.read_current()

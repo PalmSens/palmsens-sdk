@@ -19,15 +19,9 @@ async def main():
     )
 
     steps = [
-        {
-            'potential': 0.4,
-        },
-        {
-            'potential': 0.6,
-        },
-        {
-            'potential': 1.0,
-        },
+        {'potential': 0.4},
+        {'potential': 0.6},
+        {'potential': 1.0},
     ]
 
     instruments = await ps.discover_async()

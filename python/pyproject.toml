@@ -110,14 +110,14 @@ indent-style = "space"
 quote-style = "single"
 
 [tool.mypy]
-files = ["src", "tests", "examples"]
+files = ["src/pypalmsens", "tests", "examples"]
 exclude = ["typings", "scr/PalmSens-stubs"]
 allow_redefinition = true
 ignore_missing_imports = true
 
 [tool.pyright]
-include = ["src/pypalmsens", "tests", "examples"]
-ignore = ["src/PalmSens-stubs"]
+include = ["src/pypalmsens", "tests"]
+ignore = ["typings", "src/PalmSens-stubs", "examples"]
 reportMissingModuleSource = false
 reportAttributeAccessIssue = false
 reportUnknownMemberType = false

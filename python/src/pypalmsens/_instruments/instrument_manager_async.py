@@ -14,7 +14,11 @@ from PalmSens import MuxModel
 from PalmSens.Comm import CommManager, MuxType
 from typing_extensions import AsyncIterator, override
 
-from .._methods import CURRENT_RANGE, BaseTechnique
+from .._methods import (
+    AllowedCurrentRanges,
+    BaseTechnique,
+    cr_string_to_enum,
+)
 from ..data import Measurement
 from ._common import Callback, Instrument, create_future, firmware_warning
 from .measurement_manager_async import MeasurementManagerAsync
@@ -318,16 +322,19 @@ class InstrumentManagerAsync:
         async with self._lock():
             await create_future(self._comm.SetPotentialAsync(potential))
 
-    async def set_current_range(self, current_range: CURRENT_RANGE):
+    async def set_current_range(self, current_range: AllowedCurrentRanges):
         """Set the current range for the cell.
 
         Parameters
         ----------
-        current_range: CURRENT_RANGE
-            Set the current range, use `pypalmsens.settings.CURRENT_RANGE`.
+        current_range: AllowedCurrentRanges
+            Set the current range as a string.
+            See `pypalmsens.settings.AllowedCurrentRanges` for options.
         """
         async with self._lock():
-            await create_future(self._comm.SetCurrentRangeAsync(current_range._to_psobj()))
+            await create_future(
+                self._comm.SetCurrentRangeAsync(cr_string_to_enum(current_range))
+            )
 
     async def read_current(self) -> float:
         """Read the current in µA.

@@ -3,7 +3,10 @@ from __future__ import annotations
 from pydantic import Field, field_validator
 
 from . import settings
-from ._shared import CURRENT_RANGE, POTENTIAL_RANGE
+from ._shared import (
+    AllowedCurrentRanges,
+    AllowedPotentialRanges,
+)
 from .base_model import BaseModel
 
 
@@ -14,9 +17,9 @@ class CurrentRangeMixin(BaseModel):
     @field_validator('current_range', mode='before')
     @classmethod
     def current_converter(
-        cls, value: CURRENT_RANGE | settings.CurrentRange
+        cls, value: AllowedCurrentRanges | settings.CurrentRange
     ) -> settings.CurrentRange:
-        if isinstance(value, CURRENT_RANGE):
+        if isinstance(value, str):
             return settings.CurrentRange(min=value, max=value, start=value)
         return value
 
@@ -28,9 +31,9 @@ class PotentialRangeMixin(BaseModel):
     @field_validator('potential_range', mode='before')
     @classmethod
     def potential_converter(
-        cls, value: POTENTIAL_RANGE | settings.PotentialRange
+        cls, value: AllowedPotentialRanges | settings.PotentialRange
     ) -> settings.PotentialRange:
-        if isinstance(value, POTENTIAL_RANGE):
+        if isinstance(value, str):
             return settings.PotentialRange(min=value, max=value, start=value)
         return value
 

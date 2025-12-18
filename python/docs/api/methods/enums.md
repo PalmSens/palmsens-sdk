@@ -1,6 +1,6 @@
-# Enums
+# Allowed ranges
 
-The [enums](https://docs.python.org/3/library/enum.html) provide symbolic names for the supported current and potential ranges.
+For type checking, PyPalmSens uses [Literal strings](https://mypy.readthedocs.io/en/stable/literal_types.html) to define the supported current and potential ranges.
 
-::: pypalmsens.settings.CURRENT_RANGE
-::: pypalmsens.settings.POTENTIAL_RANGE
+::: pypalmsens.settings.AllowedCurrentRanges
+::: pypalmsens.settings.AllowedPotentialRanges

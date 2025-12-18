@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import field
-from enum import Enum
 from typing import Literal
 
 import PalmSens
@@ -10,105 +9,73 @@ import PalmSens
 from .._shared import single_to_double
 from .base_model import BaseModel
 
+AllowedCurrentRanges = Literal[
+    '100pA',
+    '1nA',
+    '10nA',
+    '100nA',
+    '1uA',
+    '10uA',
+    '100uA',
+    '1mA',
+    '10mA',
+    '100mA',
+    '2uA',
+    '4uA',
+    '8uA',
+    '16uA',
+    '32uA',
+    '63uA',
+    '125uA',
+    '250uA',
+    '500uA',
+    '5mA',
+    '6uA',
+    '13uA',
+    '25uA',
+    '50uA',
+    '200uA',
+    '1A',
+]
 
-class CURRENT_RANGE(Enum):
-    """Get the id for a given current range.
-
-    Use these when defining a current range."""
-
-    cr_100_pA = 0
-    """100 pA."""
-    cr_1_nA = 1
-    """1 nA."""
-    cr_10_nA = 2
-    """10 nA."""
-    cr_100_nA = 3
-    """100 nA."""
-    cr_1_uA = 4
-    """1 μA."""
-    cr_10_uA = 5
-    """10 μA."""
-    cr_100_uA = 6
-    """100 μA."""
-    cr_1_mA = 7
-    """1 mA."""
-    cr_10_mA = 8
-    """10 mA."""
-    cr_100_mA = 9
-    """100 mA."""
-    cr_2_uA = 10
-    """2 μA."""
-    cr_4_uA = 11
-    """4 μA."""
-    cr_8_uA = 12
-    """8 μA."""
-    cr_16_uA = 13
-    """16 μA."""
-    cr_32_uA = 14
-    """32 μA."""
-    cr_63_uA = 26
-    """63 μA."""
-    cr_125_uA = 17
-    """125 μA."""
-    cr_250_uA = 18
-    """250 μA."""
-    cr_500_uA = 19
-    """500 μA."""
-    cr_5_mA = 20
-    """5 mA."""
-    cr_6_uA = 21
-    """6 μA."""
-    cr_13_uA = 22
-    """13 μA."""
-    cr_25_uA = 23
-    """25 μA."""
-    cr_50_uA = 24
-    """50 μA."""
-    cr_200_uA = 25
-    """200 μA."""
-    cr_1_A = 30
-    """1 A."""
-
-    def _to_psobj(self):
-        """Get equivalent PS object."""
-        return PalmSens.CurrentRange(PalmSens.CurrentRanges(self.value))
-
-    @classmethod
-    def _from_psobj(cls, psobj, /):
-        """Convert from PS object."""
-        return cls(int(PalmSens.CurrentRange.GetCRfromCRByte(psobj.CRbyte)))
+AllowedPotentialRanges = Literal[
+    '1mV',
+    '10mV',
+    '20mV',
+    '50mV',
+    '100mV',
+    '200mV',
+    '500mV',
+    '1V',
+]
 
 
-class POTENTIAL_RANGE(Enum):
-    """Get the id for a given current range.
+def cr_string_to_enum(s: AllowedCurrentRanges) -> PalmSens.CurrentRange:
+    """Convert literal string to CurrentRange."""
+    attr = f'cr{s}'
+    cr = getattr(PalmSens.CurrentRanges, attr)
 
-    Use these when defining a potential range."""
+    return PalmSens.CurrentRange(cr)
 
-    pr_1_mV = 0
-    """1 mV."""
-    pr_10_mV = 1
-    """10 mV."""
-    pr_20_mV = 2
-    """20 mV."""
-    pr_50_mV = 3
-    """50 mV."""
-    pr_100_mV = 4
-    """100 mV."""
-    pr_200_mV = 5
-    """200 mV."""
-    pr_500_mV = 6
-    """500 mV."""
-    pr_1_V = 7
-    """1 V."""
 
-    def _to_psobj(self) -> PalmSens.PotentialRange:
-        """Get equivalent PS object."""
-        return PalmSens.PotentialRange(PalmSens.PotentialRanges(self.value))
+def cr_enum_to_string(enum: PalmSens.CurrentRange) -> AllowedCurrentRanges:
+    """Convert CurrentRange enum to literal string."""
+    cr = enum.Range
+    return cr.ToString().lstrip('cr')
 
-    @classmethod
-    def _from_psobj(cls, psobj: PalmSens.PotentialRanges, /):
-        """Convert from PS object."""
-        return cls(int(PalmSens.PotentialRange.get_PR(psobj)))
+
+def pr_string_to_enum(s: AllowedPotentialRanges) -> PalmSens.PotentialRange:
+    """Convert literal string to PotentialRange."""
+    attr = f'pr{s}'
+    cr = getattr(PalmSens.PotentialRanges, attr)
+
+    return PalmSens.PotentialRange(cr)
+
+
+def pr_enum_to_string(enum: PalmSens.PotentialRange) -> AllowedPotentialRanges:
+    """Convert PotentialRange enum to literal string."""
+    pr = enum.PR
+    return pr.ToString().lstrip('pr')
 
 
 def convert_bools_to_int(lst: Sequence[bool]) -> int:

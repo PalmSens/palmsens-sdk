@@ -11,12 +11,14 @@ import pypalmsens as ps
 
 cv = ps.LinearSweepVoltammetry(
     ...,
-    post_measurement = ps.settings.PostMeasurement(
-        cell_on_after_measurement = True,
-        standby_potential = 0.5,
-        standby_time = 30,
-    )  
+    post_measurement = {
+        'cell_on_after_measurement': True,
+        'standby_potential': 0.5,
+        'standby_time': 30,
+    } # <1>
+)
 ```
+<1> Note that you can either pass a dictionary or the assosiated `ps.settings.PostMeasurement` class.
 
 Or by setting the values on the attribute:
 

@@ -10,7 +10,11 @@ from typing_extensions import override
 
 from .._shared import single_to_double
 from . import mixins
-from ._shared import CURRENT_RANGE
+from ._shared import (
+    AllowedCurrentRanges,
+    cr_enum_to_string,
+    cr_string_to_enum,
+)
 from .base import BaseTechnique
 from .base_model import BaseModel
 
@@ -112,23 +116,23 @@ class ConstantI(BaseStage, mixins.PotentialLimitsMixin):
     So if 10 uA is the applied current range and 1.5 is given as current value,
     the applied current will be 15 uA."""
 
-    applied_current_range: CURRENT_RANGE = CURRENT_RANGE.cr_100_uA
+    applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
 
-    Use `CURRENT_RANGE` to define the range."""
+    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
 
     run_time: float = 1.0
     """Run time of the stage in s."""
 
     @override
     def _update_psstage(self, psstage: PSMethod, /):
-        psstage.AppliedCurrentRange = self.applied_current_range._to_psobj()
+        psstage.AppliedCurrentRange = cr_string_to_enum(self.applied_current_range)
         psstage.Current = self.current
         psstage.RunTime = self.run_time
 
     @override
     def _update_params(self, psstage: PSMethod, /):
-        self.applied_current_range = CURRENT_RANGE._from_psobj(psstage.AppliedCurrentRange)
+        self.applied_current_range = cr_enum_to_string(psstage.AppliedCurrentRange)
         self.current = single_to_double(psstage.Current)
         self.run_time = single_to_double(psstage.RunTime)
 

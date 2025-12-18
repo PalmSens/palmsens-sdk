@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import Any, ClassVar
 
 import PalmSens
-from pydantic import BaseModel
+import pytest
+from pydantic import BaseModel, ValidationError
 
 import pypalmsens as ps
 
@@ -37,21 +38,27 @@ def test_id():
 
 
 def test_validation():
-    cv = ps.CyclicVoltammetry(
-        current_range={
-            'min': ps.settings.CURRENT_RANGE.cr_10_uA,
-            'max': ps.settings.CURRENT_RANGE.cr_10_mA,
-            'start': ps.settings.CURRENT_RANGE.cr_1_mA,
-        }
-    )
+    cr_dict = {
+        'min': '10uA',
+        'max': '10mA',
+        'start': '1mA',
+    }
+
+    cv = ps.CyclicVoltammetry(current_range=cr_dict)
 
     assert isinstance(cv.current_range, ps.settings.CurrentRange)
-    assert cv.current_range.min.name == 'cr_10_uA'
-    assert cv.current_range.max.name == 'cr_10_mA'
-    assert cv.current_range.start.name == 'cr_1_mA'
+    assert cv.current_range.min == '10uA'
+    assert cv.current_range.max == '10mA'
+    assert cv.current_range.start == '1mA'
 
     m = cv._to_psmethod()
 
-    assert m.Ranging.MinimumCurrentRange.ToString() == '10 uA'
-    assert m.Ranging.MaximumCurrentRange.ToString() == '10 mA'
-    assert m.Ranging.StartCurrentRange.ToString() == '1 mA'
+    assert str(m.Ranging.MinimumCurrentRange) == '10 uA'
+    assert str(m.Ranging.MaximumCurrentRange) == '10 mA'
+    assert str(m.Ranging.StartCurrentRange) == '1 mA'
+
+
+def test_wrong_value():
+    cv = ps.CyclicVoltammetry()
+    with pytest.raises(ValidationError):
+        cv.current_range.min = 'fail'

@@ -1,6 +1,7 @@
 = Connecting and Measuring
 :source-language: python
 :api: api:attachment$index.html
+:api-data: api:attachment$data/index.html
 :api-inst: api:attachment$instrument/index.html
 :api-inst-async: api:attachment$instrument_async/index.html
 
@@ -131,9 +132,9 @@ In the example below we use `print` to simply log the data to the console:
 
 ----
 >>> manager.measure(method, callback=print)
-[{'index': 1, 'x': 0.0,  'x_unit': 's', 'x_type': 'Time', 'y': -305.055, 'y_unit': 'µA', 'y_type': 'Current'}]
-[{'index': 2, 'x': 0.01, 'x_unit': 's', 'x_type': 'Time', 'y': -731.741, 'y_unit': 'µA', 'y_type': 'Current'}]
-[{'index': 3, 'x': 0.02, 'x_unit': 's', 'x_type': 'Time', 'y': -751.552, 'y_unit': 'µA', 'y_type': 'Current'}]
+{'index': 0, 'x': 0.0,  'y': -305.055}
+{'index': 1, 'x': 0.01, 'y': -731.741}
+{'index': 2, 'x': 0.02, 'y': -751.552}
 ...
 ----
 
@@ -141,47 +142,33 @@ The callback is passed a collection of points that have been added since the las
 Thus, `new_data` below is a batched list of points, so we can expand the `print` example to print each point on a new line:
 
 ----
->>> def new_data_callback(new_data):
-...     for point in new_data:
-...         print(point)
+>>> def callback(data):
+...    print({'start': data.start, 'x': data.x[data.start:], 'y': data.y[data.start:]})
 ...
->>> manager.measure(method, callback=new_data_callback)
-{'index': 1, 'x': 0.00, 'x_unit': 's', 'x_type': 'Time', 'y': -305.055, 'y_unit': 'µA', 'y_type': 'Current'}
-{'index': 2, 'x': 0.01, 'x_unit': 's', 'x_type': 'Time', 'y': -740.935, 'y_unit': 'µA', 'y_type': 'Current'}
-{'index': 3, 'x': 0.02, 'x_unit': 's', 'x_type': 'Time', 'y': -750.604, 'y_unit': 'µA', 'y_type': 'Current'}
-...
+>>> manager.measure(method, callback=callback)
+{'start': 0, 'x': [0.00, 0.01, 0.02], 'y': [-305.055, -740.935, -750.604]}
 ----
 
-Points contain a dictionary with the following information:
+Alternatively, you can use `data.last_datapoint()` or `data.new_datapoints()` to get a dictionary with new data since the last callback.
 
-Non-impedimetric techniques::
+Since `data.x` and `data.y` are `ps.data.DataArrays`, you can access these directly for your own code.
+`data.start` is an index pointing at the first at the first element of the array, and `data.index` at the last.
+The data arrays contain the complete data for the measurement. See xref:{api-data}#pypalmsens.data.CallbackData[`CallbackData`] for more information.
 
-  Techniques such as linear sweep voltammetry or chronopotentiometry return a dictionary containing the following values:
+The type of data returned depends on the measurement.
+For non-impedemetric technique, this will be time (s), potential (V), or current (μA) for x, and current (μA) or potential (V) for y.
+Query the data array directly (`DataArray.unit`, `DataArray.quantity`) for these data.
 
-  * `index`: the index of the point
-  * `x`, `x_unit` and `x_type`, depending on the technique this will be:
+For impedemetric techniques, the callback returns the EIS xref:data.adoc#_dataset[Dataset]. See xref:{api-data}#pypalmsens.data.CallbackDataEIS[`CallbackDataEIS`] for more information.
 
-    ** Time in seconds for amperometry and potentiometry techniques that do
-       not specify a begin and an end potential
-    ** Potential in volts for voltammetry techniques such as linear sweep,
-       cyclic and square-wave voltammetry
-    ** Current in micro amperes for linear sweep potentiometry
+----
+>>> def callback(data):
+...    print(data.last_datapoint())
 
-  * `y`, `y_unit` and `y_type`; depending on the techniques this will be:
-
-    ** Current in micro amperes for all potentiometric techniques such as
-       linear sweep and cyclic voltammetry and chronoamperometry and multistep
-       amperometry
-    ** Potential in volts for all galvanostatic techniques such as
-       chronopotentiometry and linear sweep potentiometry
-
-Impedimetric techniques::
-
-  The exception are (galvanostatic/) electrochemical impedance spectroscopy. These techniques return the following:
-
-  * `frequency`: the applied frequency of the sample in hertz
-  * `z_re`: the real impedance in ohms
-  * `z_im`: the imaginary impedance in ohms
+>>> eismethod = ps.ElectrochemicalImpedanceSpectroscopy()
+>>> manager.measure(method, callback=callback)
+{'index': 0, 'Idc': -5.683012, 'potential': 0.0, 'time': 0.0024332, 'Frequency': 10000.0, 'ZRe': 4846.639, 'ZIm': -31990.538, 'Z': 32355.593, 'Phase': -81.385, 'Iac': 0.015, 'miDC': -5.683, 'mEdc': 0.598, 'Eac': 0.000, 'Y': 3.090e-05, 'YRe': 4.629e-06, 'YIm': -3.055e-05, 'Capacitance': -4.975e-10, "Capacitance'": -4.863e-10, "Capacitance''": 7.368e-11}
+----
 
 == MethodSCRIPT™
 
@@ -254,7 +241,7 @@ The pool takes a <<Callback>> in its `measure()` method, just like a regular xre
 
 ----
 >>> async with ps.InstrumentPoolAsync(instruments) as pool:
-...    results = await pool.measure(method, callback=new_data_callback)
+...    results = await pool.measure(method, callback=callback)
 ----
 
 You can add (xref:{api-inst}#pypalmsens.InstrumentPool.add[`pool.add()`]) and remove (xref:{api-inst}#pypalmsens.InstrumentPool.remove()`pool.remove()`]) managers from the pool:

@@ -85,6 +85,11 @@ class DataSet(Mapping[str, DataArray]):
         """Return underlying PalmSens SDK objects."""
         return self._psdataset.GetDataArrays()
 
+    @property
+    def n_points(self) -> int:
+        """Number of points in arrays."""
+        return self._psdataset.NPoints
+
     def curve(self, x: str, y: str, title: str | None = None) -> Curve:
         """Construct a custom curve from x and y keys.
 

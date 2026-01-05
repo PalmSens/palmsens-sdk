@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import asyncio
 import warnings
-from collections.abc import Sequence
 from dataclasses import dataclass, field
 from functools import partial
 from math import floor
-from typing import TYPE_CHECKING, Any, Protocol, TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 import System
 from PalmSens.Comm import enumDeviceType
@@ -17,12 +16,6 @@ from .. import __sdk_version__
 if TYPE_CHECKING:
     from PalmSens.Devices import Device as PSDevice
     from PalmSens.Devices import DeviceCapabilities
-
-
-class Callback(Protocol):
-    """Type signature for callback."""
-
-    def __call__(self, new_data: Sequence[dict[str, Any]]): ...
 
 
 T = TypeVar('T')

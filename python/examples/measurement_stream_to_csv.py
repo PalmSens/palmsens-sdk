@@ -3,14 +3,16 @@ import csv
 import pypalmsens as ps
 
 
-def stream_to_csv_callback(new_data):
-    for point in new_data:
+def stream_to_csv_callback(data):
+    for point in data.new_datapoints():
         csv_writer.writerow([point['index'], point['x'], point['y']])
-        # csv_writer.writerow([point['frequency'], point['zre'], point['zim']]) #for EIS
+
+        ## for EIS
+        # csv_writer.writerow([point['Frequency'], point['ZRe'], point['ZIm']])
 
 
-csv_file = open('test.csv', 'w', newline='')
-csv_writer = csv.writer(csv_file, delimiter=' ')
+csv_file = open('test.csv', 'w')
+csv_writer = csv.writer(csv_file)
 
 instruments = ps.discover()
 print(instruments)

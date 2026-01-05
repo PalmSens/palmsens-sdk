@@ -9,6 +9,7 @@ from pydantic import ValidationError
 
 import pypalmsens as ps
 from pypalmsens._methods import BaseTechnique
+from pypalmsens.data import DataArray, DataSet
 
 logger = logging.getLogger(__name__)
 
@@ -1186,22 +1187,23 @@ def test_callback(manager):
     points = []
 
     def callback(data):
-        points.extend(data)
+        points.append(data)
 
-    params = ps.LinearSweepVoltammetry(scanrate=10)
+    params = ps.LinearSweepVoltammetry(scanrate=1)
     _ = manager.measure(params, callback=callback)
 
     assert len(points) == 11
 
     point = points[-1]
-    assert isinstance(point, dict)
-    assert point['index'] == 11
-    assert isinstance(point['x'], float)
-    assert point['x_unit'] == 'V'
-    assert point['x_type'] == 'Potential'
-    assert isinstance(point['y'], float)
-    assert point['y_unit'] == 'µA'
-    assert point['y_type'] == 'Current'
+    assert point.start == 10
+
+    assert isinstance(point.x_array, DataArray)
+    assert point.x_array.name == 'potential'
+    assert len(point.x_array) == 11
+
+    assert isinstance(point.y_array, DataArray)
+    assert point.y_array.name == 'current'
+    assert len(point.y_array) == 11
 
 
 @pytest.mark.instrument
@@ -1209,22 +1211,21 @@ def test_callback_eis(manager):
     points = []
 
     def callback(data):
-        points.extend(data)
+        points.append(data)
 
     params = ps.ElectrochemicalImpedanceSpectroscopy(
         frequency_type='fixed',
         scan_type='fixed',
-        # fixed_frequency=1000,
     )
     _ = manager.measure(params, callback=callback)
 
     assert len(points) == 1
 
     point = points[0]
-    assert point['index'] == 1
-    assert point['frequency'] == 1000.0
-    assert isinstance(point['zre'], float)
-    assert isinstance(point['zim'], float)
+
+    assert point.start == 0
+    assert isinstance(point.data, DataSet)
+    assert point.data.n_points == 1
 
 
 @pytest.mark.parametrize(

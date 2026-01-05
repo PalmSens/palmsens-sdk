@@ -12,9 +12,8 @@ TIMEOUT = 10
 # TIMEOUT = 10000
 
 
-def new_data_callback(new_data):
-    for point in new_data:
-        print(point)
+def new_data_callback(data):
+    print(data.last_datapoint())
 
 
 instruments = ps.discover()

@@ -4,28 +4,20 @@ import asyncio
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Generator
 
-from PalmSens import AsyncEventHandler
+from PalmSens import AsyncEventHandler, Plottables
 from PalmSens import Method as PSMethod
 from PalmSens.Comm import CommManager
-from PalmSens.Plottables import (
-    Curve,
-    CurveEventHandler,
-    EISData,
-    EISDataEventHandler,
-)
 from System import EventHandler
 from System.Threading.Tasks import Task
 
-from .._data._shared import ArrayType
-from ..data import Measurement
-from ._common import Callback, create_future
+from .._data import DataSet
+from ..data import DataArray, Measurement
+from ._common import create_future
+from .callback import Callback, CallbackData, CallbackDataEIS
 
 if TYPE_CHECKING:
     from PalmSens import Measurement as PSMeasurement
     from PalmSens import Method as PSMethod
-    from PalmSens.Data import DataArray as PSDataArray
-    from PalmSens.Plottables import Curve as PSCurve
-    from PalmSens.Plottables import EISData as PSEISData
 
 
 class MeasurementManagerAsync:
@@ -57,10 +49,10 @@ class MeasurementManagerAsync:
         self.end_measurement_handler: AsyncEventHandler = AsyncEventHandler[
             CommManager.EndMeasurementAsyncEventArgs
         ](self.end_measurement_callback)
-        self.begin_receive_curve_handler: EventHandler = CurveEventHandler(
+        self.begin_receive_curve_handler: EventHandler = Plottables.CurveEventHandler(
             self.begin_receive_curve_callback
         )
-        self.curve_data_added_handler: EventHandler = Curve.NewDataAddedEventHandler(
+        self.curve_data_added_handler: EventHandler = Plottables.Curve.NewDataAddedEventHandler(
             self.curve_data_added_callback
         )
 
@@ -69,11 +61,11 @@ class MeasurementManagerAsync:
             self.eis_data_finished_callback
         )
 
-        self.begin_receive_eis_data_handler: EventHandler = EISDataEventHandler(
+        self.begin_receive_eis_data_handler: EventHandler = Plottables.EISDataEventHandler(
             self.begin_receive_eis_data_callback
         )
 
-        self.eis_data_data_added_handler: EventHandler = EISData.NewDataEventHandler(
+        self.eis_data_data_added_handler: EventHandler = Plottables.EISData.NewDataEventHandler(
             self.eis_data_data_added_callback
         )
 
@@ -189,32 +181,19 @@ class MeasurementManagerAsync:
         _ = self.loop.call_soon_threadsafe(self.end_measurement_event.set)
         return Task.CompletedTask
 
-    def curve_data_added_callback(self, curve: PSCurve, args):
+    def curve_data_added_callback(self, curve: Plottables.Curve, args):
         """Called when new data is added to the curve."""
-
-        def func(curve: PSCurve, args, callback: Callback):
-            start = args.StartIndex
-            count = curve.NPoints - start
-
-            data: list[dict[str, float | str]] = []
-            for i in range(start, start + count):
-                point: dict[str, float | str] = {
-                    'index': i + 1,
-                    'x': curve.XAxisDataArray[i].Value,
-                    'x_unit': str(curve.XUnit),
-                    'x_type': ArrayType(curve.XAxisDataArray.ArrayType).name,
-                    'y': curve.YAxisDataArray[i].Value,
-                    'y_unit': str(curve.YUnit),
-                    'y_type': ArrayType(curve.YAxisDataArray.ArrayType).name,
-                }
-                data.append(point)
-
-            callback(data)
-
         assert self.callback
-        _ = self.loop.call_soon_threadsafe(func, curve, args, self.callback)
 
-    def curve_finished_callback(self, curve: PSCurve, args):
+        data = CallbackData(
+            x_array=DataArray(psarray=curve.XAxisDataArray),
+            y_array=DataArray(psarray=curve.YAxisDataArray),
+            start=args.StartIndex,
+        )
+
+        _ = self.loop.call_soon_threadsafe(self.callback, data)
+
+    def curve_finished_callback(self, curve: Plottables.Curve, args):
         """Unsubscribe to curve finished / new data added events."""
         curve.NewDataAdded -= self.curve_data_added_handler
         curve.Finished -= self.curve_finished_handler
@@ -225,38 +204,23 @@ class MeasurementManagerAsync:
         curve.NewDataAdded += self.curve_data_added_handler
         curve.Finished += self.curve_finished_handler
 
-    def eis_data_data_added_callback(self, eis_data: PSEISData, args):
+    def eis_data_data_added_callback(self, eis_data: Plottables.EISData, args):
         """Called when a new EIS data points is obtained. Requires a callback."""
-
-        def func(eis_data: PSEISData, args, callback: Callback):
-            start = args.Index
-            count = 1
-
-            data: list[dict[str, float | str]] = []
-            arrays: list[PSDataArray] = [array for array in eis_data.EISDataSet.GetDataArrays()]
-            for i in range(start, start + count):
-                point: dict[str, float | str] = {'index': i + 1}
-
-                for array in arrays:
-                    array_type = ArrayType(array.ArrayType)
-
-                    if array_type in (ArrayType.Frequency, ArrayType.ZRe, ArrayType.ZIm):
-                        key = array_type.name.lower()
-                        point[key] = array[i].Value
-
-                data.append(point)
-
-            callback(data)
-
         assert self.callback
-        _ = self.loop.call_soon_threadsafe(func, eis_data, args, self.callback)
 
-    def eis_data_finished_callback(self, eis_data: PSEISData, args):
+        data = CallbackDataEIS(
+            data=DataSet(psdataset=eis_data.EISDataSet),
+            start=args.Index,
+        )
+
+        _ = self.loop.call_soon_threadsafe(self.callback, data)
+
+    def eis_data_finished_callback(self, eis_data: Plottables.EISData, args):
         """Unsubscribes to EIS data events."""
         eis_data.NewDataAdded -= self.eis_data_data_added_handler
         eis_data.Finished -= self.eis_data_finished_handler
 
-    def begin_receive_eis_data_callback(self, sender, eis_data: PSEISData):
+    def begin_receive_eis_data_callback(self, sender, eis_data: Plottables.EISData):
         """Subscribes to EIS data events."""
         eis_data.NewDataAdded += self.eis_data_data_added_handler
         eis_data.Finished += self.eis_data_finished_handler

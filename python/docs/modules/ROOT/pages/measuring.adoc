@@ -108,6 +108,52 @@ scripts included with the SDK.
 >>> manager.set_potential(1)
 ----
 
+== Idle status updates
+
+When idle or during pretreatment, the instrument measures and publishes the current, voltage, device state, etc when a datapoint is measured.
+You can register a callback to subscribe to these events.
+The event is fired every second and every 0.25 seconds during pretreatment.
+
+[NOTE]
+.Async
+====
+The callback requires an active event loop and therefore only works in Async mode.
+====
+
+For example, using print as the callback prints the status to the terminal:
+
+----
+>>> manager.register_status_callback(print)
+>>> await asyncio.sleep(3)  <1>
+Idle: {'current': '0.000 * 1uA', 'potential': '0.527 V'}
+Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
+Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
+>>> manager.unregister_status_callback()
+----
+<1> Sleep is used here to simulate another task
+
+The callback returns a xref:{api-data}#pypalmsens.data.CallbackStatus[`CallbackStatus`] object, which can be used to customize the behaviour.
+
+For example, to print data during the pretreatment phases:
+
+----
+>>> def callback(status):
+...     if status.device_state == 'Pretreatment':
+...         print(f'{status.pretreatment_phase}: potential={status.potential:.3f} V, current={status.current:.3f} μA')
+
+>>> manager.register_status_callback(callback)
+>>> await manager.measure(ps.ChronoAmperometry(
+...     pretreatment={'conditioning_time':2, 'conditioning_potential': 0.5},
+... ))
+Conditioning: potential=0.500 V, current=0.100 μA
+Conditioning: potential=0.500 V, current=0.101 μA
+...
+Conditioning: potential=0.500 V, current=0.098 μA
+>>> manager.unregister_status_callback()
+----
+
+See the xref:{api-data}#pypalmsens.data.CallbackStatus[API reference] or the provided xref:examples.adoc#_status_callback[Status callback] example for more information.
+
 == Measuring
 
 Starting a measurement is done by sending method parameters to a PalmSens/Nexus/EmStat/Sensit device.
@@ -284,9 +330,9 @@ For example to run two methods in sequence:
 ...     results = await pool.submit(my_task, method=method)
 ----
 
-See xref:examples.adoc#multichannel_csv_writer[] and xref:examples.adoc#multichannel_custom_loop[] for a practical example of setting a custom function.
+See xref:examples.adoc#multichannel_csv_writer[CSV writer] and xref:examples.adoc#multichannel_custom_loop[Custom loop] examples for a practical example of setting a custom function.
 
-To use hardware synchronization, use the same `measure` method. See also xref:examples.adoc#multichannel_hw_sync[].
+To use hardware synchronization, use the same `measure` method. See also the xref:examples.adoc#multichannel_hw_sync[Hardware sync] example.
 Make sure the method has the `general.use_hardware_sync` flag set.
 
 In addition, the pool must contain:

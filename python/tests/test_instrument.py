@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import asyncio
 import warnings
 from dataclasses import dataclass
+from itertools import groupby
 
 import pytest
 from PalmSens.Comm import enumDeviceType
@@ -133,3 +135,50 @@ def test_discover():
 async def test_discover_async():
     instruments = await ps.discover_async()
     assert len(instruments) >= 0
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_idle_status_callback_async():
+    points = []
+
+    def callback(status):
+        points.append(status)
+
+    async with await ps.connect_async() as manager:
+        manager.register_status_callback(callback)
+
+        await asyncio.sleep(1)
+
+        method = ps.ChronoAmperometry(
+            pretreatment=ps.settings.Pretreatment(
+                conditioning_time=0.3,
+                deposition_time=0.3,
+            ),
+            interval_time=0.02,
+            potential=1.0,
+            run_time=0.1,
+        )
+        _ = await manager.measure(method)
+        await asyncio.sleep(1)
+
+        manager.unregister_status_callback()
+
+    assert len(points) == 6
+
+    assert [_[0] for _ in groupby(points, key=lambda _: _.device_state)] == [
+        'Idle',
+        'Pretreatment',
+        'Idle',
+    ]
+    assert [_[0] for _ in groupby(points, key=lambda _: _.pretreatment_phase)] == [
+        'None',
+        'Conditioning',
+        'Depositing',
+        'None',
+    ]
+
+    for point in points:
+        assert isinstance(point.current, float)
+        assert isinstance(point.potential, float)
+        assert isinstance(point.current_we2, float)

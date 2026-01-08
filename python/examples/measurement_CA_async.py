@@ -15,7 +15,6 @@ async def main():
         serial = await manager.get_instrument_serial()
         print(serial)
 
-        # Chronoamperometry measurement using helper class
         method = ps.ChronoAmperometry(
             interval_time=0.02,
             potential=1.0,

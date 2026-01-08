@@ -29,6 +29,12 @@ async def test_get_instrument_serial(manager):
 
 
 @pytest.mark.instrument
+def test_status_async(manager):
+    status = manager.status()
+    assert status.device_state == 'Idle'
+
+
+@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_read_current(manager):
     await manager.set_cell(True)

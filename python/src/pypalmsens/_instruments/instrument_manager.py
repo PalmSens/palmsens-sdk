@@ -21,7 +21,7 @@ from .._methods import (
 )
 from ..data import Measurement
 from ._common import Instrument, create_future, firmware_warning
-from .callback import Callback
+from .callback import Callback, Status
 from .instrument_manager_async import discover_async
 from .measurement_manager_async import MeasurementManagerAsync
 
@@ -151,25 +151,9 @@ class InstrumentManager:
     ----------
     instrument: Instrument
         Instrument to connect to, use `discover()` to find connected instruments.
-    callback : Callback, optional
-        Deprecated. Pass your callback to `InstrumentManager.measure()` directly instead.
     """
 
-    def __init__(self, instrument: Instrument, *, callback: None | Callback = None):
-        if callback:
-            warnings.warn(
-                (
-                    'Passing a callback to the instrument manager is '
-                    'deprecated and will be removed in a future version. '
-                    'Use `InstrumentManager.measure(..., callback=callback)` '
-                    'instead.'
-                ),
-                DeprecationWarning,
-            )
-
-        self.callback: None | Callback = callback
-        """This callback is called on every data point."""
-
+    def __init__(self, instrument: Instrument):
         self.instrument: Instrument = instrument
         """Instrument to connect to."""
 
@@ -245,6 +229,13 @@ class InstrumentManager:
         self._comm = asyncio.run(_connect(self.instrument.device))
 
         firmware_warning(self._comm.Capabilities)
+
+    def status(self) -> Status:
+        """Get status."""
+        return Status(
+            self._comm.get_Status(),
+            device_state=str(self._comm.get_State()),  # type:ignore
+        )
 
     def set_cell(self, cell_on: bool):
         """Turn the cell on or off.
@@ -350,13 +341,15 @@ class InstrumentManager:
         callback: Callback, optional
             If specified, call this function on every new set of data points.
             New data points are batched, and contain all points since the last
-            time it was called. Each point is a dictionary containing
-            `frequency`, `z_re`, `z_im` for impedimetric techniques and
-            `index`, `x`, `x_unit`, `x_type`, `y`, `y_unit` and `y_type` for
-            non-impedimetric techniques.
-        """
-        callback = callback or self.callback
+            time it was called. Each point is an instance of `ps.data.CallbackData`
+            for non-impedimetric or  `ps.data.CallbackDataEIS`
+            for impedimetric measurments.
 
+        Returns
+        -------
+        measurement : Measurement
+            Finished measurement.
+        """
         psmethod = method._to_psmethod()
 
         self.ensure_connection()

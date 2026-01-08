@@ -30,6 +30,12 @@ def test_get_instrument_serial(manager):
 
 
 @pytest.mark.instrument
+def test_status(manager):
+    status = manager.status()
+    assert status.device_state == 'Idle'
+
+
+@pytest.mark.instrument
 def test_read_current(manager):
     manager.set_cell(True)
 
@@ -62,6 +68,52 @@ def test_read_potential(manager):
 def test_forbid_extra_keys():
     with pytest.raises(ValidationError):
         _ = ps.CyclicVoltammetry(foo=123, bar=678)
+
+
+@pytest.mark.instrument
+def test_callback(manager):
+    points = []
+
+    def callback(data):
+        points.append(data)
+
+    params = ps.LinearSweepVoltammetry(scanrate=1)
+    _ = manager.measure(params, callback=callback)
+
+    assert len(points) == 11
+
+    point = points[-1]
+    assert point.start == 10
+
+    assert isinstance(point.x_array, DataArray)
+    assert point.x_array.name == 'potential'
+    assert len(point.x_array) == 11
+
+    assert isinstance(point.y_array, DataArray)
+    assert point.y_array.name == 'current'
+    assert len(point.y_array) == 11
+
+
+@pytest.mark.instrument
+def test_callback_eis(manager):
+    points = []
+
+    def callback(data):
+        points.append(data)
+
+    params = ps.ElectrochemicalImpedanceSpectroscopy(
+        frequency_type='fixed',
+        scan_type='fixed',
+    )
+    _ = manager.measure(params, callback=callback)
+
+    assert len(points) == 1
+
+    point = points[0]
+
+    assert point.start == 0
+    assert isinstance(point.data, DataSet)
+    assert point.data.n_points == 1
 
 
 class CV:
@@ -1180,52 +1232,6 @@ def test_measure(manager, method):
     measurement = manager.measure(params)
 
     method.validate(measurement)
-
-
-@pytest.mark.instrument
-def test_callback(manager):
-    points = []
-
-    def callback(data):
-        points.append(data)
-
-    params = ps.LinearSweepVoltammetry(scanrate=1)
-    _ = manager.measure(params, callback=callback)
-
-    assert len(points) == 11
-
-    point = points[-1]
-    assert point.start == 10
-
-    assert isinstance(point.x_array, DataArray)
-    assert point.x_array.name == 'potential'
-    assert len(point.x_array) == 11
-
-    assert isinstance(point.y_array, DataArray)
-    assert point.y_array.name == 'current'
-    assert len(point.y_array) == 11
-
-
-@pytest.mark.instrument
-def test_callback_eis(manager):
-    points = []
-
-    def callback(data):
-        points.append(data)
-
-    params = ps.ElectrochemicalImpedanceSpectroscopy(
-        frequency_type='fixed',
-        scan_type='fixed',
-    )
-    _ = manager.measure(params, callback=callback)
-
-    assert len(points) == 1
-
-    point = points[0]
-
-    assert point.start == 0
-    assert isinstance(point.data, DataSet)
-    assert point.data.n_points == 1
 
 
 @pytest.mark.parametrize(

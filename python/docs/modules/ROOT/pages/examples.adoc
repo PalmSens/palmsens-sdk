@@ -76,7 +76,6 @@ Note that the example has a reduced number of cycles and maximum run time.
 include::example$mixed_mode.py[]
 ----
 
-
 == MethodSCRIPT sandbox
 
 This example shows how to set up and run a MethodSCRIPT Sandbox measurement.
@@ -84,6 +83,15 @@ This example shows how to set up and run a MethodSCRIPT Sandbox measurement.
 .measurement_MethodSCRIPT_sandbox.py
 ----
 include::example$measurement_MethodSCRIPT_sandbox.py[]
+----
+
+== Status callback
+
+This example shows how to set up a callback to read out the idle status updates (current/potential) and store the pretreatment data.
+
+.measurement_status_callback.py
+----
+include::example$measurement_status_callback.py[]
 ----
 
 == Stream data to CSV

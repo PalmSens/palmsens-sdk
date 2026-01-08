@@ -124,6 +124,8 @@ reportUnknownMemberType = false
 reportUnknownVariableType = false
 reportUnknownArgumentType = false
 reportPrivateUsage = false
+enableTypeIgnoreComments = true
+reportIgnoreCommentWithoutRule = false
 
 [tool.bumpversion]
 current_version = "1.5.0"

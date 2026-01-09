@@ -20,10 +20,10 @@ from .._methods import (
     cr_string_to_enum,
 )
 from ..data import Measurement
-from ._common import Instrument, create_future, firmware_warning
 from .callback import Callback, Status
 from .instrument_manager_async import discover_async
 from .measurement_manager_async import MeasurementManagerAsync
+from .shared import Instrument, create_future, firmware_warning
 
 warnings.simplefilter('default')
 

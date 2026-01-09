@@ -3,7 +3,7 @@ from __future__ import annotations
 from PalmSens import Techniques
 
 import pypalmsens as ps
-from pypalmsens._methods._shared import (
+from pypalmsens._methods.shared import (
     get_extra_value_mask,
     set_extra_value_mask,
 )

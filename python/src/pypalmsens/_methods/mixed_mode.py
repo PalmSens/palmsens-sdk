@@ -8,15 +8,15 @@ from PalmSens.Techniques import MixedMode as PSMixedMode
 from pydantic import Field
 from typing_extensions import override
 
-from .._shared import single_to_double
+from .._helpers import single_to_double
 from . import mixins
-from ._shared import (
+from .base import BaseTechnique
+from .base_model import BaseModel
+from .shared import (
     AllowedCurrentRanges,
     cr_enum_to_string,
     cr_string_to_enum,
 )
-from .base import BaseTechnique
-from .base_model import BaseModel
 
 
 class BaseStage(BaseModel, metaclass=ABCMeta):

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pypalmsens._methods._shared import (
+from pypalmsens._methods.shared import (
     convert_bools_to_int,
     convert_int_to_bools,
     cr_enum_to_string,

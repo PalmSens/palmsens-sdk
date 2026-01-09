@@ -4,9 +4,9 @@ import asyncio
 from typing import TYPE_CHECKING, Sequence
 
 from .._methods import BaseTechnique
-from ._common import Instrument
 from .instrument_manager_async import InstrumentManagerAsync
 from .instrument_pool_async import InstrumentPoolAsync
+from .shared import Instrument
 
 if TYPE_CHECKING:
     from .._data.measurement import Measurement

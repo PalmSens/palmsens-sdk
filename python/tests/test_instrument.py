@@ -9,7 +9,7 @@ import pytest
 from PalmSens.Comm import enumDeviceType
 
 import pypalmsens as ps
-from pypalmsens._instruments._common import firmware_warning
+from pypalmsens._instruments.shared import firmware_warning
 from pypalmsens.data import Measurement
 
 

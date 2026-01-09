@@ -3,10 +3,18 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, overload
 
+import clr
 import numpy as np
+from PalmSens.Data import CurrentReading
 from typing_extensions import override
 
-from ._shared import ArrayType
+from .._methods import cr_enum_to_string
+from ..settings import (
+    AllowedCurrentRanges,
+    AllowedReadingStatus,
+    AllowedTimingStatus,
+)
+from .shared import ArrayType
 
 if TYPE_CHECKING:
     from PalmSens.Data import DataArray as PSDataArray
@@ -113,3 +121,33 @@ class DataArray(Sequence[float]):
     def ocp_value(self) -> float:
         """OCP Value."""
         return self._psarray.OCPValue
+
+    def as_current_range(self) -> list[AllowedCurrentRanges]:
+        """Return current range as list of strings."""
+        if self.type is not ArrayType.Current:
+            raise ValueError(f'Invalid array type: {self.type}, expected: {ArrayType.Current}')
+
+        clr_type = clr.GetClrType(CurrentReading)
+        field_info = clr_type.GetField('CurrentRange')
+
+        return [cr_enum_to_string(field_info.GetValue(val)) for val in self._psarray]
+
+    def as_reading_status(self) -> list[AllowedReadingStatus]:
+        """Return reading status as list of strings."""
+        if self.type is not ArrayType.Current:
+            raise ValueError(f'Invalid array type: {self.type}, expected: {ArrayType.Current}')
+
+        clr_type = clr.GetClrType(CurrentReading)
+        field_info = clr_type.GetField('ReadingStatus')
+
+        return [field_info.GetValue(val).ToString() for val in self._psarray]
+
+    def as_timing_status(self) -> list[AllowedTimingStatus]:
+        """Return timing status as list of strings."""
+        if self.type is not ArrayType.Current:
+            raise ValueError(f'Invalid array type: {self.type}, expected: {ArrayType.Current}')
+
+        clr_type = clr.GetClrType(CurrentReading)
+        field_info = clr_type.GetField('TimingStatus')
+
+        return [field_info.GetValue(val).ToString() for val in self._psarray]

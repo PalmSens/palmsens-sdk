@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from ._common import Instrument
 from .instrument_manager import (
     InstrumentManager,
     connect,
@@ -15,6 +14,7 @@ from .instrument_manager_async import (
 )
 from .instrument_pool import InstrumentPool
 from .instrument_pool_async import InstrumentPoolAsync
+from .shared import Instrument
 
 __all__ = [
     'connect',

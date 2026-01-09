@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, final
 
 from typing_extensions import override
 
+from .._methods import cr_enum_to_string
+from ..settings import AllowedCurrentRanges
 from .data_array import DataArray
 from .dataset import DataSet
 
@@ -180,9 +182,11 @@ class EISData:
         """Complete list of data arrays."""
         return list(self.dataset.values())
 
-    def current_range(self) -> list[str]:
+    def current_range(self) -> list[AllowedCurrentRanges]:
         """Current ranges for the measurement."""
-        return [self._pseis.GetCurrentRange(val).Description for val in range(self.n_points)]
+        return [
+            cr_enum_to_string(self._pseis.GetCurrentRange(val)) for val in range(self.n_points)
+        ]
 
     @property
     def cdc(self) -> str:

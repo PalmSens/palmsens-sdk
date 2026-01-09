@@ -30,7 +30,7 @@ def test_eis_data(eis_simple):
     assert eis.x_quantity == 'Time'
     assert eis.x_unit == 's'
 
-    assert eis.current_range() == ['10 mA', '1 mA', '100 uA', '10 uA', '1 uA']
+    assert eis.current_range() == ['10mA', '1mA', '100uA', '10uA', '1uA']
 
     lst = eis.arrays()
     assert len(lst) == 18
@@ -39,7 +39,7 @@ def test_eis_data(eis_simple):
 def test_eis_dataset(eis_simple):
     dataset = eis_simple[0].dataset
 
-    assert dataset.current_range() == ['10 mA', '1 mA', '100 uA', '10 uA', '1 uA']
+    assert dataset.current_range() == ['10mA', '1mA', '100uA', '10uA', '1uA']
     assert dataset.reading_status() == ['Underload'] * 4 + ['OK']
 
     assert len(dataset) == 18
@@ -63,7 +63,7 @@ def test_eis_data_mux_subscans(eis_mux_subscans):
     assert eis.x_quantity == 'Potential'
     assert eis.x_unit == 'V'
 
-    assert set(eis.current_range()) == {'10 mA', '1 mA', '100 uA', '10 uA', '1 uA'}
+    assert set(eis.current_range()) == {'10mA', '1mA', '100uA', '10uA', '1uA'}
 
     assert len(eis.subscans) == 4
 
@@ -76,7 +76,7 @@ def test_eis_data_mux_subscans_dataset(eis_mux_subscans):
 
     dataset = eis_mux_subscans[0].dataset
 
-    assert set(dataset.current_range()) == {'10 mA', '1 mA', '100 uA', '10 uA', '1 uA'}
+    assert set(dataset.current_range()) == {'10mA', '1mA', '100uA', '10uA', '1uA'}
     assert set(dataset.reading_status()) == {'Underload', 'OK'}
 
     assert len(dataset) == 18

@@ -1,17 +1,23 @@
 from __future__ import annotations
 
+from collections.abc import Generator
 from dataclasses import dataclass, field
 from typing import Literal, Protocol
 
 import PalmSens
 from PalmSens.Comm import StatusEventArgs
-from typing_extensions import Generator, override
-
-from pypalmsens.settings import AllowedCurrentRanges, AllowedPotentialRanges
+from typing_extensions import override
 
 from .._data.data_array import DataArray
 from .._data.dataset import DataSet
-from .._methods._shared import cr_enum_to_string, pr_enum_to_string
+from .._methods.shared import cr_enum_to_string, pr_enum_to_string
+from ..settings import (
+    AllowedCurrentRanges,
+    AllowedDeviceState,
+    AllowedPotentialRanges,
+    AllowedReadingStatus,
+    AllowedTimingStatus,
+)
 
 
 @dataclass(slots=True)
@@ -94,8 +100,8 @@ class PotentialReading:
     potential_range: AllowedPotentialRanges
     potential: float
     potential_in_range: float
-    timing_status: Literal['Unknown', 'OK', 'OverStep']
-    reading_status: Literal['OK', 'Overload', 'Underload', 'OverloadWarning']
+    timing_status: AllowedTimingStatus
+    reading_status: AllowedReadingStatus
 
     @override
     def __str__(self):
@@ -117,8 +123,8 @@ class CurrentReading:
     current_range: AllowedCurrentRanges
     current: float
     current_in_range: float
-    timing_status: Literal['Unknown', 'OK', 'OverStep']
-    reading_status: Literal['OK', 'Overload', 'Underload', 'OverloadWarning']
+    timing_status: AllowedTimingStatus
+    reading_status: AllowedReadingStatus
 
     @override
     def __str__(self):
@@ -138,9 +144,7 @@ class CurrentReading:
 @dataclass(slots=True)
 class Status:
     _status: PalmSens.Comm.Status = field(repr=False)
-    device_state: Literal[
-        'Unknown', 'Idle', 'Measurement', 'Download', 'Pretreatment', 'Error', 'MeasOCP'
-    ] = 'Unknown'
+    device_state: AllowedDeviceState = 'Unknown'
     """Device state."""
 
     @classmethod

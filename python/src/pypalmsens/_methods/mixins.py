@@ -3,11 +3,11 @@ from __future__ import annotations
 from pydantic import Field, field_validator
 
 from . import settings
-from ._shared import (
+from .base_model import BaseModel
+from .shared import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
 )
-from .base_model import BaseModel
 
 
 class CurrentRangeMixin(BaseModel):

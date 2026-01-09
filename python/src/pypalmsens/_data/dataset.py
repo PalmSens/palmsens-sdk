@@ -3,14 +3,13 @@ from __future__ import annotations
 from collections.abc import Generator, Mapping
 from typing import TYPE_CHECKING, Callable, final
 
-import clr
-from PalmSens.Data import CurrentReading
 from PalmSens.Plottables import Curve as PSCurve
 from typing_extensions import override
 
-from ._shared import ArrayType
+from ..settings import AllowedCurrentRanges, AllowedReadingStatus, AllowedTimingStatus
 from .curve import Curve
 from .data_array import DataArray
+from .shared import ArrayType
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -210,32 +209,20 @@ class DataSet(Mapping[str, DataArray]):
         """Return all AuxInput arrays."""
         return self.arrays_by_type(ArrayType.AuxInput)
 
-    def current_range(self) -> list[str]:
+    def current_range(self) -> list[AllowedCurrentRanges]:
         """Return current range as list of strings."""
         array = self.current_arrays()[-1]
+        return array.as_current_range()
 
-        clr_type = clr.GetClrType(CurrentReading)
-        field_info = clr_type.GetField('CurrentRange')
-
-        return [field_info.GetValue(val).ToString() for val in array._psarray]
-
-    def reading_status(self) -> list[str]:
+    def reading_status(self) -> list[AllowedReadingStatus]:
         """Return reading status as list of strings."""
         array = self.current_arrays()[-1]
+        return array.as_reading_status()
 
-        clr_type = clr.GetClrType(CurrentReading)
-        field_info = clr_type.GetField('ReadingStatus')
-
-        return [field_info.GetValue(val).ToString() for val in array._psarray]
-
-    def timing_status(self) -> list[str]:
+    def timing_status(self) -> list[AllowedTimingStatus]:
         """Return timing status as list of strings."""
         array = self.current_arrays()[-1]
-
-        clr_type = clr.GetClrType(CurrentReading)
-        field_info = clr_type.GetField('TimingStatus')
-
-        return [field_info.GetValue(val).ToString() for val in array._psarray]
+        return array.as_timing_status()
 
     def to_dataframe(self) -> pd.DataFrame:
         """Return dataset as pandas dataframe.

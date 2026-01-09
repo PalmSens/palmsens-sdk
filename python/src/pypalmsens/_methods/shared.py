@@ -6,8 +6,14 @@ from typing import Literal
 
 import PalmSens
 
-from .._shared import single_to_double
+from .._helpers import single_to_double
 from .base_model import BaseModel
+
+AllowedTimingStatus = Literal['Unknown', 'OK', 'OverStep']
+AllowedReadingStatus = Literal['OK', 'Overload', 'Underload', 'OverloadWarning']
+AllowedDeviceState = Literal[
+    'Unknown', 'Idle', 'Measurement', 'Download', 'Pretreatment', 'Error', 'MeasOCP'
+]
 
 AllowedCurrentRanges = Literal[
     '100pA',
@@ -67,9 +73,9 @@ def cr_enum_to_string(enum: PalmSens.CurrentRange) -> AllowedCurrentRanges:
 def pr_string_to_enum(s: AllowedPotentialRanges) -> PalmSens.PotentialRange:
     """Convert literal string to PotentialRange."""
     attr = f'pr{s}'
-    cr = getattr(PalmSens.PotentialRanges, attr)
+    pr = getattr(PalmSens.PotentialRanges, attr)
 
-    return PalmSens.PotentialRange(cr)
+    return PalmSens.PotentialRange(pr)
 
 
 def pr_enum_to_string(enum: PalmSens.PotentialRange) -> AllowedPotentialRanges:

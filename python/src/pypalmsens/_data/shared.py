@@ -88,10 +88,3 @@ class ArrayType(Enum):
     @classmethod
     def _missing_(cls, value):
         return cls.Unspecified
-
-
-class Status(Enum):
-    Unknown = -1
-    OK = 0
-    Overload = 1
-    Underload = 2

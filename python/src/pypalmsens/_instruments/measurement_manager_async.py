@@ -12,8 +12,8 @@ from System.Threading.Tasks import Task
 
 from .._data import DataSet
 from ..data import DataArray, Measurement
-from ._common import create_future
 from .callback import Callback, CallbackData, CallbackDataEIS
+from .shared import create_future
 
 if TYPE_CHECKING:
     from PalmSens import Measurement as PSMeasurement

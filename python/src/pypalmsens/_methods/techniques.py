@@ -10,9 +10,10 @@ from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 from pydantic import Field
 from typing_extensions import override
 
-from .._shared import single_to_double
+from .._helpers import single_to_double
 from . import mixins
-from ._shared import (
+from .base import BaseTechnique
+from .shared import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
     ELevel,
@@ -24,7 +25,6 @@ from ._shared import (
     pr_string_to_enum,
     set_extra_value_mask,
 )
-from .base import BaseTechnique
 
 
 class CyclicVoltammetry(

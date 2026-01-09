@@ -5,7 +5,7 @@ from math import isnan
 import numpy as np
 import pytest
 
-from pypalmsens._data._shared import ArrayType
+from pypalmsens._data.shared import ArrayType
 
 
 @pytest.fixture
@@ -60,3 +60,18 @@ def test_array_copy(array):
     assert list(array) == list(new_array)  # data must match
     assert array is not new_array
     assert array._psarray is not new_array._psarray
+
+
+def test_array_status(data_cv_1scan):
+    array = data_cv_1scan[0].dataset.current_arrays()[0]
+    _ = array.as_current_range()
+    _ = array.as_timing_status()
+    _ = array.as_reading_status()
+
+
+def test_array_status_fail(data_cv_1scan):
+    array = data_cv_1scan[0].dataset.potential_arrays()[0]
+    with pytest.raises(ValueError):
+        _ = array.as_current_range()
+        _ = array.as_timing_status()
+        _ = array.as_reading_status()

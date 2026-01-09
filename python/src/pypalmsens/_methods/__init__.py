@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from ._shared import (
+from .base import BaseSettings, BaseTechnique
+from .method import Method
+from .shared import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
     cr_enum_to_string,
@@ -8,8 +10,6 @@ from ._shared import (
     pr_enum_to_string,
     pr_string_to_enum,
 )
-from .base import BaseSettings, BaseTechnique
-from .method import Method
 
 __all__ = [
     'cr_string_to_enum',

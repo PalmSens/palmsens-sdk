@@ -62,6 +62,13 @@ publishing = [
     "build",
 ]
 
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings",
+    "mkdocstrings-python",
+]
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 

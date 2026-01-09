@@ -1,28 +1,22 @@
 site:
   title: PalmSens for Developers
   start_page: start::index.adoc
-  url: https://sdk.palmsens.com
 content:
   sources:
     - url: .
-      branches: HEAD
       start_path: docs/start
     - url: .
-      branches: HEAD
+      version: true
       start_path: python/docs
-      tags: [python-1.6.0, python-1.5.0, python-1.4.0]
-      version:
-        main: dev
-        python-(?<version>+({0..9}).+({0..9})).*: $<version>
     - url: .
-      branches: HEAD
       start_path: matlab/docs
+      version: true
     - url: .
-      branches: HEAD
       start_path: labview/docs
+      version: true
     - url: .
-      branches: HEAD
       start_path: maui/docs
+      version: true
 urls:
   latest_version_segment: latest
 ui:

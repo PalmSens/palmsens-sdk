@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from ._methods.settings import (
     BiPot,
+    BiPotCurrentRange,
     ChargeLimits,
     CurrentLimits,
     CurrentRange,
@@ -37,6 +38,7 @@ __all__ = [
     'AllowedReadingStatus',
     'AllowedDeviceState',
     'BiPot',
+    'BiPotCurrentRange',
     'ChargeLimits',
     'CurrentLimits',
     'CurrentRange',

@@ -32,6 +32,7 @@ class CyclicVoltammetry(
     mixins.CurrentRangeMixin,
     mixins.PretreatmentMixin,
     mixins.VersusOCPMixin,
+    mixins.BiPotMixin,
     mixins.PostMeasurementMixin,
     mixins.CurrentLimitsMixin,
     mixins.IrDropCompensationMixin,

@@ -132,9 +132,11 @@ def test_BipotSettings():
     params = ps.settings.BiPot(
         mode='offset',
         potential=10.0,
-        current_range_max='100uA',
-        current_range_min='10nA',
-        current_range_start='10uA',
+        current_range={
+            'max': '100uA',
+            'min': '10nA',
+            'start': '10uA',
+        },
     )
     params._update_psmethod(obj)
 
@@ -143,6 +145,23 @@ def test_BipotSettings():
     assert obj.BipotRanging.MaximumCurrentRange.Description == '100 uA'
     assert obj.BipotRanging.MinimumCurrentRange.Description == '10 nA'
     assert obj.BipotRanging.StartCurrentRange.Description == '10 uA'
+
+    new_params = ps.settings.BiPot()
+    new_params._update_params(obj)
+
+    assert new_params == params
+
+
+def test_BipotSettings_fixed():
+    obj = Techniques.CyclicVoltammetry()
+
+    params = ps.settings.BiPot(mode='constant', current_range='10mA')
+    params._update_psmethod(obj)
+
+    assert obj.BipotModePS == Techniques.CyclicVoltammetry.EnumPalmSensBipotMode(0)
+    assert obj.BipotRanging.MaximumCurrentRange.Description == '10 mA'
+    assert obj.BipotRanging.MinimumCurrentRange.Description == '10 mA'
+    assert obj.BipotRanging.StartCurrentRange.Description == '10 mA'
 
     new_params = ps.settings.BiPot()
     new_params._update_params(obj)

@@ -34,6 +34,7 @@
 		</Item>
 		<Item Name="BasicExample.vi" Type="VI" URL="../BasicExample.vi"/>
 		<Item Name="BasicExampleExportCSV.vi" Type="VI" URL="../BasicExampleExportCSV.vi"/>
+		<Item Name="BasicExampleMux.vi" Type="VI" URL="../BasicExampleMux.vi"/>
 		<Item Name="BasicExampleOCP.vi" Type="VI" URL="../BasicExampleOCP.vi"/>
 		<Item Name="BasicUIExample.vi" Type="VI" URL="../BasicUIExample.vi"/>
 		<Item Name="MethodSCRIPTExample.vi" Type="VI" URL="../MethodSCRIPTExample.vi"/>

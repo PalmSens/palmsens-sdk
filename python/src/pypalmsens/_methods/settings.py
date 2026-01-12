@@ -545,9 +545,10 @@ class Multiplexer(BaseSettings):
     """Set multiplexer mode.
 
     Possible values:
-    * 'none' = No multiplexer (disable)
-    * 'consecutive
-    * 'alternate
+
+    - `none`: No multiplexer (disable)
+    - `consecutive`
+    - `alternate`
     """
 
     channels: list[int] = Field(default_factory=list)

@@ -1,0 +1,43 @@
+= PalmSens WinForms Documentation
+
+{empty} +
+{empty}
+
+image::banner.svg[PalmSens banner, width=80%]
+
+{empty} +
+{empty}
+
+With this WinForms SDK you develop Windows applications in Visual Studio using https://learn.microsoft.com/en-us/dotnet/desktop/winforms/overview/[WinForms].
+
+WinForms, is a free, open-source graphical user interface (GUI) class library for building Windows desktop applications,
+included as a part of Microsoft .NET, .NET Framework or Mono.
+
+https://github.com/PalmSens/PalmSens_SDK/releases[Click here to download the latest release].
+
+image::basic_example.png[Example measurement app, width=50%]
+
+== Features
+
+These projects contain a simplified open source wrapper for the xref:start:ROOT:core.adoc[`PalmSens.Core`] libraries.
+
+* `PalmSens.Core.Simplified`
+* `PalmSens.Core.Simplified.WinForms`
+
+The simplified wrappers give you quick and easy access to all the basic functions of the PalmSens/EmStat devices and automatically handles most potential threading issues for you:
+
+* Connecting
+* Manual control of the cell
+* Running measurements
+* Accessing and processing measured data
+* Analyzing and manipulating data
+
+Methods and data structures are referenced from the xref:start:ROOT:core.adoc[`PalmSens.Core`] libraries.
+
+In addition, the projects contain a simple open source plot control that you can use to plot your measurements in real-time.
+They are based on the open-source http://www.oxyplot.org/[OxyPlot library].
+
+* `SDKPlot`
+* `SDKPlot.WinForms`
+
+Click xref:examples.adoc[here for a list of example apps] to help you get started.

@@ -130,17 +130,17 @@ This can be particularly useful when the device was disconnected due to a commun
 
 Communication issues can occur when certain commands are executed at the same time.
 The problem with starting a measurement and triggering a read potential at the same time will result in the device receiving commands in an incorrect order.
-These issues typically arise when a timer is used, when using multiple threads, and when invoking commands in a callback on one on the `psCommSimple/psMultiCommSimple` events.
+These issues typically arise when a timer is used, when using multiple threads, and when invoking commands in a callback on one on the `psCommSimple`/`psMultiCommSimple` events.
 
 When using the simplified core wrapper, communication issues are prevented as much as possible.
-Using commands to control the device from your `psCommSimple/psMultiCommSimple` event callbacks is blocked, to prevent communication issues.
+Using commands to control the device from your `psCommSimple`/`psMultiCommSimple` event callbacks is blocked, to prevent communication issues.
 With the asynchronous methods you can control your device from one of these callbacks as the command will be delayed and run after completion of the previous command
 However, as it can be run at a later point in time it is important to check whether all conditions for executing the command are still true.
 
 This can be adjusted in the `PSCommSimple.cs` or `PSMultiCommSimple.cs` files in the `PalmSens.Core.Simplified` project.
 
 When using the `PalmSens.Core` directly, useful aids to prevent threading issues are the `comm.ClientConnection.Run` and `comm.ClientConnection.Run<T>` methods.
-These assure the commands are run on the correct context which prevents communication errors due to multiple threads communicating with the device simultaneously. When using multiple threads it is highly recommended to use these helper methods when invoking methods that communicate with the device (i.e. Measure, Current, Potential, CurrentRange and CellOn) from a different thread.
+These assure the commands are run on the correct context which prevents communication errors due to multiple threads communicating with the device simultaneously. When using multiple threads it is highly recommended to use these helper methods when invoking methods that communicate with the device (i.e. `Measure`, `Current`, `Potential`, `CurrentRange` and `CellOn`) from a different thread.
 
 Setting a value safely:
 

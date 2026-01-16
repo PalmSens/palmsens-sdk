@@ -15,12 +15,15 @@ SDKs are available for the ecosystems below. See the links for installation inst
 - xref:python:ROOT:index.adoc[PyPalmSens] (Python SDK)
 - xref:matlab:ROOT:index.adoc[Matlab SDK]
 - xref:labview:ROOT:index.adoc[Labview SDK]
-- xref:maui:ROOT:index.adoc[.NET MAUI SDK]
+
+- .NET development:
+    - xref:maui:ROOT:index.adoc[.NET MAUI SDK]
+    - xref:maui:ROOT:index.adoc[WinForms SDK]
 
 == Which SDK should you use?
 
 For new projects, we recommend using xref:python:ROOT:index.adoc[PyPalmSens] for research, data analysis and prototyping, and the xref:maui:ROOT:index.adoc[.NET MAUI SDK] for native, cross-platform application development targeting Windows, Android, and iOS.
 Both of these SDKs are actively maintained and will continue to receive new features and updates.
 
-For existing codebases, we support the xref:matlab:ROOT:index.adoc[Matlab SDK] and xref:labview:ROOT:index.adoc[LabView SDK].
+For existing codebases, we support the xref:matlab:ROOT:index.adoc[Matlab SDK], xref:labview:ROOT:index.adoc[LabView SDK], and xref:winforms:ROOT:index.adoc[WinForms SDK].
 These SDKs will continue to receive occasional bug fixes but are no longer under active development.

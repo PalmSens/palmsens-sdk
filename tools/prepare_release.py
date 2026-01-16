@@ -1,9 +1,8 @@
-from pathlib import Path
 import argparse
+import os
 import subprocess as sp
 from contextlib import contextmanager
-import os
-
+from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
 

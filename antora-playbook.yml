@@ -19,6 +19,9 @@ content:
     - url: .
       branches: HEAD
       start_path: maui/docs
+    - url: .
+      branches: HEAD
+      start_path: winforms/docs
 urls:
   latest_version_segment: latest
 ui:

@@ -1,0 +1,5 @@
+name: winforms
+version: '1.0.0'
+title: WinForms SDK
+nav:
+- modules/ROOT/nav.adoc

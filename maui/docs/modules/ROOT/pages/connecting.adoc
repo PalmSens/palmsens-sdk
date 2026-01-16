@@ -33,37 +33,38 @@ SynchronizationContextRemover.Init(nCores > 1 ? nCores - 1 : 1);
 
 === Bluetooth
 
-Discovery of Bluetooth devices is disabled by default, it can be enabled
-by setting the EnableBluetooth proprety to true.
+Discovery of Bluetooth devices is disabled by default, it can be enabled by setting the EnableBluetooth proprety to true.
 
 ----
 psCommSimple.EnableBluetooth = true;
 ----
 
 To be able to use Bluetooth in your project you should reference the `32.Feet.NET` NuGet package in your project (https://www.nuget.org/packages/32feet.NET/).
-Bluetooth Classic works on all supported platforms (Windows 7 SP1, Windows 8.1 and Windows 10).
+Bluetooth Classic works on all supported platforms (Windows 10+). BLE only works on Windows 10+.
 
-Bluetooth Low energy only works on Windows 10.
-
-To enable Bluetooth Low Energy you should add references to the `PalmSens.Core.Windows.BLE.dll` library (included in the PSLibraries folder) in `your` project and the `PalmSens.Core.Simplified` project.
+To enable BLE you should add references to the `PalmSens.Core.Windows.BLE.dll` library (included in the PSLibraries folder) in `your` project and the `PalmSens.Core.Simplified` project.
 Finally, you will also need to respectively uncomment the following lines in the `ScanDevices` and the `ScanDevicesAsync` methods of the `DeviceHandler` class in the `PalmSens.Core.Simplified` project.
+
+----
+discFuncs.Add(BLEDevice.DiscoverDevices);
+discFuncs.Add(BLEDevice.DiscoverDevicesAsync());
+----
 
 == Receive idle status readings
 
 The readings of PalmSens can be monitored continuously using the `ReceiveStatus` event.
 The `status` object that is received using this event contains the following information:
 
-* AuxInput: auxiliary input in V, `Status.GetExtraValueAsAuxVoltage()`
-* Current: in uA, `Status.CurrentReading.Value` or `Status.CurrentReading.ValueInRange`
-* Current2: in uA, in case a `BiPot` is used, `Status.GetExtraValueAsBiPotCurrent()`
-* Noise: `Status.Noise`
-* CurrentRange: the current range in use at the moment, `Status.CurrentReading.CurrentRange`
-* CurrentStatus: as `PalmSens.Comm.ReadingStatus` is ok, underload or overload, `Status.CurrentReading.ReadingStatus`
-* Potential: measured potential, `Status.PotentialReading.Value`
-* ReverseCurrent: the reverse current for SquareWave, `Status.ExtraValue`
-* PretreatmentPhaseStatus: `None`, `Conditioning`, `Depositing` or `Equilibrating`, `Status.PretreatmentPhase`
-* VoltageStatus: as `PalmSens.Comm.ReadingStatus` is ok, underload or overload, `Status.PotentialReading.ReadingStatus`
-
+* `AuxInput`: auxiliary input in V (`Status.GetExtraValueAsAuxVoltage()`)
+* `Current`: in μA, (`Status.CurrentReading.Value` or `Status.CurrentReading.ValueInRange`)
+* `Current2`: in μA, in case a `BiPot` is used (`Status.GetExtraValueAsBiPotCurrent()`)
+* `Noise`: `Status.Noise`
+* `CurrentRange`: the current range in use at the moment, `Status.CurrentReading.CurrentRange`
+* `CurrentStatus`: as `PalmSens.Comm.ReadingStatus` is `OK`, `UNDERLOAD` or `OVERLOAD` ( `Status.CurrentReading.ReadingStatus`)
+* `Potential`: measured potential, `Status.PotentialReading.Value`
+* `ReverseCurrent`: the reverse current for SquareWave (`Status.ExtraValue`)
+* `PretreatmentPhaseStatus`: `None`, `Conditioning`, `Depositing` or `Equilibrating` ( `Status.PretreatmentPhase`)
+* `VoltageStatus`: as `PalmSens.Comm.ReadingStatus` is `OK`, `Underload` or `Overload` (`Status.PotentialReading.ReadingStatus`)
 To get the device’s status updates subscribe to the `ReceiveStatus` event after connecting to a device.
 
 ----

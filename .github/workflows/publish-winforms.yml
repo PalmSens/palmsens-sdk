@@ -1,0 +1,37 @@
+name: Publish Winforms
+
+on:
+  push:
+    tags:
+      - 'winforms-*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Package release
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+        ref: ${{ github.ref_name }}
+
+    - name: Zip winforms directory
+      run: |
+        cd winforms
+        zip -r ../${{ github.ref_name }}.zip *
+        cd ..
+
+    - name: Upload zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ github.ref_name }}.zip
+        path: ${{ github.ref_name }}.zip
+
+    # https://github.com/softprops/action-gh-release
+    - name: Add zip to tagged release
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/winforms-')
+      with:
+        files: ${{ github.ref_name }}.zip

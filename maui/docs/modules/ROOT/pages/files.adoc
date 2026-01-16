@@ -39,7 +39,7 @@ Add these namespaces at the top of the document.
 
 ----
 using PalmSens;
-using PalmSens.Core.Simplified;
+using PalmSens.Core.Simplified.WinForms;
 ----
 
 This method loads a `.psmethod` file from the specified file path (i.e. `C:\path\to\my_method.psmethod`).
@@ -48,7 +48,7 @@ This method loads a `.psmethod` file from the specified file path (i.e. `C:\path
 Method method = SimpleLoadSaveFunctions.LoadMethod(filepath);
 ----
 
-=== Setting up a method
+== Setting up a method
 
 The next example defines a Linear Sweep Voltammetry *method*.
 
@@ -80,7 +80,7 @@ lsv.Ranging.MaximumCurrentRange = new CurrentRange(CurrentRanges.cr100pA);
 
 The CurrentRange constructor uses the enum `PalmSens.CurrentRanges` to specify its range.
 
-=== Saving a method
+== Saving a method
 
 To save the Linear Sweep Voltammetry *method* with the parameters as defined in the previous example, the following examples can be used:
 
@@ -88,7 +88,7 @@ Add these namespaces at the top of the document.
 
 ----
 using PalmSens;
-using PalmSens.Core.Simplified;
+using PalmSens.Core.Simplified.WinForms;
 ----
 
 This saves the previously defined Linear Sweep Voltammetry *method*
@@ -100,13 +100,15 @@ SimpleLoadSaveFunctions.SaveMethod(lsv, filepath);
 
 == Loading and saving data
 
-// TODO: loading data is missing from this section
+image::pssession.png[Data in pssession files]
 
 Data from measurements can be loaded from and stored to `.pssession` files.
 This contains a session with one or more measurements containing its respective method and curves.
 
-[discrete]
-=== `PalmSens.Core.Simplified`
+// TODO: loading data is missing from this section
+
+Data from measurements can be loaded from and stored to `.pssession` files.
+This contains a session with one or more measurements containing its respective method and curves.
 
 The simplified wrapper uses the `SimpleMeasurement` and `SimpleCurve` classes from the `PalmSens.Core.Simplified.Data` namespace instead of the `PalmSens.Measurement`, `PalmSens.Plottables.Curve` and `PalmSens.Plottables.EISData` classes.
 The `SimpleMeasurement` and `SimpleCurve` classes make it easier to perform basic functions such as:
@@ -121,6 +123,7 @@ Add these namespaces at the top of the document.
 ----
 using PalmSens;
 using PalmSens.Core.Simplified.Data;
+using PalmSens.Core.Simplified.WinForms;
 ----
 
 This saves a `SimpleMeasurement` to a `.pssession` file specified in the file path (i.e. `C:\path\to\my_data.pssession`).

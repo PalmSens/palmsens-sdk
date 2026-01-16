@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="OxyPlot.Core" Version="2.2.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PalmSens.Core.Simplified\PalmSens.Core.Simplified.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PalmSens.Core">
+      <HintPath>..\PalmSens.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

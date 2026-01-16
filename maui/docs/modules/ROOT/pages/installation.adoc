@@ -29,7 +29,7 @@ to your solution] and referencing the project.
 If you use the simplified wrapper to control your devices, reference the `PalmSens.Core.Simplified.csproj` and `PalmSens.Core.Simplified.MAUI.csproj` should be referenced.
 To use the plot helpers, reference the `SDKPlot.csproj`, `SDKPlot.Maui.csproj` projects.
 
-The `PalmSens.Core` libraries are available from nuget.org[https://nuget.org].
+The `PalmSens.Core` libraries are available from https://nuget.org[nuget.org].
 
 - https://www.nuget.org/packages/PalmSens.Core[PalmSens.Core]
 - https://www.nuget.org/packages/PalmSens.Core.Android[PalmSens.Core.Android]

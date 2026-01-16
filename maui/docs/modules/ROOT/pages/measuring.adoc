@@ -171,3 +171,89 @@ Or when connected to a device asynchronously:
 ----
 float potential = comm.ClientConnection.RunAsync<float>(() => comm.GetPotentialAsync());
 ----
+
+== Bluetooth
+
+On Android Bluetooth communication is partially handled on the main/UI thread.
+As a result your UI can become unresponsive or you can lose data packets.
+When designing your app you should take this into account.
+For example, reduce the sampling rate of your measurement to display live results, and limit the use of the UI during the measurement to perform measurements at high sampling rates.
+
+When data is lost during a measurement the device disconnects automatically, most of the time you can reconnect.
+However, in the worst case the Bluetooth module may need to be reset.
+
+A stable connection with bluetooth is very hardware/chip dependent.
+In the table below is an overview of the recommended maximum and maximum throughput in points per second we observed on different android devices.
+
+!!! note "Debug mode"
+
+    Take into account that throughput is lower when debugging your application.
+
+.Bluetooth Classic throughput
+[cols=",,",options="header",]
+|===
+| Instrument | Recommended max. (points per second) | Max. (points per second)
+
+| PalmSens4
+| 75 footnote:fntime[These values are for measurements longer than 30 seconds. For shorter measurements higher throughput are possible. Below 10, 5, and 2 seconds you could go up to 100, 250, 500 points per second, respectively.]
+| 100 footnote:fntime[]
+
+| Emstat3(+) Blue
+| 75 footnote:fntime[]
+| 100 footnote:fntime[]
+
+| EmStat Go (EmStat3)
+| 50 footnote:fntime[]
+| 100 footnote:fntime[]
+
+| EmStat Go (EmStat Pico)
+| 400
+| 600
+
+| Sensit BT
+| 400
+| 600
+
+| EmStat Pico
+| 400
+| 600
+
+| Development board
+| 400
+| 600
+|===
+
+
+.Bluetooth Low Energy throughput
+[cols=",,",options="header",]
+|===
+| Instrument | Recommended max. (points per second) | Max. (points per second)
+
+| PalmSens4
+| 100
+| 150
+
+| Emstat3(+) Blue
+| n/a
+| n/a
+
+| EmStat Go (EmStat3)
+| 100
+| 150
+
+| EmStat Go (EmStat Pico)
+| 100
+| 150
+
+| Sensit BT
+| 100
+| 150
+
+| EmStat Pico
+| 100
+| 150
+
+| Development board
+| 100
+| 150
+|===

@@ -25,6 +25,9 @@ content:
       version: true
 urls:
   latest_version_segment: latest
+asciidoc:
+  attributes:
+    page-component-sort-order: labview, matlab, maui, python, winforms, wpf
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable

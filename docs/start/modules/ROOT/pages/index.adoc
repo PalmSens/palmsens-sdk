@@ -16,7 +16,7 @@ SDKs are available for the ecosystems below. See the links for installation inst
 * xref:matlab:ROOT:index.adoc[Matlab SDK]
 * xref:labview:ROOT:index.adoc[Labview SDK]
 
-. .NET development:
+..NET development
 * xref:maui:ROOT:index.adoc[.NET MAUI SDK]
 * xref:winforms:ROOT:index.adoc[WinForms SDK]
 * xref:wpf:ROOT:index.adoc[WPF SDK]

@@ -1,0 +1,38 @@
+= Example Apps
+:experimental:
+
+This page lists some examples to help you get started with app development.
+
+The examples use https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/[asynchronous
+programming] where necessary to prevent the PalmSens SDK libraries from blocking the user interface.
+
+To make a new app using one of the example apps as a template:
+
+1. Copy the directory you want to copy, e.g. `BasicExample`
+2. Rename the directory to e.g. `MyNewApp`
+3. Rename `BasicExample.csproj` to `MyNewApp.csproj`
+4. Right click menu:Solution[Add > Existing Project], select `MyNewApp.csproj` file
+5. Update namespace (find-replace), `BasicExample` -> `MyNewApp`
+
+
+[#eScreenshot of Example appsxample-basic]
+== Basic Example
+[.float-group]
+--
+image:basic_example.png[Screenshot of Basic Example, 300, float="right"]
+
+Shows how to make a connection and run a measurement, with a minimum amount of code.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/wpf/Examples/BasicExample[Link to the code]
+--
+
+[#example-multichannel]
+== Multichannel Example
+[.float-group]
+--
+image:multichannel_example.png[Screenshot of Multichannel Example, 300, float="right"]
+
+Shows how to make a connection to multiple channels, run different types of measurements and plot the results.
+
+https://github.com/palmsens/palmsens_sdk/blob/main/wpf/Examples/MultiChannelExample[Link to the code]
+--

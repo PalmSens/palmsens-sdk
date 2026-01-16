@@ -1,0 +1,12 @@
+[tool.bumpversion]
+current_version = "1.0.0"
+
+[[tool.bumpversion.files]]
+filename = "docs/antora.yml"
+search = "version: '{current_version}'"
+replace = "version: '{new_version}'"
+
+[[tool.bumpversion.files]]
+filename = "/docs/modules/ROOT/nav.adoc"
+search = "wpf-{current_version}"
+replace = "wpf-{new_version}"

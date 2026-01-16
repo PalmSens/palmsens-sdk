@@ -1,0 +1,57 @@
+<Window x:Class="BasicExample.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BasicExample"
+        xmlns:WPF="clr-namespace:PalmSens.Core.Simplified.WPF;assembly=PalmSens.Core.Simplified.WPF"
+        mc:Ignorable="d"
+        d:DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        Title="MainWindow" Height="445" Width="547"
+    >
+    <Grid>
+        <GroupBox x:Name="grpConnection" Header="Connection" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="91" Width="193" BorderThickness="1,1,2,2">
+            <Grid >
+                <ComboBox x:Name="cmbDevices" HorizontalAlignment="Left" VerticalAlignment="Top" Width="161" Margin="10,10,0,0"/>
+                <Button x:Name="btnConnect" Content="Connect" HorizontalAlignment="Left" Margin="96,37,0,0" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnConnect_Click"/>
+                <Button x:Name="btnRefresh" Content="Refresh" HorizontalAlignment="Left" Margin="16,37,0,0" VerticalAlignment="Top" Width="75" Click="btnRefresh_Click"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="grpConsole" Header="Console" HorizontalAlignment="Left" Margin="10,106,0,5" Width="193" BorderThickness="1,1,2,2">
+            <Grid>
+                <ListBox x:Name="lbConsole" Margin="10" />
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="grpStatus" Header="Device Status" Margin="208,10,5,0" VerticalAlignment="Top" Height="91" BorderThickness="1,1,2,2">
+            <Grid>
+                <Label Content="Potential:" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top"/>
+                <TextBox x:Name="tbPotential" HorizontalAlignment="Left" Height="23" Margin="64,5,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="46" IsReadOnly="True"/>
+                <Label Content="V" HorizontalAlignment="Left" Margin="110,2,0,0" VerticalAlignment="Top"/>
+                <Label Content="Current:" HorizontalAlignment="Left" Margin="0,28,0,0" VerticalAlignment="Top"/>
+                <TextBox x:Name="tbCurrent" HorizontalAlignment="Left" Height="23" Margin="64,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="46" IsReadOnly="True"/>
+                <Label x:Name="lblCurrentRange" Content="* 10 mA" HorizontalAlignment="Left" Margin="110,28,0,0" VerticalAlignment="Top"/>
+                <Label Content="Status:" HorizontalAlignment="Left" Margin="168,2,0,0" VerticalAlignment="Top"/>
+                <TextBox x:Name="tbStatus" HorizontalAlignment="Left" Height="23" Margin="168,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="109" IsReadOnly="True"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="grpMeasurement" Header="Measurement" Margin="208,106,5,5" BorderThickness="1,1,2,2">
+            <Grid>
+                <Button x:Name="btnMeasure" Content="Measure" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" IsEnabled="False" Click="btnMeasure_Click"/>
+                <DataGrid Margin="10,35,10,10" ItemsSource="{Binding DataPoints}" AutoGenerateColumns="False" HeadersVisibility="Column">
+                    <DataGrid.Columns >
+                        <DataGridTextColumn Header="ID" Binding="{Binding ID}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False"/>
+                        <DataGridTextColumn Header="Potential (V)" Binding="{Binding Potential, StringFormat=F2}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False"/>
+                        <DataGridTextColumn Header="Current (µA)" Binding="{Binding Current, StringFormat=E2}" IsReadOnly="True" CanUserReorder="False" CanUserResize="False" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
+        <WPF:PSCommSimpleWPF x:Name="psCommSimpleWPF" HorizontalAlignment="Left" Height="100" VerticalAlignment="Top" Width="100"
+                             ReceiveStatus="psCommSimpleWPF_ReceiveStatus"
+                             StateChanged="psCommSimpleWPF_StateChanged"
+                             MeasurementStarted="psCommSimpleWPF_MeasurementStarted"
+                             MeasurementEnded="psCommSimpleWPF_MeasurementEnded"
+                             SimpleCurveStartReceivingData="psCommSimpleWPF_SimpleCurveStartReceivingData"
+                             Disconnected="psCommSimpleWPF_Disconnected"/>
+    </Grid>
+</Window>

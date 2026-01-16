@@ -1,0 +1,182 @@
+= Getting Started
+:experimental: true
+
+Download the latest release from https://github.com/PalmSens/PalmSens_SDK/releases[here].
+
+Developing WinForms apps requires Visual Studio 2017 or newer, or the latest Visual Studio Code.
+
+See https://learn.microsoft.com/en-us/visualstudio/ide/create-csharp-winform-visual-studio[this page] for installation instructions and how to get started with WinForms.
+
+[#add-sdk-to-solution]
+== Add SDK project to your solution
+
+In Visual Studio, click on your solution and go to menu:File[Add > Existing Project].
+Navigate to the project (`.csproj`) you want to add, e.g. `PSLibraries/PalmSens.Core.Simplified.WinForms/PalmSens.Core.Simplified.WinForms.csproj`.
+
+image::add_to_solution.png[]
+
+== Add SDK references to the project
+
+In Visual Studio, click on your project and go to menu:Project[Add Project Reference].
+Select the reference(s) you want to add, e.g. `PalmSens.Core.Simplified.WinForms`.
+
+image::add_to_project.png[]
+
+Reference external libraries (`.dll` files) by selecting them via the
+'Browse' button and reference project files (.csproj) by xref#add-sdk-to-solution[adding them
+to your solution] and referencing the project.
+
+The `PalmSens.Core.dll` and `PalmSens.Core.Windows.dll` libraries should always be referenced.
+
+If you use the simplified wrapper to control your devices, reference the `PalmSens.Core.Simplified.csproj` and `PalmSens.Core.Simplified.WinForms.csproj` should be referenced.
+To use the plot helpers, reference the `SDKPlot.csproj`, `SDKPlot.WinForms.csproj` projects.
+
+If your project does not build please make sure that:
+1. You target .NET Framework 4.7.2 or higher
+2. You use visual studio 2017 or higher
+3. .NET standard 2.0 is available.
+
+image::select_target_framework.png[]
+
+== Add PSCommSimpleWinforms or PS component to your user interface
+
+
+First, import the `PalmSens.Core.Simplified.csproj` and `PalmSens.Core.Simplified.WinForms.csproj` into your solution and build the `PalmSens.Core.Simplified.WinForms` project.
+Then reference these projects in your project.
+Next, go to the designer of your Main Form and look for the `PSCommSimpleWPF` user control in your toolbox.
+Drag and drop this component on top of your `Window`.
+If you would like to develop for a multi channel instrument use the `PSMultiCommSimpleWPF` user control instead.
+
+image::commsimple_control.png[]
+
+If you would like to develop for a multi channel instrument use the `PSMultiCommSimpleWPF` user control instead.
+
+image::comm_properties.png[]
+image::comm_events.png[]
+
+[#compatibility]
+== Compatible devices and firmware
+
+The PalmSens SDK is based on PalmSens core version 5.12.
+
+The table below lists the minimum supported firmwares versions and required drivers.
+
+You can update the firmware using a recent version of PSTrace on a Windows PC
+See the chapter 'Updating firmware' in the https://www.palmsens.com/knowledgebase-article/pstrace-user-manual/[PSTrace user manual] for more information.
+
+[cols=",,",options="header",]
+|===
+| Instrument | Firmware version | Windows drivers
+
+| Nexus
+| 1.100
+| palmsens_cdc.inf (optional) footnote:psdrivers[Drivers are installed with alongside the PSTrace desktop software or using https://github.com/PalmSens/PalmSens_SDK/releases/download/python-1.0.0/PalmSens.Drivers.exe[the driver installer].]
+
+| Palmsens1
+| 4.4
+| PalmSens FTDI footnote:psdrivers[]
+
+| Palmsens2
+| 4.4
+| PalmSens FTDI footnote:psdrivers[]
+
+| Palmsens3
+| 2.8
+| PalmSens FTDI footnote:psdrivers[]
+
+| Palmsens4
+| 1.7
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+
+| MultiPalmsens4
+| 1.7
+| Generic FTDI footnote:winftdi[Available from https://ftdichip.com/drivers/d2xx-drivers/]
+
+| EmStat1
+| 3.7
+| PalmSens FTDI footnote:psdrivers[]
+
+| EmStat2
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+
+| EmStat3
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+
+| EmStat3+
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+
+| MultiEmStat3
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+
+| EmStat3 Blue
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+
+| EmStat3+ Blue
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+
+| EmStat3 Go
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+
+| EmStat3+ Go
+| 7.7
+| PalmSens FTDI footnote:psdrivers[]
+
+| EmStat4S
+| 1.307
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+
+| MultiEmStat4
+| 1.307
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+
+| EmStat4X
+| 1.307
+| palmsens_winusb.inf (optional) footnote:psdrivers[]
+
+| EmStat4R
+| 1.307
+| Generic FTDI footnote:winftdi[]
+
+| EmStat4M
+| 1.307
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+
+| EmStat4T
+| 1.406
+| palmsens_cdc.inf (optional) footnote:psdrivers[]
+
+| EmStat4 Go
+| 1.307
+| Generic FTDI footnote:winftdi[]
+
+| EmStat Pico DevBoard
+| 1.601
+| Generic FTDI (optional) footnote:winftdi[]
+
+| EmStat Pico Module
+| 1.601
+| Generic FTDI (optional) footnote:winftdi[]
+
+| EmStat Pico Go
+| 1.601
+| Generic FTDI (optional) footnote:winftdi[]
+
+| Sensit Smart
+| 1.601
+| Generic FTDI (optional) footnote:winftdi[]
+
+| Sensit BT
+| 1.601
+| Generic FTDI (optional) footnote:winftdi[]
+
+| Sensit Wearable
+| 1.600
+| Generic FTDI (optional) footnote:winftdi[]
+|===

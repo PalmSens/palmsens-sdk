@@ -31,6 +31,7 @@ def version(write_json=False):
         ROOT / "matlab",
         ROOT / "labview",
         ROOT / "winforms",
+        ROOT / "wpf",
     )
 
     directories = {}

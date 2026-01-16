@@ -22,6 +22,9 @@ content:
     - url: .
       branches: HEAD
       start_path: winforms/docs
+    - url: .
+      branches: HEAD
+      start_path: wpf/docs
 urls:
   latest_version_segment: latest
 ui:

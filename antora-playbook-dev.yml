@@ -20,6 +20,9 @@ content:
     - url: .
       start_path: winforms/docs
       version: true
+    - url: .
+      start_path: wpf/docs
+      version: true
 urls:
   latest_version_segment: latest
 ui:

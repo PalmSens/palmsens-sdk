@@ -1,0 +1,5 @@
+name: wpf
+version: '1.0.0'
+title: WPF SDK
+nav:
+- modules/ROOT/nav.adoc

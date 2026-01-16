@@ -185,9 +185,11 @@ However, in the worst case the Bluetooth module may need to be reset.
 A stable connection with bluetooth is very hardware/chip dependent.
 In the table below is an overview of the recommended maximum and maximum throughput in points per second we observed on different android devices.
 
-!!! note "Debug mode"
-
-    Take into account that throughput is lower when debugging your application.
+[NOTE]
+.Debug mode
+====
+Take into account that throughput is lower when debugging your application.
+====
 
 .Bluetooth Classic throughput
 [cols=",,",options="header",]

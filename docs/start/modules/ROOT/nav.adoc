@@ -3,6 +3,7 @@
 * xref:labview:ROOT:index.adoc[Labview]
 * xref:maui:ROOT:index.adoc[.NET MAUI]
 * xref:winforms:ROOT:index.adoc[WinForms]
+* xref:wpf:ROOT:index.adoc[WPF]
 // * xref:projects.adoc[]
 
 * PalmSens .NET libraries

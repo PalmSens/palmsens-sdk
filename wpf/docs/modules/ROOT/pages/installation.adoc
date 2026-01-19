@@ -70,7 +70,7 @@ See the chapter 'Updating firmware' in the https://www.palmsens.com/knowledgebas
 
 | Nexus
 | 1.100
-| palmsens_cdc.inf (optional) footnote:psdrivers[Drivers are installed with alongside the PSTrace desktop software or using https://github.com/PalmSens/PalmSens_SDK/releases/download/python-1.0.0/PalmSens.Drivers.exe[the driver installer].]
+| palmsens_cdc.inf (optional) footnote:psdrivers[Drivers are installed with alongside the PSTrace desktop software or using https://github.com/PalmSens/PalmSens_SDK/releases/download/drivers-5.12/PalmSens.Drivers.exe[the driver installer].]
 
 | Palmsens1
 | 4.4

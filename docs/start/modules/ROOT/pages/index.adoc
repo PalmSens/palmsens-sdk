@@ -28,3 +28,9 @@ Both of these SDKs are actively maintained and will continue to receive new feat
 
 For existing codebases, we support the xref:matlab:ROOT:index.adoc[Matlab SDK], xref:labview:ROOT:index.adoc[LabView SDK], xref:winforms:ROOT:index.adoc[WinForms SDK], xref:wpf:ROOT:index.adoc[WPF SDK].
 These SDKs will continue to receive occasional bug fixes but are no longer under active development.
+
+== Getting help
+
+The best way to get help with the PalmSens SDKs is to https://www.palmsens.com/contact/[contact us directly].
+
+For development related matter (e.g. bug reports), https://github.com/PalmSens/PalmSens_SDK/issues[open an issue on our git repository].

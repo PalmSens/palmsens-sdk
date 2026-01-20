@@ -12,14 +12,23 @@ Take full control of your PalmSens instruments and modules with the PalmSens Sof
 
 SDKs are available for the ecosystems below. See the links for installation instructions, code documentation, and examples.
 
+[cols="a,a", frame=none, grid=none]
+|===
+|
 * xref:python:ROOT:index.adoc[PyPalmSens] (Python SDK)
 * xref:matlab:ROOT:index.adoc[Matlab SDK]
 * xref:labview:ROOT:index.adoc[Labview SDK]
 
+| image::platforms_python.png[Python logo, xref=python:ROOT:index.adoc]
+
+|
 ..NET development
 * xref:maui:ROOT:index.adoc[.NET MAUI SDK]
 * xref:winforms:ROOT:index.adoc[WinForms SDK]
 * xref:wpf:ROOT:index.adoc[WPF SDK]
+
+| image::platforms_net.png[.NET logo, xref=maui:ROOT:index.adoc]
+|===
 
 == Which SDK should you use?
 

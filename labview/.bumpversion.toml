@@ -1,5 +1,5 @@
 [tool.bumpversion]
-current_version = "1.0.0"
+current_version = "1.1.0"
 
 [[tool.bumpversion.files]]
 filename = "docs/antora.yml"
@@ -7,6 +7,6 @@ search = "version: '{current_version}'"
 replace = "version: '{new_version}'"
 
 [[tool.bumpversion.files]]
-filename = "/docs/modules/ROOT/nav.adoc"
+filename = "./docs/modules/ROOT/nav.adoc"
 search = "labview-{current_version}"
 replace = "labview-{new_version}"

@@ -48,12 +48,32 @@ def announce(tag: str):
     sp.check_call(["git", "commit", "-m", "Updated release index"])
 
 
+def get_new_version(sdk: str, component: str) -> str:
+    workdir = ROOT / sdk
+
+    cmd = ["bump-my-version", "show", "--increment", component, "new_version"]
+
+    # breakpoint()
+
+    with work_directory(workdir):
+        p = sp.run(cmd, capture_output=True)
+
+    return p.stdout.decode().strip()
+
+
 def bump_version(sdk: str, version: str):
     workdir = ROOT / sdk
 
     with work_directory(workdir):
         sp.check_call(
-            ["bump-my-version", "bump", "--new-version", version, "patch", "--commit"]
+            [
+                "bump-my-version",
+                "bump",
+                "--new-version",
+                version,
+                "patch",
+                "--commit",
+            ]
         )
 
     print(f"Bumped {sdk} version to {version}")
@@ -101,13 +121,19 @@ def prepare_pr(sdk: str, version: str, base_branch="main"):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("sdk", type=str)
-    parser.add_argument("--version", type=str)
+    parser.add_argument("--version", type=str, help="Set version.")
+    parser.add_argument("--bump", type=str, help="Major/minor/patch, overrides version.")
     options = parser.parse_args()
 
-    tag = f"{options.sdk}-{options.version}"
+    if options.bump:
+        version = get_new_version(sdk=options.sdk, component=options.bump)
+    else:
+        version = options.version
+
+    tag = f"{options.sdk}-{version}"
     print(f"{tag=}")
 
     prepare_pr(
         sdk=options.sdk,
-        version=options.version,
+        version=version,
     )

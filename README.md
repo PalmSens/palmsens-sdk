@@ -22,14 +22,14 @@ Take full control of your PalmSens instruments and modules with the PalmSens Sof
 SDKs are available for the ecosystems below. See the links for installation instructions, code documentation, and examples.
 
 - **Data analysis, prototyping, research**
-  - [Python](./python) - [documentation](https://sdk.palmsens.com/python/latest/)
-  - [Matlab](./matlab) - [documentation](https://sdk.palmsens.com/matlab/latest/)
-  - [Labview](./labview) - [documentation](https://sdk.palmsens.com/labview/latest/)
+  - [PyPalmSens](./python) (Python SDK) - [documentation](https://sdk.palmsens.com/python/latest/)
+  - [Matlab_SDK](./matlab) - [documentation](https://sdk.palmsens.com/matlab/latest/)
+  - [Labview SDK](./labview) - [documentation](https://sdk.palmsens.com/labview/latest/)
 
 - **.NET app development**
-  - [.NET MAUI](./maui) - [documentation](https://sdk.palmsens.com/maui/latest/)
-  - [WinForms](./winforms) - [documentation](https://sdk.palmsens.com/winforms/latest/)
-  - [WPF](./wpf) - [documentation](https://sdk.palmsens.com/wpf/latest/)
+  - [.NET MAUI SDK](./maui) - [documentation](https://sdk.palmsens.com/maui/latest/)
+  - [WinForms SDK](./winforms) - [documentation](https://sdk.palmsens.com/winforms/latest/)
+  - [WPF SDK](./wpf) - [documentation](https://sdk.palmsens.com/wpf/latest/)
 
 ## Which SDK should you use?
 
@@ -42,4 +42,5 @@ For existing codebases using [Matlab](https://sdk.palmsens.com/matlab/latest/), 
 The best way to get help with the PalmSens SDKs is to [contact us directly](https://www.palmsens.com/contact/).
 
 For bug reports, questions, and other development related matter [open an issue](https://github.com/PalmSens/PalmSens_SDK/issues).
+
 

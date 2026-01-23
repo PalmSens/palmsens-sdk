@@ -37,8 +37,9 @@ For new projects, we recommend using [PyPalmSens](https://sdk.palmsens.com/pytho
 
 For existing codebases using [Matlab](https://sdk.palmsens.com/matlab/latest/), [LabView](https://sdk.palmsens.com/labview/latest/), [WinForms](https://sdk.palmsens.com/winforms/latest/), or [WPF](https://sdk.palmsens.com/wpf/latest/), we maintain the other SDKs. These SDKs will continue to receive occasional bug fixes but are no longer under active development.
 
-== Getting help
+## Getting help
 
 The best way to get help with the PalmSens SDKs is to [contact us directly](https://www.palmsens.com/contact/).
 
 For bug reports, questions, and other development related matter [open an issue](https://github.com/PalmSens/PalmSens_SDK/issues).
+

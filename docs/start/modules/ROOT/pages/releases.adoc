@@ -2,6 +2,7 @@ Releases
 ========
 
 // latest
+- https://github.com/palmsens/palmsens_sdk/releases/tag/labview-1.1.1[labview-1.1.1]
 - https://github.com/palmsens/palmsens_sdk/releases/tag/labview-1.1.0[labview-1.1.0]
 - https://github.com/palmsens/palmsens_sdk/releases/tag/wpf-1.0.0[wpf-1.0.0]
 - https://github.com/palmsens/palmsens_sdk/releases/tag/winforms-1.0.0[winforms-1.0.0]

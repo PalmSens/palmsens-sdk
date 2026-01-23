@@ -4,4 +4,4 @@
 * xref:methodscript.adoc[]
 * xref:examples.adoc[]
 * https://github.com/PalmSens/PalmSens_SDK/tree/main/labview[Source code ↗]
-* https://github.com/PalmSens/PalmSens_SDK/releases/tag/labview-1.1.0[Latest release ↗]
+* https://github.com/PalmSens/PalmSens_SDK/releases/tag/labview-1.1.1[Latest release ↗]

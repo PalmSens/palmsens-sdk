@@ -285,6 +285,10 @@ def test_TriggerAtEquilibrationSettings():
 
     assert new_params == params
 
+    assert any(params)
+    params.clear()
+    assert not any(params)
+
 
 def test_TriggerAtMeasurementSettings():
     obj = Techniques.CyclicVoltammetry()
@@ -304,6 +308,10 @@ def test_TriggerAtMeasurementSettings():
     new_params._update_params(obj)
 
     assert new_params == params
+
+    assert any(params)
+    params.clear()
+    assert not any(params)
 
 
 def test_TriggerAtDelaySettings():
@@ -326,6 +334,10 @@ def test_TriggerAtDelaySettings():
     new_params._update_params(obj)
 
     assert new_params == params
+
+    assert any(params)
+    params.clear()
+    assert not any(params)
 
 
 def test_MultiplexerSettings():

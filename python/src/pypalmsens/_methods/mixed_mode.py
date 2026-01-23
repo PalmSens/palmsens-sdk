@@ -77,7 +77,7 @@ class BaseStage(BaseModel, metaclass=ABCMeta):
                 pass
 
 
-class ConstantE(BaseStage, mixins.CurrentLimitsMixin):
+class ConstantE(BaseStage, mixins.CurrentLimitsMixin, mixins.MeasurementTriggersMixin):
     """Amperometric detection stage.
 
     Apply constant potential during this stage."""
@@ -101,7 +101,7 @@ class ConstantE(BaseStage, mixins.CurrentLimitsMixin):
         self.run_time = single_to_double(psstage.RunTime)
 
 
-class ConstantI(BaseStage, mixins.PotentialLimitsMixin):
+class ConstantI(BaseStage, mixins.PotentialLimitsMixin, mixins.MeasurementTriggersMixin):
     """Potentiometry stage.
 
     Apply constant fixed current during this stage."""
@@ -137,7 +137,7 @@ class ConstantI(BaseStage, mixins.PotentialLimitsMixin):
         self.run_time = single_to_double(psstage.RunTime)
 
 
-class SweepE(BaseStage, mixins.CurrentLimitsMixin):
+class SweepE(BaseStage, mixins.CurrentLimitsMixin, mixins.MeasurementTriggersMixin):
     """Linear sweep detection stage.
 
     Ramp the voltage from `begin_potential` to `end_potential` during this stage."""
@@ -176,7 +176,7 @@ class SweepE(BaseStage, mixins.CurrentLimitsMixin):
         self.scanrate = single_to_double(psstage.Scanrate)
 
 
-class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin):
+class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin, mixins.MeasurementTriggersMixin):
     """Open Circuit stage.
 
     Measure the open circuit potential during this stage."""
@@ -329,11 +329,23 @@ class MixedMode(
     )
     """List of stages to run through."""
 
+    @property
+    def use_triggers(self):
+        """True if any of the stages has triggers set."""
+        return any(
+            any(stage.measurement_triggers)
+            for stage in self.stages
+            if stage.stage_type != 'Impedance'
+        )
+
     @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         """Update method with mixed mode settings."""
         psmethod.nCycles = self.cycles
         psmethod.IntervalTime = self.interval_time
+
+        if self.use_triggers:
+            psmethod.UseTriggerOnStart = True
 
         for stage in self.stages:
             _ = stage._update_psmethod(psmethod)
@@ -347,3 +359,10 @@ class MixedMode(
             stage = BaseStage._from_psstage(psstage)
 
             self.stages.append(stage)  # type: ignore
+
+        if not psmethod.UseTriggerOnStart:
+            for stage in self.stages:
+                # triggers are not supported by Impedance stage
+                if stage.stage_type == 'Impedance':
+                    continue
+                stage.measurement_triggers.clear()

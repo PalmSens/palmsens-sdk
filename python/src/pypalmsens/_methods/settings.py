@@ -6,10 +6,11 @@ import PalmSens
 from PalmSens import Method as PSMethod
 from PalmSens import MuxMethod as PSMuxMethod
 from pydantic import Field
-from typing_extensions import override
+from typing_extensions import Generator, override
 
 from .._helpers import single_to_double
 from .base import BaseSettings
+from .base_model import BaseModel
 from .shared import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
@@ -20,8 +21,6 @@ from .shared import (
     pr_enum_to_string,
     pr_string_to_enum,
 )
-from .base import BaseSettings
-from .base_model import BaseModel
 
 
 class CurrentRange(BaseSettings):
@@ -399,10 +398,16 @@ class IrDropCompensation(BaseSettings):
 
 
 class EquilibrationTriggers(BaseSettings):
-    """Set the trigger at equilibration settings.
+    """Set the equilibration triggers.
 
-    If enabled, set one or more digital outputs at the start of
-    the equilibration period.
+    Set one or more digital outputs on the AUX port
+    at the start of equilibration.
+
+    The selected digital line(s) will be set to high when triggered
+    and remain high until the end of the equilibration.
+
+    See the instrument-specific documentation for more information about
+    the position of the digital pins on your instrument’s auxiliary port.
     """
 
     d0: bool = False
@@ -417,13 +422,14 @@ class EquilibrationTriggers(BaseSettings):
     d3: bool = False
     """If True, enable trigger at d3 high."""
 
+    def __iter__(self) -> Generator[bool]:
+        yield from (self.d0, self.d1, self.d2, self.d3)
+
     @override
     def _update_psmethod(self, psmethod: PSMethod, /):
-        if any((self.d0, self.d1, self.d2, self.d3)):
+        if any(self):
             psmethod.UseTriggerOnEquil = True
-            psmethod.TriggerValueOnEquil = convert_bools_to_int(
-                (self.d0, self.d1, self.d2, self.d3)
-            )
+            psmethod.TriggerValueOnEquil = convert_bools_to_int(list(self))
         else:
             psmethod.UseTriggerOnEquil = False
 
@@ -434,16 +440,27 @@ class EquilibrationTriggers(BaseSettings):
                 psmethod.TriggerValueOnEquil
             )
         else:
-            self.d0 = False
-            self.d1 = False
-            self.d2 = False
-            self.d3 = False
+            self.clear()
+
+    def clear(self):
+        """Clear triggers."""
+        self.d0 = False
+        self.d1 = False
+        self.d2 = False
+        self.d3 = False
 
 
 class MeasurementTriggers(BaseSettings):
-    """Set the trigger at measurement settings.
+    """Set the measurement triggers.
 
-    If enabled, set one or more digital outputs at the start measurement,
+    Set one or more digital outputs on the AUX port
+    at the start measurement (end of equilibration).
+
+    The selected digital line(s) will be set to high when triggered
+    and remain high until the end of the measurement.
+
+    See the instrument-specific documentation for more information about
+    the position of the digital pins on your instrument’s auxiliary port.
     """
 
     d0: bool = False
@@ -458,15 +475,16 @@ class MeasurementTriggers(BaseSettings):
     d3: bool = False
     """If True, enable trigger at d3 high."""
 
+    def __iter__(self) -> Generator[bool]:
+        yield from (self.d0, self.d1, self.d2, self.d3)
+
     @override
     def _update_psmethod(self, psmethod: PSMethod, /):
-        if any((self.d0, self.d1, self.d2, self.d3)):
+        if any(self):
             psmethod.UseTriggerOnStart = True
-            psmethod.TriggerValueOnStart = convert_bools_to_int(
-                (self.d0, self.d1, self.d2, self.d3)
-            )
+            psmethod.TriggerValueOnStart = convert_bools_to_int(list(self))
         else:
-            psmethod.UseTriggerOnEquil = False
+            psmethod.UseTriggerOnStart = False
 
     @override
     def _update_params(self, psmethod: PSMethod, /):
@@ -475,16 +493,27 @@ class MeasurementTriggers(BaseSettings):
                 psmethod.TriggerValueOnStart
             )
         else:
-            self.d0 = False
-            self.d1 = False
-            self.d2 = False
-            self.d3 = False
+            self.clear()
+
+    def clear(self):
+        """Clear triggers."""
+        self.d0 = False
+        self.d1 = False
+        self.d2 = False
+        self.d3 = False
 
 
 class DelayTriggers(BaseSettings):
-    """Set the delayed trigger at measurement settings.
+    """Set the delayed measurement triggers.
 
-    If enabled, set one or more digital outputs at the start measurement after a delay,
+    Set one or more digital outputs on the AUX port after a delay
+    at the start measurement (end of equilibration).
+
+    The selected digital line(s) will be set to high when triggered
+    and remain high until the end of the measurement.
+
+    See the instrument-specific documentation for more information about
+    the position of the digital pins on your instrument’s auxiliary port.
     """
 
     delay: float = 0.5
@@ -505,15 +534,16 @@ class DelayTriggers(BaseSettings):
     d3: bool = False
     """If True, enable trigger at d3 high."""
 
+    def __iter__(self) -> Generator[bool]:
+        yield from (self.d0, self.d1, self.d2, self.d3)
+
     @override
     def _update_psmethod(self, psmethod: PSMethod, /):
         psmethod.TriggerDelayPeriod = self.delay
 
-        if any((self.d0, self.d1, self.d2, self.d3)):
+        if any(self):
             psmethod.UseTriggerOnDelay = True
-            psmethod.TriggerValueOnDelay = convert_bools_to_int(
-                (self.d0, self.d1, self.d2, self.d3)
-            )
+            psmethod.TriggerValueOnDelay = convert_bools_to_int(list(self))
         else:
             psmethod.UseTriggerOnDelay = False
 
@@ -526,10 +556,14 @@ class DelayTriggers(BaseSettings):
                 psmethod.TriggerValueOnDelay
             )
         else:
-            self.d0 = False
-            self.d1 = False
-            self.d2 = False
-            self.d3 = False
+            self.clear()
+
+    def clear(self):
+        """Clear triggers."""
+        self.d0 = False
+        self.d1 = False
+        self.d2 = False
+        self.d3 = False
 
 
 class Multiplexer(BaseSettings):

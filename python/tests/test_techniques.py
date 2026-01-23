@@ -1088,6 +1088,7 @@ class MM:
                 'current_limits': {'max': 10.0, 'min': 1},
                 'potential': 0.5,
                 'run_time': 0.1,
+                'measurement_triggers': {'d0': True, 'd2': True},
             },
             {
                 'stage_type': 'ConstantI',
@@ -1102,6 +1103,7 @@ class MM:
                 'end_potential': 0.5,
                 'step_potential': 0.25,
                 'scanrate': 20.0,
+                'measurement_triggers': {'d1': True},
             },
             {'stage_type': 'OpenCircuit', 'run_time': 0.1},
             {

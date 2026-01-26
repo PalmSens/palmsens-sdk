@@ -11,6 +11,7 @@ if(PSSDK == false)
     disp('Error while adding the PalmSens SDK to the workspace. Please resolve before continuing.');
     return;
 end
+
 %% 1. Connect to a PalmSens, Emstat or Sensit device
 %Scan for connected devices
 deviceList = GetConnectedDevices(); %see function help for scanning bluetooth and serial devices
@@ -64,12 +65,13 @@ if(exist('psDataFolder','var') == 0 || isnumeric(psDataFolder) || isempty(psData
     end
 end
 
+
 %Show load method dialog
-disp([newline 'Please specify the location a *.psmethod file']);
-if(exist('psDataFolder','var') == 0 || isnumeric(psDataFolder) || isempty(psDataFolder))
-    [methodName,methodFolder] = uigetfile('*.psmethod','Please specify the location of a *.psmethod file');
+disp([newline 'Specify the location a *.psmethod file']);
+if (exist('psDataFolder','var') == 0 | isnumeric(psDataFolder) | isempty(psDataFolder))
+    [methodName,methodFolder] = uigetfile('*.psmethod','Load PalmSens method file');
 else
-    [methodName,methodFolder] = uigetfile('*.psmethod','Please specify the location of a *.psmethod file',psDataFolder);
+    [methodName,methodFolder] = uigetfile('*.psmethod','Load PalmSens method file',psDataFolder);
 end
 
 %Store folder location of method for future reference

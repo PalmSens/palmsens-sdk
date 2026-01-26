@@ -33,11 +33,11 @@ if(exist('psDataFolder','var') == 0 || (~isnumeric(psDataFolder) && isempty(psDa
 end
 
 %Show load method dialog
-disp([newline 'Please specify the location a *.pssession file']);
-if(exist('psDataFolder','var') == 0)
-    [sessionName,sessionFolder,filterIndex] = uigetfile('*','Please specify the location of a palmsens data file');
+disp([newline 'Specify the location a *.pssession file']);
+if (exist('psDataFolder','var') == 0) | isnumeric(psDataFolder) | isempty(psDataFolder)
+    [sessionName,sessionFolder,filterIndex] = uigetfile('*.pssession','Load PalmSens data file');
 else
-    [sessionName,sessionFolder,filterIndex] = uigetfile('*','Please specify the location of a palmsens datafile',psDataFolder);
+    [sessionName,sessionFolder,filterIndex] = uigetfile('*.pssession','Load PalmSens data file',psDataFolder);
 end
 
 %Store folder location for future reference

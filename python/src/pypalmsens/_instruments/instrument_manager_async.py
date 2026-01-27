@@ -4,7 +4,7 @@ import asyncio
 import sys
 import warnings
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING, Any, Coroutine
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Protocol
 
 import clr
 import PalmSens
@@ -17,8 +17,11 @@ from typing_extensions import AsyncIterator, override
 
 from .._methods import (
     AllowedCurrentRanges,
+    AllowedPotentialRanges,
     BaseTechnique,
+    cr_enum_to_string,
     cr_string_to_enum,
+    pr_enum_to_string,
 )
 from ..data import Measurement
 from .callback import Callback, CallbackStatus, Status
@@ -205,7 +208,84 @@ async def measure_async(
     return measurement
 
 
-class InstrumentManagerAsync:
+class HasCommProtocol(Protocol):
+    _comm: CommManager
+    ensure_connection: Callable[[], None]
+
+
+class SupportedMixin:
+    def supported_methods(self: HasCommProtocol) -> list[str]:
+        """List methods supported by this device.
+
+        Returns
+        -------
+        methods: list[str]
+        """
+        self.ensure_connection()
+        capabilities = self._comm.Capabilities
+        numbers = list(capabilities.SupportedMethods)
+        method_ids = []
+
+        for number in numbers:
+            try:
+                id = PalmSens.Method.FromTechniqueNumber(number).MethodID
+            except Exception:
+                pass
+            else:
+                method_ids.append(id)
+
+        return method_ids
+
+    def supported_current_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
+        """List current ranges supported by this device.
+
+        Returns
+        -------
+        current_ranges: list[AllowedCurrentRanges]
+        """
+        self.ensure_connection()
+        capabilities = self._comm.Capabilities
+
+        return [cr_enum_to_string(cr) for cr in capabilities.SupportedRanges]
+
+    def supported_applied_current_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
+        """List applied current ranges supported by this device.
+
+        Returns
+        -------
+        current_ranges: list[AllowedCurrentRanges]
+        """
+        self.ensure_connection()
+        capabilities = self._comm.Capabilities
+
+        return [cr_enum_to_string(cr) for cr in capabilities.SupportedAppliedRanges]
+
+    def supported_bipot_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
+        """List applied current ranges supported by this device.
+
+        Returns
+        -------
+        current_ranges: list[AllowedCurrentRanges]
+        """
+        self.ensure_connection()
+        capabilities = self._comm.Capabilities
+
+        return [cr_enum_to_string(cr) for cr in capabilities.SupportedBipotRanges]
+
+    def supported_potential_ranges(self: HasCommProtocol) -> list[AllowedPotentialRanges]:
+        """List applied potential ranges supported by this device.
+
+        Returns
+        -------
+        potential_ranges: list[AllowedPotentialRanges]
+        """
+        self.ensure_connection()
+        capabilities = self._comm.Capabilities
+
+        return [pr_enum_to_string(pr) for pr in capabilities.SupportedPotentialRanges]
+
+
+class InstrumentManagerAsync(SupportedMixin):
     """Asynchronous instrument manager for PalmSens instruments.
 
     Parameters

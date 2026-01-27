@@ -126,3 +126,8 @@ class Instrument:
         )
 
         return f'{self.__class__.__name__}({args})'
+
+    @property
+    def baudrate(self):
+        """Baud rate."""
+        return self.Device.baudrate

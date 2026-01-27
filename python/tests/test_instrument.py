@@ -182,3 +182,26 @@ async def test_idle_status_callback_async():
         assert isinstance(point.current, float)
         assert isinstance(point.potential, float)
         assert isinstance(point.current_we2, float)
+
+
+@pytest.mark.instrument
+def test_supported():
+    instruments = ps.discover()
+    with ps.connect(instruments[0]) as manager:
+        assert isinstance(manager.supported_methods(), list)
+        assert isinstance(manager.supported_current_ranges(), list)
+        assert isinstance(manager.supported_applied_current_ranges(), list)
+        assert isinstance(manager.supported_potential_ranges(), list)
+        assert isinstance(manager.supported_bipot_ranges(), list)
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_supported_async():
+    instruments = await ps.discover_async()
+    async with await ps.connect_async(instruments[0]) as manager:
+        assert isinstance(manager.supported_methods(), list)
+        assert isinstance(manager.supported_current_ranges(), list)
+        assert isinstance(manager.supported_applied_current_ranges(), list)
+        assert isinstance(manager.supported_potential_ranges(), list)
+        assert isinstance(manager.supported_bipot_ranges(), list)

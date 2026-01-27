@@ -21,7 +21,7 @@ from .._methods import (
 )
 from ..data import Measurement
 from .callback import Callback, Status
-from .instrument_manager_async import discover_async
+from .instrument_manager_async import SupportedMixin, discover_async
 from .measurement_manager_async import MeasurementManagerAsync
 from .shared import Instrument, create_future, firmware_warning
 
@@ -144,7 +144,7 @@ def measure(
     return measurement
 
 
-class InstrumentManager:
+class InstrumentManager(SupportedMixin):
     """Instrument manager for PalmSens instruments.
 
     Parameters

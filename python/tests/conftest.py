@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-import pypalmsens
+import pypalmsens as ps
 
 DATA_DIR = Path(__file__).parent / 'test_data'
 
@@ -20,39 +20,39 @@ DATA_EIS_5FREQ = DATA_DIR / 'eis_5freq.pssession'
 
 @pytest.fixture(scope='module')
 def data_dpv():
-    return pypalmsens.load_session_file(DATA_DPV)
+    return ps.load_session_file(DATA_DPV)
 
 
 @pytest.fixture(scope='module')
 def data_cv():
-    return pypalmsens.load_session_file(DATA_CV)
+    return ps.load_session_file(DATA_CV)
 
 
 @pytest.fixture(scope='module')
 def data_diff_pulse():
-    return pypalmsens.load_session_file(DATA_DIFF_PULSE)
+    return ps.load_session_file(DATA_DIFF_PULSE)
 
 
 @pytest.fixture(scope='module')
 def data_noise_test():
-    return pypalmsens.load_session_file(DATA_NOISE_TEST)
+    return ps.load_session_file(DATA_NOISE_TEST)
 
 
 @pytest.fixture(scope='module')
 def data_cv_1scan():
-    return pypalmsens.load_session_file(DATA_CV_1SCAN)
+    return ps.load_session_file(DATA_CV_1SCAN)
 
 
 @pytest.fixture(scope='module')
 def data_cv_3scan():
-    return pypalmsens.load_session_file(DATA_CV_3SCAN)
+    return ps.load_session_file(DATA_CV_3SCAN)
 
 
 @pytest.fixture(scope='module')
 def data_eis_5freq():
-    return pypalmsens.load_session_file(DATA_EIS_5FREQ)
+    return ps.load_session_file(DATA_EIS_5FREQ)
 
 
 @pytest.fixture(scope='module')
 def data_eis_3ch_4scan_5freq():
-    return pypalmsens.load_session_file(DATA_EIS_3CH_4SCAN_5FREQ)
+    return ps.load_session_file(DATA_EIS_3CH_4SCAN_5FREQ)

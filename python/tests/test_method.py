@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-import pypalmsens
+import pypalmsens as ps
 
 
 @pytest.fixture
@@ -25,4 +25,15 @@ def test_to_dict(method):
 
 def test_to_settings(method):
     params = method.to_settings()
-    assert isinstance(params, pypalmsens.CyclicVoltammetry)
+    assert isinstance(params, ps.CyclicVoltammetry)
+
+
+def test_methodscript_file_roundtrip(tmpdir):
+    path = tmpdir / 'test.mscr'
+
+    method = ps.MethodScript(script='e\nsend_string "Test"\n\n')
+    method.to_file(path)
+    method2 = ps.MethodScript().from_file(path)
+
+    assert method2.script == method.script
+    assert method2 == method

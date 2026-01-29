@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import ClassVar, Literal
 
 import PalmSens.Techniques as PSTechniques
@@ -7,7 +8,7 @@ from PalmSens import FixedCurrentRange as PSFixedCurrentRange
 from PalmSens import FixedPotentialRange as PSFixedPotentialRange
 from PalmSens import Method as PSMethod
 from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
-from pydantic import Field
+from pydantic import Field, field_validator
 from typing_extensions import override
 
 from .._helpers import single_to_double
@@ -2084,3 +2085,42 @@ endif
     @override
     def _update_params(self, psmethod: PSMethod, /):
         self.script = psmethod.MethodScript
+
+    @classmethod
+    def from_file(cls, path: str | Path = 'methodscript.mscr') -> MethodScript:
+        """Load methodscript from file.
+
+        Parameters
+        ----------
+        path: str | Path
+            Path to methodscript file.
+
+        Returns
+        -------
+        method: MethodScript
+        """
+        with Path(path).open('r') as f:
+            script = f.read()
+
+        return cls(script=script)
+
+    def to_file(self, path: str | Path = 'methodscript.mscr') -> None:
+        """Save script to file.
+
+        Parameters
+        ----------
+        path: str | Path
+            Path to methodscript file.
+        """
+        with Path(path).open('w') as f:
+            _ = f.write(self.script)
+
+    @field_validator('script')
+    @classmethod
+    def validate_script(cls, value: str) -> str:
+        if not (value.startswith('e\n') or value.startswith('l\n')):
+            raise ValueError('A script must start with `e\\n` or `l\\n`')
+        if not value.endswith('\n\n'):
+            raise ValueError('A script must end with 2 newlines')
+
+        return value

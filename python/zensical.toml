@@ -1,0 +1,200 @@
+[project]
+site_name = "PyPalmSens"
+site_url = "https://sdk.palmsens.com"
+site_description = "PyPalmSens: a Python library for automating electrochemistry with PalmSens instruments"
+repo_url = "https://github.com/palmsens/palmsens_sdk"
+repo_name = "GitHub"
+docs_dir = "docs/mkdocs"
+copyright = "&copy; 2025 PalmSens BV"
+
+nav = [
+  { "Home" = "index.md" },
+  "installation.md",
+  "files.md",
+  "data.md",
+  "measuring.md",
+  "methods.md",
+  "circuit_fitting.md",
+  "examples.md",
+  { "Techniques" = [
+    "reference/methods/index.md",
+    { "Shared settings" = "reference/methods/settings.md" },
+    "reference/methods/enums.md",
+    "reference/methods/a_c_voltammetry.md",
+    "reference/methods/chrono_amperometry.md",
+    "reference/methods/chrono_coulometry.md",
+    "reference/methods/chrono_potentiometry.md",
+    "reference/methods/cyclic_voltammetry.md",
+    "reference/methods/differential_pulse_voltammetry.md",
+    { "Impedance Spectroscopy" = "reference/methods/impedance_spectroscopy.md" },
+    "reference/methods/fast_amperometry.md",
+    "reference/methods/fast_cyclic_voltammetry.md",
+    "reference/methods/fast_galvanostatic_impedance_spectroscopy.md",
+    "reference/methods/fast_impedance_spectroscopy.md",
+    "reference/methods/galvanostatic_impedance_spectroscopy.md",
+    "reference/methods/linear_sweep_potentiometry.md",
+    "reference/methods/linear_sweep_voltammetry.md",
+    "reference/methods/method_script.md",
+    "reference/methods/mixed_mode.md",
+    "reference/methods/multi_step_amperometry.md",
+    "reference/methods/multi_step_potentiometry.md",
+    "reference/methods/multiple_pulse_amperometry.md",
+    "reference/methods/normal_pulse_voltammetry.md",
+    "reference/methods/open_circuit_potentiometry.md",
+    "reference/methods/pulsed_amperometric_detection.md",
+    "reference/methods/square_wave_voltammetry.md",
+    "reference/methods/stripping_chrono_potentiometry.md",
+  ]},
+  { "Reference" = [
+    "reference/index.md",
+    "reference/data.md",
+    "reference/io.md",
+    "reference/instrument.md",
+    "reference/instrument_async.md",
+    "reference/fitting.md",
+  ]},
+  { "Source code ↗" = "https://github.com/palmsens/palmsens_sdk" },
+  { "Issues ↗" = "https://github.com/palmsens/palmsens_sdk/issues" },
+]
+
+
+extra_css = [
+    # Include a copy of mkdocstrings.css
+    # This is a work-around for Antora not publishing
+    # Underscore files (i.e. assets/_mkdocstrings.css)
+    # https://github.com/PalmSens/PalmSens_SDK/issues/176
+    "stylesheets/mkdocstrings.css",
+    "stylesheets/extra.css",
+]
+
+extra_javascript = [
+  "https://polyfill.io/v3/polyfill.min.js?features:es6",
+  "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
+]
+
+[project.extra]
+homepage = "https://sdk.palmsens.com/"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/PalmSens/PalmSens_SDK"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/python"
+link = "https://pypi.org/project/pypalmsens/"
+
+[[project.extra.social]]
+icon = "fontawesome/solid/paper-plane"
+link = "https://www.palmsens.com/contact"
+
+[project.theme]
+name = "material"
+logo = "assets/header_icon.svg"
+favicon = "assets/favicon.ico"
+
+features = [
+    "content.code.annotate",
+    "content.footnote.tooltips",
+    "content.tooltips",
+    "navigation.indexes",
+    "toc.follow",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "custom"
+accent = "custom"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"
+
+[project.markdown_extensions.abbr]
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.attr_list]
+[project.markdown_extensions.footnotes]
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.pymdownx.blocks.caption]
+[project.markdown_extensions.pymdownx.details]
+[project.markdown_extensions.pymdownx.snippets]
+check_paths = true
+[project.markdown_extensions.pymdownx.superfences]
+
+[project.plugins.mkdocstrings.handlers.python]
+# https://mkdocstrings.github.io/usage/
+inventories = [
+    "https://docs.python.org/3/objects.inv",
+    "https://numpy.org/doc/stable/objects.inv",
+    "https://matplotlib.org/stable/objects.inv",
+]
+paths = ["src"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+# https://mkdocstrings.github.io/python/usage/#recommended-settings
+docstring_style = "numpy"
+# Discard first line of `__init__` method docstrings,
+# useful when merging such docstrings into their parent class'.
+docstring_options = { "ignore_init_summary" = true }
+# Tables are generally too large, lists will fix this.
+docstring_section_style = "list"
+# Enable relative crossrefs and scoped crossrefs, see Docstrings options.
+relative_crossrefs = true
+scoped_crossrefs = true
+# Enable cross-references in signatures.
+signature_crossrefs = true
+# Unwrap actual types from `Annotated` type annotations.
+unwrap_annotated = true
+# Only render pulic symbols.
+filters = "public"
+# Comment the option otherwise to get the default filters.
+# Show class inherited members.
+inherited_members = true
+# Render auto-generated summaries of attributes, functions, etc.
+# at the start of each symbol's documentation.
+summary = true
+# For auto-generated pages, one module per page,
+# make the module heading be the H1 heading of the page.
+# heading_level = 1
+# Render headings for parameters, making them linkable.
+parameter_headings = true
+# Render headings for type parameters too.
+type_parameter_headings = true
+# Always show the heading for the symbol you render with `:: = id`.
+show_root_heading = true
+# Only show the name of the symbols you inject render `:: = id`.
+show_root_full_path = true
+# Show the type of symbol (class, function, etc.) in the heading.
+show_symbol_type_heading = true
+# Show the type of symbol (class, function, etc.) in the table of contents.
+show_symbol_type_toc = true
+# Format code to 80 + 10% margin (Black and Ruff defaults)
+# in signatures and attribute value code blocks.
+# Needs Black/Ruff installed.
+line_length = 96
+# Merge signature and docstring of `__init__` methods
+# into their parent class signature and docstring.
+merge_init_into_class = true
+# Render signatures and attribute values in a separate code block,
+# below the symbol heading.
+separate_signature = true
+# Show type annotations in signatures.
+show_signature_annotations = true
+# Show type parameters in signatures.
+show_signature_type_parameters = true
+# Show backlinks to other documentation sections within each symbol.
+backlinks = false  # crashes in linux
+# Show base classes OR inheritance diagram.
+show_bases = false
+show_inheritance_diagram = true

@@ -1,3 +1,3 @@
-# Fitting
+# Circuit fitting
 
 ::: pypalmsens.fitting

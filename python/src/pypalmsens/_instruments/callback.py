@@ -22,6 +22,8 @@ from ..settings import (
 
 @dataclass(slots=True)
 class CallbackData:
+    """Data returned by the new data callback."""
+
     x_array: DataArray
     """Data array for the x variable."""
 
@@ -60,6 +62,8 @@ class CallbackData:
 
 @dataclass(slots=True)
 class CallbackDataEIS:
+    """Data returned by the EIS new data callback."""
+
     data: DataSet
     """EIS dataset."""
 
@@ -97,11 +101,22 @@ class Callback(Protocol):
 
 @dataclass(slots=True)
 class PotentialReading:
+    """Potential reading data class."""
+
     potential_range: AllowedPotentialRanges
+    """Active potential range for this data point."""
+
     potential: float
+    """Potential in V."""
+
     potential_in_range: float
+    """Raw potential value expressed in the active potential range."""
+
     timing_status: AllowedTimingStatus
+    """Status of the potential timing."""
+
     reading_status: AllowedReadingStatus
+    """Status of the potential reading."""
 
     @override
     def __str__(self):
@@ -120,11 +135,22 @@ class PotentialReading:
 
 @dataclass(slots=True)
 class CurrentReading:
+    """Current reading data class."""
+
     current_range: AllowedCurrentRanges
+    """Active current range for this data point."""
+
     current: float
+    """current in μA."""
+
     current_in_range: float
+    """Raw current value expressed in the active current range."""
+
     timing_status: AllowedTimingStatus
+    """Status of the current timing."""
+
     reading_status: AllowedReadingStatus
+    """Status of the current reading."""
 
     @override
     def __str__(self):
@@ -143,6 +169,8 @@ class CurrentReading:
 
 @dataclass(slots=True)
 class Status:
+    """Device Status class."""
+
     _status: PalmSens.Comm.Status = field(repr=False)
     device_state: AllowedDeviceState = 'Unknown'
     """Device state."""
@@ -173,7 +201,7 @@ class Status:
         return self._status.PotentialReading.Value
 
     @property
-    def potential_reading(self):
+    def potential_reading(self) -> PotentialReading:
         """Potential reading dataclass."""
         return PotentialReading._from_psobject(self._status.PotentialReading)
 
@@ -183,7 +211,7 @@ class Status:
         return self._status.CurrentReading.Value
 
     @property
-    def current_reading(self):
+    def current_reading(self) -> CurrentReading:
         """Current reading dataclass."""
         return CurrentReading._from_psobject(self._status.CurrentReading)
 
@@ -193,7 +221,7 @@ class Status:
         return self._status.CurrentReadingWE2.Value
 
     @property
-    def current_reading_we2(self):
+    def current_reading_we2(self) -> CurrentReading:
         """Current reading dataclass for WE2."""
         return CurrentReading._from_psobject(self._status.CurrentReadingWE2)
 
@@ -214,6 +242,7 @@ class Status:
 
     @property
     def noise(self) -> float:
+        """Measured"""
         return self._status.Noise
 
 

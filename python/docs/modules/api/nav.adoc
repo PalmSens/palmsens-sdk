@@ -1,1 +1,0 @@
-* xref:attachment$index.html[API reference ↗]

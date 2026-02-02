@@ -15,10 +15,11 @@ cv = ps.LinearSweepVoltammetry(
         'cell_on_after_measurement': True,
         'standby_potential': 0.5,
         'standby_time': 30,
-    } # <1>
+    } # (1)!
 )
 ```
-<1> Note that you can either pass a dictionary or the assosiated `ps.settings.PostMeasurement` class.
+
+1. Note that you can either pass a dictionary or the associated `ps.settings.PostMeasurement` class.
 
 Or by setting the values on the attribute:
 

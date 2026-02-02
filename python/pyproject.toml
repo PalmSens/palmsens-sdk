@@ -63,9 +63,8 @@ publishing = [
 ]
 
 docs = [
-    "mkdocs",
-    "mkdocs-material",
-    "mkdocstrings",
+    "zensical >= 0.0.20",
+    "mkdocstrings >= 1.0.1",
     "mkdocstrings-python",
 ]
 

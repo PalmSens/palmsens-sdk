@@ -89,7 +89,7 @@ For more info on type stubs see the [mypy docs](https://mypy.readthedocs.io/en/s
 
 ## Documentation
 
-The documentation uses [griffe2md](https://mkdocstrings.github.io/griffe2md/) and pandoc to build the API documentation.
+The documentation uses [zensical](https://zensical.org) to build the Python documentation.
 
 The code uses the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) style for docstrings, and [PEP-257 style](https://peps.python.org/pep-0257/#what-is-a-docstring) attribute docstrings.
 

@@ -1,4 +1,4 @@
-* xref:python:ROOT:index.adoc[Python]
+* xref:python:ROOT:attachment$index.html[Python]
 * xref:matlab:ROOT:index.adoc[Matlab]
 * xref:labview:ROOT:index.adoc[Labview]
 * xref:maui:ROOT:index.adoc[.NET MAUI]

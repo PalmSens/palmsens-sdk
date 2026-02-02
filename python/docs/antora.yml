@@ -1,17 +1,15 @@
 name: python
 version: '1.6.1'
 title: PyPalmSens
+start_page: redirect.adoc
 nav:
-- modules/ROOT/nav.adoc
-- modules/api/nav.adoc
+  - modules/ROOT/nav.adoc
 ext:
   collector:
-  - run: mkdocs build -f python/docs/mkdocs.yml
+  - run:
+      command: zensical build -f zensical.toml
+      dir: python
     scan:
       clean: true
-      dir: python/docs/site
-      into: modules/api/attachments/
-  - scan:
-      dir: python/examples/
-      into: modules/ROOT/examples
-      files: '*.py'
+      dir: python/site
+      into: modules/ROOT/attachments/

@@ -1,0 +1,69 @@
+# Equivalent Circuit Fitting
+
+[pypalmsens.fitting.CircuitModel][] fits the equivalent circuit specified with the CDC descriptor code.
+Optional settings are fixing the value of a parameter, setting the min/max bounds for a parameter,
+specifying the frequency range to fit, limitting the number of iterations, delta error term or delta parameter term.
+
+Example usage for fitting an equivalent circuit:
+
+```python
+>>> import pypalmsens as ps
+
+>>> measurements = ps.load_save_data(eis_data.pssession)
+>>> eis_data = measurements[0].eis_data[0]
+
+>>> cdc = 'R(RC)'
+>>> model = ps.fitting.CircuitModel(cdc=cdc)
+>>> result = model.fit(eis_data)
+>>> result
+FitResult(cdc='R(RC)', parameters=[564.65, 10077.11, 3.327e-08], chisq=0.00040, exit_code='MinimumDeltaErrorTerm', n_iter=9, error=[1.47, 1.54, 1.92])
+```
+
+`CircuitModel` takes a single parameter, the circuit description code
+(CDC). Note that the code must be in all caps. For more information, see
+[this link](https://www.utwente.nl/en/tnw/ims/publications/downloads/cdc-explained.pdf).
+
+`result` is an instance of [pypalmsens.fitting.FitResult][], a dataclass with fit values,
+errors, and other fitting data.
+You can pass `result.parameters` back to [pypalmsens.fitting.CircuitModel.fit][]) to redo the fit:
+
+```python
+>>> result = ps.fitting.CircuitModel(cdc=cdc, parameters=result.parameters)
+```
+
+## Parameters
+
+If you want to tune the parameters, like fixing values or setting
+bounds, you can use set them using the [pypalmsens.fitting.Parameters][] class.
+`model.default_parameters` grabs the default parameters for the CDC.
+These can be modified, for example:
+
+```python
+>>> parameters = model.default_parameters
+
+>>> parameters[0].value = 123  # set starting value to 123
+>>> parameters[0].fixed = True # fix this value
+>>> parameters[1].min = 12  # set lower bound
+>>> parameters[1].max = 34  # set upper bound
+
+>>> result = model.fit(eis_data, parameters=parameters)
+```
+
+## Re-fit EIS data
+
+If you already fitted your data in PSTrace, you can redo the fit or use the values as a starting parameters:
+
+```python
+>>> model = ps.fitting.CircuitModel(cdc=eisdata.cdc)
+>>> result = model.fit(eisdata, parameters=eisdata.cdc_values)
+```
+
+## Plotting
+
+If you have [matplotlib](https://matplotlib.org) installed, you can
+generate the plots from the result:
+
+```python
+>>> result.plot_nyquist(eis_data)
+>>> result.plot_bode(eis_data)
+```

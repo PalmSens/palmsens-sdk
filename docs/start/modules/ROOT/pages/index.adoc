@@ -16,7 +16,7 @@ SDKs are available for the ecosystems below. See the links for installation inst
 |===
 |
 .Data analysis, prototyping, research
-* xref:python:ROOT:index.adoc[PyPalmSens] (Python SDK)
+* xref:python:ROOT:attachment$index.html[PyPalmSens] (Python SDK)
 * xref:matlab:ROOT:index.adoc[Matlab SDK]
 * xref:labview:ROOT:index.adoc[Labview SDK]
 

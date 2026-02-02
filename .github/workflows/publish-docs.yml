@@ -51,8 +51,8 @@ jobs:
       with:
         python-version: 3.x
 
-    - name: Install mkdocs
-      run: pip install mkdocs-material mkdocstrings[python]
+    - name: Install zensical
+      run: pip install zensical mkdocstrings[python]
 
     - name: Install Antora
       run: npm clean-install

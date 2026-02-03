@@ -1,4 +1,4 @@
-= PalmSens WinForms Documentation
+= WinForms SDK Documentation
 
 {empty} +
 {empty}
@@ -19,7 +19,7 @@ image::basic_example.png[Example measurement app, width=50%]
 
 == Features
 
-These projects contain a simplified open source wrapper for the xref:start:ROOT:core.adoc[`PalmSens.Core`] libraries.
+These projects contain a simplified open source wrapper for the xref:start:api:core.adoc[`PalmSens.Core`] libraries.
 
 * `PalmSens.Core.Simplified`
 * `PalmSens.Core.Simplified.WinForms`
@@ -32,7 +32,7 @@ The simplified wrappers give you quick and easy access to all the basic function
 * Accessing and processing measured data
 * Analyzing and manipulating data
 
-Methods and data structures are referenced from the xref:start:ROOT:core.adoc[`PalmSens.Core`] libraries.
+Methods and data structures are referenced from the xref:start:api:core.adoc[`PalmSens.Core`] libraries.
 
 In addition, the projects contain a simple open source plot control that you can use to plot your measurements in real-time.
 They are based on the open-source http://www.oxyplot.org/[OxyPlot library].

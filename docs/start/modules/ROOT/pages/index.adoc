@@ -1,4 +1,4 @@
-= PalmSens Developer documentation
+= Developer Documentation
 
 {empty} +
 {empty}

@@ -1,4 +1,4 @@
-= PalmSens Labview Documentation
+= Labview SDK Documentation
 
 {empty} +
 {empty}

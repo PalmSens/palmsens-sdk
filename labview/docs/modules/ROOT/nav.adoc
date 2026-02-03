@@ -2,6 +2,7 @@
 * xref:connecting.adoc[]
 * xref:measuring.adoc[]
 * xref:methodscript.adoc[]
+* xref:techniques.adoc[]
 * xref:examples.adoc[]
 * https://github.com/PalmSens/PalmSens_SDK/tree/main/labview[Source code ↗]
 * https://github.com/PalmSens/PalmSens_SDK/releases/tag/labview-1.1.1[Latest release ↗]

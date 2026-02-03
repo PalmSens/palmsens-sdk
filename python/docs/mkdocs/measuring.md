@@ -107,11 +107,9 @@ When idle or during pretreatment, the instrument measures and publishes the curr
 You can register a callback to subscribe to these events.
 The event is fired every second and every 0.25 seconds during pretreatment.
 
-[NOTE]
-.Async
-====
-The callback requires an active event loop and therefore only works in Async mode.
-====
+!!! NOTE "Async"
+
+    The callback requires an active event loop and therefore only works in Async mode.
 
 For example, using print as the callback prints the status to the terminal:
 

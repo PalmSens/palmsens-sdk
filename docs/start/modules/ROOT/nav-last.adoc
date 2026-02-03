@@ -1,0 +1,4 @@
+// * xref:projects.adoc[]
+* xref:releases.adoc[]
+* https://github.com/PalmSens/PalmSens_SDK[Source code ↗]
+* https://github.com/PalmSens/PalmSens_SDK/issues[Issues ↗]

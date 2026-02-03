@@ -1,0 +1,44 @@
+= API Reference
+
+The PalmSens SDK is built on the following libraries and projects:
+
+* `PalmSens.Core`
+* `PalmSens.Core.Windows`
+* `PalmSens.Core.iOS`
+* `PalmSens.Core.Android`
+
+These latest versions are available from https://www.nuget.org/profiles/PalmSens[nuget].
+They contain the namespaces with all the necessary files for using PalmSens/EmStat devices in your software.
+
+== Simplified wrapper
+
+Throughout the documentation we refer to the `Simplified` wrapper, in addition to the _Core_ libraries.
+These wrappers were designed to be easier to use for interacting with PalmSens devices than their _Core_ counterparts.
+The simplified wrapper simplifies event and data handling, and prevents common threading and device communication pitfalls.
+Therefore, we generally recommend to use the `PalmSens.Core.Simplified` wrapper provided as part of the SDKs where possible.
+
+Namespaces provided by the simplified wrapper:
+
+* `PalmSens.Core.Simplified`
+* `PalmSens.Core.Simplified.Data`
+* `PalmSens.Core.Simplified.Helpers`
+* `PalmSens.Core.Simplified.InternalStorage`
+* `SDKPlot`
+
+See the documentation for your SDK or the API reference for more information.
+
+[NOTE]
+====
+The namespace and API may differ slightly from SDK to SDK.
+Some namespaces have the platform specific implementations.
+
+For example:
+
+- Generic: `PalmSens.Core.Simplified` / `psCommSimple`
+- MAUI: `PalmSens.Core.Simplified.MAUI` / `psCommSimpleMAUI`
+- WinForms: `PalmSens.Core.Simplified.MAUI` / `psCommSimpleWinForms`
+- WPF: `PalmSens.Core.Simplified.WPF` / `psCommSimpleWPF`
+
+In the documentation we typically refer to the generic implementation.
+Substitute in the SDK of choice, or check out the examples.
+====

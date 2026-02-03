@@ -1,4 +1,5 @@
-* xref:api:attachment$index.html[API reference ↗]
+* xref:index.adoc[]
+** xref:core.adoc[]
 ** xref:api:attachment$api/PalmSens.Core.Simplified.html[PalmSens.Core.Simplified ↗]
 *** xref:api:attachment$api/PalmSens.Core.Simplified.Data.html[Data ↗]
 *** xref:api:attachment$api/PalmSens.Core.Simplified.Helpers.html[Helpers ↗]

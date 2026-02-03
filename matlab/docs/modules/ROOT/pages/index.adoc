@@ -1,4 +1,4 @@
-= PalmSens Matlab Documentation
+= Matlab SDK Documentation
 
 {empty} +
 {empty}

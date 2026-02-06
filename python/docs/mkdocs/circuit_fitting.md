@@ -9,7 +9,7 @@ Example usage for fitting an equivalent circuit:
 ```python
 >>> import pypalmsens as ps
 
->>> measurements = ps.load_save_data(eis_data.pssession)
+>>> measurements = ps.load_session_file('eis_data.pssession')
 >>> eis_data = measurements[0].eis_data[0]
 
 >>> cdc = 'R(RC)'
@@ -28,7 +28,7 @@ errors, and other fitting data.
 You can pass `result.parameters` back to [pypalmsens.fitting.CircuitModel.fit][]) to redo the fit:
 
 ```python
->>> result = ps.fitting.CircuitModel(cdc=cdc, parameters=result.parameters)
+>>> result = model.fit(eis_data, parameters=result.parameters)
 ```
 
 ## Parameters

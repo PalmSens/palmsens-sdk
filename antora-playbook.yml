@@ -2,6 +2,8 @@ site:
   title: PalmSens for Developers
   start_page: start::index.adoc
   url: https://sdk.palmsens.com
+  keys:
+    google_analytics: 'G-3SJNPNCDHD'
 content:
   sources:
     - url: .

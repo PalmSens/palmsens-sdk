@@ -75,6 +75,10 @@ extra_javascript = [
 [project.extra]
 homepage = "https://sdk.palmsens.com/"
 
+[project.extra.analytics]
+provider = "google"
+property = "G-3SJNPNCDHD"
+
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
 link = "https://github.com/PalmSens/PalmSens_SDK"

@@ -64,3 +64,8 @@ footer.footer {
     border-top: 0.5rem solid;
     border-color: #008CCD;
 }
+
+.footer a {
+  color: white;
+  text-decoration: underline;
+}

@@ -18,3 +18,7 @@ To build the Python docs manually, run:
 cd python
 python python/build_python_api_docs.py
 ```
+
+## UI
+
+The UI is derived from the [antora default UI](https://gitlab.com/antora/antora-ui-default/-/tree/master/src)

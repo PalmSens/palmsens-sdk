@@ -13,7 +13,7 @@ async def stream_to_csv(manager, *, method):
     """Measure with a custom csv writer callback."""
     serial = await manager.get_instrument_serial()
 
-    with open(f'{serial}.csv', 'w') as csv_file:
+    with open(f'{serial}.csv', 'w', newline='') as csv_file:
         csv_writer = csv.writer(csv_file)
 
         callback = functools.partial(stream_to_csv_callback, csv_writer=csv_writer)

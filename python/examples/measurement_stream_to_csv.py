@@ -11,7 +11,7 @@ def stream_to_csv_callback(data):
         # csv_writer.writerow([point['Frequency'], point['ZRe'], point['ZIm']])
 
 
-csv_file = open('test.csv', 'w')
+csv_file = open('test.csv', 'w', newline='')
 csv_writer = csv.writer(csv_file)
 
 instruments = ps.discover()

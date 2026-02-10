@@ -93,6 +93,8 @@ def test_callback(manager):
     assert point.y_array.name == 'current'
     assert len(point.y_array) == 11
 
+    assert len(list(points[0].new_datapoints())) == 11
+
 
 @pytest.mark.instrument
 def test_callback_eis(manager):
@@ -114,6 +116,8 @@ def test_callback_eis(manager):
     assert point.start == 0
     assert isinstance(point.data, DataSet)
     assert point.data.n_points == 1
+
+    assert len(list(points[0].new_datapoints())) == 1
 
 
 class CV:

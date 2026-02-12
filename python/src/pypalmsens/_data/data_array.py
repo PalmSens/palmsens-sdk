@@ -14,9 +14,10 @@ from ..settings import (
     AllowedTimingStatus,
 )
 from .data_value import CurrentReading, PotentialReading
-from .shared import ArrayType
+from .shared import AllowedArrayTypes, array_enum_to_str
 
 if TYPE_CHECKING:
+    import pandas as pd
     from PalmSens.Data import DataArray as PSDataArray
 
 
@@ -111,9 +112,9 @@ class DataArray(Sequence[float]):
         return list(self._psarray.GetValues())
 
     @property
-    def type(self) -> ArrayType:
-        """ArrayType enum."""
-        return ArrayType(self._psarray.ArrayType)
+    def type(self) -> AllowedArrayTypes:
+        """Array type as str."""
+        return array_enum_to_str(self._psarray.ArrayType)
 
     @property
     def unit(self) -> str:
@@ -147,7 +148,7 @@ class CurrentArray(DataArray):
     def current(self) -> list[float]:
         """Current in uA."""
         # Work-around for mIDC bug
-        if self.type is ArrayType.miDC:
+        if self.type == 'miDC':
             return self._current_in_range()
         return self.to_list()
 
@@ -160,7 +161,7 @@ class CurrentArray(DataArray):
         `current` = `current_in_range` * CR, e.g. 0.2 * 100uA = 2.0 uA
         """
         # Work-around for mIDC bug
-        if self.type is ArrayType.miDC:
+        if self.type == 'miDC':
             return self.to_list()
         return self._current_in_range()
 
@@ -218,6 +219,20 @@ class CurrentArray(DataArray):
             'TimingStatus': self.timing_status(),
             'ReadingStatus': self.reading_status(),
         }
+
+    def to_dataframe(self) -> pd.DataFrame:
+        """Return array as pandas DataFrome.
+
+        Requires pandas to be installed.
+
+        Returns
+        -------
+        df : pd.DataFrame
+            Dataframe with current readings
+        """
+        import pandas as pd
+
+        return pd.DataFrame(self.to_dict())
 
 
 class PotentialArray(DataArray):
@@ -278,3 +293,17 @@ class PotentialArray(DataArray):
             'TimingStatus': self.timing_status(),
             'ReadingStatus': self.reading_status(),
         }
+
+    def to_dataframe(self) -> pd.DataFrame:
+        """Return array as pandas DataFrome.
+
+        Requires pandas to be installed.
+
+        Returns
+        -------
+        df : pd.DataFrame
+            Dataframe with potential readings
+        """
+        import pandas as pd
+
+        return pd.DataFrame(self.to_dict())

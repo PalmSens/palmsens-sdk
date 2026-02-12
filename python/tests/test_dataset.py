@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import pytest
 
-from pypalmsens._data.shared import ArrayType
 from pypalmsens.data import DataArray
 
 
@@ -42,7 +41,7 @@ def test_to_list(dataset):
     assert isinstance(dataset.arrays(), list)
 
 
-def test_to_dict(dataset):
+def test_dict(dataset):
     dct = dict(dataset)
     assert isinstance(dct, dict)
     assert len(dct) == 4
@@ -55,25 +54,30 @@ def test_to_dict(dataset):
     ]
 
 
-def test_list_arrays(dataset):
-    assert len(dataset.current_arrays()[0]) == 41
-    assert len(dataset.potential_arrays()[0]) == 41
-    assert len(dataset.time_arrays()[0]) == 41
+def test_to_dict(dataset):
+    dct = dataset.to_dict()
+    assert len(dct) == 6
 
-    assert len(dataset.freq_arrays()) == 0
-    assert len(dataset.zre_arrays()) == 0
-    assert len(dataset.zim_arrays()) == 0
-    assert len(dataset.aux_input_arrays()) == 0
+
+def test_list_arrays(dataset):
+    assert len(dataset.arrays(type='Current')[0]) == 41
+    assert len(dataset.arrays(type='Potential')[0]) == 41
+    assert len(dataset.arrays(type='Time')[0]) == 41
+
+    assert len(dataset.arrays(type='Freq')) == 0
+    assert len(dataset.arrays(type='Zre')) == 0
+    assert len(dataset.arrays(type='Zim')) == 0
+    assert len(dataset.arrays(type='Aux_input')) == 0
 
 
 def test_array_types(dataset):
     types = dataset.array_types
     assert len(types) == 4
     assert types == {
-        ArrayType.Time,
-        ArrayType.Potential,
-        ArrayType.Current,
-        ArrayType.Charge,
+        'Time',
+        'Potential',
+        'Current',
+        'Charge',
     }
 
 
@@ -97,24 +101,24 @@ def test_array_quantities(dataset):
 
 
 def test_arrays_by_name(dataset):
-    lst = dataset.arrays_by_name('scan1channel1')
+    lst = dataset.arrays(name='scan1channel1')
     assert len(lst) == 3
     assert [item.quantity for item in lst] == ['Potential', 'Current', 'Charge']
 
-    assert not dataset.arrays_by_name('FAIL')
+    assert not dataset.arrays(name='FAIL')
 
 
 def test_arrays_by_type(dataset):
-    lst = dataset.arrays_by_type(ArrayType.Potential)
+    lst = dataset.arrays(type='Potential')
     assert len(lst) == 1
-    assert lst[0].type.name == 'Potential'
+    assert lst[0].type == 'Potential'
 
-    assert not dataset.arrays_by_type(ArrayType.Unspecified)
+    assert not dataset.arrays(type='Unspecified')
 
 
 def test_arrays_by_quantity(dataset):
-    lst = dataset.arrays_by_quantity('Potential')
+    lst = dataset.arrays(quantity='Potential')
     assert len(lst) == 1
     assert lst[0].quantity == 'Potential'
 
-    assert not dataset.arrays_by_quantity('laitnetoP')
+    assert not dataset.arrays(quantity='laitnetoP')

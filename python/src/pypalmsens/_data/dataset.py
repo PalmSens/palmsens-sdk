@@ -1,15 +1,15 @@
 from __future__ import annotations
 
+import warnings
 from collections.abc import Generator, Mapping, Sequence
-from typing import TYPE_CHECKING, Callable, final
+from typing import TYPE_CHECKING, Any, Callable, final
 
 from PalmSens.Plottables import Curve as PSCurve
 from typing_extensions import override
 
-from ..settings import AllowedCurrentRanges, AllowedReadingStatus, AllowedTimingStatus
 from .curve import Curve
 from .data_array import CurrentArray, DataArray, PotentialArray
-from .shared import ArrayType
+from .shared import AllowedArrayTypes, array_enum_to_str
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -38,12 +38,12 @@ def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, D
     )
 
     arrays: list[PSDataArray] = [array for array in psdataset.GetDataArrays()]
-    array_types = [ArrayType(array.ArrayType).name for array in arrays]
+    array_types = [array_enum_to_str(array.ArrayType) for array in arrays]
 
     mapping: dict[str, DataArray] = {}
 
     for array in arrays:
-        array_type = ArrayType(array.ArrayType).name
+        array_type = array_enum_to_str(array.ArrayType)
 
         is_unique = array_types.count(array_type) == 1
 
@@ -141,59 +141,51 @@ class DataSet(Mapping[str, DataArray]):
 
         return Curve(pscurve=pscurve)
 
-    def arrays(self) -> Sequence[DataArray]:
-        """Return list of all arrays. Alias for `.to_list()`"""
-        return list(self.values())
+    def arrays(
+        self,
+        type: AllowedArrayTypes | None = None,
+        name: str | None = None,
+        quantity: str | None = None,
+        hidden: bool = False,
+    ) -> Sequence[DataArray]:
+        """Return list of all arrays.
 
-    def hidden_arrays(self) -> Sequence[DataArray]:
-        """Return 'hidden' arrays used for debugging."""
-        return [DataArray(psarray=psarray) for psarray in self._psdataset if psarray.Hidden]
-
-    def arrays_by_name(self, name: str) -> Sequence[DataArray]:
-        """Get arrays by name.
+        By default, return all arrays.
+        Only one filter can be active at the time.
 
         Parameters
         ----------
+        type : str
+            Get arrays by type of the array, e.g. 'Current', 'Frequency', 'AuxInput'.
+            Use `.array_types()` to get a list of possible values.
         name : str
-            Name of the array.
-
-        Returns
-        -------
-        arrays : list[DataArray]
-        """
-        return self._filter(key=lambda array: array.name == name)
-
-    def arrays_by_quantity(self, quantity: str) -> Sequence[DataArray]:
-        """Get arrays by quantity.
-
-        Parameters
-        ----------
+            Get arrays with given name, e.g. 'scan1', 'time'.
+            Use `.array_names()` to get a list of possible values.
         quantity : str
-            Quantity of the array.
+            Get arrays by quantity, e.g. 'Charge', '-Phase'.
+            Use `.array_quantities()` to get a list of possible values.
+        hidden : bool
+            Return hidden arrays used for debugging.
 
         Returns
         -------
-        arrays : list[DataArray]
+        arrays : Sequence[DataArray]
+            List of arrays.
         """
-        return self._filter(key=lambda array: array.quantity == quantity)
-
-    def arrays_by_type(self, array_type: ArrayType) -> Sequence[DataArray]:
-        """Get arrays by data type.
-
-        Parameters
-        ----------
-        array_type : str
-            Type of the array.
-
-        Returns
-        -------
-        arrays : list[DataArray]
-        """
-        return self._filter(key=lambda array: array.type == array_type)
+        if type:
+            return self._filter(key=lambda array: array.type == type)
+        elif name:
+            return self._filter(key=lambda array: array.name == name)
+        elif quantity:
+            return self._filter(key=lambda array: array.quantity == quantity)
+        elif hidden:
+            return [DataArray(psarray=psarray) for psarray in self._psdataset if psarray.Hidden]
+        else:
+            return list(self.values())
 
     @property
-    def array_types(self) -> set[ArrayType]:
-        """Return unique set of array type (enum) for arrays in dataset."""
+    def array_types(self) -> set[AllowedArrayTypes]:
+        """Return unique set of array types for arrays in dataset."""
         return set(array.type for array in self.values())
 
     @property
@@ -206,74 +198,61 @@ class DataSet(Mapping[str, DataArray]):
         """Return unique set of quantities for arrays in dataset."""
         return set(arr.quantity for arr in self.values())
 
-    def current_arrays(self) -> Sequence[DataArray]:
-        """Return all Current arrays."""
-        return self.arrays_by_type(ArrayType.Current)
+    def to_dict(self) -> dict[str, list[Any]]:
+        """Return dataset as key/value mapping.
 
-    def potential_arrays(self) -> Sequence[DataArray]:
-        """Return all Potential arrays."""
-        return self.arrays_by_type(ArrayType.Potential)
+        The mapping can be used to create a pandas or polars dataframe.
 
-    def time_arrays(self) -> Sequence[DataArray]:
-        """Return all Time arrays."""
-        return self.arrays_by_type(ArrayType.Time)
+        For example:
 
-    def freq_arrays(self) -> Sequence[DataArray]:
-        """Return all Frequency arrays."""
-        return self.arrays_by_type(ArrayType.Frequency)
+            df = pd.DataFrame(dataset.to_dict())
 
-    def zre_arrays(self) -> Sequence[DataArray]:
-        """Return all ZRe arrays."""
-        return self.arrays_by_type(ArrayType.ZRe)
+        Returns
+        -------
+        dct : dict[str, list[Any]]
+            Dictionary with all arrays in dataset.
+        """
+        dct: dict[str, Any] = {key: arr.to_list() for key, arr in self.items() if len(arr)}
 
-    def zim_arrays(self) -> Sequence[DataArray]:
-        """Return all ZIm arrays."""
-        return self.arrays_by_type(ArrayType.ZIm)
+        current = self.arrays(type='Current')[-1]
+        assert isinstance(current, CurrentArray)
 
-    def aux_input_arrays(self) -> Sequence[DataArray]:
-        """Return all AuxInput arrays."""
-        return self.arrays_by_type(ArrayType.AuxInput)
+        dct['CR'] = current.current_range()
+        dct['ReadingStatus'] = current.reading_status()
 
-    def current_range(self) -> Sequence[AllowedCurrentRanges]:
-        """Return current range as list of strings."""
-        array = self.current_arrays()[-1]
-        assert isinstance(array, CurrentArray)
-        return array.current_range()
-
-    def reading_status(self) -> Sequence[AllowedReadingStatus]:
-        """Return reading status as list of strings."""
-        array = self.current_arrays()[-1]
-        assert isinstance(array, CurrentArray)
-        return array.reading_status()
-
-    def timing_status(self) -> Sequence[AllowedTimingStatus]:
-        """Return timing status as list of strings."""
-        array = self.current_arrays()[-1]
-        assert isinstance(array, CurrentArray)
-        return array.timing_status()
+        return dct
 
     def to_dataframe(self) -> pd.DataFrame:
-        """Return dataset as pandas dataframe.
-
-        Requires pandas.
+        """Return dataset as pandas DataFrame.
+        Requires pandas to be installed.
 
         Returns
         -------
         df : pd.DataFrame
-            pandas dataframe with all arrays in dataset
+            Dataframe with all arrays in dataset.
         """
         import pandas as pd
 
-        cols, arrays = zip(*[(key, arr.to_list()) for key, arr in self.items() if len(arr)])
+        dct = self.to_dict()
+        return pd.DataFrame.from_dict(dct, orient='index').T
 
-        arrays_list = list(arrays)
-        arrays_list.append(self.current_range())
-        arrays_list.append(self.reading_status())
+    def arrays_by_name(self, name: str) -> Sequence[DataArray]:
+        warnings.warn(
+            (f'This function has been deprecated, use `.arrays(name={name})` instead.'),
+            DeprecationWarning,
+        )
+        return self.arrays(name=name)
 
-        cols_list = list(cols)
-        cols_list.append('CR')
-        cols_list.append('ReadingStatus')
+    def arrays_by_quantity(self, quantity: str) -> Sequence[DataArray]:
+        warnings.warn(
+            (f'This function has been deprecated, use `.arrays(quantity={quantity})` instead.'),
+            DeprecationWarning,
+        )
+        return self.arrays(quantity=quantity)
 
-        df = pd.DataFrame(arrays_list, index=cols_list).T
-
-        return df
+    def arrays_by_type(self, array_type: AllowedArrayTypes) -> Sequence[DataArray]:
+        warnings.warn(
+            (f'This function has been deprecated, use `.arrays(type={array_type})` instead.'),
+            DeprecationWarning,
+        )
+        return self.arrays(type=array_type)

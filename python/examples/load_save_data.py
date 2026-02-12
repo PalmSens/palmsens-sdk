@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pandas as pd
 
 import pypalmsens as ps
 
@@ -16,28 +15,21 @@ ps.save_method_file(examples_dir / 'PSDummyCell_LSV_copy.psmethod', method)
 measurements = ps.load_session_file(examples_dir / 'Demo CV DPV EIS IS-C electrode.pssession')
 
 for measurement in measurements:
-    print(f'loaded measurement: {measurement.title}, {measurement.timestamp}')
-    print(f'number of curves: {len(measurement.curves)}')
+    print(f'\n# Measurement: {measurement.title} @ {measurement.timestamp}')
+    print(f'\n- number of curves: {len(measurement.curves)}')
     for curve in measurement.curves:
-        print(f'curve title: {curve.title}')
-        print(f'number of points: {len(curve.x_array)}')
-        print(f'number of peaks: {len(curve.peaks)}')
-    print(f'Has EIS fit results: {"yes" if len(measurement.eis_fit) > 0 else "no"}')
+        print(f'  - curve title: {curve.title} ({curve.x_label} vs. {curve.y_label})')
+        print(f'    number of points: {len(curve)}')
+        print(f'    number of peaks: {len(curve.peaks)}')
+    print(f'- Has EIS fit results: {"yes" if len(measurement.eis_fit) > 0 else "no"}')
 
-# save the session file
+    # convert measurments to pandas dataframes
+    frame = measurement.dataset.to_dataframe()
+
+    print()
+    print(frame)
+
+# save a copy of the session file
 ps.save_session_file(
-    examples_dir / 'Demo CV DPV EIS IS-C electrode_copy.pssession', [measurements[0]]
+    examples_dir / 'Demo CV DPV EIS IS-C electrode_copy.pssession', measurements
 )
-
-# convert measurments to pandas dataframes
-frames = []
-frame_names = []
-
-for measurement in measurements:
-    dataset = measurement.dataset
-
-    frames.append(dataset.to_dataframe())
-    frame_names.append(measurement.title)
-
-df = pd.concat(frames, keys=frame_names)
-print(df)

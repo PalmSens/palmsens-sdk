@@ -190,7 +190,7 @@ A dataset is a mapping, so it acts like a Python dictionary:
 >>> dataset['Time']
 DataArray(name=time, unit=s, n_points=219)
 >>> dataset['Potential']
-DataArray(name=potential, unit=V, n_points=219)
+PotentialArray(name=potential, unit=V, n_points=219)
 ```
 
 To list all arrays:
@@ -198,17 +198,17 @@ To list all arrays:
 ```python
 >>> dataset.arrays()
 [DataArray(name=time, unit=s, n_points=219),
- DataArray(name=potential, unit=V, n_points=219),
- DataArray(name=current, unit=µA, n_points=219)]
+ PotentialArray(name=potential, unit=V, n_points=219),
+ CurrentArray(name=current, unit=µA, n_points=219)]
 ```
 
-Some commonly used arrays can be retrieved through a method:
+Arrays of the same type can be retrieved through a method:
 
 ```python
->>> dataset.current_arrays()
-[DataArray(name=current, unit=µA, n_points=219)]
->>> dataset.potential_arrays()
-[DataArray(name=potential, unit=V, n_points=219)]
+>>> dataset.arrays(type='Current')
+[CurrentArray(name=current, unit=µA, n_points=219)]
+>>> dataset.arrays(type='Potential')
+[PotentialArray(name=potential, unit=V, n_points=219)]
 ```
 
 Datasets can be quite large and contain many arrays.
@@ -217,7 +217,7 @@ Therefore, arrays can be selected by name...
 ```python
 >>> dataset.array_names
 {'current', 'potential', 'time'}
->>> dataset.arrays_by_name('time')
+>>> dataset.arrays(name='time')
 [DataArray(name=time, unit=s, n_points=219)]
 ```
 
@@ -226,18 +226,21 @@ Therefore, arrays can be selected by name...
 ```python
 >>> dataset.array_quantities
 {'Current', 'Potential', 'Time'}
->>> dataset.arrays_by_quantity('Potential')
-[DataArray(name=potential, unit=V, n_points=219)]
+>>> dataset.arrays(quantity='Potential')
+[PotentialArray(name=potential, unit=V, n_points=219)]
 ```
 
 ...or type:
 
 ```python
 >>> dataset.array_types
-{<ArrayType.Current: 2>, <ArrayType.Potential: 1>, <ArrayType.Time: 0>}
->>> dataset.arrays_by_type(ps.data.ArrayType.Current)
-[DataArray(name=current, unit=µA, n_points=219)]
+{'Current', 'Potential', 'Time'}
+>>> dataset.arrays(type='Current')
+[CurrentArray(name=current, unit=µA, n_points=219)]
 ```
+
+Type and quantity may seem similar, but for methods with many quantities the difference will be visible.
+For example, in EIS 'miDC' and 'Iac' are different array types, but have the same quantity 'Current'.
 
 Note that for larger datasets these methods can return multiple DataArrays.
 Data from a _Cyclic Voltammetry_ measurement can contain multiple scans and
@@ -248,7 +251,7 @@ you can use easily convert the dataset into a
 [DataFrame](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html):
 
 ```python
->>> df = dataset.to_dataframe()
+>>> df = pd.DataFrame(dataset.to_dict())
 >>> df
      Time Potential   Current     CR ReadingStatus
 0     0.0 -0.399962  0.352146  10 uA            OK
@@ -283,9 +286,9 @@ Data arrays store a list of values, essentially representing a column in the PST
 Let’s grab the first current array:
 
 ```python
->>> array = dataset.current_arrays()[0]
+>>> array = dataset.arrays(type='Current')[0]
 >>> array
-DataArray(name=current, unit=µA, n_points=219)
+CurrentArray(name=current, unit=µA, n_points=219)
 ```
 
 An array stores some data about itself:
@@ -294,7 +297,7 @@ An array stores some data about itself:
 >>> array.name
 'current'
 >>> array.type
-<ArrayType.Current: 2>
+'Current'
 >>> array.unit
 'µA'
 >>> array.quantity
@@ -339,6 +342,64 @@ array([0.352146, 0.351192, ..., 0.19908 , 0.199557])
 ```
 
 For more information, see [pypalmsens.data.DataArray][].
+
+### CurrentArray
+
+Current readings have more data associated with them, such as the current range, reading status, etc.
+[pypalmsens.data.CurrentArray][] derive from `DataArray` and contain additional methods:
+
+```python
+>>> import pypalmsens as ps
+>>> measurement = ps.measure(ps.CyclicVoltammetry())
+>>> array = measurement['Current']
+>>> array
+CurrentArray(name=scan1, unit=µA, n_points=21)
+>>> array.current()  # in µA
+[-304.951, -301.55, -291.406, ...]
+>>> array.current_in_range()
+[-3.04951, -0.30155, -0.291406,  ... ]
+>>> array.current_range()
+['100uA', '1mA',  '1mA', ...]
+>>> array.reading_status()
+['Overload', 'OK', 'OK', 'OK']
+>>> array.timing_status()
+['OK', 'OK', 'OK', ...]
+>>> pd.DataFrame(array.to_dict())
+    Current  CurrentInRange     CR TimingStatus ReadingStatus
+0  -304.951       -3.049510  100uA           OK      Overload
+1  -301.550       -0.301550    1mA           OK            OK
+2  -291.406       -0.291406    1mA           OK            OK
+...
+```
+
+For more information, see [pypalmsens.data.DataArray][].
+
+### PotentialArray
+
+Like currents, potential readings also have more data associated with them.
+[pypalmsens.data.PotentialArray][] derive from `DataArray` and can be used to query additional data:
+
+```python
+>>> array = measurement.dataset['Potential']
+>>> array.potential()  # in V
+[-0.50, -0.40, 0.30, ...]
+>>> array.potential_in_range()
+[-0.50, -0.40, -0.30, ...]
+>>> array.potential_range()
+['1V', '1V', '1V', ...]
+>>> array.reading_status()
+['Unknown', 'Unknown', 'Unknown', ...]
+>>> array.timing_status()
+['Unknown', 'Unknown', 'Unknown', ...]
+>>> pd.DataFrame(array.to_dict())
+    Potential  PotentialInRange  CR TimingStatus ReadingStatus
+0       -0.50             -0.50  1V      Unknown       Unknown
+1       -0.40             -0.40  1V      Unknown       Unknown
+2       -0.30             -0.30  1V      Unknown       Unknown
+...
+```
+
+For more information, see [pypalmsens.data.PotentialArray][].
 
 ## EISData
 
@@ -410,8 +471,8 @@ Likewise, you can retrieve all the arrays:
 
 ```python
 >>> eis_data.arrays()
-[DataArray(name=Idc, unit=µA, n_points=71),
- DataArray(name=potential, unit=V, n_points=71),
+[CurrentArray(name=Idc, unit=µA, n_points=71),
+ PotentialArray(name=potential, unit=V, n_points=71),
  DataArray(name=time, unit=s, n_points=71),
  ...
  DataArray(name=Capacitance, unit=F, n_points=71),

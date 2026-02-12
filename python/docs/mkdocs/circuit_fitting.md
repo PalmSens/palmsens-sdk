@@ -39,7 +39,7 @@ bounds, you can use set them using the [pypalmsens.fitting.Parameters][] class.
 These can be modified, for example:
 
 ```python
->>> parameters = model.default_parameters
+>>> parameters = model.default_parameters()
 
 >>> parameters[0].value = 123  # set starting value to 123
 >>> parameters[0].fixed = True # fix this value

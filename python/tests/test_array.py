@@ -5,7 +5,6 @@ from math import isnan
 import numpy as np
 import pytest
 
-from pypalmsens._data.shared import ArrayType
 from pypalmsens.data import CurrentArray, PotentialArray
 
 
@@ -45,7 +44,7 @@ def test_to_list(array):
 
 def test_properties(array):
     assert array.name == 'scan1channel1'
-    assert array.type is ArrayType.Charge
+    assert array.type == 'Charge'
     assert array.quantity == 'Charge'
     assert isnan(array.ocp_value)
 
@@ -64,7 +63,7 @@ def test_array_copy(array):
 
 
 def test_array_status(data_cv_1scan):
-    array = data_cv_1scan[0].dataset.current_arrays()[0]
+    array = data_cv_1scan[0].dataset.arrays(type='Current')[0]
     _ = array.current_range()
     _ = array.timing_status()
     _ = array.reading_status()

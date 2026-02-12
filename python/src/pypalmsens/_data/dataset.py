@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Generator, Mapping
+from collections.abc import Generator, Mapping, Sequence
 from typing import TYPE_CHECKING, Callable, final
 
 from PalmSens.Plottables import Curve as PSCurve
@@ -8,7 +8,7 @@ from typing_extensions import override
 
 from ..settings import AllowedCurrentRanges, AllowedReadingStatus, AllowedTimingStatus
 from .curve import Curve
-from .data_array import DataArray
+from .data_array import CurrentArray, DataArray, PotentialArray
 from .shared import ArrayType
 
 if TYPE_CHECKING:
@@ -19,6 +19,24 @@ if TYPE_CHECKING:
 
 def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, DataArray]:
     """Suffix non-unique keys with integer. Keys are derived from the array type."""
+    CURRENT_TYPES = (
+        'Current',
+        'Iac',
+        'miDC',
+        'BipotCurrent',
+        'ForwardCurrent',
+        'ReverseCurrent',
+        'CurrentExtraWE',
+        'DCCurrent',
+    )
+    POTENTIAL_TYPES = (
+        'Potential',
+        'BipotPotential',
+        'CEPotential',
+        'SE2vsXPotential',
+        'PotentialExtraRE',
+    )
+
     arrays: list[PSDataArray] = [array for array in psdataset.GetDataArrays()]
     array_types = [ArrayType(array.ArrayType).name for array in arrays]
 
@@ -36,7 +54,14 @@ def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, D
         else:
             key = array_type
 
-        mapping[key] = DataArray(psarray=array)
+        if array_type in CURRENT_TYPES:
+            cls = CurrentArray  # type: ignore
+        elif array_type in POTENTIAL_TYPES:
+            cls = PotentialArray  # type: ignore
+        else:
+            cls = DataArray  # type: ignore
+
+        mapping[key] = cls(psarray=array)
 
     return mapping
 
@@ -116,15 +141,15 @@ class DataSet(Mapping[str, DataArray]):
 
         return Curve(pscurve=pscurve)
 
-    def arrays(self) -> list[DataArray]:
+    def arrays(self) -> Sequence[DataArray]:
         """Return list of all arrays. Alias for `.to_list()`"""
         return list(self.values())
 
-    def hidden_arrays(self) -> list[DataArray]:
+    def hidden_arrays(self) -> Sequence[DataArray]:
         """Return 'hidden' arrays used for debugging."""
         return [DataArray(psarray=psarray) for psarray in self._psdataset if psarray.Hidden]
 
-    def arrays_by_name(self, name: str) -> list[DataArray]:
+    def arrays_by_name(self, name: str) -> Sequence[DataArray]:
         """Get arrays by name.
 
         Parameters
@@ -138,7 +163,7 @@ class DataSet(Mapping[str, DataArray]):
         """
         return self._filter(key=lambda array: array.name == name)
 
-    def arrays_by_quantity(self, quantity: str) -> list[DataArray]:
+    def arrays_by_quantity(self, quantity: str) -> Sequence[DataArray]:
         """Get arrays by quantity.
 
         Parameters
@@ -152,7 +177,7 @@ class DataSet(Mapping[str, DataArray]):
         """
         return self._filter(key=lambda array: array.quantity == quantity)
 
-    def arrays_by_type(self, array_type: ArrayType) -> list[DataArray]:
+    def arrays_by_type(self, array_type: ArrayType) -> Sequence[DataArray]:
         """Get arrays by data type.
 
         Parameters
@@ -181,48 +206,51 @@ class DataSet(Mapping[str, DataArray]):
         """Return unique set of quantities for arrays in dataset."""
         return set(arr.quantity for arr in self.values())
 
-    def current_arrays(self) -> list[DataArray]:
+    def current_arrays(self) -> Sequence[DataArray]:
         """Return all Current arrays."""
         return self.arrays_by_type(ArrayType.Current)
 
-    def potential_arrays(self) -> list[DataArray]:
+    def potential_arrays(self) -> Sequence[DataArray]:
         """Return all Potential arrays."""
         return self.arrays_by_type(ArrayType.Potential)
 
-    def time_arrays(self) -> list[DataArray]:
+    def time_arrays(self) -> Sequence[DataArray]:
         """Return all Time arrays."""
         return self.arrays_by_type(ArrayType.Time)
 
-    def freq_arrays(self) -> list[DataArray]:
+    def freq_arrays(self) -> Sequence[DataArray]:
         """Return all Frequency arrays."""
         return self.arrays_by_type(ArrayType.Frequency)
 
-    def zre_arrays(self) -> list[DataArray]:
+    def zre_arrays(self) -> Sequence[DataArray]:
         """Return all ZRe arrays."""
         return self.arrays_by_type(ArrayType.ZRe)
 
-    def zim_arrays(self) -> list[DataArray]:
+    def zim_arrays(self) -> Sequence[DataArray]:
         """Return all ZIm arrays."""
         return self.arrays_by_type(ArrayType.ZIm)
 
-    def aux_input_arrays(self) -> list[DataArray]:
+    def aux_input_arrays(self) -> Sequence[DataArray]:
         """Return all AuxInput arrays."""
         return self.arrays_by_type(ArrayType.AuxInput)
 
-    def current_range(self) -> list[AllowedCurrentRanges]:
+    def current_range(self) -> Sequence[AllowedCurrentRanges]:
         """Return current range as list of strings."""
         array = self.current_arrays()[-1]
-        return array.as_current_range()
+        assert isinstance(array, CurrentArray)
+        return array.current_range()
 
-    def reading_status(self) -> list[AllowedReadingStatus]:
+    def reading_status(self) -> Sequence[AllowedReadingStatus]:
         """Return reading status as list of strings."""
         array = self.current_arrays()[-1]
-        return array.as_reading_status()
+        assert isinstance(array, CurrentArray)
+        return array.reading_status()
 
-    def timing_status(self) -> list[AllowedTimingStatus]:
+    def timing_status(self) -> Sequence[AllowedTimingStatus]:
         """Return timing status as list of strings."""
         array = self.current_arrays()[-1]
-        return array.as_timing_status()
+        assert isinstance(array, CurrentArray)
+        return array.timing_status()
 
     def to_dataframe(self) -> pd.DataFrame:
         """Return dataset as pandas dataframe.

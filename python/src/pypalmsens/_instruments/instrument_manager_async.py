@@ -22,6 +22,7 @@ from .._methods import (
     cr_enum_to_string,
     cr_string_to_enum,
     pr_enum_to_string,
+    pr_string_to_enum,
 )
 from ..data import Measurement
 from .callback import Callback, CallbackStatus, Status
@@ -60,7 +61,7 @@ async def discover_async(
     """Discover instruments.
 
     For a list of device interfaces, see:
-        https://sdk.palmsens.com/python/latest/installation.html#compatibility
+        https://sdk.palmsens.com/python/latest/_attachments/installation/index.html#compatibility
 
     Parameters
     ----------
@@ -385,16 +386,32 @@ class InstrumentManagerAsync(SupportedMixin):
         async with self._lock():
             await create_future(self._comm.SetCellOnAsync(cell_on))
 
-    async def set_potential(self, potential: float) -> None:
-        """Set the potential of the cell.
+    async def read_current(self) -> float:
+        """Read the current in µA.
 
-        Parameters
-        ----------
-        potential : float
-            Potential in V
+        Returns
+        -------
+        current : float
+            Current in µA.
         """
         async with self._lock():
-            await create_future(self._comm.SetPotentialAsync(potential))
+            current: float = await create_future(self._comm.GetCurrentAsync())
+
+        return current
+
+    async def get_current_range(self) -> AllowedCurrentRanges:
+        """Get the current range for the cell.
+
+        Returns
+        -------
+        current_range: AllowedCurrentRanges
+        """
+        async with self._lock():
+            value: PalmSens.CurrentRange = await create_future(
+                self._comm.GetCurrentRangeAsync()
+            )
+
+        return cr_enum_to_string(value)
 
     async def set_current_range(self, current_range: AllowedCurrentRanges):
         """Set the current range for the cell.
@@ -410,19 +427,6 @@ class InstrumentManagerAsync(SupportedMixin):
                 self._comm.SetCurrentRangeAsync(cr_string_to_enum(current_range))
             )
 
-    async def read_current(self) -> float:
-        """Read the current in µA.
-
-        Returns
-        -------
-        current : float
-            Current in µA.
-        """
-        async with self._lock():
-            current: float = await create_future(self._comm.GetCurrentAsync())
-
-        return current
-
     async def read_potential(self) -> float:
         """Read the potential in V.
 
@@ -436,6 +440,42 @@ class InstrumentManagerAsync(SupportedMixin):
             potential: float = await create_future(self._comm.GetPotentialAsync())
 
         return potential
+
+    async def set_potential(self, potential: float) -> None:
+        """Set the potential of the cell.
+
+        Parameters
+        ----------
+        potential : float
+            Potential in V
+        """
+        async with self._lock():
+            await create_future(self._comm.SetPotentialAsync(potential))
+
+    async def get_potential_range(self) -> AllowedPotentialRanges:
+        """Get the potential range for the cell.
+
+        Returns
+        -------
+        potential_range: AllowedPotentialRanges
+        """
+        async with self._lock():
+            # no such api: self._comm.GetPotentialRangeAsync()
+            return pr_enum_to_string(self._comm.PotentialRange)
+
+    async def set_potential_range(self, potential_range: AllowedPotentialRanges):
+        """Set the potential range for the cell.
+
+        Parameters
+        ----------
+        potential_range: AllowedPotentialRanges
+            Set the potential range as a string.
+            See `pypalmsens.settings.AllowedPotentialRanges` for options.
+        """
+        async with self._lock():
+            await create_future(
+                self._comm.SetPotentialRangeAsync(pr_string_to_enum(potential_range))
+            )
 
     async def get_instrument_serial(self) -> str:
         """Return instrument serial number.

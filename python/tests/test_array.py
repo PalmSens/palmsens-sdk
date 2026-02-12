@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from pypalmsens._data.shared import ArrayType
+from pypalmsens.data import CurrentArray, PotentialArray
 
 
 @pytest.fixture
@@ -64,14 +65,38 @@ def test_array_copy(array):
 
 def test_array_status(data_cv_1scan):
     array = data_cv_1scan[0].dataset.current_arrays()[0]
-    _ = array.as_current_range()
-    _ = array.as_timing_status()
-    _ = array.as_reading_status()
+    _ = array.current_range()
+    _ = array.timing_status()
+    _ = array.reading_status()
 
 
-def test_array_status_fail(data_cv_1scan):
-    array = data_cv_1scan[0].dataset.potential_arrays()[0]
-    with pytest.raises(ValueError):
-        _ = array.as_current_range()
-        _ = array.as_timing_status()
-        _ = array.as_reading_status()
+def test_current_array(data_cv_1scan):
+    arr = data_cv_1scan[0].dataset['Current']
+    assert isinstance(arr, CurrentArray)
+
+    n_points = len(arr)
+
+    assert len(arr.current()) == n_points
+    assert len(arr.current_reading()) == n_points
+    assert len(arr.current_range()) == n_points
+    assert len(arr.reading_status()) == n_points
+    assert len(arr.timing_status()) == n_points
+
+    d = arr.to_dict()
+    assert len(d) == 5
+
+
+def test_potential_array(data_cv_1scan):
+    arr = data_cv_1scan[0].dataset['Potential']
+    assert isinstance(arr, PotentialArray)
+
+    n_points = len(arr)
+
+    assert len(arr.potential()) == n_points
+    assert len(arr.potential_reading()) == n_points
+    assert len(arr.potential_range()) == n_points
+    assert len(arr.reading_status()) == n_points
+    assert len(arr.timing_status()) == n_points
+
+    d = arr.to_dict()
+    assert len(d) == 5

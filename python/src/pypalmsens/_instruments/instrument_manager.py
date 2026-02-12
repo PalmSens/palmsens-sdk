@@ -16,8 +16,12 @@ from typing_extensions import override
 
 from .._methods import (
     AllowedCurrentRanges,
+    AllowedPotentialRanges,
     BaseTechnique,
+    cr_enum_to_string,
     cr_string_to_enum,
+    pr_enum_to_string,
+    pr_string_to_enum,
 )
 from ..data import Measurement
 from .callback import Callback, Status
@@ -39,7 +43,7 @@ def discover(
     """Discover instruments.
 
     For a list of device interfaces, see:
-        https://sdk.palmsens.com/python/latest//installation.html#compatibility
+        https://sdk.palmsens.com/python/latest/_attachments/installation/index.html#compatibility
 
     Parameters
     ----------
@@ -126,10 +130,9 @@ def measure(
     callback: Callback, optional
         If specified, call this function on every new set of data points.
         New data points are batched, and contain all points since the last
-        time it was called. Each point is a dictionary containing
-        `frequency`, `z_re`, `z_im` for impedimetric techniques and
-        `index`, `x`, `x_unit`, `x_type`, `y`, `y_unit` and `y_type` for
-        non-impedimetric techniques.
+        time it was called. Each point is an instance of `ps.data.CallbackData`
+        for non-impedimetric or  `ps.data.CallbackDataEIS`
+        for impedimetric measurments.
 
     Returns
     -------
@@ -248,29 +251,6 @@ class InstrumentManager(SupportedMixin):
         with self._lock():
             self._comm.CellOn = cell_on
 
-    def set_potential(self, potential: float):
-        """Set the potential of the cell.
-
-        Parameters
-        ----------
-        potential : float
-            Potential in V
-        """
-        with self._lock():
-            self._comm.Potential = potential
-
-    def set_current_range(self, current_range: AllowedCurrentRanges):
-        """Set the current range for the cell.
-
-        Parameters
-        ----------
-        current_range: AllowedCurrentRanges
-            Set the current range as a string.
-            See `pypalmsens.settings.AllowedCurrentRanges` for options.
-        """
-        with self._lock():
-            self._comm.CurrentRange = cr_string_to_enum(current_range)
-
     def read_current(self) -> float:
         """Read the current in µA.
 
@@ -283,6 +263,28 @@ class InstrumentManager(SupportedMixin):
             current = self._comm.Current
 
         return current
+
+    def get_current_range(self) -> AllowedCurrentRanges:
+        """Get the current range for the cell.
+
+        Returns
+        -------
+        current_range: AllowedCurrentRanges
+        """
+        with self._lock():
+            return cr_enum_to_string(self._comm.CurrentRange)
+
+    def set_current_range(self, current_range: AllowedCurrentRanges):
+        """Set the current range for the cell.
+
+        Parameters
+        ----------
+        current_range: AllowedCurrentRanges
+            Set the current range as a string.
+            See `pypalmsens.settings.AllowedCurrentRanges` for options.
+        """
+        with self._lock():
+            self._comm.CurrentRange = cr_string_to_enum(current_range)
 
     def read_potential(self) -> float:
         """Read the potential in V.
@@ -297,6 +299,39 @@ class InstrumentManager(SupportedMixin):
             potential = self._comm.Potential
 
         return potential
+
+    def set_potential(self, potential: float):
+        """Set the potential of the cell.
+
+        Parameters
+        ----------
+        potential : float
+            Potential in V
+        """
+        with self._lock():
+            self._comm.Potential = potential
+
+    def get_potential_range(self) -> AllowedPotentialRanges:
+        """Get the potential range for the cell.
+
+        Returns
+        -------
+        potential_range: AllowedPotentialRanges
+        """
+        with self._lock():
+            return pr_enum_to_string(self._comm.PotentialRange)
+
+    def set_potential_range(self, potential_range: AllowedPotentialRanges):
+        """Set the potential range for the cell.
+
+        Parameters
+        ----------
+        potential_range: AllowedPotentialRanges
+            Set the potential range as a string.
+            See `pypalmsens.settings.AllowedPotentialRanges` for options.
+        """
+        with self._lock():
+            self._comm.PotentialRange = pr_string_to_enum(potential_range)
 
     def get_instrument_serial(self) -> str:
         """Return instrument serial number.

@@ -115,14 +115,14 @@ For example, using print as the callback prints the status to the terminal:
 
 ```python
 >>> manager.register_status_callback(print)
->>> await asyncio.sleep(3)  &lt;1>
+>>> await asyncio.sleep(3)  # (1)!
 Idle: {'current': '0.000 * 1uA', 'potential': '0.527 V'}
 Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
 Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
 >>> manager.unregister_status_callback()
 ```
 
-(1): Sleep is used here to simulate another task
+1. Sleep is used here to simulate another task
 
 The callback returns a [pypalmsens.data.Status][] object, which can be used to customize the behaviour.
 

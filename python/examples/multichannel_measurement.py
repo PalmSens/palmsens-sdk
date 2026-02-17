@@ -1,8 +1,9 @@
 import pypalmsens as ps
+import functools
 
 
-def new_data_callback(data):
-    print(data.last_datapoint())
+def new_data_callback(data, channel: int):
+    print(f'Channel {channel}: {data.last_datapoint()}')
 
 
 method = ps.ChronoAmperometry(
@@ -13,10 +14,16 @@ method = ps.ChronoAmperometry(
 
 instruments = ps.discover()
 
-print(instruments)
+for instrument in instruments:
+    print(instrument)
 
-# run multichannel experiment with callback
 with ps.InstrumentPool(instruments) as pool:
-    results = pool.measure(method=method, callback=new_data_callback)
+    callback_list = [
+        functools.partial(new_data_callback, channel=manager.instrument.channel)
+        for manager in pool.managers
+    ]
 
-print(results)
+    measurements = pool.measure(method=method, callback=callback_list)
+
+for measurement in measurements:
+    print(measurement)

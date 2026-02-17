@@ -24,7 +24,7 @@ from .._methods import (
     pr_string_to_enum,
 )
 from ..data import Measurement
-from .callback import Callback, Status
+from .callback import Callback, CallbackEIS, Status
 from .instrument_manager_async import SupportedMixin, discover_async
 from .measurement_manager_async import MeasurementManagerAsync
 from .shared import Instrument, create_future, firmware_warning
@@ -115,7 +115,7 @@ def connect(
 def measure(
     method: BaseTechnique,
     instrument: None | Instrument = None,
-    callback: Callback | None = None,
+    callback: Callback | CallbackEIS | None = None,
 ) -> Measurement:
     """Run measurement.
 
@@ -127,11 +127,11 @@ def measure(
     instrument : Instrument, optional
         Connect to and meassure on a specific instrument.
         Use `pypalmsens.discover()` to discover instruments.
-    callback: Callback, optional
+    callback: Callback | CallbackEIS, optional
         If specified, call this function on every new set of data points.
         New data points are batched, and contain all points since the last
         time it was called. Each point is an instance of `ps.data.CallbackData`
-        for non-impedimetric or  `ps.data.CallbackDataEIS`
+        for non-impedimetric or `ps.data.CallbackDataEIS`
         for impedimetric measurments.
 
     Returns
@@ -365,7 +365,7 @@ class InstrumentManager(SupportedMixin):
         self,
         method: BaseTechnique,
         *,
-        callback: Callback | None = None,
+        callback: Callback | CallbackEIS | None = None,
     ) -> Measurement:
         """Start measurement using given method parameters.
 

@@ -25,7 +25,7 @@ from .._methods import (
     pr_string_to_enum,
 )
 from ..data import Measurement
-from .callback import Callback, CallbackStatus, Status
+from .callback import Callback, CallbackEIS, CallbackStatus, Status
 from .measurement_manager_async import MeasurementManagerAsync
 from .shared import Instrument, create_future, firmware_warning
 
@@ -177,7 +177,7 @@ async def connect_async(
 async def measure_async(
     method: BaseTechnique,
     instrument: None | Instrument = None,
-    callback: Callback | None = None,
+    callback: Callback | CallbackEIS | None = None,
 ) -> Measurement:
     """Run measurement async.
 
@@ -193,7 +193,7 @@ async def measure_async(
         If specified, call this function on every new set of data points.
         New data points are batched, and contain all points since the last
         time it was called. Each point is an instance of `ps.data.CallbackData`
-        for non-impedimetric or  `ps.data.CallbackDataEIS`
+        for non-impedimetric or `ps.data.CallbackDataEIS`
         for impedimetric measurments.
 
     Returns
@@ -543,7 +543,7 @@ class InstrumentManagerAsync(SupportedMixin):
         self,
         method: BaseTechnique,
         *,
-        callback: Callback | None = None,
+        callback: Callback | CallbackEIS | None = None,
         sync_event: asyncio.Event | None = None,
     ):
         """Start measurement using given method parameters.
@@ -556,7 +556,7 @@ class InstrumentManagerAsync(SupportedMixin):
             If specified, call this function on every new set of data points.
             New data points are batched, and contain all points since the last
             time it was called. Each point is an instance of `ps.data.CallbackData`
-            for non-impedimetric or  `ps.data.CallbackDataEIS`
+            for non-impedimetric or `ps.data.CallbackDataEIS`
             for impedimetric measurments.
         sync_event: asyncio.Event
             Event for hardware synchronization. Do not use directly.

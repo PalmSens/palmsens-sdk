@@ -147,6 +147,8 @@ This example shows how to [set up and control a multiplexer][pypalmsens.settings
 
 This example shows how to [manage a pool of of instruments](measuring/#multichannel-measurements) and run a [chronoamperometry][pypalmsens.ChronoAmperometry] measurement on all channels simultaneously.
 
+Every channel gets its own [callback](measuring/#callback), using [functools.partial][] to attach some metadata (the channel number) to your callback. Note that the callbacks are completely optional.
+
 ```python title="multichannel_measurement.py"
 --8<-- "examples/multichannel_measurement.py"
 ```

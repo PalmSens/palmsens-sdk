@@ -12,7 +12,7 @@ from System.Threading.Tasks import Task
 
 from .._data import DataSet
 from ..data import DataArray, Measurement
-from .callback import Callback, CallbackData, CallbackDataEIS
+from .callback import Callback, CallbackData, CallbackDataEIS, CallbackEIS
 from .shared import create_future
 
 if TYPE_CHECKING:
@@ -29,7 +29,7 @@ class MeasurementManagerAsync:
         comm: CommManager,
     ):
         self.comm: CommManager = comm
-        self.callback: Callback | None = None
+        self.callback: Callback | CallbackEIS | None = None
 
         self.is_measuring: bool = False
         self.last_measurement: PSMeasurement | None = None
@@ -136,7 +136,7 @@ class MeasurementManagerAsync:
     async def measure(
         self,
         method: PSMethod,
-        callback: Callback | None = None,
+        callback: Callback | CallbackEIS | None = None,
         sync_event: asyncio.Event | None = None,
     ) -> Measurement:
         """Measure given method.
@@ -191,7 +191,7 @@ class MeasurementManagerAsync:
             start=args.StartIndex,
         )
 
-        _ = self.loop.call_soon_threadsafe(self.callback, data)
+        _ = self.loop.call_soon_threadsafe(self.callback, data)  # type: ignore
 
     def curve_finished_callback(self, curve: Plottables.Curve, args):
         """Unsubscribe to curve finished / new data added events."""
@@ -213,7 +213,7 @@ class MeasurementManagerAsync:
             start=args.Index,
         )
 
-        _ = self.loop.call_soon_threadsafe(self.callback, data)
+        _ = self.loop.call_soon_threadsafe(self.callback, data)  # type: ignore
 
     def eis_data_finished_callback(self, eis_data: Plottables.EISData, args):
         """Unsubscribes to EIS data events."""

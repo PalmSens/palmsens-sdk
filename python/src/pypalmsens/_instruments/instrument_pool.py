@@ -4,6 +4,7 @@ import asyncio
 from typing import TYPE_CHECKING, Sequence
 
 from .._methods import BaseTechnique
+from .callback import Callback, CallbackEIS
 from .instrument_manager_async import InstrumentManagerAsync
 from .instrument_pool_async import InstrumentPoolAsync
 from .shared import Instrument
@@ -40,6 +41,9 @@ class InstrumentPool:
     def __repr__(self):
         ids = [manager.instrument.id for manager in self.managers]
         return f'{self.__class__.__name__}({ids}, connected={self.is_connected()})'
+
+    def __len__(self):
+        return len(self.managers)
 
     def __enter__(self):
         self.connect()
@@ -87,7 +91,12 @@ class InstrumentPool:
         """
         self._loop.run_until_complete(self._async.add(manager))
 
-    def measure(self, method: BaseTechnique, **kwargs) -> list[Measurement]:
+    def measure(
+        self,
+        method: BaseTechnique,
+        callback: Sequence[Callback | CallbackEIS] | Callback | CallbackEIS | None = None,
+        **kwargs,
+    ) -> list[Measurement]:
         """Concurrently run measurement on all managers in the pool.
 
         For hardware synchronization, set `.general.use_hardware_sync` on the method.
@@ -105,7 +114,18 @@ class InstrumentPool:
         ----------
         method : MethodSettings
             Method parameters for measurement.
+        callback : list[Callback] | Callback | CallbackEIS | None
+            If specified, call these functions/this function on every new set of data points.
+            New data points are batched, and contain all points since the last
+            time it was called.
+
+            Specify a sequence of callbacks to set a different function for every channel.
+            The number of callbacks must match the number of channels.
+
+            Specify a single callback to set the same function to all channels.
         **kwargs
-            These keyword arguments are passed to the measure method.
+            These keyword parameters are passed to the measure function.
         """
-        return self._loop.run_until_complete(self._async.measure(method=method, **kwargs))
+        return self._loop.run_until_complete(
+            self._async.measure(method=method, callback=callback, **kwargs)
+        )

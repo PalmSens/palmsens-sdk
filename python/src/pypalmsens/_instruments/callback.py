@@ -92,7 +92,13 @@ class CallbackDataEIS:
 class Callback(Protocol):
     """Type signature for callback."""
 
-    def __call__(self, data: CallbackData | CallbackDataEIS): ...
+    def __call__(self, data: CallbackData) -> None: ...
+
+
+class CallbackEIS(Protocol):
+    """Type signature for callback EIS."""
+
+    def __call__(self, data: CallbackDataEIS) -> None: ...
 
 
 @dataclass(slots=True)

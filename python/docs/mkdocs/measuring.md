@@ -325,10 +325,17 @@ For example to run two methods in sequence:
 
 See [CSV writer](examples.md#multichannel_csv_writer) and [Custom loop](examples.md#multichannel_custom_loop) examples for a practical example of setting a custom function.
 
-To use hardware synchronization, use the same `measure` method. See also the [Hardware sync](examples.md#multichannel_hw_sync) example.
-Make sure the method has the `general.use_hardware_sync` flag set.
+### Hardware Synchronization
+
+To use hardware synchronization, use the same `measure` method.
+
+First, enable hardware sync on your method. PyPalmSens uses these flags to set up the main/follower channels and associated events.
+
+- For most methods, you can use the `general.use_hardware_sync` flag
+- For MethodSCRIPT, use `set_channel_sync 1` in your script. PyPalmSens checks for the presence of this string.
 
 In addition, the pool must contain:
+
 - channels from a single multi-channel instrument only
 - the first channel of the multi-channel instrument
 - at least two channels
@@ -342,3 +349,5 @@ The measurements are started via a hardware sync trigger on channel 1.
 >>> async with ps.InstrumentPoolAsync(instruments) as pool:
 ...      results = await pool.measure_hw_sync(method)
 ```
+
+See [Hardware sync](examples.md#multichannel_hw_sync) for a practical example.

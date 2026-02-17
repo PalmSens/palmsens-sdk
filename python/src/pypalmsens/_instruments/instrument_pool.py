@@ -37,6 +37,10 @@ class InstrumentPool:
         self.managers: list[InstrumentManagerAsync] = self._async.managers
         """List of instruments managers in the pool."""
 
+    def __repr__(self):
+        ids = [manager.instrument.id for manager in self.managers]
+        return f'{self.__class__.__name__}({ids}, connected={self.is_connected()})'
+
     def __enter__(self):
         self.connect()
         return self
@@ -86,7 +90,9 @@ class InstrumentPool:
     def measure(self, method: BaseTechnique, **kwargs) -> list[Measurement]:
         """Concurrently run measurement on all managers in the pool.
 
-        For hardware synchronization, set `use_hardware_sync` on the method.
+        For hardware synchronization, set `.general.use_hardware_sync` on the method.
+        For MethodSCRIPT, use 'set_channel_sync 1'.
+
         In addition, the pool must contain:
         - channels from a single multi-channel instrument only
         - the first channel of the multi-channel instrument

@@ -112,3 +112,7 @@ class DataProcessingMixin(BaseModel):
 class GeneralMixin(BaseModel):
     general: settings.General = Field(default_factory=settings.General)
     """Sets general/other settings."""
+
+    @property
+    def _use_hardware_sync(self):
+        return self.general.use_hardware_sync

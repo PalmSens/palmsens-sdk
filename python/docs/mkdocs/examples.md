@@ -182,8 +182,7 @@ After that, the follower and main will synchronize their measurement loop start 
 This example shows how to connect to a [pool of instruments][pypalmsens.InstrumentPoolAsync] and run a [chronopotentiometry][pypalmsens.ChronoPotentiometry] measurement on all channels simultaneously using hardware synchronization.
 
 For hardware synchronization, you set [`use_hardware_sync = True`][pypalmsens.settings.General.use_hardware_sync] on the method.
-This is the equivalent of `set_channel_sync 1` in MethodSCRIPT.
-At the moment this only works with async.
+If you use MethodSCRIPT, use `set_channel_sync 1` in your script. PyPalmSens checks for this string to check if it is necessary to set up the main/follower channels.
 
 In addition, your pool of instruments must contain:
 

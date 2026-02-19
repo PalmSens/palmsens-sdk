@@ -1,4 +1,5 @@
 = PyPalmSens Documentation
+:page-notitle: true
 :source-language: python
 
 {empty} +

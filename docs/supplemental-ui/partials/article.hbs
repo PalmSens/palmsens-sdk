@@ -1,0 +1,9 @@
+<article class="doc">
+{{#unless page.attributes.notitle}}
+    {{#with page.title}}
+    <h1 class="page">{{{this}}}</h1>
+    {{/with}}
+{{/unless}}
+{{{page.contents}}}
+{{> pagination}}
+</article>

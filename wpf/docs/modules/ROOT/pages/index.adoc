@@ -1,4 +1,5 @@
 = WPF SDK Documentation
+:page-notitle: true
 
 {empty} +
 {empty}

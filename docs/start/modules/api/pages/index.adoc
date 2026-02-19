@@ -1,6 +1,6 @@
 = API Reference
 
-The PalmSens SDK is built on the following libraries and projects:
+The PalmSens SDKs are built on the following .NET libraries and projects:
 
 * `PalmSens.Core`
 * `PalmSens.Core.Windows`

@@ -4,6 +4,7 @@ title: .NET Docs
 nav:
 - modules/ROOT/nav.adoc
 - modules/api/nav.adoc
+start_page: api:index.adoc
 ext:
   collector:
     run: docfx docs/dotnet/api/docfx.json

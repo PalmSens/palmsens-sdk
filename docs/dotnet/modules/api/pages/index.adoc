@@ -1,4 +1,4 @@
-= API Reference
+= .NET API Reference
 
 The PalmSens SDKs are built on the following .NET libraries and projects:
 

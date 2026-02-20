@@ -4,6 +4,7 @@ For type checking, PyPalmSens uses [Literal strings](https://mypy.readthedocs.io
 
 ::: pypalmsens.settings.AllowedCurrentRanges
 ::: pypalmsens.settings.AllowedDeviceState
+::: pypalmsens.settings.AllowedMethods
 ::: pypalmsens.settings.AllowedPotentialRanges
 ::: pypalmsens.settings.AllowedReadingStatus
 ::: pypalmsens.settings.AllowedTimingStatus

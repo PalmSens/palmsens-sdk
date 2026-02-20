@@ -17,6 +17,7 @@ from typing_extensions import AsyncIterator, override
 
 from .._methods import (
     AllowedCurrentRanges,
+    AllowedMethods,
     AllowedPotentialRanges,
     BaseTechnique,
     cr_enum_to_string,
@@ -215,12 +216,13 @@ class HasCommProtocol(Protocol):
 
 
 class SupportedMixin:
-    def supported_methods(self: HasCommProtocol) -> list[str]:
+    def supported_methods(self: HasCommProtocol) -> list[AllowedMethods]:
         """List methods supported by this device.
 
         Returns
         -------
-        methods: list[str]
+        methods: list[AllowedMethods]
+            List of supported methods.
         """
         self.ensure_connection()
         capabilities = self._comm.Capabilities
@@ -243,6 +245,7 @@ class SupportedMixin:
         Returns
         -------
         current_ranges: list[AllowedCurrentRanges]
+            List of supported current ranges.
         """
         self.ensure_connection()
         capabilities = self._comm.Capabilities
@@ -255,6 +258,7 @@ class SupportedMixin:
         Returns
         -------
         current_ranges: list[AllowedCurrentRanges]
+            List of supported current ranges.
         """
         self.ensure_connection()
         capabilities = self._comm.Capabilities
@@ -267,6 +271,7 @@ class SupportedMixin:
         Returns
         -------
         current_ranges: list[AllowedCurrentRanges]
+            List of supported current ranges.
         """
         self.ensure_connection()
         capabilities = self._comm.Capabilities
@@ -279,6 +284,7 @@ class SupportedMixin:
         Returns
         -------
         potential_ranges: list[AllowedPotentialRanges]
+            List of supported potential ranges.
         """
         self.ensure_connection()
         capabilities = self._comm.Capabilities

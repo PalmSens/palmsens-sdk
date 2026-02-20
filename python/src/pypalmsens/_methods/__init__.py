@@ -4,6 +4,7 @@ from .base import BaseSettings, BaseTechnique
 from .method import Method
 from .shared import (
     AllowedCurrentRanges,
+    AllowedMethods,
     AllowedPotentialRanges,
     cr_enum_to_string,
     cr_string_to_enum,
@@ -17,6 +18,7 @@ __all__ = [
     'pr_string_to_enum',
     'pr_enum_to_string',
     'AllowedCurrentRanges',
+    'AllowedMethods',
     'AllowedPotentialRanges',
     'BaseSettings',
     'BaseTechnique',

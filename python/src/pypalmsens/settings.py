@@ -24,6 +24,7 @@ from ._methods.settings import (
 from ._methods.shared import (
     AllowedCurrentRanges,
     AllowedDeviceState,
+    AllowedMethods,
     AllowedPotentialRanges,
     AllowedReadingStatus,
     AllowedTimingStatus,
@@ -33,6 +34,7 @@ from ._methods.shared import (
 
 __all__ = [
     'AllowedCurrentRanges',
+    'AllowedMethods',
     'AllowedPotentialRanges',
     'AllowedTimingStatus',
     'AllowedReadingStatus',

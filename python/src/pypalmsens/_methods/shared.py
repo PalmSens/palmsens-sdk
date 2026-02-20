@@ -44,6 +44,38 @@ AllowedCurrentRanges = Literal[
     '1A',
 ]
 
+AllowedMethods = Literal[
+    'acv',
+    'ad',
+    'cp',
+    'cpot',
+    'cv',
+    'dpv',
+    'eis',
+    'eis_it',
+    'fam',
+    'fcv',
+    'fgis',
+    'fis',
+    'geis_it',
+    'gis',
+    'gs',
+    'lp',
+    'lsp',
+    'lsv',
+    'ma',
+    'mm',
+    'mp',
+    'mpad',
+    'ms',
+    'npv',
+    'pad',
+    'pot',
+    'ps',
+    'scp',
+    'swv',
+]
+
 AllowedPotentialRanges = Literal[
     '1mV',
     '10mV',

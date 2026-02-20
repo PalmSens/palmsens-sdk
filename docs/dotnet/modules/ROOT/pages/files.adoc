@@ -100,7 +100,7 @@ SimpleLoadSaveFunctions.SaveMethod(lsv, filepath);
 
 == Loading and saving data
 
-image::start:dotnet:pssession.png[Data in pssession files]
+image::dotnet:ROOT:pssession.png[Data in pssession files]
 
 Data from measurements can be loaded from and stored to `.pssession` files.
 This contains a session with one or more measurements containing its respective method and curves.

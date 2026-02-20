@@ -1,1 +1,1 @@
-include::start:dotnet:connecting.adoc[]
+include::dotnet:ROOT:connecting.adoc[]

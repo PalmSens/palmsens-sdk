@@ -16,7 +16,7 @@ For handling communications and device capabilities
 
 PalmSens.Techniques::
 Contains all measurement techniques for PalmSens and EmStat.
-See xref:start:dotnet:techniques.adoc[this page] for more information.
+See xref:dotnet:ROOT:techniques.adoc[this page] for more information.
 
 PalmSens.Units::
 Contains a collection of units used by these libraries
@@ -28,9 +28,9 @@ The measurement class contains all classes, functions, and parameters necessary 
 A `Measurement` has one associated method and can contain multiple curves.
 Curves are a representation of the data in the measurement used for plotting and analysis.
 
-image::sdk_measurement_class.png[Inheritance structure for Method classes, width=50%, role=half-view-width]
+image::dotnet:api:sdk_measurement_class.png[Inheritance structure for Method classes, width=50%, role=half-view-width]
 
 The following diagram shows the inheritance structure of the `Method`
 classes:
 
-image::sdk_method_inheritance.png[Inheritance structure for Method classes, role=half-view-width]
+image::dotnet:api:sdk_method_inheritance.png[Inheritance structure for Method classes, role=half-view-width]

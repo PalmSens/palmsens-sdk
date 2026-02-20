@@ -4,7 +4,7 @@ This is a list of the functions and classes that are available in the Matlab SDK
 
 == Functions
 
-These wrap some of the classes and functions in the xref:start:dotnet:techniques.adoc[.NET SDK] and make them accessible through Matlab.
+These wrap some of the classes and functions in the xref:dotnet:ROOT:techniques.adoc[.NET SDK] and make them accessible through Matlab.
 Look at the function docstrings for usage and parameter descriptions.
 
 https://github.com/palmsens/palmsens_sdk/blob/main/matlab/GetConnectedDevices.m[`GetConnectedDevices.m`]::
@@ -33,7 +33,7 @@ Saves a method.
 
 == Classes
 
-These wrap some of the Palmsens xref:start:dotnet:techniques.adoc[.NET internal data structures] to make them more accessible in Matlab.
+These wrap some of the Palmsens xref:dotnet:ROOT:techniques.adoc[.NET internal data structures] to make them more accessible in Matlab.
 Look at the class and method docstrings for further information on the interfaces.
 
 https://github.com/palmsens/palmsens_sdk/blob/main/matlab/EquivalentCircuitFit.m[`EquivalentCircuitFit.m`]::

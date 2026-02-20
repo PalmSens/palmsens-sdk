@@ -1,7 +1,0 @@
-* xref:index.adoc[]
-** xref:core.adoc[]
-** xref:api:attachment$api/PalmSens.Core.Simplified.html[PalmSens.Core.Simplified ↗]
-*** xref:api:attachment$api/PalmSens.Core.Simplified.Data.html[Data ↗]
-*** xref:api:attachment$api/PalmSens.Core.Simplified.Helpers.html[Helpers ↗]
-*** xref:api:attachment$api/PalmSens.Core.Simplified.InternalStorage.html[InternalStorage ↗]
-** xref:api:attachment$api/SDKPlot.html[SDKPlot ↗]

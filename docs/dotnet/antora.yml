@@ -1,0 +1,13 @@
+name: dotnet
+version: ~
+title: .NET Docs
+nav:
+- modules/ROOT/nav.adoc
+- modules/api/nav.adoc
+ext:
+  collector:
+    run: docfx docs/dotnet/api/docfx.json
+    scan:
+      clean: true
+      dir: docs/dotnet/api/_site
+      into: modules/api/attachments/

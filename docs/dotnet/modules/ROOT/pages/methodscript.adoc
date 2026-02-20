@@ -23,7 +23,7 @@ PSTrace includes an option to make use MethodSCRIPT™ Sandbox to write and run 
 This is a great place to test MethodSCRIPT™ measurements to see what the result would be.
 That script can then be used in the `MethodScriptSandbox` technique in the SDK as demonstrated below.
 
-image::start:dotnet:method_script_editor.png[]
+image::dotnet:ROOT:method_script_editor.png[]
 
 The following example contains 2 measurements, a LSV (`meas_loop_lsv`) and a CV (`meas_loop_cv`).
 Custom MethodSCRIPT™ can be run using the `MethodScriptSandbox` Method class.

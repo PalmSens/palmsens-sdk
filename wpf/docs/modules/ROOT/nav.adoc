@@ -6,6 +6,6 @@
 * xref:methodscript.adoc[]
 * xref:techniques.adoc[]
 * xref:examples.adoc[]
-* xref:start:api:index.adoc[API reference ↗]
+* xref:dotnet:api:index.adoc[API reference ↗]
 * https://github.com/PalmSens/PalmSens_SDK/tree/main/wpf[Source code ↗]
 * https://github.com/PalmSens/PalmSens_SDK/releases/tag/wpf-1.0.0[Latest release ↗]

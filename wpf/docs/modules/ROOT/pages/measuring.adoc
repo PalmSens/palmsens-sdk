@@ -1,1 +1,1 @@
-include::start:dotnet:measuring.adoc[]
+include::dotnet:ROOT:measuring.adoc[]

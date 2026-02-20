@@ -7,7 +7,7 @@ Start a measurement by sending method parameters to a PalmSens/EmStat device.
 == Creating a method
 
 To run a measurement on your instrument, create an instance of a method that defines the parameters for the technique to run.
-See the xref:start:dotnet:techniques.adoc[.NET api reference] for an overview of all techniques and their respective parameters.
+See the xref:dotnet:ROOT:techniques.adoc[.NET api reference] for an overview of all techniques and their respective parameters.
 
 To create an instance of a method in LabVIEW add a .NET constructor node
 to your block diagram.
@@ -31,13 +31,13 @@ Then double-click on the menu:PalmSens.Techniques[] near the bottom of the list 
 image::create_method_4.png[Select `PalmSens.Techniques` item]
 
 Select the technique you want to run and click on btn:[OK].
-See the xref:start:dotnet:techniques.adoc[.NET API reference] and the PSTrace help documentation for more information.
+See the xref:dotnet:ROOT:techniques.adoc[.NET API reference] and the PSTrace help documentation for more information.
 This example uses the _Linear Sweep Voltammetry_ technique.
 
 image::create_method_5.png[Select LinearSweep technique]
 
 To define the parameters for a technique right-click on the constructor node, go to menu:Create[Property for PalmSens.Techniques Class > EquilibrationTime] or any other parameter you want to set.
-The xref:start:dotnet:techniques.adoc[.NET API reference] lists the relevant parameters for each technique.
+The xref:dotnet:ROOT:techniques.adoc[.NET API reference] lists the relevant parameters for each technique.
 
 image::create_method_6.png[Select EquilibrationTime property]
 
@@ -130,7 +130,7 @@ The final diagram and front panel of the xref:index.adoc#example_basic[BasicExam
 [TIP]
 .Blocking behavior of Measure function
 ====
-The menu:Measure[] function will block the VI until the measurement is complete, for more information on this refer to xref:start:dotnet:techniques.adoc[] and the xref:index.adoc#example_basicui[BasicUIExample VI]`.
+The menu:Measure[] function will block the VI until the measurement is complete, for more information on this refer to xref:dotnet:ROOT:techniques.adoc[] and the xref:index.adoc#example_basicui[BasicUIExample VI]`.
 ====
 
 == Live interaction

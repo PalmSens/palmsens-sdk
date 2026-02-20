@@ -1,1 +1,1 @@
-include::start:dotnet:methodscript.adoc[]
+include::dotnet:ROOT:methodscript.adoc[]

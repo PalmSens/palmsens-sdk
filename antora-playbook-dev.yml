@@ -4,10 +4,12 @@ site:
 content:
   sources:
     - url: .
-      start_path: docs/start
+      start_paths:
+        - docs/start
+        - docs/dotnet
     - url: .
-      version: true
       start_path: python/docs
+      version: true
     - url: .
       start_path: matlab/docs
       version: true

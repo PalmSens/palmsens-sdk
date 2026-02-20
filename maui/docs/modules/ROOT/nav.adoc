@@ -6,6 +6,6 @@
 * xref:measuring.adoc[]
 * xref:methodscript.adoc[]
 * xref:techniques.adoc[]
-* xref:start:api:index.adoc[API reference ↗]
+* xref:dotnet:api:index.adoc[API reference ↗]
 * https://github.com/PalmSens/PalmSens_SDK/tree/main/maui[Source code ↗]
 * https://github.com/PalmSens/PalmSens_SDK/releases/tag/maui-1.2.3[Latest release ↗]

@@ -1,1 +1,1 @@
-include::start:dotnet:techniques.adoc[]
+include::dotnet:ROOT:techniques.adoc[]

@@ -1,1 +1,1 @@
-include::start:dotnet:files.adoc[]
+include::dotnet:ROOT:files.adoc[]

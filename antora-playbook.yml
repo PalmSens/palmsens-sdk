@@ -1,7 +1,7 @@
 site:
   title: PalmSens for Developers
   start_page: start::index.adoc
-  url: https://sdk.palmsens.com
+  url: https://dev.palmsens.com
   keys:
     google_analytics: 'G-3SJNPNCDHD'
 content:
@@ -42,6 +42,6 @@ ui:
 antora:
   extensions:
     - require: '@antora/collector-extension'
-      enabled: true
+      enabled: false
     - require: '@antora/lunr-extension'
       enabled: true

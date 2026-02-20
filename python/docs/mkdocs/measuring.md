@@ -150,7 +150,7 @@ See [pypalmsens.data.Status][] or the provided [Status callback](examples.md#sta
 
 Starting a measurement is done by sending method parameters to a PalmSens/Nexus/EmStat/Sensit device.
 The [pypalmsens.InstrumentManager.measure][] method returns a `Measurement` object and also supports keeping a reference to the underlying .NET object.
-For more information please refer to [PalmSens.Net.Core](https://sdk.palmsens.com/start/core.html).
+For more information please refer to [PalmSens.Net.Core](https://dev.palmsens.com/dotnet/api/core.html).
 
 The following example runs a chronoamperometry measurement on an instrument.
 

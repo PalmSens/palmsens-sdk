@@ -26,4 +26,4 @@ PyPalmSens is a Python library that lets you control your PalmSens device using 
     either when loading a `.pssession` file or after a measurement,
     this page documents the attributes and methods available on these classes.
 
-For installation instructions, examples, tutorials, and other information, refer to the [PalmSens developer documentation](https://sdk.palmsens.com/python/latest/).
+For installation instructions, examples, tutorials, and other information, refer to the [PalmSens developer documentation](https://dev.palmsens.com/python/latest/_attachments/index.html).

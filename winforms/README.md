@@ -1,7 +1,7 @@
 <br>
 
 <p align="center">
-    <a href="https://sdk.palmsens.com/winforms/latest" target="_blank">
+    <a href="https://dev.palmsens.com/winforms/latest" target="_blank">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="./docs/modules/ROOT/images/banner_dark.svg">
           <source media="(prefers-color-scheme: light)" srcset="./docs/modules/ROOT/images/banner.svg">
@@ -20,7 +20,7 @@ WinForms, is a free, open-source graphical user interface (GUI) class library fo
 
 [Click here to download the latest release](https://github.com/PalmSens/PalmSens_SDK/releases).
 
-For more information, see the [documentation](https://sdk.palmsens.com/winforms/latest/index.html).
+For more information, see the [documentation](https://dev.palmsens.com/winforms/latest/index.html).
 
 ## Making a new app
 

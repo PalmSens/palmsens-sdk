@@ -6,7 +6,7 @@
 <br>
 
 <p align="center">
-    <a href="https://sdk.palmsens.com/maui/latest" target="_blank">
+    <a href="https://dev.palmsens.com/maui/latest" target="_blank">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/docs/modules/ROOT/images/banner_dark.svg">
           <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/docs/modules/ROOT/images/banner.svg">
@@ -39,7 +39,7 @@ To install:
 pip install pypalmsens
 ```
 
-PyPalmSens is built on top of the included [PalmSens .NET libraries](https://sdk.palmsens.com/start/core.html), and therefore requires the .NET runtime to be installed.
+PyPalmSens is built on top of the included [PalmSens .NET libraries](https://dev.palmsens.com/dotnet/api/core.html), and therefore requires the .NET runtime to be installed.
 
 For specific installation instructions for your platform, see the
-[documentation](https://sdk.palmsens.com/python/latest/).
+[documentation](https://dev.palmsens.com/python/latest/_attachments/index.html).

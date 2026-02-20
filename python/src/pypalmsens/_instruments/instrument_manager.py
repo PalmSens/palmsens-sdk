@@ -43,7 +43,7 @@ def discover(
     """Discover instruments.
 
     For a list of device interfaces, see:
-        https://sdk.palmsens.com/python/latest/_attachments/installation/index.html#compatibility
+        https://dev.palmsens.com/python/latest/_attachments/installation/index.html#compatibility
 
     Parameters
     ----------

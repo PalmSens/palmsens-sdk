@@ -1,7 +1,7 @@
 <br>
 
 <p align="center">
-    <a href="https://sdk.palmsens.com/maui/latest" target="_blank">
+    <a href="https://dev.palmsens.com/maui/latest" target="_blank">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="./docs/modules/ROOT/images/banner_dark.svg">
           <source media="(prefers-color-scheme: light)" srcset="./docs/modules/ROOT/images/banner.svg">
@@ -19,7 +19,7 @@ Connect, control and process data from your PalmSens instrument using Labview.
 
 Download the latest [release here](https://github.com/palmsens/PalmSens_SDK/releases).
 
-See [the installation guidelines](https://sdk.palmsens.com/labview/latest/installation.html) for more information.
+See [the installation guidelines](https://dev.palmsens.com/labview/latest/installation.html) for more information.
 
 ## SDK overview
 
@@ -53,4 +53,4 @@ The following examples are included.
 | - | - | - |
 | **Getting started example**: Demonstrates how to use the PalmSens class to run a measurement. | **UI example**: Demonstrates how to use the PalmSens class to run and plot a measurement in real-time and the recommended method to abort, disconnect, or terminate the app during an active measurement. | **MethodSCRIPT example**: Demonstrates how to use the PalmSens class to run a MethodSCRIPT™ measurement. |
 
-For more information, see the [documentation](https://sdk.palmsens.com/labview/latest/index.html)
+For more information, see the [documentation](https://dev.palmsens.com/labview/latest/index.html)

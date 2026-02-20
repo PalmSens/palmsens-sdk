@@ -1,6 +1,6 @@
 [project]
 site_name = "PyPalmSens"
-site_url = "https://sdk.palmsens.com"
+site_url = "https://dev.palmsens.com"
 site_description = "PyPalmSens: a Python library for automating electrochemistry with PalmSens instruments"
 repo_url = "https://github.com/palmsens/palmsens_sdk"
 repo_name = "GitHub"
@@ -73,7 +73,7 @@ extra_javascript = [
 ]
 
 [project.extra]
-homepage = "https://sdk.palmsens.com/"
+homepage = "https://dev.palmsens.com/"
 
 [project.extra.analytics]
 provider = "google"

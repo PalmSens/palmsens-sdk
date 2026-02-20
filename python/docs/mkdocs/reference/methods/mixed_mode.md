@@ -2,7 +2,7 @@
 
 This submodule contains the Mixed Mode method and Stage classes.
 
-See [this link](https://sdk.palmsens.com/python/latest/examples.html#_mixed_mode) for an example how to set it up.
+See [this link](https://dev.palmsens.com/python/latest/_attachments/examples/#mixed-mode) for an example how to set it up.
 
 ::: pypalmsens.mixed_mode.MixedMode
 ::: pypalmsens.mixed_mode.ConstantE

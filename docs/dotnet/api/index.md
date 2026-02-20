@@ -12,4 +12,4 @@ The PalmSens .NET libraries are a set of packages that lets you control your Pal
 - @"PalmSens.Core.Simplified.InternalStorage"
 - @"SDKPlot"
 
-For installation instructions, examples, tutorials, and other information, refer to the [PalmSens developer documentation](https://sdk.palmsens.com).
+For installation instructions, examples, tutorials, and other information, refer to the [PalmSens developer documentation](https://dev.palmsens.com).

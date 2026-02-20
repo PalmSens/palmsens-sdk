@@ -8,7 +8,9 @@ content:
   sources:
     - url: .
       branches: HEAD
-      start_path: docs/start
+      start_paths:
+        - docs/start
+        - docs/dotnet
     - url: .
       branches: HEAD
       start_path: python/docs

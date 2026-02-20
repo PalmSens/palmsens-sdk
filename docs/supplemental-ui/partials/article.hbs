@@ -1,4 +1,23 @@
 <article class="doc">
+<div class="admonitionblock important">
+    <table>
+        <tr>
+            <td class="icon">
+                <i class="fa icon-important" title="Page has moved"></i>
+            </td>
+            <td style="background: #f7d8d8" class="content">
+                <div class="paragraph">
+                    <p>The SDK docs have moved to <a href=https://dev.palmsens.com>https://dev.palmsens.com/sdk</a>.</p>
+                    {{#if (ne page.component.name 'start')}}
+                        <br/>
+                        <p><a href="https://dev.palmsens.com{{ page.url }}">Click here</a> to go to the latest version of this page.</p>
+                    {{/if }}
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
 {{#unless page.attributes.notitle}}
     {{#with page.title}}
     <h1 class="page">{{{this}}}</h1>

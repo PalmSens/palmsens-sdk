@@ -4,7 +4,7 @@
 <br>
 
 <p align="center">
-    <a href="https://sdk.palmsens.com/maui/latest" target="_blank">
+    <a href="https://dev.palmsens.com/maui/latest" target="_blank">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="./docs/start/modules/ROOT/images/banner_dark.svg">
           <source media="(prefers-color-scheme: light)" srcset="./docs/start/modules/ROOT/images/banner.svg">
@@ -22,25 +22,23 @@ Take full control of your PalmSens instruments and modules with the PalmSens Sof
 SDKs are available for the ecosystems below. See the links for installation instructions, code documentation, and examples.
 
 - **Data analysis, prototyping, research**
-  - [PyPalmSens](./python) (Python SDK) - [documentation](https://sdk.palmsens.com/python/latest/)
-  - [Matlab_SDK](./matlab) - [documentation](https://sdk.palmsens.com/matlab/latest/)
-  - [Labview SDK](./labview) - [documentation](https://sdk.palmsens.com/labview/latest/)
+  - [PyPalmSens](./python) (Python SDK) - [documentation](https://dev.palmsens.com/python/latest/)
+  - [Matlab_SDK](./matlab) - [documentation](https://dev.palmsens.com/matlab/latest/)
+  - [Labview SDK](./labview) - [documentation](https://dev.palmsens.com/labview/latest/)
 
 - **.NET app development**
-  - [.NET MAUI SDK](./maui) - [documentation](https://sdk.palmsens.com/maui/latest/)
-  - [WinForms SDK](./winforms) - [documentation](https://sdk.palmsens.com/winforms/latest/)
-  - [WPF SDK](./wpf) - [documentation](https://sdk.palmsens.com/wpf/latest/)
+  - [.NET MAUI SDK](./maui) - [documentation](https://dev.palmsens.com/maui/latest/)
+  - [WinForms SDK](./winforms) - [documentation](https://dev.palmsens.com/winforms/latest/)
+  - [WPF SDK](./wpf) - [documentation](https://dev.palmsens.com/wpf/latest/)
 
 ## Which SDK should you use?
 
-For new projects, we recommend using [PyPalmSens](https://sdk.palmsens.com/python/latest/) for research, data analysis and prototyping, and the [.NET MAUI SDK](https://sdk.palmsens.com/maui/latest/) for native, cross-platform application development targeting Windows, Android, and iOS. Both of these SDKs are actively developed and will be first to receive new features, updates, and fixes.
+For new projects, we recommend using [PyPalmSens](https://dev.palmsens.com/python/latest/) for research, data analysis and prototyping, and the [.NET MAUI SDK](https://dev.palmsens.com/maui/latest/) for native, cross-platform application development targeting Windows, Android, and iOS. Both of these SDKs are actively developed and will be first to receive new features, updates, and fixes.
 
-For existing codebases using [Matlab](https://sdk.palmsens.com/matlab/latest/), [LabView](https://sdk.palmsens.com/labview/latest/), [WinForms](https://sdk.palmsens.com/winforms/latest/), or [WPF](https://sdk.palmsens.com/wpf/latest/), we maintain the other SDKs. These SDKs will continue to receive occasional bug fixes but are no longer under active development.
+For existing codebases using [Matlab](https://dev.palmsens.com/matlab/latest/), [LabView](https://dev.palmsens.com/labview/latest/), [WinForms](https://dev.palmsens.com/winforms/latest/), or [WPF](https://dev.palmsens.com/wpf/latest/), we maintain the other SDKs. These SDKs will continue to receive occasional bug fixes but are no longer under active development.
 
 ## Getting help
 
 The best way to get help with the PalmSens SDKs is to [contact us directly](https://www.palmsens.com/contact/).
 
 For bug reports, questions, and other development related matter [open an issue](https://github.com/PalmSens/PalmSens_SDK/issues).
-
-

@@ -1,7 +1,7 @@
 <br>
 
 <p align="center">
-    <a href="https://sdk.palmsens.com/maui/latest" target="_blank">
+    <a href="https://dev.palmsens.com/maui/latest" target="_blank">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="./docs/modules/ROOT/images/banner_dark.svg">
           <source media="(prefers-color-scheme: light)" srcset="./docs/modules/ROOT/images/banner.svg">
@@ -21,7 +21,7 @@ Connect, control and process data from your PalmSens instrument using MATLAB.
 | - | - | - |
 | **Control your instrument using MATLAB** | **Import experimental results from PSTrace** | **Generate Nyquist and Bode plots** |
 
-For more information, see the [documentation](https://sdk.palmsens.com/matlab/latest/index.html).
+For more information, see the [documentation](https://dev.palmsens.com/matlab/latest/index.html).
 
 ## Installation
 

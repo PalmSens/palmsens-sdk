@@ -62,7 +62,7 @@ async def discover_async(
     """Discover instruments.
 
     For a list of device interfaces, see:
-        https://sdk.palmsens.com/python/latest/_attachments/installation/index.html#compatibility
+        https://dev.palmsens.com/python/latest/_attachments/installation/index.html#compatibility
 
     Parameters
     ----------
@@ -119,7 +119,7 @@ async def discover_async(
                 msg = (
                     'Cannot discover FTDI devices (missing driver).'
                     '\nfor more information see: '
-                    'https://sdk.palmsens.com/python/latest/installation.html#ftdisetup'
+                    'https://dev.palmsens.com/python/latest/_attachments/installation/index.html#ftdisetup'
                     '\nSet `ftdi=False` to hide this message.'
                 )
                 warnings.warn(msg, stacklevel=2)

@@ -43,7 +43,7 @@ dependencies = [
 [project.urls]
 homepage = "https://github.com/palmsens/palmsens_sdk"
 issues = "https://github.com/palmsens/palmsens_sdk/issues"
-documentation = "https://sdk.palmsens.com/python/latest"
+documentation = "https://dev.palmsens.com/python/latest/_attachments/index.html"
 changelog = "https://github.com/palmsens/palmsens_sdk/releases"
 
 [project.optional-dependencies]

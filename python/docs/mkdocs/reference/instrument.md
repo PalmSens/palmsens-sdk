@@ -39,7 +39,7 @@ Or managing the instrument connection yourself:
 >>> manager.disconnect()
 ```
 
-For more information, see the [measurement documentation](https://sdk.palmsens.com/python/latest/measuring.html).
+For more information, see the [measurement documentation](https://dev.palmsens.com/python/latest/_attachments/measuring/).
 
 ::: pypalmsens.connect
 ::: pypalmsens.discover

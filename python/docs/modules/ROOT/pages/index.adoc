@@ -1,4 +1,8 @@
-= Start
+= PyPalmSens Documentation
+
+Redirecting you to the PyPalmSens documentation...
+
+If you aren't automatically redirected please follow xref:attachment$index.html[this link].
 
 ifndef::loader-assembler[]
 ++++

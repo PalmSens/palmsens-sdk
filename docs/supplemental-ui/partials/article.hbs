@@ -8,9 +8,11 @@
             <td style="background: #f7d8d8" class="content">
                 <div class="paragraph">
                     <p>The SDK docs have moved to <a href=https://dev.palmsens.com>https://dev.palmsens.com/sdk</a>.</p>
-                    {{#if (ne page.component.name 'start')}}
-                        <br/>
-                        <p>If you aren't automatically redirected please follow<a href="https://dev.palmsens.com{{ page.url }}">this link</a>.</p>
+                    <br/>
+                    {{#if (eq page.component.name 'start')}}
+                        <p>If you aren't automatically redirected please follow <a href="https://dev.palmsens.com/sdk">this link</a>.</p>
+                    {{else }}
+                        <p>If you aren't automatically redirected please follow <a href="https://dev.palmsens.com{{ page.url }}">this link</a>.</p>
                     {{/if }}
                 </div>
             </td>

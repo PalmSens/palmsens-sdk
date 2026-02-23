@@ -7,27 +7,27 @@ site:
 content:
   sources:
     - url: .
-      branches: HEAD
+      branches: sdk-palmsens-com
       start_paths:
         - docs/start
         - docs/dotnet
     - url: .
-      branches: HEAD
+      branches: sdk-palmsens-com
       start_path: python/docs
     - url: .
-      branches: HEAD
+      branches: sdk-palmsens-com
       start_path: matlab/docs
     - url: .
-      branches: HEAD
+      branches: sdk-palmsens-com
       start_path: labview/docs
     - url: .
-      branches: HEAD
+      branches: sdk-palmsens-com
       start_path: maui/docs
     - url: .
-      branches: HEAD
+      branches: sdk-palmsens-com
       start_path: winforms/docs
     - url: .
-      branches: HEAD
+      branches: sdk-palmsens-com
       start_path: wpf/docs
 urls:
   latest_version_segment: latest

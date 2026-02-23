@@ -42,6 +42,6 @@ ui:
 antora:
   extensions:
     - require: '@antora/collector-extension'
-      enabled: false
+      enabled: true
     - require: '@antora/lunr-extension'
       enabled: true

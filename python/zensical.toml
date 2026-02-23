@@ -73,7 +73,7 @@ extra_javascript = [
 ]
 
 [project.extra]
-homepage = "https://dev.palmsens.com/"
+homepage = "https://dev.palmsens.com/sdk"
 
 [project.extra.analytics]
 provider = "google"

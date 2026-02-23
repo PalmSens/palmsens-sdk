@@ -1,17 +1,7 @@
-= Developer Documentation
-:page-notitle: true
+= Software Development Kits
+:navtitle: Overview
 
-{empty} +
-{empty}
-
-image::banner.svg[PalmSens banner, width=80%]
-
-{empty} +
-{empty}
-
-Take full control of your PalmSens instruments and modules with the PalmSens Software Development Kits (SDKs) and code examples.
-
-SDKs are available for the ecosystems below. See the links for installation instructions, code documentation, and examples.
+Software Development Kits (SDKs) are available for the ecosystems below. See the links for installation instructions, code documentation, and examples.
 
 [cols="a,a", frame=none, grid=none]
 |===
@@ -21,7 +11,7 @@ SDKs are available for the ecosystems below. See the links for installation inst
 * xref:matlab:ROOT:index.adoc[Matlab SDK]
 * xref:labview:ROOT:index.adoc[Labview SDK]
 
-.^| image::platforms_python.png[Python logo, xref=python:ROOT:index.adoc]
+.^| image:ROOT:platforms_python.png[Python logo, xref=python:ROOT:attachment$index.html]
 
 |
 ..NET app development
@@ -29,7 +19,7 @@ SDKs are available for the ecosystems below. See the links for installation inst
 * xref:winforms:ROOT:index.adoc[WinForms SDK]
 * xref:wpf:ROOT:index.adoc[WPF SDK]
 
-.^| image::platforms_net.png[.NET logo, xref=maui:ROOT:index.adoc]
+.^| image:ROOT:platforms_net.png[.NET logo, xref=maui:ROOT:index.adoc]
 |===
 
 == Which SDK should you use?

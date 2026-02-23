@@ -1,11 +1,11 @@
 site:
   title: PalmSens for Developers
-  start_page: start::index.adoc
+  start_page: sdk::index.adoc
 content:
   sources:
     - url: .
       start_paths:
-        - docs/start
+        - docs/sdk
         - docs/dotnet
     - url: .
       start_path: python/docs

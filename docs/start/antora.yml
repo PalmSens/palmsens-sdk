@@ -1,6 +1,0 @@
-name: start
-version: ~
-title: PalmSens SDK
-nav:
-- modules/ROOT/nav.adoc
-- modules/ROOT/nav-last.adoc

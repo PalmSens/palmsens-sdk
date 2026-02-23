@@ -30,7 +30,7 @@ def work_directory(path: Path):
 
 
 def announce(tag: str):
-    releases_path = Path(ROOT, "docs", "start", "modules", "ROOT", "pages", "releases.adoc")
+    releases_path = Path(ROOT, "docs", "sdk", "modules", "ROOT", "pages", "releases.adoc")
     assert releases_path.exists()
     lines = releases_path.read_text().splitlines()
 

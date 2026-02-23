@@ -1,7 +1,7 @@
 name: python
 version: '1.7.0'
 title: PyPalmSens
-start_page: redirect.adoc
+start_page: index.adoc
 nav:
   - modules/ROOT/nav.adoc
 ext:

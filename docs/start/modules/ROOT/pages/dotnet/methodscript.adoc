@@ -1,1 +1,0 @@
-include::dotnet:ROOT:methodscript.adoc[]

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+
+<link rel="canonical" href="url=https://dev.palmsens.com/python/latest/_attachments/{{ page.url }}">
+<meta http-equiv="refresh" content="0; url=https://dev.palmsens.com/python/latest/_attachments/{{ page.url }}">
+
+{% endblock %}
+
+{% block announce %}
+
+<style>
+.md-banner {
+    background-color: #f7d8d8;
+</style>
+
+<h3>Page has moved</h3>
+
+The SDK documentation has moved to <a href="https://dev.palmsens.com{{ page.url }}">dev.palmsens.com</a>.
+
+<br/>
+
+If you aren't automatically redirected please follow <a href="https://dev.palmsens.com/python/latest/_attachments{{ page.url }}">this link</a>.
+
+{% endblock %}

@@ -105,6 +105,8 @@ features = [
     "toc.follow",
 ]
 
+custom_dir = "docs/overrides"
+
 [[project.theme.palette]]
 media = "(prefers-color-scheme)"
 toggle.icon = "lucide/sun-moon"

@@ -77,7 +77,7 @@ homepage = "https://dev.palmsens.com/sdk"
 
 [project.extra.analytics]
 provider = "google"
-property = "G-3SJNPNCDHD"
+property = "G-BFEP0NBPD8"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"

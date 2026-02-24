@@ -25,56 +25,12 @@ from .._methods import (
 )
 from ..data import Measurement
 from .callback import Callback, CallbackEIS, Status
-from .instrument_manager_async import SupportedMixin, discover_async
+from .instrument import Instrument, discover
+from .instrument_manager_async import SupportedMixin
 from .measurement_manager_async import MeasurementManagerAsync
-from .shared import Instrument, create_future, firmware_warning
+from .shared import create_future, firmware_warning
 
 warnings.simplefilter('default')
-
-
-def discover(
-    ftdi: bool = True,
-    usbcdc: bool = True,
-    winusb: bool = True,
-    bluetooth: bool = False,
-    serial: bool = True,
-    ignore_errors: bool = False,
-) -> list[Instrument]:
-    """Discover instruments.
-
-    For a list of device interfaces, see:
-        https://dev.palmsens.com/python/latest/_attachments/installation/index.html#compatibility
-
-    Parameters
-    ----------
-    ftdi : bool
-        If True, discover ftdi devices
-    usbcdc : bool
-        If True, discover usbcdc devices (Windows only)
-    winusb : bool
-        If True, discover winusb devices (Windows only)
-    bluetooth : bool
-        If True, discover bluetooth devices (Windows only)
-    serial : bool
-        If True, discover serial devices
-    ignore_errors : False
-        Ignores errors in device discovery
-
-    Returns
-    -------
-    discovered : list[Instrument]
-        List of dataclasses with discovered instruments.
-    """
-    return asyncio.run(
-        discover_async(
-            ftdi=ftdi,
-            usbcdc=usbcdc,
-            winusb=winusb,
-            bluetooth=bluetooth,
-            serial=serial,
-            ignore_errors=ignore_errors,
-        )
-    )
 
 
 def connect(
@@ -222,6 +178,9 @@ class InstrumentManager(SupportedMixin):
                 raise ConnectionError(
                     f'Cannot open instrument connection (reason: {err.Message}). Check if the device is already in use.'
                 ) from err
+            except System.IO.IOException as err:
+                # Raised if port does not exist
+                raise IOError(err.Message) from err
 
             return await create_future(CommManager.CommManagerAsync(psinstrument))
 

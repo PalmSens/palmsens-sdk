@@ -11,16 +11,15 @@ from . import (
     mixed_mode,
     settings,
 )
+from ._instruments.instrument import Instrument, discover, discover_async
 from ._instruments.instrument_manager import (
     InstrumentManager,
     connect,
-    discover,
     measure,
 )
 from ._instruments.instrument_manager_async import (
     InstrumentManagerAsync,
     connect_async,
-    discover_async,
     measure_async,
 )
 from ._instruments.instrument_pool import InstrumentPool
@@ -67,8 +66,8 @@ __all__ = [
     'load_session_file',
     'save_method_file',
     'save_session_file',
+    'Instrument',
     'InstrumentManager',
-    'FastAmperometry',
     'InstrumentManagerAsync',
     'InstrumentPool',
     'InstrumentPoolAsync',
@@ -79,6 +78,7 @@ __all__ = [
     'CyclicVoltammetry',
     'DifferentialPulseVoltammetry',
     'ElectrochemicalImpedanceSpectroscopy',
+    'FastAmperometry',
     'FastCyclicVoltammetry',
     'FastGalvanostaticImpedanceSpectroscopy',
     'FastImpedanceSpectroscopy',

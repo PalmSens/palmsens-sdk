@@ -27,117 +27,18 @@ from .._methods import (
 )
 from ..data import Measurement
 from .callback import Callback, CallbackEIS, CallbackStatus, Status
+from .instrument import Instrument, discover_async
 from .measurement_manager_async import MeasurementManagerAsync
-from .shared import Instrument, create_future, firmware_warning
+from .shared import create_future, firmware_warning
 
 WINDOWS = sys.platform == 'win32'
 LINUX = not WINDOWS
-
-if WINDOWS:
-    from PalmSens.Windows.Devices import (
-        BLEDevice,
-        BluetoothDevice,
-        FTDIDevice,
-        USBCDCDevice,
-        WinUSBDevice,
-    )
-else:
-    from PalmSens.Core.Linux.Comm.Devices import FTDIDevice, SerialPortDevice
 
 
 if TYPE_CHECKING:
     from PalmSens import Method as PSMethod
 
 warnings.simplefilter('default')
-
-
-async def discover_async(
-    ftdi: bool = True,
-    usbcdc: bool = True,
-    winusb: bool = True,
-    bluetooth: bool = False,
-    serial: bool = True,
-    ignore_errors: bool = False,
-) -> list[Instrument]:
-    """Discover instruments.
-
-    For a list of device interfaces, see:
-        https://dev.palmsens.com/python/latest/_attachments/installation/index.html#compatibility
-
-    Parameters
-    ----------
-    ftdi : bool
-        If True, discover ftdi devices
-    usbcdc : bool
-        If True, discover usbcdc devices (Windows only)
-    winusb : bool
-        If True, discover winusb devices (Windows only)
-    bluetooth : bool
-        If True, discover bluetooth devices (Windows only)
-    serial : bool
-        If True, discover serial devices
-    ignore_errors : False
-        Ignores errors in device discovery
-
-    Returns
-    -------
-    discovered : list[Instrument]
-        List of dataclasses with discovered instruments.
-    """
-    interfaces: dict[str, Any] = {}
-
-    if ftdi:
-        interfaces['ftdi'] = FTDIDevice
-
-    if WINDOWS:
-        if usbcdc:
-            interfaces['usbcdc'] = USBCDCDevice
-
-        if winusb:
-            interfaces['winusb'] = WinUSBDevice
-
-        if bluetooth:
-            interfaces['bluetooth'] = BluetoothDevice
-            interfaces['ble'] = BLEDevice
-
-    if LINUX:
-        if serial:
-            interfaces['serial'] = SerialPortDevice
-
-    instruments: list[Instrument] = []
-
-    for name, interface in interfaces.items():
-        try:
-            devices: list[PalmSens.Devices.Device] = await create_future(
-                interface.DiscoverDevicesAsync()
-            )
-        except System.DllNotFoundException:
-            if ignore_errors:
-                continue
-
-            if name == 'ftdi':
-                msg = (
-                    'Cannot discover FTDI devices (missing driver).'
-                    '\nfor more information see: '
-                    'https://dev.palmsens.com/python/latest/_attachments/installation/index.html#ftdisetup'
-                    '\nSet `ftdi=False` to hide this message.'
-                )
-                warnings.warn(msg, stacklevel=2)
-                continue
-            raise
-
-        for device in devices:
-            instruments.append(
-                Instrument(
-                    id=device.ToString(),
-                    interface=name,
-                    device=device,
-                )
-            )
-
-    instruments.sort(key=lambda instrument: instrument.id)
-
-    return instruments
 
 
 async def connect_async(
@@ -369,6 +270,9 @@ class InstrumentManagerAsync(SupportedMixin):
             raise ConnectionError(
                 f'Cannot open instrument connection (reason: {err.Message}). Check if the device is already in use.'
             ) from err
+        except System.IO.IOException as err:
+            # Raised if port does not exist
+            raise IOError(err.Message) from err
 
         self._comm = await create_future(CommManager.CommManagerAsync(psinstrument))
 

@@ -90,61 +90,54 @@ You can enable scanning with Bluetooth by setting:
 >>> ps.discover(bluetooth=True)
 ```
 
-## Manually controlling the device
+### Connecting to a serial port
 
-Depending on your device’s capabilities it can be used to set a potential/current and to switch current ranges.
-The potential can be set manually in potentiostatic mode and the current can be set in galvanostatic mode.
-The following example show how to manually set a potential, for more examples refer to the [`ManualControlExample`](examples.md#manual-control) and [`ManualControlExampleAsync`](examples.md#manual-control-async)
-scripts included with the SDK.
+For general use, we recommend to use the [discover][pypalmsens.discover] functions to find specific devices.
+The automatic device discovery uses pre-defined metadata (e.g. VID, PID for USB devices) to detect PalmSens devices.
 
-```python
->>> manager.set_potential(1)
-```
+If this does not fit your workflow, you can use the [pypalmsens.Instrument][] class to manually set the serial port to connect to.
 
-## Idle status updates
-
-When idle or during pretreatment, the instrument measures and publishes the current, voltage, device state, etc when a datapoint is measured.
-You can register a callback to subscribe to these events.
-The event is fired every second and every 0.25 seconds during pretreatment.
-
-!!! NOTE "Async"
-
-    The callback requires an active event loop and therefore only works in Async mode.
-
-For example, using print as the callback prints the status to the terminal:
+The example below shows how to connect to the 'COM4' port on Windows:
 
 ```python
->>> manager.register_status_callback(print)
->>> await asyncio.sleep(3)  # (1)!
-Idle: {'current': '0.000 * 1uA', 'potential': '0.527 V'}
-Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
-Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
->>> manager.unregister_status_callback()
+>>> import pypalmsens as ps
+
+>>> instrument = ps.Instrument.from_port('COM4')
+>>> instrument
+Instrument(name='COM4', interface='serialport')
+>>> with ps.connect(instrument) as manager:
+...     print(manager.get_instrument_serial())
+ES4HR20B0008
 ```
 
-1. Sleep is used here to simulate another task
+On Windows, you can see the connected devices using:
 
-The callback returns a [pypalmsens.data.Status][] object, which can be used to customize the behaviour.
+```powershell
+$ reg query HKLM\HARDWARE\DEVICEMAP\SERIALCOMM
 
-For example, to print data during the pretreatment phases:
+HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\SERIALCOMM
+    \Device\USBSER000    REG_SZ    COM4
+```
+
+On linux you can query `/dev/serial` for serial devices, e.g.:
+
+```bash
+$ ls /dev/serial/by-id/
+usb-PalmSens_EmStat4_ES4HR20B0008-if00
+```
+
+And pass the full device path to PyPalmSens:
 
 ```python
->>> def callback(status):
-...     if status.device_state == 'Pretreatment':
-...         print(f'{status.pretreatment_phase}: potential={status.potential:.3f} V, current={status.current:.3f} μA')
-
->>> manager.register_status_callback(callback)
->>> await manager.measure(ps.ChronoAmperometry(
-...     pretreatment={'conditioning_time':2, 'conditioning_potential': 0.5},
-... ))
-Conditioning: potential=0.500 V, current=0.100 μA
-Conditioning: potential=0.500 V, current=0.101 μA
-...
-Conditioning: potential=0.500 V, current=0.098 μA
->>> manager.unregister_status_callback()
+>>> instrument = ps.Instrument.from_port('/dev/serial/by-id/usb-PalmSens_EmStat4_ES4HR20B0008-if00')
+>>> instrument
+Instrument(name='/dev/serial/by-id/usb-PalmSens_EmStat4_ES4HR20B0008-if00', interface='serialport')
 ```
 
-See [pypalmsens.data.Status][] or the provided [Status callback](examples.md#status-callback) example for more information.
+!!! Note "Port stability"
+
+    The serial port or device path your device gets assigned is not stable.
+    It can change after a reboot or unplugging your device.
 
 ## Measuring
 
@@ -206,6 +199,62 @@ For impedemetric techniques, the callback returns the EIS [Dataset](data.md#data
 >>> eismethod = ps.ElectrochemicalImpedanceSpectroscopy()
 >>> manager.measure(method, callback=callback)
 {'index': 0, 'Idc': -5.683012, 'potential': 0.0, 'time': 0.0024332, 'Frequency': 10000.0, 'ZRe': 4846.639, 'ZIm': -31990.538, 'Z': 32355.593, 'Phase': -81.385, 'Iac': 0.015, 'miDC': -5.683, 'mEdc': 0.598, 'Eac': 0.000, 'Y': 3.090e-05, 'YRe': 4.629e-06, 'YIm': -3.055e-05, 'Capacitance': -4.975e-10, "Capacitance'": -4.863e-10, "Capacitance''": 7.368e-11}
+```
+
+## Idle status updates
+
+When idle or during pretreatment, the instrument measures and publishes the current, voltage, device state, etc when a datapoint is measured.
+You can register a callback to subscribe to these events.
+The event is fired every second and every 0.25 seconds during pretreatment.
+
+!!! NOTE "Async"
+
+    The callback requires an active event loop and therefore only works in Async mode.
+
+For example, using print as the callback prints the status to the terminal:
+
+```python
+>>> manager.register_status_callback(print)
+>>> await asyncio.sleep(3)  # (1)!
+Idle: {'current': '0.000 * 1uA', 'potential': '0.527 V'}
+Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
+Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
+>>> manager.unregister_status_callback()
+```
+
+1. Sleep is used here to simulate another task
+
+The callback returns a [pypalmsens.data.Status][] object, which can be used to customize the behaviour.
+
+For example, to print data during the pretreatment phases:
+
+```python
+>>> def callback(status):
+...     if status.device_state == 'Pretreatment':
+...         print(f'{status.pretreatment_phase}: potential={status.potential:.3f} V, current={status.current:.3f} μA')
+
+>>> manager.register_status_callback(callback)
+>>> await manager.measure(ps.ChronoAmperometry(
+...     pretreatment={'conditioning_time':2, 'conditioning_potential': 0.5},
+... ))
+Conditioning: potential=0.500 V, current=0.100 μA
+Conditioning: potential=0.500 V, current=0.101 μA
+...
+Conditioning: potential=0.500 V, current=0.098 μA
+>>> manager.unregister_status_callback()
+```
+
+See [pypalmsens.data.Status][] or the provided [Status callback](examples.md#status-callback) example for more information.
+
+## Manually controlling the device
+
+Depending on your device’s capabilities it can be used to set a potential/current and to switch current ranges.
+The potential can be set manually in potentiostatic mode and the current can be set in galvanostatic mode.
+The following example show how to manually set a potential, for more examples refer to the [`ManualControlExample`](examples.md#manual-control) and [`ManualControlExampleAsync`](examples.md#manual-control-async)
+scripts included with the SDK.
+
+```python
+>>> manager.set_potential(1)
 ```
 
 ## MethodSCRIPT™

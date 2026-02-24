@@ -44,5 +44,6 @@ For more information, see the [measurement documentation](https://dev.palmsens.c
 ::: pypalmsens.connect
 ::: pypalmsens.discover
 ::: pypalmsens.measure
+::: pypalmsens.Instrument
 ::: pypalmsens.InstrumentManager
 ::: pypalmsens.InstrumentPool

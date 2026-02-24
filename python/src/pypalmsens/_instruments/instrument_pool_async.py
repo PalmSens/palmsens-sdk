@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any, Awaitable, Protocol, Sequence
 
 from .._methods import BaseTechnique
 from .callback import Callback, CallbackEIS
+from .instrument import Instrument
 from .instrument_manager_async import InstrumentManagerAsync
-from .shared import Instrument
 
 if TYPE_CHECKING:
     from .._data.measurement import Measurement

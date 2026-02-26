@@ -250,12 +250,46 @@ See [pypalmsens.data.Status][] or the provided [Status callback](examples.md#sta
 
 Depending on your device’s capabilities it can be used to set a potential/current and to switch current ranges.
 The potential can be set manually in potentiostatic mode and the current can be set in galvanostatic mode.
-The following example show how to manually set a potential, for more examples refer to the [`ManualControlExample`](examples.md#manual-control) and [`ManualControlExampleAsync`](examples.md#manual-control-async)
-scripts included with the SDK.
+
+To turn the cell on or off:
 
 ```python
+manager.set_cell(True)
+```
+
+or off:
+
+```python
+manager.set_cell(False)
+```
+
+You can switch current ranges, and read the current:
+
+```python
+>>> manager.supported_current_ranges()
+['100nA', '1uA', '10uA', '100uA', '1mA', '10mA', '100mA']
+>>> manager.set_current_range('1uA')
+>>> manager.get_current_range()
+'1uA'
+>>> manager.read_current()
+-0.0187
+```
+
+Likewise you can switch potential ranges, and set/read the potential:
+
+```python
+>>> manager.supported_potential_ranges()
+['50mV', '100mV', '200mV', '500mV', '1V']
+'1V'
+>>> manager.set_potential_range('1V')
+>>> manager.get_potential_range()
+'1V'
+>>> manager.read_potential()
+0.0
 >>> manager.set_potential(1)
 ```
+
+See [`manual_control.py`](examples.md#manual-control) and [`manual_control_async.py`](examples.md#manual-control-async) for examples.
 
 ## MethodSCRIPT™
 

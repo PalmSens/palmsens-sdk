@@ -85,6 +85,22 @@ def test_current_array(data_cv_1scan):
     assert len(d) == 5
 
 
+def test_current_array_midc(data_eis_5freq):
+    """Regression test for midc bug.
+
+    For miDC the array value is 'in range' instead of µA for backwards compatibility reasons.
+    `current()` and `current_in_range()` should always return the correct values.
+    """
+    midc = data_eis_5freq[0].dataset['miDC']
+    iac = data_eis_5freq[0].dataset['Iac']
+
+    assert midc.to_list() != midc.current()
+    assert midc.to_list() == midc.current_in_range()
+
+    assert iac.to_list() == iac.current()
+    assert iac.to_list() != iac.current_in_range()
+
+
 def test_potential_array(data_cv_1scan):
     arr = data_cv_1scan[0].dataset['Potential']
     assert isinstance(arr, PotentialArray)

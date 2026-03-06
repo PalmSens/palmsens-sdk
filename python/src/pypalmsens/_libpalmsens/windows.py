@@ -16,8 +16,7 @@ ble_dll = PSSDK_DIR / 'PalmSens.Core.Windows.BLE.dll'
 def unblock(path: Path):
     """Unblock DLL: https://stackoverflow.com/q/20886450"""
     zone_id = path.with_name(path.name + ':Zone.Identifier')
-    if zone_id.exists():
-        zone_id.unlink()
+    zone_id.unlink(missing_ok=True)
 
 
 def load() -> str:

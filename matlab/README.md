@@ -1,7 +1,7 @@
 <br>
 
 <p align="center">
-    <a href="https://dev.palmsens.com/maui/latest" target="_blank">
+    <a href="https://dev.palmsens.com/matlab/latest" target="_blank">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="./docs/modules/ROOT/images/banner_dark.svg">
           <source media="(prefers-color-scheme: light)" srcset="./docs/modules/ROOT/images/banner.svg">

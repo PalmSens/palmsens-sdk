@@ -4,7 +4,7 @@
 <br>
 
 <p align="center">
-    <a href="https://dev.palmsens.com/maui/latest" target="_blank">
+    <a href="https://dev.palmsens.com/sdk" target="_blank">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="./docs/sdk/modules/ROOT/images/banner_dark.svg">
           <source media="(prefers-color-scheme: light)" srcset="./docs/sdk/modules/ROOT/images/banner.svg">

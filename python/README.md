@@ -6,7 +6,7 @@
 <br>
 
 <p align="center">
-    <a href="https://dev.palmsens.com/maui/latest" target="_blank">
+    <a href="https://dev.palmsens.com/python/latest" target="_blank">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/docs/modules/ROOT/images/banner_dark.svg">
           <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/docs/modules/ROOT/images/banner.svg">

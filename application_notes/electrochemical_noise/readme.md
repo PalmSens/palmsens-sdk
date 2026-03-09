@@ -1,6 +1,6 @@
 # Analyzing Electrochemical Noise Using Python
 
-This notebook accompanies the application note: [Analyzing Electrochemical Noise using Python](https://www.palmsens.com/knowledgebase-category/application-notes/)
+This notebook accompanies the application note: [Analyzing Electrochemical Noise using Python](https://www.palmsens.com/knowledgebase-article/analyzing-electrochemical-noise-using-python/)
 
 View the notebook [here](./electrochemical_noise.ipynb) or:
 

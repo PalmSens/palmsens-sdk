@@ -1,0 +1,84 @@
+:root {
+    --palmsens-dark-blue: #00387B;
+    --palmsens-classic-blue: #2D9DD6;
+    --palmsens-secondary-background: #EBF3FA;
+    --palmsens-secondary-cta: #A28D5B;
+    --palmsens-footer-background: #0f243c;
+}
+
+[data-md-color-scheme="slate"] {
+
+    --md-primary-fg-color:        var(--palmsens-dark-blue);
+    --md-accent-fg-color:         var(--palmsens-classic-blue);
+    --md-typeset-a-color:         var(--palmsens-classic-blue);
+    --md-accent-fg-color--transparent: var(--palmsens-secondary-background);
+    --md-default-bg-color:        var(--palmsens-footer-background);
+    --md-code-bg-color:           #183a62;
+    --md-code-bg-color--light:    #183a62;
+    --md-code-bg-color--lighter:  #183a62;
+}
+
+[data-md-color-scheme="default"] {
+    --md-primary-fg-color:        var(--palmsens-dark-blue);
+    --md-accent-fg-color:         var(--palmsens-classic-blue);
+    --md-typeset-a-color:         var(--palmsens-classic-blue);
+    --md-accent-fg-color--transparent: var(--palmsens-secondary-background);
+}
+
+[data-md-color-scheme="default"] h1 {
+    color: var(--md-accent-fg-color);
+}
+
+.md-header {
+  color: white;
+  background-color: var(--md-primary-fg-color);
+  border-bottom: solid;
+  border-color: var(--palmsens-classic-blue);
+}
+
+.md-search__button {
+  color: white;
+  background-color: var(--md-primary-fg-color);
+}
+
+.md-search__button::before {
+  background-color: white;
+}
+
+.md-search__button::after {
+   background-color: var(--md-accent-fg-color);
+}
+
+.md-search__button:hover {
+    background-color: #FFFFFF40;
+    color: white;
+}
+
+/* Give the logo a bit more breathing room */
+.md-header__button.md-logo {
+    margin-top: -.1rem;
+    margin-bottom: -.1rem;
+}
+
+.md-header__button.md-logo img {
+    height: 2.0rem;
+}
+
+
+
+.md-footer-meta {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-top: solid;
+  border-color: var(--palmsens-classic-blue);
+  background-color: var(--palmsens-footer-background);
+}
+
+.md-copyright__highlight,
+html .md-footer-meta.md-typeset a:not(:focus, :hover) {
+    color: white;
+}
+
+.md-copyright {
+    color: #FFFFFF70;
+}

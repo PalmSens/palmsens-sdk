@@ -1,5 +1,15 @@
+:root {
+    --palmsens-dark-blue: #00387B;
+    --palmsens-classic-blue: #2D9DD6;
+    --palmsens-secondary-background: #EBF3FA;
+    --palmsens-secondary-cta: #A28D5B;
+    --palmsens-footer-background: #0f243c;
+}
+
 .navbar {
-    background: #01355C;
+    background: var(--palmsens-dark-blue);
+    border-bottom: 5px solid;
+    border-bottom-color: var(--palmsens-classic-blue);
 }
 
 .navbar img {
@@ -7,7 +17,7 @@
 }
 
 .navbar-dropdown a.navbar-item:hover {
-  background: #f1f5fb;
+  background: var(--palmsens-secondary-background);
   color: black;
 }
 
@@ -15,54 +25,56 @@
     .navbar-end > a.navbar-item:hover,
     .navbar-end .navbar-link:hover,
     .navbar-end .navbar-item.has-dropdown:hover .navbar-link {
-    background: #01355C;
+    background: var(--palmsens-dark-blue);
     }
 }
 
 @media screen and (max-width: 1023.5px) {
     .navbar-menu a.navbar-item:hover,
     .navbar-menu .navbar-link:hover {
-        background: #f1f5fb;
+        background: var(--palmsens-secondary-background);
     }
 }
 
 .nav-menu {
-    background: #f1f5fb;
+    background: var(--palmsens-secondary-background);
 }
 
 .toolbar {
-    background: #f1f5fb;
+    background: var(--palmsens-secondary-background);
 }
 
 .doc h1 {
-     color: #008CCD;
+     color: var(--palmsens-classic-blue);
 }
 
 .context {
-    background: #f1f5fb;
+    background: var(--palmsens-secondary-background);
 }
 
 .title a {
-     color: #01355C;
+     color: var(--palmsens-dark-blue);
 }
 
 .nav-panel-explore .components {
-    background: #e3ecf7;
+    background: var(--palmsens-secondary-background);
 }
 
 .nav-panel-explore .component .is-current a {
-  background: #008CCD;
+  background: var(--palmsens-classic-blue);
   color: white;
+}
+
+.nav-panel-explore:not(:first-child) .context {
+  color: var(--palmsens-dark-blue);
+  font-weight: bold;
 }
 
 footer.footer {
     color: white;
-    background: #01355C;
-}
-
-footer.footer {
-    border-top: 0.5rem solid;
-    border-color: #008CCD;
+    background: var(--palmsens-footer-background);
+    border-top: 5px solid;
+    border-color: var(--palmsens-classic-blue);
 }
 
 .footer a {

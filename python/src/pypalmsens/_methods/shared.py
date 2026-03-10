@@ -261,7 +261,7 @@ class ILevel(BaseModel):
     """Duration in s."""
 
     record: bool = True
-    """Record the current."""
+    """Record the potential."""
 
     limit_potential_max: float | None = None
     """Limit potential max in V. Set to None to disable."""

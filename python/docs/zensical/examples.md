@@ -10,7 +10,11 @@ This example shows how to load/save [methods][pypalmsens.load_method_file] and [
 --8<-- "examples/load_save_data.py"
 ```
 
-[:fontawesome-solid-download: load_save_data.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/load_save_data.py){ .md-button .md-button--primary} [:fontawesome-solid-download: Demo CV DPV EIS.pssession](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/Demo CV DPV EIS IS-C electrode.pssession){ .md-button } [:fontawesome-solid-download: LSV.psmethod](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/PSDummyCell_LSV.psmethod){ .md-button }
+[:fontawesome-solid-download: load_save_data.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/load_save_data.py){ .md-button .md-button--primary}
+
+[:fontawesome-solid-download:Demo CV DPV EIS IS-C electrode.pssession](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/Demo CV DPV EIS IS-C electrode.pssession)
+&nbsp;&nbsp;
+[:fontawesome-solid-download:PSDummyCell_LSV.psmethod](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/PSDummyCell_LSV.psmethod)
 
 ## Manual control
 

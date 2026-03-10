@@ -5,7 +5,7 @@ site_description = "PyPalmSens: a Python library for automating electrochemistry
 repo_url = "https://github.com/palmsens/palmsens_sdk"
 repo_name = "GitHub"
 docs_dir = "docs/zensical"
-copyright = "&copy; 2025 PalmSens BV"
+copyright = "&copy; 2026 PalmSens BV"
 
 nav = [
   { "Home" = "index.md" },

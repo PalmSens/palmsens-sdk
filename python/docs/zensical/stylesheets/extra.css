@@ -64,7 +64,10 @@
     height: 2.0rem;
 }
 
-
+.md-typeset .md-button--primary {
+    background-color: var(--palmsens-secondary-cta);
+    color: white;
+}
 
 .md-footer-meta {
   padding-top: 10px;

@@ -1,6 +1,6 @@
 - name: Home
-  href: /
+  href: index.md
 - name: PalmSens.Core.Simplified
-  href: /api/PalmSens.Core.Simplified.html
+  href: api/PalmSens.Core.Simplified.yml
 - name: SDKPlot
-  href: /api/SDKPlot.html
+  href: api/SDKPlot.yml

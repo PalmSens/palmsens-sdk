@@ -6,5 +6,5 @@ static_files:
   - favicon-32x32.png
   - favicon.ico
   - site.webmanifest
-  - header_icon.svg
-  - palmsens_logo_white.svg
+  - header_icon_white.svg
+  - palmsens_logo_white_solid.svg

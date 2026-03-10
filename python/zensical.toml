@@ -93,7 +93,7 @@ link = "https://www.palmsens.com/contact"
 
 [project.theme]
 name = "material"
-logo = "assets/header_icon.svg"
+logo = "assets/header_icon_white.svg"
 favicon = "assets/favicon.ico"
 
 features = [

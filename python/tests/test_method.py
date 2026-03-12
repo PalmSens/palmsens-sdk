@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 import pypalmsens as ps
+from pypalmsens._methods.adapters import technique_adapter
 
 
 @pytest.fixture
@@ -37,3 +38,11 @@ def test_methodscript_file_roundtrip(tmpdir):
 
     assert method2.script == method.script
     assert method2 == method
+
+
+def test_structure_unstructure():
+    data = technique_adapter.validate_python({'id': 'cv'})
+    assert isinstance(data, ps.CyclicVoltammetry)
+
+    data = technique_adapter.validate_python({'id': 'eis'})
+    assert isinstance(data, ps.ElectrochemicalImpedanceSpectroscopy)

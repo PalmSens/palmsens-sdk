@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from typing import Any, ClassVar
 
-from PalmSens import Method as PSMethod
+import PalmSens
 
 from .base_model import BaseModel
 
@@ -12,16 +12,15 @@ class BaseSettings(BaseModel, metaclass=ABCMeta):
     """Protocol to provide generic methods for parameters."""
 
     @abstractmethod
-    def _update_psmethod(self, psmethod: PSMethod, /): ...
+    def _update_psmethod(self, psmethod: PalmSens.Method, /): ...
 
     @abstractmethod
-    def _update_params(self, psmethod: PSMethod, /): ...
+    def _update_params(self, psmethod: PalmSens.Method, /): ...
 
 
 class BaseTechnique(BaseModel, metaclass=ABCMeta):
     """Protocol to provide base methods for method classes."""
 
-    id: ClassVar[str] = ''
     _registry: ClassVar[dict[str, type[BaseTechnique]]] = {}
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
@@ -46,7 +45,7 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
         return new()
 
     @classmethod
-    def _from_psmethod(cls, psmethod: PSMethod, /) -> BaseTechnique:
+    def _from_psmethod(cls, psmethod: PalmSens.Method, /) -> BaseTechnique:
         """Generate parameters from dotnet method object."""
         new = cls.from_method_id(psmethod.MethodID)
         new._update_params(psmethod)
@@ -54,9 +53,9 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
         return new
 
     @abstractmethod
-    def _update_params(self, psmethod: PSMethod, /) -> None: ...
+    def _update_params(self, psmethod: PalmSens.Method, /) -> None: ...
 
-    def _update_params_nested(self, psmethod: PSMethod, /) -> None:
+    def _update_params_nested(self, psmethod: PalmSens.Method, /) -> None:
         """Retrieve and convert dotnet method for nested field parameters."""
         for field in self.__class__.model_fields:
             attribute = getattr(self, field)
@@ -66,18 +65,18 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
             except AttributeError:
                 pass
 
-    def _to_psmethod(self) -> PSMethod:
+    def _to_psmethod(self) -> PalmSens.Method:
         """Convert parameters to dotnet method."""
-        psmethod = PSMethod.FromMethodID(self.id)
+        psmethod = PalmSens.Method.FromMethodID(self.id)
 
         self._update_psmethod(psmethod)
         self._update_psmethod_nested(psmethod)
         return psmethod
 
     @abstractmethod
-    def _update_psmethod(self, psmethod: PSMethod, /) -> None: ...
+    def _update_psmethod(self, psmethod: PalmSens.Method, /) -> None: ...
 
-    def _update_psmethod_nested(self, psmethod: PSMethod, /) -> None:
+    def _update_psmethod_nested(self, psmethod: PalmSens.Method, /) -> None:
         """Convert and set field parameters on dotnet method."""
         for field in self.__class__.model_fields:
             attribute = getattr(self, field)

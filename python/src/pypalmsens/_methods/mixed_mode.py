@@ -3,8 +3,7 @@ from __future__ import annotations
 from abc import ABCMeta, abstractmethod
 from typing import Annotated, ClassVar, Literal
 
-from PalmSens import Method as PSMethod
-from PalmSens.Techniques import MixedMode as PSMixedMode
+import PalmSens
 from pydantic import Field
 from typing_extensions import override
 
@@ -35,7 +34,7 @@ class BaseStage(BaseModel, metaclass=ABCMeta):
         return new()
 
     @classmethod
-    def _from_psstage(cls, psstage: PSMethod, /) -> BaseStage:
+    def _from_psstage(cls, psstage: PalmSens.Method, /) -> BaseStage:
         """Generate parameters from dotnet method object."""
         new = cls.from_stage_type(psstage.StageType)
         new._update_params(psstage)
@@ -43,9 +42,9 @@ class BaseStage(BaseModel, metaclass=ABCMeta):
         return new
 
     @abstractmethod
-    def _update_params(self, psstage: PSMethod, /) -> None: ...
+    def _update_params(self, psstage: PalmSens.Method, /) -> None: ...
 
-    def _update_params_nested(self, psstage: PSMethod, /) -> None:
+    def _update_params_nested(self, psstage: PalmSens.Method, /) -> None:
         """Retrieve and convert dotnet method for nested field parameters."""
         for field in self.__class__.model_fields:
             attribute = getattr(self, field)
@@ -55,18 +54,20 @@ class BaseStage(BaseModel, metaclass=ABCMeta):
             except AttributeError:
                 pass
 
-    def _update_psmethod(self, psmethod: PSMethod, /) -> PSMethod:
+    def _update_psmethod(self, psmethod: PalmSens.Method, /) -> PalmSens.Method:
         """Add stage to dotnet method, and update paramaters on dotnet stage."""
-        stage_type = getattr(PSMixedMode.EnumMixedModeStageType, self.stage_type)
+        stage_type = getattr(
+            PalmSens.Techniques.MixedMode.EnumMixedModeStageType, self.stage_type
+        )
         psstage = psmethod.AddStage(stage_type)
         self._update_psstage(psstage)
         self._update_psstage_nested(psstage)
         return psstage
 
     @abstractmethod
-    def _update_psstage(self, psstage: PSMethod, /) -> None: ...
+    def _update_psstage(self, psstage: PalmSens.Method, /) -> None: ...
 
-    def _update_psstage_nested(self, psstage: PSMethod, /) -> None:
+    def _update_psstage_nested(self, psstage: PalmSens.Method, /) -> None:
         """Convert and set field parameters on dotnet method."""
         for field in self.__class__.model_fields:
             attribute = getattr(self, field)
@@ -91,12 +92,12 @@ class ConstantE(BaseStage, mixins.CurrentLimitsMixin, mixins.MeasurementTriggers
     """Run time of the stage in s."""
 
     @override
-    def _update_psstage(self, psstage: PSMethod, /):
+    def _update_psstage(self, psstage: PalmSens.Method, /):
         psstage.Potential = self.potential
         psstage.RunTime = self.run_time
 
     @override
-    def _update_params(self, psstage: PSMethod, /):
+    def _update_params(self, psstage: PalmSens.Method, /):
         self.potential = single_to_double(psstage.Potential)
         self.run_time = single_to_double(psstage.RunTime)
 
@@ -125,13 +126,13 @@ class ConstantI(BaseStage, mixins.PotentialLimitsMixin, mixins.MeasurementTrigge
     """Run time of the stage in s."""
 
     @override
-    def _update_psstage(self, psstage: PSMethod, /):
+    def _update_psstage(self, psstage: PalmSens.Method, /):
         psstage.AppliedCurrentRange = cr_string_to_enum(self.applied_current_range)
         psstage.Current = self.current
         psstage.RunTime = self.run_time
 
     @override
-    def _update_params(self, psstage: PSMethod, /):
+    def _update_params(self, psstage: PalmSens.Method, /):
         self.applied_current_range = cr_enum_to_string(psstage.AppliedCurrentRange)
         self.current = single_to_double(psstage.Current)
         self.run_time = single_to_double(psstage.RunTime)
@@ -162,14 +163,14 @@ class SweepE(BaseStage, mixins.CurrentLimitsMixin, mixins.MeasurementTriggersMix
     """
 
     @override
-    def _update_psstage(self, psstage: PSMethod, /):
+    def _update_psstage(self, psstage: PalmSens.Method, /):
         psstage.BeginPotential = self.begin_potential
         psstage.EndPotential = self.end_potential
         psstage.StepPotential = self.step_potential
         psstage.Scanrate = self.scanrate
 
     @override
-    def _update_params(self, psstage: PSMethod, /):
+    def _update_params(self, psstage: PalmSens.Method, /):
         self.begin_potential = single_to_double(psstage.BeginPotential)
         self.end_potential = single_to_double(psstage.EndPotential)
         self.step_potential = single_to_double(psstage.StepPotential)
@@ -187,11 +188,11 @@ class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin, mixins.MeasurementTrig
     """Run time of the stage in s."""
 
     @override
-    def _update_psstage(self, psstage: PSMethod, /):
+    def _update_psstage(self, psstage: PalmSens.Method, /):
         psstage.RunTime = self.run_time
 
     @override
-    def _update_params(self, psstage: PSMethod, /):
+    def _update_params(self, psstage: PalmSens.Method, /):
         self.run_time = single_to_double(psstage.RunTime)
 
 
@@ -253,7 +254,7 @@ class Impedance(BaseStage):
     """
 
     @override
-    def _update_psstage(self, psstage: PSMethod, /):
+    def _update_psstage(self, psstage: PalmSens.Method, /):
         psstage.Potential = self.dc_potential
         psstage.Eac = self.ac_potential
 
@@ -264,7 +265,7 @@ class Impedance(BaseStage):
         psstage.MaxEqTime = self.max_equilibration_time
 
     @override
-    def _update_params(self, psstage: PSMethod, /):
+    def _update_params(self, psstage: PalmSens.Method, /):
         self.dc_potential = single_to_double(psstage.Potential)
         self.ac_potential = single_to_double(psstage.Eac)
 
@@ -316,7 +317,7 @@ class MixedMode(
     potential, and minimum potential.
     """
 
-    id: ClassVar[str] = 'mm'
+    id: Literal['mm'] = 'mm'
 
     interval_time: float = 0.1
     """Time between two samples in s."""
@@ -339,7 +340,7 @@ class MixedMode(
         )
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         """Update method with mixed mode settings."""
         psmethod.nCycles = self.cycles
         psmethod.IntervalTime = self.interval_time
@@ -351,7 +352,7 @@ class MixedMode(
             _ = stage._update_psmethod(psmethod)
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         self.cycles = psmethod.nCycles
         self.interval_time = single_to_double(psmethod.IntervalTime)
 

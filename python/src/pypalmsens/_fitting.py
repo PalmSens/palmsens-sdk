@@ -4,8 +4,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
 
-from PalmSens import Fitting as PSFitting
-from System import Array
+import PalmSens
+import System
 from typing_extensions import override
 
 from ._data.curve import Curve
@@ -31,7 +31,7 @@ class Parameter:
     """If True, fix the value for this parameter."""
 
     @classmethod
-    def _from_psparameter(cls, psparameter: PSFitting.Parameter):
+    def _from_psparameter(cls, psparameter: PalmSens.Fitting.Parameter):
         """Create instance from SDK Parameter object."""
         return cls(
             symbol=psparameter.Symbol,
@@ -41,7 +41,7 @@ class Parameter:
             fixed=psparameter.Fixed,
         )
 
-    def _update_psparameter(self, psparameter: PSFitting.Parameter):
+    def _update_psparameter(self, psparameter: PalmSens.Fitting.Parameter):
         """Update PalmSens SDK object with values from dataclass."""
         if self.value:
             psparameter.Value = self.value
@@ -71,7 +71,7 @@ class Parameters(Sequence[Any]):
         self.cdc: str = cdc
         """CDC code used to generate parameter listing."""
 
-        model = PSFitting.Models.CircuitModel()
+        model = PalmSens.Fitting.Models.CircuitModel()
         model.SetCircuit(cdc)
         self._parameters = tuple(
             Parameter._from_psparameter(psparam) for psparam in model.InitialParameters
@@ -93,7 +93,7 @@ class Parameters(Sequence[Any]):
     def __str__(self) -> str:
         return self._parameters.__str__()
 
-    def _update_psmodel_parameters(self, psmodel: PSFitting.Models.CircuitModel) -> None:
+    def _update_psmodel_parameters(self, psmodel: PalmSens.Fitting.Models.CircuitModel) -> None:
         """Update the initial parameters in the SDK model with parameters in this instance.
 
         Note that the length and type of parameters must match that of the SDK class.
@@ -123,7 +123,7 @@ class FitResult:
     """Exit code for the minimization."""
 
     @classmethod
-    def from_psfitresult(cls, result: PSFitting.FitResult, cdc: str):
+    def from_psfitresult(cls, result: PalmSens.Fitting.FitResult, cdc: str):
         """Construct fitresult from SDK FitResult."""
         return cls(
             cdc=cdc,
@@ -146,9 +146,9 @@ class FitResult:
             n_iter=0,
         )
 
-    def get_psmodel(self, data: EISData) -> PSFitting.Models.CircuitModel:
+    def get_psmodel(self, data: EISData) -> PalmSens.Fitting.Models.CircuitModel:
         """Get SDK Circuit model object."""
-        psmodel = PSFitting.Models.CircuitModel()
+        psmodel = PalmSens.Fitting.Models.CircuitModel()
         psmodel.SetEISdata(data._pseis)
         psmodel.SetCircuit(self.cdc)
         psmodel.SetInitialParameters(self.parameters)
@@ -337,7 +337,7 @@ class CircuitModel:
     """Lambda Scaling Factor. Levenberg-Marquardt only (default = 10)."""
 
     _last_result: None | FitResult = field(default=None, repr=False)
-    _last_psfitter: None | PSFitting.FitAlgorithm = field(default=None, repr=False)
+    _last_psfitter: None | PalmSens.Fitting.FitAlgorithm = field(default=None, repr=False)
 
     def default_parameters(self) -> Parameters:
         """Get default parameters. Use this to modify parameter values.
@@ -354,7 +354,7 @@ class CircuitModel:
         data: EISData,
         *,
         parameters: None | Sequence[float] | Parameters = None,
-    ) -> PSFitting.FitOptions:
+    ) -> PalmSens.Fitting.FitOptions:
         """Fit circuit model.
 
         Parameters
@@ -367,10 +367,10 @@ class CircuitModel:
 
         Returns
         -------
-        opts : PSFitting.FitOptions
+        opts : PalmSens.Fitting.FitOptions
             SDK object containing fitting options.
         """
-        model = PSFitting.Models.CircuitModel()
+        model = PalmSens.Fitting.Models.CircuitModel()
         model.SetCircuit(self.cdc)
         model.SetEISdata(data._pseis)
 
@@ -386,7 +386,7 @@ class CircuitModel:
                     raise ValueError(f'Parameters must be of length {model.NParameters}')
                 model.SetInitialParameters(parameters)
 
-        opts = PSFitting.FitOptionsCircuit()
+        opts = PalmSens.Fitting.FitOptionsCircuit()
         opts.Model = model
         opts.RawData = data._pseis
 
@@ -395,9 +395,9 @@ class CircuitModel:
         opts.MinimumDeltaParameters = self.min_delta_step
 
         if self.algorithm == 'leastsq':
-            opts.SelectedAlgorithm = PSFitting.Algorithm.LevenbergMarquardt
+            opts.SelectedAlgorithm = PalmSens.Fitting.Algorithm.LevenbergMarquardt
         elif self.algorithm == 'nelder-mead':
-            opts.SelectedAlgorithm = PSFitting.Algorithm.NelderMead
+            opts.SelectedAlgorithm = PalmSens.Fitting.Algorithm.NelderMead
         else:
             raise ValueError(f'{self.algorithm=}')
 
@@ -412,7 +412,7 @@ class CircuitModel:
             array = data.dataset.arrays(type='Frequency')[-1]
             sel = (self.min_freq < val < self.max_freq for val in array)
 
-            opts.SelectedDataPoints = Array[bool]((bool(item) for item in sel))
+            opts.SelectedDataPoints = System.Array[bool]((bool(item) for item in sel))
 
         return opts
 
@@ -455,7 +455,7 @@ class CircuitModel:
 
         opts = self._psfitoptions(data=data, parameters=parameters)
 
-        fitter = PSFitting.FitAlgorithm.FromAlgorithm(opts)
+        fitter = PalmSens.Fitting.FitAlgorithm.FromAlgorithm(opts)
         fitter.ApplyFitCircuit()
         self._last_psfitter = fitter
         self._last_result = FitResult.from_psfitresult(fitter.FitResult, cdc=self.cdc)

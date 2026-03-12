@@ -161,7 +161,7 @@ async def discover_async(
 
     for name, interface in interfaces.items():
         try:
-            devices: list[PalmSens.PSDevices.Device] = await create_future(
+            devices: list[PalmSens.Devices.Device] = await create_future(
                 interface.DiscoverDevicesAsync()
             )
         except System.DllNotFoundException:

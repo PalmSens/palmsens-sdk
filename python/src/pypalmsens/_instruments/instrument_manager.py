@@ -9,8 +9,6 @@ from typing import Iterator
 import clr
 import PalmSens
 import System
-from PalmSens import Method as PSMethod
-from PalmSens import MuxModel
 from PalmSens.Comm import CommManager, MuxType
 from typing_extensions import override
 
@@ -305,13 +303,13 @@ class InstrumentManager(SupportedMixin):
 
         return serial
 
-    def validate_method(self, method: PSMethod | BaseTechnique) -> None:
+    def validate_method(self, method: PalmSens.Method | BaseTechnique) -> None:
         """Validate method.
 
         Raise ValueError if the method cannot be validated."""
         self.ensure_connection()
 
-        if not isinstance(method, PSMethod):
+        if not isinstance(method, PalmSens.Method):
             method = method._to_psmethod()
 
         errors = method.Validate(self._comm.Capabilities)
@@ -392,9 +390,9 @@ class InstrumentManager(SupportedMixin):
             Number of available multiplexes channels
         """
         with self._lock():
-            model = MuxModel(mux_model)
+            model = PalmSens.MuxModel(mux_model)
 
-            if model == MuxModel.MUX8R2 and (
+            if model == PalmSens.MuxModel.MUX8R2 and (
                 self._comm.ClientConnection.GetType().Equals(
                     clr.GetClrType(PalmSens.Comm.ClientConnectionPS4)
                 )
@@ -406,11 +404,11 @@ class InstrumentManager(SupportedMixin):
 
             self._comm.Capabilities.MuxModel = model
 
-            if self._comm.Capabilities.MuxModel == MuxModel.MUX8:
+            if self._comm.Capabilities.MuxModel == PalmSens.MuxModel.MUX8:
                 self._comm.Capabilities.NumMuxChannels = 8
-            elif self._comm.Capabilities.MuxModel == MuxModel.MUX16:
+            elif self._comm.Capabilities.MuxModel == PalmSens.MuxModel.MUX16:
                 self._comm.Capabilities.NumMuxChannels = 16
-            elif self._comm.Capabilities.MuxModel == MuxModel.MUX8R2:
+            elif self._comm.Capabilities.MuxModel == PalmSens.MuxModel.MUX8R2:
                 self._comm.ClientConnection.ReadMuxInfo()
 
         channels = self._comm.Capabilities.NumMuxChannels
@@ -438,16 +436,16 @@ class InstrumentManager(SupportedMixin):
         """
         self.ensure_connection()
 
-        if self._comm.Capabilities.MuxModel != MuxModel.MUX8R2:
+        if self._comm.Capabilities.MuxModel != PalmSens.MuxModel.MUX8R2:
             raise ValueError(
                 f"Incompatible mux model: {self._comm.Capabilities.MuxModel}, expected 'MUXR2'."
             )
 
-        mux_settings = PSMethod.MuxSettings(False)
+        mux_settings = PalmSens.Method.MuxSettings(False)
         mux_settings.ConnSEWE = connect_sense_to_working_electrode
         mux_settings.ConnectCERE = combine_reference_and_counter_electrodes
         mux_settings.CommonCERE = use_channel_1_reference_and_counter_electrodes
-        mux_settings.UnselWE = PSMethod.MuxSettings.UnselWESetting(
+        mux_settings.UnselWE = PalmSens.Method.MuxSettings.UnselWESetting(
             set_unselected_channel_working_electrode
         )
 

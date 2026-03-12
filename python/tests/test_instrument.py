@@ -97,9 +97,16 @@ def test_connect():
 def test_connect_serial_port():
     instruments = ps.discover()
     assert instruments
-    portname = instruments[0].device.portname
-    instrument = Instrument.from_port(portname)
-    with ps.connect(instrument) as manager:
+
+    instrument = instruments[0]
+
+    if instrument.interface == 'ftdi':
+        pytest.skip('Unsupported for FTDI')
+
+    portname = instrument.device.portname
+
+    new_instrument = Instrument.from_port(portname)
+    with ps.connect(new_instrument) as manager:
         assert manager.instrument.name == portname
         assert manager.get_instrument_serial()
 

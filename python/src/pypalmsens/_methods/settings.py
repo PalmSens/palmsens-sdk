@@ -3,8 +3,6 @@ from __future__ import annotations
 from typing import Literal
 
 import PalmSens
-from PalmSens import Method as PSMethod
-from PalmSens import MuxMethod as PSMuxMethod
 from pydantic import Field
 from typing_extensions import Generator, override
 
@@ -42,13 +40,13 @@ class CurrentRange(BaseSettings):
     See `pypalmsens.settings.AllowedCurrentRanges` for options."""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         psmethod.Ranging.MaximumCurrentRange = cr_string_to_enum(self.max)
         psmethod.Ranging.MinimumCurrentRange = cr_string_to_enum(self.min)
         psmethod.Ranging.StartCurrentRange = cr_string_to_enum(self.start)
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         self.max = cr_enum_to_string(psmethod.Ranging.MaximumCurrentRange)
         self.min = cr_enum_to_string(psmethod.Ranging.MinimumCurrentRange)
         self.start = cr_enum_to_string(psmethod.Ranging.StartCurrentRange)
@@ -73,13 +71,13 @@ class PotentialRange(BaseSettings):
     See `pypalmsens.settings.AllowedPotentialRanges` for options."""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         psmethod.RangingPotential.MaximumPotentialRange = pr_string_to_enum(self.max)
         psmethod.RangingPotential.MinimumPotentialRange = pr_string_to_enum(self.min)
         psmethod.RangingPotential.StartPotentialRange = pr_string_to_enum(self.start)
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         self.max = pr_enum_to_string(psmethod.RangingPotential.MaximumPotentialRange)
         self.min = pr_enum_to_string(psmethod.RangingPotential.MinimumPotentialRange)
         self.start = pr_enum_to_string(psmethod.RangingPotential.StartPotentialRange)
@@ -101,14 +99,14 @@ class Pretreatment(BaseSettings):
     """Conditioning time in s."""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         psmethod.DepositionPotential = self.deposition_potential
         psmethod.DepositionTime = self.deposition_time
         psmethod.ConditioningPotential = self.conditioning_potential
         psmethod.ConditioningTime = self.conditioning_time
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         self.deposition_potential = single_to_double(psmethod.DepositionPotential)
         self.deposition_time = single_to_double(psmethod.DepositionTime)
         self.conditioning_potential = single_to_double(psmethod.ConditioningPotential)
@@ -143,13 +141,13 @@ class VersusOCP(BaseSettings):
     """
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         psmethod.OCPmode = self.mode
         psmethod.OCPMaxOCPTime = self.max_ocp_time
         psmethod.OCPStabilityCriterion = self.stability_criterion
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         self.mode = psmethod.OCPmode
         self.max_ocp_time = single_to_double(psmethod.OCPMaxOCPTime)
         self.stability_criterion = single_to_double(psmethod.OCPStabilityCriterion)
@@ -196,7 +194,7 @@ class BiPot(BaseSettings):
     See `pypalmsens.settings.AllowedCurrentRanges` for options."""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         bipot_num = self._MODES.index(self.mode)
         psmethod.BipotModePS = PalmSens.Method.EnumPalmSensBipotMode(bipot_num)
         psmethod.BiPotPotential = self.potential
@@ -213,7 +211,7 @@ class BiPot(BaseSettings):
         psmethod.BipotRanging.StartCurrentRange = cr_string_to_enum(crstart)
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         self.mode = self._MODES[int(psmethod.BipotModePS)]
         self.potential = single_to_double(psmethod.BiPotPotential)
 
@@ -244,13 +242,13 @@ class PostMeasurement(BaseSettings):
     """Standby time (s) for use with cell on after measurement."""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         psmethod.CellOnAfterMeasurement = self.cell_on_after_measurement
         psmethod.StandbyPotential = self.standby_potential
         psmethod.StandbyTime = self.standby_time
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         self.cell_on_after_measurement = psmethod.CellOnAfterMeasurement
         self.standby_potential = single_to_double(psmethod.StandbyPotential)
         self.standby_time = single_to_double(psmethod.StandbyTime)
@@ -272,7 +270,7 @@ class CurrentLimits(BaseSettings):
     """Set limit current min in µA."""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         if self.max is not None:
             psmethod.UseLimitMaxValue = True
             psmethod.LimitMaxValue = self.max
@@ -286,7 +284,7 @@ class CurrentLimits(BaseSettings):
             psmethod.UseLimitMinValue = False
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         if psmethod.UseLimitMaxValue:
             self.max = single_to_double(psmethod.LimitMaxValue)
         else:
@@ -313,7 +311,7 @@ class PotentialLimits(BaseSettings):
     """Set limit potential min in V."""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         if self.max is not None:
             psmethod.UseLimitMaxValue = True
             psmethod.LimitMaxValue = self.max
@@ -327,7 +325,7 @@ class PotentialLimits(BaseSettings):
             psmethod.UseLimitMinValue = False
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         if psmethod.UseLimitMaxValue:
             self.max = single_to_double(psmethod.LimitMaxValue)
         else:
@@ -349,7 +347,7 @@ class ChargeLimits(BaseSettings):
     """Set limit charge min in µC."""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         if self.max is not None:
             psmethod.UseChargeLimitMax = True
             psmethod.ChargeLimitMax = self.max
@@ -363,7 +361,7 @@ class ChargeLimits(BaseSettings):
             psmethod.UseChargeLimitMin = False
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         if psmethod.UseChargeLimitMax:
             self.max = single_to_double(psmethod.ChargeLimitMax)
         else:
@@ -382,7 +380,7 @@ class IrDropCompensation(BaseSettings):
     """Set the iR compensation resistance in Ω"""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         if self.resistance:
             psmethod.UseIRDropComp = True
             psmethod.IRDropCompRes = self.resistance
@@ -390,7 +388,7 @@ class IrDropCompensation(BaseSettings):
             psmethod.UseIRDropComp = False
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         if psmethod.UseIRDropComp:
             self.resistance = single_to_double(psmethod.IRDropCompRes)
         else:
@@ -426,7 +424,7 @@ class EquilibrationTriggers(BaseSettings):
         yield from (self.d0, self.d1, self.d2, self.d3)
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         if any(self):
             psmethod.UseTriggerOnEquil = True
             psmethod.TriggerValueOnEquil = convert_bools_to_int(list(self))
@@ -434,7 +432,7 @@ class EquilibrationTriggers(BaseSettings):
             psmethod.UseTriggerOnEquil = False
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         if psmethod.UseTriggerOnEquil:
             self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(
                 psmethod.TriggerValueOnEquil
@@ -479,7 +477,7 @@ class MeasurementTriggers(BaseSettings):
         yield from (self.d0, self.d1, self.d2, self.d3)
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         if any(self):
             psmethod.UseTriggerOnStart = True
             psmethod.TriggerValueOnStart = convert_bools_to_int(list(self))
@@ -487,7 +485,7 @@ class MeasurementTriggers(BaseSettings):
             psmethod.UseTriggerOnStart = False
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         if psmethod.UseTriggerOnStart:
             self.d0, self.d1, self.d2, self.d3 = convert_int_to_bools(
                 psmethod.TriggerValueOnStart
@@ -538,7 +536,7 @@ class DelayTriggers(BaseSettings):
         yield from (self.d0, self.d1, self.d2, self.d3)
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         psmethod.TriggerDelayPeriod = self.delay
 
         if any(self):
@@ -548,7 +546,7 @@ class DelayTriggers(BaseSettings):
             psmethod.UseTriggerOnDelay = False
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         self.delay = single_to_double(psmethod.TriggerDelayPeriod)
 
         if psmethod.UseTriggerOnDelay:
@@ -607,10 +605,10 @@ class Multiplexer(BaseSettings):
     """Set the unselected channel working electrode to 0 = Disconnected / floating, 1 = Ground, 2 = Standby potential. Default is 0."""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         # Create a mux8r2 multiplexer settings settings object
         mux_mode = self._MODES.index(self.mode) - 1
-        psmethod.MuxMethod = PSMuxMethod(mux_mode)
+        psmethod.MuxMethod = PalmSens.MuxMethod(mux_mode)
 
         # disable all mux channels (range 0-127)
         for i in range(len(psmethod.UseMuxChannel)):
@@ -623,12 +621,12 @@ class Multiplexer(BaseSettings):
         psmethod.MuxSett.ConnSEWE = self.connect_sense_to_working_electrode
         psmethod.MuxSett.ConnectCERE = self.combine_reference_and_counter_electrodes
         psmethod.MuxSett.CommonCERE = self.use_channel_1_reference_and_counter_electrodes
-        psmethod.MuxSett.UnselWE = PSMethod.MuxSettings.UnselWESetting(
+        psmethod.MuxSett.UnselWE = PalmSens.Method.MuxSettings.UnselWESetting(
             self.set_unselected_channel_working_electrode
         )
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         self.mode = self._MODES[int(psmethod.MuxMethod) + 1]
 
         self.channels = [
@@ -669,13 +667,13 @@ class DataProcessing(BaseSettings):
     Peaks narrower than this value are rejected (default: 0.1 V)."""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         psmethod.SmoothLevel = self.smooth_level
         psmethod.MinPeakHeight = self.min_height
         psmethod.MinPeakWidth = self.min_width
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         self.smooth_level = psmethod.SmoothLevel
         self.min_width = single_to_double(psmethod.MinPeakWidth)
         self.min_height = single_to_double(psmethod.MinPeakHeight)
@@ -700,14 +698,14 @@ class General(BaseSettings):
     Set to 50 Hz or 60 Hz depending on your region (default: 50)."""
 
     @override
-    def _update_psmethod(self, psmethod: PSMethod, /):
+    def _update_psmethod(self, psmethod: PalmSens.Method, /):
         psmethod.SaveOnDevice = self.save_on_internal_storage
         psmethod.UseHWSync = self.use_hardware_sync
         psmethod.Notes = self.notes
         psmethod.PowerFreq = self.power_frequency
 
     @override
-    def _update_params(self, psmethod: PSMethod, /):
+    def _update_params(self, psmethod: PalmSens.Method, /):
         self.save_on_internal_storage = psmethod.SaveOnDevice
         self.use_hardware_sync = psmethod.UseHWSync
         self.notes = psmethod.Notes

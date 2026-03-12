@@ -3,18 +3,13 @@ from __future__ import annotations
 import os
 from contextlib import contextmanager
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-from PalmSens.Data import SessionManager
-from PalmSens.DataFiles import MethodFile, MethodFile2
+import PalmSens
 from System.IO import StreamReader, StreamWriter
 from System.Text import Encoding
 
 from ._data.measurement import Measurement
 from ._methods import BaseTechnique, Method
-
-if TYPE_CHECKING:
-    from ._methods.method import Method
 
 
 @contextmanager
@@ -52,7 +47,7 @@ def load_session_file(
     """
     path = Path(path)
 
-    session = SessionManager()
+    session = PalmSens.Data.SessionManager()
 
     with stream_reader(str(path)) as stream:
         session.Load(stream.BaseStream, str(path))
@@ -80,7 +75,7 @@ def save_session_file(path: str | Path, measurements: list[Measurement]):
     if any((measurement is None) for measurement in measurements):
         raise ValueError('cannot save null measurement')
 
-    session = SessionManager()
+    session = PalmSens.Data.SessionManager()
     session.MethodForEditor = measurements[0]._psmeasurement.Method
     session.MethodForEditor.MethodFilename = str(path.absolute())
 
@@ -109,10 +104,10 @@ def load_method_file(path: str | Path, as_method: bool = False) -> BaseTechnique
     path = Path(path)
 
     with stream_reader(str(path)) as stream:
-        if path.suffix == MethodFile2.FileExtension:
-            psmethod = MethodFile2.FromStream(stream)
+        if path.suffix == PalmSens.DataFiles.MethodFile2.FileExtension:
+            psmethod = PalmSens.DataFiles.MethodFile2.FromStream(stream)
         else:
-            psmethod = MethodFile.FromStream(stream, str(path))
+            psmethod = PalmSens.DataFiles.MethodFile.FromStream(stream, str(path))
 
     psmethod.MethodFilename = str(path.absolute())
 
@@ -146,7 +141,9 @@ def save_method_file(path: str | Path, method: Method | BaseTechnique):
     path = Path(path)
 
     with stream_writer(str(path), False, Encoding.Unicode) as stream:
-        MethodFile2.Save(psmethod, stream.BaseStream, str(path), True, __sdk_version__)
+        PalmSens.DataFiles.MethodFile2.Save(
+            psmethod, stream.BaseStream, str(path), True, __sdk_version__
+        )
 
 
 def read_notes(path: str | Path, n_chars: int = 3000):

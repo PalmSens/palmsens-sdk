@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import asyncio
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Generator
+from typing import Any, Generator
 
+import PalmSens
 from PalmSens import AsyncEventHandler, Plottables
-from PalmSens import Method as PSMethod
 from PalmSens.Comm import CommManager
 from System import EventHandler
 from System.Threading.Tasks import Task
@@ -14,10 +14,6 @@ from .._data import DataSet
 from ..data import DataArray, Measurement
 from .callback import Callback, CallbackData, CallbackDataEIS, CallbackEIS
 from .shared import create_future
-
-if TYPE_CHECKING:
-    from PalmSens import Measurement as PSMeasurement
-    from PalmSens import Method as PSMethod
 
 
 class MeasurementManagerAsync:
@@ -32,7 +28,7 @@ class MeasurementManagerAsync:
         self.callback: Callback | CallbackEIS | None = None
 
         self.is_measuring: bool = False
-        self.last_measurement: PSMeasurement | None = None
+        self.last_measurement: PalmSens.Measurement | None = None
 
         self.loop: asyncio.AbstractEventLoop
 
@@ -113,7 +109,7 @@ class MeasurementManagerAsync:
 
     async def await_measurement(
         self,
-        method: PSMethod,
+        method: PalmSens.Method,
         sync_event: asyncio.Event | None = None,
     ):
         """Helper function to handle the measurement.
@@ -135,7 +131,7 @@ class MeasurementManagerAsync:
 
     async def measure(
         self,
-        method: PSMethod,
+        method: PalmSens.Method,
         callback: Callback | CallbackEIS | None = None,
         sync_event: asyncio.Event | None = None,
     ) -> Measurement:
@@ -169,7 +165,7 @@ class MeasurementManagerAsync:
     def begin_measurement_callback(self, sender, args) -> Task.CompletedTask:
         """Called when the measurement begins."""
 
-        def func(measurement: PSMeasurement):
+        def func(measurement: PalmSens.Measurement):
             self.last_measurement = measurement
             self.begin_measurement_event.set()
 

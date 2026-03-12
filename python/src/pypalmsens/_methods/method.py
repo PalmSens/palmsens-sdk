@@ -3,8 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Union
 
-from PalmSens import Method as PSMethod
-from PalmSens.Devices import PalmSens4Capabilities
+import PalmSens
 
 from . import techniques
 
@@ -15,7 +14,7 @@ if TYPE_CHECKING:
 class Method:
     """Wrapper for PalmSens.Method."""
 
-    def __init__(self, *, psmethod: PSMethod):
+    def __init__(self, *, psmethod: PalmSens.Method):
         self.psmethod = psmethod
 
     def __repr__(self) -> str:
@@ -54,7 +53,7 @@ class Method:
             If not specified it will use the PalmSens4 capabilities to determine the estimated duration.
         """
         if instrument_manager is None or instrument_manager.__comm is None:
-            instrument_capabilities = PalmSens4Capabilities()
+            instrument_capabilities = PalmSens.Devices.PalmSens4Capabilities()
         else:
             instrument_capabilities = instrument_manager.__comm.Capabilities
         return self.psmethod.GetMinimumEstimatedMeasurementDuration(instrument_capabilities)

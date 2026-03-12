@@ -8,9 +8,9 @@
 <p align="center">
     <a href="https://dev.palmsens.com/python/latest" target="_blank">
         <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/docs/modules/ROOT/images/banner_dark.svg">
-          <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/docs/modules/ROOT/images/banner.svg">
-          <img alt="PalmSens banner" src="https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/docs/modules/ROOT/images/banner.svg" width="80%">
+          <source media="(prefers-color-scheme: dark)" srcset="./docs/zensical/assets//banner_dark.svg">
+          <source media="(prefers-color-scheme: light)" srcset="./docs/zensical/assets//banner.svg">
+          <img alt="PalmSens banner" src="./docs/zensical/assets//banner.svg" width="80%">
         </picture>
     </a>
 </p>

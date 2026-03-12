@@ -40,7 +40,7 @@
     "globalMetadata": {
       "_appName": "",
       "_appTitle": "PalmSens.NET",
-      "_appLogoPath": "images/header_icon.svg",
+      "_appLogoPath": "images/header_icon_white.svg",
       "_appLogoUrl": "https://dev.palmsens.com/dotnet",
       "_appFaviconPath": "favicon.ico",
       "_appFooter": "<p><a href=https://palmsens.com><img alt=\"PalmSens banner\" class=\"svg\" src=\"~/images/palmsens_logo_white_solid.svg\"></a></p><p>© 2026 PalmSens BV</p>",

@@ -28,7 +28,7 @@ from ..data import Measurement
 from .callback import Callback, CallbackEIS, CallbackStatus, Status
 from .instrument import Instrument, discover_async
 from .measurement_manager_async import MeasurementManagerAsync
-from .shared import create_future, firmware_warning
+from .shared import MethodIncompatibleError, create_future, firmware_warning
 
 WINDOWS = sys.platform == 'win32'
 LINUX = not WINDOWS
@@ -443,7 +443,7 @@ class InstrumentManagerAsync(SupportedMixin):
 
         if any(error.IsFatal for error in errors):
             message = '\n'.join([error.Message for error in errors])
-            raise ValueError(f'Method not compatible:\n{message}')
+            raise MethodIncompatibleError(f'Method not compatible:\n{message}')
 
     async def measure(
         self,

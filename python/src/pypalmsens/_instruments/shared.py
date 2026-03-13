@@ -18,6 +18,9 @@ if TYPE_CHECKING:
 T = TypeVar('T')
 
 
+class MethodIncompatibleError(ValueError): ...
+
+
 def create_future(clr_task: System.Task[T]) -> asyncio.Future[T]:
     loop = asyncio.get_running_loop()
     future = loop.create_future()

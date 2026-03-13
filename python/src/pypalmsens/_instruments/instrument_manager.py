@@ -26,7 +26,7 @@ from .callback import Callback, CallbackEIS, Status
 from .instrument import Instrument, discover
 from .instrument_manager_async import SupportedMixin
 from .measurement_manager_async import MeasurementManagerAsync
-from .shared import create_future, firmware_warning
+from .shared import MethodIncompatibleError, create_future, firmware_warning
 
 warnings.simplefilter('default')
 
@@ -306,7 +306,7 @@ class InstrumentManager(SupportedMixin):
     def validate_method(self, method: PalmSens.Method | BaseTechnique) -> None:
         """Validate method.
 
-        Raise ValueError if the method cannot be validated."""
+        Raise MethodIncompatibleError if the method cannot be validated."""
         self.ensure_connection()
 
         if not isinstance(method, PalmSens.Method):
@@ -316,7 +316,7 @@ class InstrumentManager(SupportedMixin):
 
         if any(error.IsFatal for error in errors):
             message = '\n'.join([error.Message for error in errors])
-            raise ValueError(f'Method not compatible:\n{message}')
+            raise MethodIncompatibleError(f'Method not compatible:\n{message}')
 
     def measure(
         self,

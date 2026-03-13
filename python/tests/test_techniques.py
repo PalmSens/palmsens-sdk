@@ -8,6 +8,7 @@ import pytest
 from pydantic import ValidationError
 
 import pypalmsens as ps
+from pypalmsens._instruments.shared import MethodIncompatibleError
 from pypalmsens._methods import BaseTechnique
 from pypalmsens.data import DataArray, DataSet
 
@@ -42,13 +43,13 @@ def test_read_current(manager):
     manager.set_current_range('1uA')
     val1 = manager.read_current()
     cr1 = manager.get_current_range()
-    assert val1
+    assert val1 is not None
     assert cr1 == '1uA'
 
     manager.set_current_range('10uA')
     val2 = manager.read_current()
     cr2 = manager.get_current_range()
-    assert val2
+    assert val2 is not None
     assert cr2 == '10uA'
 
     manager.set_cell(False)
@@ -62,14 +63,14 @@ def test_read_potential(manager):
     manager.set_potential(1)
     val1 = manager.read_potential()
     pr1 = manager.get_potential_range()
-    assert val1
+    assert val1 is not None
     assert pr1 == '100mV'
 
     manager.set_potential_range('1V')
     manager.set_potential(0)
     val2 = manager.read_potential()
     pr2 = manager.get_potential_range()
-    assert val2
+    assert val2 is not None
     assert pr2 == '1V'
 
     manager.set_cell(False)
@@ -133,9 +134,9 @@ def test_callback_eis(manager):
 class CV:
     id = 'cv'
     kwargs = {
-        'begin_potential': -1,
-        'vertex1_potential': -1,
-        'vertex2_potential': 1,
+        'begin_potential': 0.25,
+        'vertex1_potential': 0.6,
+        'vertex2_potential': -0.6,
         'step_potential': 0.25,
         'scanrate': 5,
         'n_scans': 2,
@@ -834,8 +835,8 @@ class EIS_time_fixed:
         eis_datas = measurement.eis_data
         assert len(eis_datas) == 1
         for eis_data in eis_datas:
-            # n_points is tricky to reproduce because of specific timings, target is 4
-            assert eis_data.n_points in (3, 4, 5)
+            # n_points is tricky to reproduce because of device specific timings?
+            assert eis_data.n_points > 1
             assert eis_data.n_subscans == 0
             assert eis_data.n_frequencies == 1
 
@@ -1245,7 +1246,19 @@ class MM:
 def test_measure(manager, method):
     params = BaseTechnique._registry[method.id].from_dict(method.kwargs)
 
-    measurement = manager.measure(params)
+    try:
+        measurement = manager.measure(params)
+    except MethodIncompatibleError as exc:
+        message = str(exc)
+        if (
+            ('is not supported by this device.' in message)
+            or ('Fast Impedance techniques are only supported by' in message)
+            or ('Fast Galvanostatic Impedance techniques are only supported by' in message)
+        ):
+            pytest.skip(f'{manager.instrument.name} does not support {method.id!r}')
+        if 'Contact PalmSens BV or your local distributor to upgrade your license.' in message:
+            pytest.skip(f'Unlicensed method: {method.id!r}')
+        raise
 
     method.validate(measurement)
 

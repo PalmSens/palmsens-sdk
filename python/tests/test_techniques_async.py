@@ -7,6 +7,7 @@ import pytest_asyncio
 from test_techniques import CP, CV, EIS, MM, MS
 
 import pypalmsens as ps
+from pypalmsens._instruments.shared import MethodIncompatibleError
 from pypalmsens._methods import BaseTechnique
 from pypalmsens.data import DataArray, DataSet
 
@@ -90,7 +91,20 @@ async def test_read_potential(manager):
 )
 async def test_measure(manager, method):
     params = BaseTechnique._registry[method.id].from_dict(method.kwargs)
-    measurement = await manager.measure(params)
+
+    try:
+        measurement = await manager.measure(params)
+    except MethodIncompatibleError as exc:
+        message = str(exc)
+        if (
+            ('is not supported by this device.' in message)
+            or ('Fast Impedance techniques are only supported by' in message)
+            or ('Fast Galvanostatic Impedance techniques are only supported by' in message)
+        ):
+            pytest.skip(f'{manager.instrument.name} does not support {method.id!r}')
+        if 'Contact PalmSens BV or your local distributor to upgrade your license.' in message:
+            pytest.skip(f'Unlicensed method: {method.id!r}')
+        raise
 
     method.validate(measurement)
 

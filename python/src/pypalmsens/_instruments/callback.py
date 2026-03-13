@@ -8,9 +8,7 @@ import PalmSens
 from PalmSens.Comm import StatusEventArgs
 from typing_extensions import override
 
-from .._data.data_array import DataArray
-from .._data.data_value import CurrentReading, PotentialReading
-from .._data.dataset import DataSet
+from ..data import CurrentReading, DataArray, DataSet, PotentialReading
 from ..settings import (
     AllowedDeviceState,
 )
@@ -41,6 +39,16 @@ class CallbackData:
             'x': self.x_array[-1],
             'y': self.y_array[-1],
         }
+
+    @property
+    def last_x(self) -> float:
+        """Return last measured x value."""
+        return self.x_array[-1]
+
+    @property
+    def last_y(self) -> float:
+        """Return last measured y value."""
+        return self.y_array[-1]
 
     def new_datapoints(self) -> Generator[dict[str, float]]:
         """Return new data points since last callback."""

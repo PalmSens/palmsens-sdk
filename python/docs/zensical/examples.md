@@ -147,6 +147,21 @@ This example shows how to [set up and control a multiplexer][pypalmsens.settings
 
 [:fontawesome-solid-download: multiplexer.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/multiplexer.py){ .md-button .md-button--primary}
 
+## Abort measurement
+
+This example shows how to abort a running measurement based on various parameters. This uses callbacks to trigger the abort once a certain current is reached.
+
+This pattern is quite flexible. For the [CA][pypalmsens.ChronoAmperometry] example below, you can trigger the abort on additional data if you specify `record_auxiliary_input=True` or `record_we_potential=True` in the method. Note that in this case the callback gets called twice: once for current (y) vs time (x) and once for auxiliary (y) vs time (x). Inspect the [DataArray][pypalmsens.data.DataArray] class available via [CallbackData.y_array][pypalmsens.data.CallbackData.y_array] to distinguish the two.
+
+See the callback classes for an overview of which data are available: [pypalmsens.data.CallbackData][] and [pypalmsens.data.CallbackDataEIS][].
+
+```python title="measurement_abort.py"
+--8<-- "examples/measurement_abort.py"
+```
+
+[:fontawesome-solid-download: measurement_abort.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_abort.py){ .md-button .md-button--primary}
+
+
 ## Multichannel measurement   { #multichannel_basic }
 
 This example shows how to [manage a pool of of instruments](measuring/#multichannel-measurements) and run a [chronoamperometry][pypalmsens.ChronoAmperometry] measurement on all channels simultaneously.

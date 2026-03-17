@@ -120,14 +120,15 @@ class VersusOCP(BaseSettings):
     """Set versus OCP mode.
 
     Possible values:
-    * 0 = disable versus OCP
-    * 1 = vertex 1 potential
-    * 2 = vertex 2 potential
-    * 3 = vertex 1 & 2 potential
-    * 4 = begin potential
-    * 5 = begin & vertex 1 potential
-    * 6 = begin & vertex 2 potential
-    * 7 = begin & vertex 1 & 2 potential
+
+    - 0 = disable versus OCP
+    - 1 = vertex 1 potential
+    - 2 = vertex 2 potential
+    - 3 = vertex 1 & 2 potential
+    - 4 = begin potential
+    - 5 = begin & vertex 1 potential
+    - 6 = begin & vertex 2 potential
+    - 7 = begin & vertex 1 & 2 potential
     """
 
     max_ocp_time: float = 20.0

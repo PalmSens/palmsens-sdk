@@ -10,10 +10,15 @@ from .._helpers import single_to_double
 from .base_model import BaseModel
 
 AllowedTimingStatus = Literal['Unknown', 'OK', 'OverStep']
+"""Possible values for measurement timing status."""
+
 AllowedReadingStatus = Literal['OK', 'Overload', 'Underload', 'OverloadWarning']
+"""Possible values for current or potential readings."""
+
 AllowedDeviceState = Literal[
     'Unknown', 'Idle', 'Measurement', 'Download', 'Pretreatment', 'Error', 'MeasOCP'
 ]
+"""Possible values for the device state."""
 
 AllowedCurrentRanges = Literal[
     '100pA',
@@ -43,6 +48,11 @@ AllowedCurrentRanges = Literal[
     '200uA',
     '1A',
 ]
+"""Possible current ranges.
+
+See the device documentation or query the instrument manager
+for supported current ranges."""
+
 
 AllowedMethods = Literal[
     'acv',
@@ -75,6 +85,11 @@ AllowedMethods = Literal[
     'scp',
     'swv',
 ]
+"""All available method IDs.
+
+See the device documentation or query the instrument manager
+for supported methods."""
+
 
 AllowedPotentialRanges = Literal[
     '1mV',
@@ -86,6 +101,10 @@ AllowedPotentialRanges = Literal[
     '500mV',
     '1V',
 ]
+"""Possible potential ranges.
+
+See the device documentation or query the instrument manager
+for supported potential ranges."""
 
 
 def cr_string_to_enum(s: AllowedCurrentRanges) -> PalmSens.CurrentRange:

@@ -84,6 +84,7 @@ class ConstantE(BaseStage, mixins.CurrentLimitsMixin, mixins.MeasurementTriggers
     Apply constant potential during this stage."""
 
     stage_type: Literal['ConstantE'] = 'ConstantE'
+    """Stage type identifier."""
 
     potential: float = 0.0
     """Potential during measurement in V."""
@@ -108,6 +109,7 @@ class ConstantI(BaseStage, mixins.PotentialLimitsMixin, mixins.MeasurementTrigge
     Apply constant fixed current during this stage."""
 
     stage_type: Literal['ConstantI'] = 'ConstantI'
+    """Stage type identifier."""
 
     current: float = 0.0
     """The current to apply in the given current range.
@@ -144,6 +146,7 @@ class SweepE(BaseStage, mixins.CurrentLimitsMixin, mixins.MeasurementTriggersMix
     Ramp the voltage from `begin_potential` to `end_potential` during this stage."""
 
     stage_type: Literal['SweepE'] = 'SweepE'
+    """Stage type identifier."""
 
     begin_potential: float = -0.5
     """Potential where the scan starts in V."""
@@ -183,6 +186,7 @@ class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin, mixins.MeasurementTrig
     Measure the open circuit potential during this stage."""
 
     stage_type: Literal['OpenCircuit'] = 'OpenCircuit'
+    """Stage type identifier."""
 
     run_time: float = 1.0
     """Run time of the stage in s."""
@@ -204,6 +208,7 @@ class Impedance(BaseStage):
     """
 
     stage_type: Literal['Impedance'] = 'Impedance'
+    """Stage type identifier."""
 
     run_time: float = 10.0
     """Run time of the scan in s."""
@@ -318,6 +323,7 @@ class MixedMode(
     """
 
     id: Literal['mm'] = 'mm'
+    """Unique method identifier."""
 
     interval_time: float = 0.1
     """Time between two samples in s."""

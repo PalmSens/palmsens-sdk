@@ -33,20 +33,24 @@ lsv.post_measurement.standby_time = 30
 
 See the technique reference pages to see which settings are supported.
 
-::: pypalmsens.settings.CurrentRange
-::: pypalmsens.settings.PotentialRange
-::: pypalmsens.settings.Pretreatment
-::: pypalmsens.settings.VersusOCP
-::: pypalmsens.settings.BiPot
-::: pypalmsens.settings.ELevel
-::: pypalmsens.settings.ILevel
-::: pypalmsens.settings.PostMeasurement
-::: pypalmsens.settings.CurrentLimits
-::: pypalmsens.settings.PotentialLimits
-::: pypalmsens.settings.ChargeLimits
-::: pypalmsens.settings.IrDropCompensation
-::: pypalmsens.settings.EquilibrationTriggers
-::: pypalmsens.settings.MeasurementTriggers
-::: pypalmsens.settings.Multiplexer
-::: pypalmsens.settings.DataProcessing
-::: pypalmsens.settings.General
+::: pypalmsens.settings
+    options:
+      members_order: source
+      members:
+        - CurrentRange
+        - PotentialRange
+        - Pretreatment
+        - VersusOCP
+        - BiPot
+        - ELevel
+        - ILevel
+        - PostMeasurement
+        - CurrentLimits
+        - PotentialLimits
+        - ChargeLimits
+        - IrDropCompensation
+        - EquilibrationTriggers
+        - MeasurementTriggers
+        - Multiplexer
+        - DataProcessing
+        - General

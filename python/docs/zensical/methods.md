@@ -48,7 +48,7 @@ The following methods are supported in PyPalmSens:
 
 ## Setting up a method
 
-This example creates a method for a square-wave voltammetry measurement versus the open circuit potential:
+This example creates a method for a [square-wave voltammetry][pypalmsens.SquareWaveVoltammetry] measurement versus the open circuit potential:
 
 ```python
 >>> import pypalmsens as ps

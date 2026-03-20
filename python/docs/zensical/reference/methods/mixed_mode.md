@@ -1,12 +1,16 @@
 # Mixed Mode
 
-This submodule contains the Mixed Mode method and Stage classes.
+This submodule contains the Mixed Mode (`MM`) method and Stage classes.
 
 See [this link](https://dev.palmsens.com/python/latest/_attachments/examples/#mixed-mode) for an example how to set it up.
 
-::: pypalmsens.mixed_mode.MixedMode
-::: pypalmsens.mixed_mode.ConstantE
-::: pypalmsens.mixed_mode.ConstantI
-::: pypalmsens.mixed_mode.SweepE
-::: pypalmsens.mixed_mode.OpenCircuit
-::: pypalmsens.mixed_mode.Impedance
+::: pypalmsens.mixed_mode
+    options:
+      members_order: source
+      members:
+        - MixedMode
+        - ConstantE
+        - ConstantI
+        - SweepE
+        - OpenCircuit
+        - Impedance

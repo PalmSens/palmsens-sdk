@@ -51,6 +51,7 @@ class CyclicVoltammetry(
     """
 
     id: Literal['cv'] = 'cv'
+    """Unique method identifier."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -151,6 +152,7 @@ class FastCyclicVoltammetry(
     """
 
     id: Literal['fcv'] = 'fcv'
+    """Unique method identifier."""
 
     current_range: AllowedCurrentRanges = '1uA'
     """Fixed current range.
@@ -242,6 +244,7 @@ class ACVoltammetry(
     """
 
     id: Literal['acv'] = 'acv'
+    """Unique method identifier."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -326,6 +329,7 @@ class LinearSweepVoltammetry(
     """
 
     id: Literal['lsv'] = 'lsv'
+    """Unique method identifier."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s.
@@ -422,6 +426,7 @@ class SquareWaveVoltammetry(
     """
 
     id: Literal['swv'] = 'swv'
+    """Unique method identifier."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -524,6 +529,7 @@ class DifferentialPulseVoltammetry(
     """
 
     id: Literal['dpv'] = 'dpv'
+    """Unique method identifier."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -632,6 +638,7 @@ class NormalPulseVoltammetry(
     """
 
     id: Literal['npv'] = 'npv'
+    """Unique method identifier."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -736,6 +743,7 @@ class ChronoAmperometry(
     """
 
     id: Literal['ad'] = 'ad'
+    """Unique method identifier."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -821,6 +829,7 @@ class FastAmperometry(
     """
 
     id: Literal['fam'] = 'fam'
+    """Unique method identifier."""
 
     current_range: AllowedCurrentRanges = '100nA'
     """Fixed current range.
@@ -892,6 +901,7 @@ class MultiStepAmperometry(
     """
 
     id: Literal['ma'] = 'ma'
+    """Unique method identifier."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -991,6 +1001,7 @@ class PulsedAmperometricDetection(
     """
 
     id: Literal['pad'] = 'pad'
+    """Unique method identifier."""
 
     _MODES: tuple[Literal['dc', 'pulse', 'differential'], ...] = ('dc', 'pulse', 'differential')
 
@@ -1067,6 +1078,7 @@ class MultiplePulseAmperometry(
     """
 
     id: Literal['mpad'] = 'mpad'
+    """Unique method identifier."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -1148,6 +1160,7 @@ class OpenCircuitPotentiometry(
     """
 
     id: Literal['ocp'] = 'ocp'
+    """Unique method identifier."""
 
     interval_time: float = 0.1
     """Time between two potential samples in s."""
@@ -1222,6 +1235,7 @@ class ChronoPotentiometry(
     """
 
     id: Literal['pot'] = 'pot'
+    """Unique method identifier."""
 
     current: float = 0.0
     """The current to apply in the given current range.
@@ -1312,6 +1326,7 @@ class StrippingChronoPotentiometry(
     """
 
     id: Literal['scp'] = 'scp'
+    """Unique method identifier."""
 
     potential_range: AllowedPotentialRanges = '500mV'
     """Fixed potential range.
@@ -1393,6 +1408,7 @@ class LinearSweepPotentiometry(
     """Create linear sweep potentiometry method parameters."""
 
     id: Literal['lsp'] = 'lsp'
+    """Unique method identifier."""
 
     applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
@@ -1485,6 +1501,7 @@ class MultiStepPotentiometry(
     """
 
     id: Literal['mp'] = 'mp'
+    """Unique method identifier."""
 
     applied_current_range: AllowedCurrentRanges = '1uA'
     """Applied current range.
@@ -1570,6 +1587,7 @@ class ChronoCoulometry(
     """
 
     id: Literal['cc'] = 'cc'
+    """Unique method identifier."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -1688,6 +1706,7 @@ class ElectrochemicalImpedanceSpectroscopy(
     """
 
     id: Literal['eis'] = 'eis'
+    """Unique method identifier."""
 
     _SCAN_TYPES: tuple[Literal['potential', 'time', 'fixed'], ...] = (
         'potential',
@@ -1881,6 +1900,7 @@ class FastImpedanceSpectroscopy(
     """Create fast impedance spectroscopy method parameters."""
 
     id: Literal['fis'] = 'fis'
+    """Unique method identifier."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -1943,6 +1963,7 @@ class GalvanostaticImpedanceSpectroscopy(
     """
 
     id: Literal['gis'] = 'gis'
+    """Unique method identifier."""
 
     applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
@@ -2003,6 +2024,7 @@ class FastGalvanostaticImpedanceSpectroscopy(
     """Create fast galvanostatic impededance spectroscopy method parameters."""
 
     id: Literal['fgis'] = 'fgis'
+    """Unique method identifier."""
 
     applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
@@ -2063,6 +2085,7 @@ class MethodScript(BaseTechnique):
     """
 
     id: Literal['ms'] = 'ms'
+    """Unique method identifier."""
 
     script: str = """e
 wait 100m

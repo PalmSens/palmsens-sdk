@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, final
 
+import System
 from typing_extensions import override
 
 from .._fitting import FitResult
@@ -64,8 +65,9 @@ class Measurement:
 
     @property
     def timestamp(self) -> str:
-        """Date and time of the start of this measurement."""
-        return str(self._psmeasurement.TimeStamp)
+        """Date and time of the start of this measurement in ISO 8601 format."""
+        timestamp = self._psmeasurement.TimeStamp
+        return timestamp.ToString('s', System.Globalization.CultureInfo.InvariantCulture)
 
     @property
     def device(self) -> DeviceInfo:

@@ -2,28 +2,27 @@
 
 PyPalmSens is a Python library that lets you control your PalmSens device using Python.
 
-- `pypalmsens`
+[pypalmsens][]
 
-    The most-used functions and classes are available from the root module.
+:   The most-used functions and classes are available from the root module.
 
-    - [Saving and loading files](./io.md)
-    - [Setting up methods](./methods/index.md)
-    - [Connecting to and managing an instrument](./instrument.md)
+    - [Data reading/writing](./io.md)
+    - [Technique parameters](./methods/index.md)
+    - [Instrument management](./instrument.md)
+    - [Instrument management (async)](./instrument.md)
 
-- `pypalmsens.settings`
+[pypalmsens.settings][]
 
-    This module additional classes for method configuration (e.g. general settings, current ranges, etc).
+:   Contains additional classes for method configuration (e.g. general settings, current ranges, etc).
 
-- `pypalmsens.fitting`
+[pypalmsens.fitting][]
 
-    Contains classes for equivalent circuit fitting.
+:   Contains classes for equivalent circuit fitting.
 
-- `pypalmsens.data`
+[pypalmsens.data][]
 
-    Contains the dataclasses for working with measurement data.
+:   Contains the data structures for working with measurement data.
 
-    Although `PyPalmSens` will typically construct these dataclasses for you,
-    either when loading a `.pssession` file or after a measurement,
-    this page documents the attributes and methods available on these classes.
-
-For installation instructions, examples, tutorials, and other information, refer to the [PalmSens developer documentation](https://dev.palmsens.com/python/latest/_attachments/index.html).
+    `PyPalmSens` will typically construct these dataclasses for you,
+    either when loading a `.pssession` file or after a measurement.
+    This page documents the attributes and methods available on these classes.

@@ -8,6 +8,7 @@ from typing import Any
 
 import PalmSens
 import System
+from PalmSens.Comm import CommManager
 from typing_extensions import override
 
 from .shared import create_future
@@ -51,6 +52,24 @@ class Instrument:
             self.channel = int(ch_str[2:])
             self.name = self.id[:idx]
 
+    async def _connect_async(self) -> CommManager:
+        """Open connection to instrument, return `CommManager` object."""
+        try:
+            if self.interface == 'tcp':
+                # OpenAsync is not available on TCPDevices
+                self.device.Open()
+            else:
+                await create_future(self.device.OpenAsync())
+        except System.UnauthorizedAccessException as err:
+            raise ConnectionError(
+                f'Cannot open instrument connection (reason: {err.Message}). Check if the device is already in use.'
+            ) from err
+        except System.IO.IOException as err:
+            # Raised if port does not exist
+            raise IOError(err.Message) from err
+
+        return await create_future(CommManager.CommManagerAsync(self.device))
+
     @classmethod
     def from_port(cls, port: str, *, baudrate: int | None = None) -> Instrument:
         """Create serial port instrument class.
@@ -71,6 +90,33 @@ class Instrument:
             device = PSDevices.SerialPortDevice(port)
         else:
             device = PSDevices.SerialPortDevice(port, baudrate=baudrate)
+
+        return cls._from_device(device)
+
+    @classmethod
+    def from_ip(cls, hostname: str, port: int = 49152) -> Instrument:
+        """Create TCP instrument class.
+
+        Use this method to connect to a device that is connected to the network,
+        like a Nexus.
+
+        Parameters
+        ----------
+        hostname : str
+            Hostname or IP to connect to.
+        port : str
+            Port to connect to.
+
+        Returns
+        -------
+        instrument : Instrument
+            Instrument dataclass
+        """
+        ipaddr = System.Net.IPAddress.Parse(hostname)
+
+        endpoint = System.Net.IPEndPoint(ipaddr, port)
+
+        device = PSDevices.TCPDevice(endpoint)
 
         return cls._from_device(device)
 

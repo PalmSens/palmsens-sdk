@@ -8,7 +8,6 @@ from typing import Any, Callable, Coroutine, Protocol
 
 import clr
 import PalmSens
-import System
 from PalmSens import AsyncEventHandler
 from PalmSens.Comm import CommManager, MuxType
 from System.Threading.Tasks import Task
@@ -259,18 +258,7 @@ class InstrumentManagerAsync(SupportedMixin):
         if self.is_connected():
             return
 
-        psinstrument = self.instrument.device
-        try:
-            await create_future(psinstrument.OpenAsync())
-        except System.UnauthorizedAccessException as err:
-            raise ConnectionError(
-                f'Cannot open instrument connection (reason: {err.Message}). Check if the device is already in use.'
-            ) from err
-        except System.IO.IOException as err:
-            # Raised if port does not exist
-            raise IOError(err.Message) from err
-
-        self._comm = await create_future(CommManager.CommManagerAsync(psinstrument))
+        self._comm = await self.instrument._connect_async()
 
         firmware_warning(self._comm.Capabilities)
 

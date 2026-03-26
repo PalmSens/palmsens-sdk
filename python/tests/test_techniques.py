@@ -1206,26 +1206,14 @@ class MM:
         ACV,
         SWV,
         CP,
-        pytest.param(
-            SCP,
-            marks=pytest.mark.xfail(
-                raises=ValueError,
-                reason='Not all devices support SCP.',
-            ),
-        ),
+        SCP,
         LSP,
         OCP,
         CA,
         FAM,
         DPV,
         PAD,
-        pytest.param(
-            MPAD,
-            marks=pytest.mark.xfail(
-                raises=ValueError,
-                reason='Not all devices support MPAD.',
-            ),
-        ),
+        MPAD,
         NPV,
         MA,
         MP,

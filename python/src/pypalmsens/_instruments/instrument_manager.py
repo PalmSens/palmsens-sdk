@@ -8,7 +8,6 @@ from typing import Iterator
 
 import clr
 import PalmSens
-import System
 from PalmSens.Comm import CommManager, MuxType
 from typing_extensions import override
 
@@ -26,7 +25,7 @@ from .callback import Callback, CallbackEIS, Status
 from .instrument import Instrument, discover
 from .instrument_manager_async import SupportedMixin
 from .measurement_manager_async import MeasurementManagerAsync
-from .shared import MethodIncompatibleError, create_future, firmware_warning
+from .shared import MethodIncompatibleError, firmware_warning
 
 warnings.simplefilter('default')
 
@@ -169,24 +168,11 @@ class InstrumentManager(SupportedMixin):
         if self.is_connected():
             return
 
-        async def _connect(psinstrument: PalmSens.Devices.Device) -> CommManager:
-            try:
-                await create_future(psinstrument.OpenAsync())
-            except System.UnauthorizedAccessException as err:
-                raise ConnectionError(
-                    f'Cannot open instrument connection (reason: {err.Message}). Check if the device is already in use.'
-                ) from err
-            except System.IO.IOException as err:
-                # Raised if port does not exist
-                raise IOError(err.Message) from err
-
-            return await create_future(CommManager.CommManagerAsync(psinstrument))
-
         # The comm manager needs to open async, because the measurement is handled async.
         # Opening the comm manager in async sets some handlers in ClientConnection
         # that are sync or async specific. This affects the measurement,
         # receive status, and device state change events.
-        self._comm = asyncio.run(_connect(self.instrument.device))
+        self._comm = asyncio.run(self.instrument._connect_async())
 
         firmware_warning(self._comm.Capabilities)
 

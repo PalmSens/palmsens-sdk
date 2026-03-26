@@ -139,7 +139,7 @@ Instrument(name='/dev/serial/by-id/usb-PalmSens_EmStat4_ES4HR20B0008-if00', inte
     The serial port or device path your device gets assigned is not stable.
     It can change after a reboot or unplugging your device.
 
-### Connecting via Ethernet
+### Connecting via ethernet
 
 Some devices, like the [PalmSens Nexus](https://www.palmsens.com/nexus/), can connect via ethernet over TCP/IP.
 
@@ -153,7 +153,7 @@ The example below shows how to connect to a Nexus with IP address '192.168.0.123
 ```python
 >>> import pypalmsens as ps
 
->>> instrument = ps.Instrument.from_port('192.168.0.123')
+>>> instrument = ps.Instrument.from_ip('192.168.0.123')
 >>> instrument
 Instrument(name='192.168.0.123', interface='tcp')
 >>> with ps.connect(instrument) as manager:

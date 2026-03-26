@@ -323,6 +323,9 @@ PyPalmSens supports multichannel experiments via [pypalmsens.InstrumentPool][] a
 
 This class manages a pool of instruments ([pypalmsens.InstrumentManagerAsync][]), so that one method can be executed on all instruments at the same time.
 
+This works best with a multichannel device like the [MultiPalmSens4](https://www.palmsens.com/product/multipalmsens4/) or a [MultiEmStat4](https://www.palmsens.com/product/multi-emstat4/).
+You can also use it to manage a collection of single devices
+
 A basic multichannel measurement can be set up by passing a list of instruments, either from a multichannel device, or otherwise connected:
 
 ```python
@@ -391,7 +394,7 @@ You can also manage the pool yourself by passing the _instrument managers_ direc
 ```
 
 To define your own measurement functions, you can use the [pypalmsens.InstrumentPoolAsync][] method.
-Pass a function that must take [instrument/index.html#pypalmsens.InstrumentManagerAsync) as the first argument.
+Pass a function that must take [pypalmsens.InstrumentManagerAsync][] as the first argument.
 Any other keyword arguments will be passed on.
 
 For example to run two methods in sequence:
@@ -419,8 +422,8 @@ First, enable hardware sync on your method. PyPalmSens uses these flags to set u
 
 In addition, the pool must contain:
 
-- channels from a single multi-channel instrument only
-- the first channel of the multi-channel instrument
+- channels from a single multichannel instrument only
+- the first channel of the multichannel instrument
 - at least two channels
 
 All instruments are prepared and put in a waiting state.

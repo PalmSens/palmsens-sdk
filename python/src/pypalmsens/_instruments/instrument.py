@@ -35,7 +35,7 @@ class Instrument:
     channel: int = field(init=False, default=-1)
     """Channel index if part of a multichannel device.
 
-    Returns -1 if instrument is not part of a multi-channel device."""
+    Returns -1 if instrument is not part of a multichannel device."""
     interface: str
     """Type of the connection."""
     device: PalmSens.Device.Device = field(repr=False)

@@ -196,7 +196,7 @@ This example shows how to run and set up a sequence of measurements on a [collec
 
 ## Multichannel HW sync  { #multichannel_hw_sync }
 
-On multi-channel devices that support it, hardware sync can be used to [synchronize measurements between multiple channels](measuring.md#multichannel-measurements).
+On multichannel devices that support it, hardware sync can be used to [synchronize measurements between multiple channels](measuring.md#multichannel-measurements).
 When synchronization is enabled the follower device will wait until the main channel enables synchronisation.
 After that, the follower and main will synchronize their measurement loop start and iterations.
 
@@ -207,7 +207,7 @@ If you use MethodSCRIPT, use `set_channel_sync 1` in your script. PyPalmSens che
 
 In addition, your pool of instruments must contain:
 
-* channels from a single [multi-channel instrument](https://www.palmsens.com/knowledgebase-article/multichannel-potentiostat/)
+* channels from a single [multichannel instrument](https://www.palmsens.com/knowledgebase-article/multichannel-potentiostat/)
 * the first (main) channel of the instrument
 * at least one follower channel
 

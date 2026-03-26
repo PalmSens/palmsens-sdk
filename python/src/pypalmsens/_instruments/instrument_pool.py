@@ -103,8 +103,8 @@ class InstrumentPool:
         For MethodSCRIPT, use 'set_channel_sync 1'.
 
         In addition, the pool must contain:
-        - channels from a single multi-channel instrument only
-        - the first channel of the multi-channel instrument
+        - channels from a single multichannel instrument only
+        - the first channel of the multichannel instrument
         - at least two channels
 
         All instruments are prepared and put in a waiting state.

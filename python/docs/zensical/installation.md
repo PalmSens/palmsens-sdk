@@ -36,8 +36,8 @@ pip install pypalmsens
 In addition, make sure your user is added to the 'dialout' group:
 
 ```bash
-$ groups
-pi adm dialout ...
+groups
+# pi adm dialout ...
 ```
 
 If your username is not among the list, add it using:
@@ -62,9 +62,24 @@ This avoids errors like `can’t open device "/dev/ttyACM0": Permission denied` 
 To set up your system to work with devices using the [FTDI chip](https://ftdichip.com/), you need to follow a few additional steps.
 To see if your device needs the FTDI drivers, see the [Compatibility table](#compatibility).
 
-First, install the [D2XX drivers](https://ftdichip.com/drivers/d2xx-drivers/).
+First, download and install the [D2XX drivers](https://ftdichip.com/drivers/d2xx-drivers/).
+See the link for full instructions. In short for a linux system:
 
-Set up [udev rules](https://wiki.archlinux.org/title/Udev).
+```bash
+tar xfvz libftd2xx-$PLATFORM-$VERSION.tgz
+cd $PLATFORM
+sudo cp libftd2xx.* /usr/local/lib
+sudo chmod 0755 /usr/local/lib/libftd2xx.so.$VERSION
+sudo ln -sf /usr/local/lib/libftd2xx.so.$VERSION /usr/local/lib/libftd2xx.so
+```
+
+And update the linker cache:
+
+```bash
+sudo ldconfig -v
+```
+
+Second, set up [udev rules](https://wiki.archlinux.org/title/Udev).
 `udev` manages permissions of the device to be accessible to non-root users and groups.
 Add the following lines to `/etc/udev/rules.d/50-ftdi.rules`:
 
@@ -207,6 +222,6 @@ See the chapter 'Updating firmware' in the [PSTrace user manual](https://www.pal
 | Sensit Wearable | 1.600 | Generic FTDI (optional) [^2] | n/a [^3] |
 
 [^1]: Drivers are installed with alongside the PSTrace desktop software or using [the driver installer](https://github.com/PalmSens/PalmSens_SDK/releases/download/drivers-5.12/PalmSens.Drivers.exe).
-[^2]: Available from https://ftdichip.com/drivers/d2xx-drivers/
+[^2]: Available from <https://ftdichip.com/drivers/d2xx-drivers/>
 [^3]: The SDK communicates directly via the serial port. No drivers are necessary.
 [^4]: See [the installation instructions](#req-linux) for more info.

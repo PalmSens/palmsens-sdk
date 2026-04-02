@@ -53,6 +53,7 @@ nav = [
     "reference/instrument_async.md",
     "reference/fitting.md",
   ]},
+  { "Changelog" = "releases/index.md" },
   { "Source code ↗" = "https://github.com/palmsens/palmsens_sdk" },
   { "Issues ↗" = "https://github.com/palmsens/palmsens_sdk/issues" },
 ]

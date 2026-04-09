@@ -40,7 +40,7 @@ This example shows how to [discover][pypalmsens.discover] devices, [establish a 
 
 This example shows how to set up and run a [chronoamperometry][pypalmsens.ChronoAmperometry] measurement.
 
-For more information, see [Methods](Methods.md).
+For more information, see [Methods](methods.md).
 
 ```python title="measurement_CA.py"
 --8<-- "examples/measurement_CA.py"
@@ -52,7 +52,7 @@ For more information, see [Methods](Methods.md).
 
 This example shows how to set up and run a [chronoamperometry][pypalmsens.ChronoAmperometry] measurement using the asynchronous instrument manager.
 
-For more information, see [Methods](Methods.md).
+For more information, see [Methods](methods.md).
 
 ```python title="measurement_CA_async.py"
 --8<-- "examples/measurement_CA_async.py"
@@ -64,7 +64,7 @@ For more information, see [Methods](Methods.md).
 
 This example shows how to set up and run a [cyclic voltammetry][pypalmsens.CyclicVoltammetry] measurement.
 
-For more information, see [Methods](Methods.md).
+For more information, see [Methods](methods.md).
 
 ```python title="measurement_CV.py"
 --8<-- "examples/measurement_CV.py"
@@ -76,7 +76,7 @@ For more information, see [Methods](Methods.md).
 
 This example shows how to set up and run a [EIS measurement][pypalmsens.ElectrochemicalImpedanceSpectroscopy].
 
-For more information, see [Methods](Methods.md).
+For more information, see [Methods](methods.md).
 
 ```python title="measurement_EIS.py"
 --8<-- "examples/measurement_EIS.py"

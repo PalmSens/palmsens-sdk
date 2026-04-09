@@ -19,4 +19,4 @@ streamlit run app.py
 
 ## Licence
 
-The code for this notebook is licensed under the terms of the [MIT Licence](./LICENSE).
+The code for this application note is licensed under the terms of the [MIT Licence](./LICENSE).

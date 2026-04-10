@@ -1,6 +1,6 @@
-# Remote Corrosion Monitoring Using Python
+# Remote IoT Corrosion Monitoring Using Python
 
-The code here accompanies the application note: [Remote Corrosion Monitoring Using Python](https://www.palmsens.com/knowledgebase-article/distributed-polarization-resistance-using-python/).
+The code here accompanies the application note: [Remote IoT Corrosion Monitoring Using Python](https://www.palmsens.com/knowledgebase-article/remote-iot-corrosion-monitoring-using-python/).
 
 The application note demonstrates how to set up a Raspberry Pi or equivalent low-power linux computer for remote corrosion measurements. The corrosion measurements are performed using the Linear Polarization Resistance (LPR) technique. The application note includes a example dashboard for viewing and analyzing results.
 

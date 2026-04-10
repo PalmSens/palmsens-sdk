@@ -58,10 +58,27 @@ class InstrumentPoolAsync:
     def __iter__(self):
         yield from self.managers
 
-    async def connect(self) -> None:
-        """Connect all instrument managers in the pool."""
+    async def connect(self, attempts: int = 1) -> None:
+        """Connect all instrument managers in the pool.
+
+        Parameters
+        ----------
+        attempts: int, optional
+            Number of attempts to establish connection.
+            Use this if you experience connection issues via USB.
+        """
         tasks = [manager.connect() for manager in self.managers]
-        await asyncio.gather(*tasks)
+
+        try:
+            _ = await asyncio.gather(*tasks)
+        except Exception:
+            if attempts <= 1:
+                raise
+            await asyncio.sleep(0.5)
+        else:
+            return
+
+        await self.connect(attempts=attempts - 1)
 
     async def disconnect(self) -> None:
         """Disconnect all instrument managers in the pool."""

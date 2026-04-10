@@ -166,6 +166,25 @@ NEXUS24C0029
     Connecting to a device over TCP/IP is available on Windows only.
     See https://github.com/PalmSens/PalmSens_SDK/issues/327 for more info.
 
+### Connection issues
+
+In some cases, devices may fail to connect via USB at seemingly random moments with the following error message:
+
+```
+Palmsens connection error: Device not recognized
+```
+
+This error means that the channel has been discovered, the connection has been opened, but that it was somehow not possible to send/receive data.
+This can happen when there is some interference. Especially when establishing a connection there is a lot of back-and-forth communication, so chances of interference are the largest.
+Unfortunately, there is no guarantee that the USB connection is stable with every PC configuration.
+
+However, there are some precautions you can take.
+
+1. Use the original USB cable as some other cables may not be properly shielded.
+2. If you connect a MultiPalmSens4 via USB, wait at least 30s up to a minute before connecting after turning it on.
+
+In most cases, you can simply retry connecting to the device or the channels.
+If you are using an `InstrumentPool`, you can increase the number of attempts to establish the connection, see [InstrumentPool.connect][pypalmsens.InstrumentPool.connect] / [InstrumentPoolAsync.connect][pypalmsens.InstrumentPoolAsync.connect].
 
 ## Measuring
 

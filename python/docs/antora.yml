@@ -1,5 +1,5 @@
 name: python
-version: '1.8.0'
+version: '1.8.1'
 title: PyPalmSens
 start_page: index.adoc
 nav:

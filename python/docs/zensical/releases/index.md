@@ -1,5 +1,18 @@
 # Changelog
 
+## PyPalmSens 1.8.1
+
+> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.8.1">python-1.8.1</a>
+| :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.8.1">pypalmsens-1.8.1</a>
+| :fontawesome-solid-calendar: 2026-10-04
+
+This is a small bugfix release
+
+### What's Changed
+
+* Add retry function to `pool.connect()` by [@stefsmeets](https://github.com/stefsmeets) in [#334](https://github.com/PalmSens/PalmSens_SDK/pull/334)
+* Fix `DataSet.to_dict()` crash for datasets with no current by [@stefsmeets](https://github.com/stefsmeets) in [#338](https://github.com/PalmSens/PalmSens_SDK/pull/338)
+
 ## PyPalmSens 1.8.0
 
 > :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.8.0">python-1.8.0</a>

@@ -30,7 +30,9 @@ def work_directory(path: Path):
 
 
 def announce(tag: str):
-    releases_path = Path(ROOT, "docs", "sdk", "modules", "ROOT", "pages", "releases.adoc")
+    releases_path = Path(
+        ROOT, "docs", "sdk", "modules", "ROOT", "pages", "releases.adoc"
+    )
     assert releases_path.exists()
     lines = releases_path.read_text().splitlines()
 
@@ -39,7 +41,9 @@ def announce(tag: str):
     if tag in lines[index + 1]:
         print("Tag already exists, skipping")
     else:
-        new_line = f"- https://github.com/palmsens/palmsens_sdk/releases/tag/{tag}[{tag}]"
+        new_line = (
+            f"- https://github.com/palmsens/palmsens_sdk/releases/tag/{tag}[{tag}]"
+        )
         lines.insert(index + 1, new_line)
         releases_path.write_text("\n".join(lines) + "\n", encoding="UTF-8")
         print(f"Tag added to {releases_path.name}")
@@ -122,7 +126,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("sdk", type=str)
     parser.add_argument("--version", type=str, help="Set version.")
-    parser.add_argument("--bump", type=str, help="Major/minor/patch, overrides version.")
+    parser.add_argument(
+        "--bump", type=str, help="Major/minor/patch, overrides version."
+    )
     options = parser.parse_args()
 
     if options.bump:

@@ -214,11 +214,14 @@ class DataSet(Mapping[str, DataArray]):
         """
         dct: dict[str, Any] = {key: arr.to_list() for key, arr in self.items() if len(arr)}
 
-        current = self.arrays(type='Current')[-1]
-        assert isinstance(current, CurrentArray)
-
-        dct['CR'] = current.current_range()
-        dct['ReadingStatus'] = current.reading_status()
+        try:
+            current = self.arrays(type='Current')[-1]
+            assert isinstance(current, CurrentArray)
+        except IndexError:  # e.g. OCP does not have a current array
+            pass
+        else:
+            dct['CR'] = current.current_range()
+            dct['ReadingStatus'] = current.reading_status()
 
         return dct
 

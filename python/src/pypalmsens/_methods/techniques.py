@@ -1771,14 +1771,14 @@ class ElectrochemicalImpedanceSpectroscopy(
     """
 
     run_time: float = 10.0
-    """Minimal run time in seconds (time scan only).
+    """Minimal run time in seconds in s (time scan only).
 
     For example, if a frequency scan takes 18 seconds and is measured
     at an interval of 19 seconds for a `run_time` of 40 seconds, then
     three iterations will be performed."""
 
     interval_time: float = 0.1
-    """The interval at which a measurement iteration should be performed (time scan only).
+    """The interval at which a measurement iteration should be performed in s (time scan only).
 
     The minimum interval time between each data point (`frequency_type='fixed') or
     between each frequency scan (`frequency_type='scan').

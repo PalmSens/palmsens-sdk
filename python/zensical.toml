@@ -18,8 +18,6 @@ nav = [
   "examples.md",
   { "Techniques" = [
     "reference/methods/index.md",
-    { "Shared settings" = "reference/methods/settings.md" },
-    "reference/methods/enums.md",
     "reference/methods/a_c_voltammetry.md",
     "reference/methods/chrono_amperometry.md",
     "reference/methods/chrono_coulometry.md",
@@ -45,6 +43,16 @@ nav = [
     "reference/methods/square_wave_voltammetry.md",
     "reference/methods/stripping_chrono_potentiometry.md",
   ]},
+  { "Techniques (corrosion)" = [
+      "reference/corrosion/index.md",
+      "reference/corrosion/potentiostatic.md",
+      "reference/corrosion/galvanostatic.md",
+      "reference/corrosion/linear_polarization.md",
+      "reference/corrosion/cyclic_polarization.md",
+      "reference/corrosion/corrosion_potential.md",
+      "reference/corrosion/impedance_spectroscopy.md",
+  ]},
+  { "Technique settings" = "reference/methods/settings.md" },
   { "Reference" = [
     "reference/index.md",
     "reference/data.md",
@@ -52,6 +60,7 @@ nav = [
     "reference/instrument.md",
     "reference/instrument_async.md",
     "reference/fitting.md",
+    "reference/methods/enums.md",
   ]},
   { "Changelog" = "releases/index.md" },
   { "Source code ↗" = "https://github.com/palmsens/palmsens_sdk" },

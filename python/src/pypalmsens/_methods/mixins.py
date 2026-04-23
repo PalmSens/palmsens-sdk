@@ -4,7 +4,7 @@ from pydantic import Field, field_validator
 
 from . import settings
 from .base_model import BaseModel
-from .shared import (
+from .types import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
 )
@@ -116,3 +116,8 @@ class GeneralMixin(BaseModel):
     @property
     def _use_hardware_sync(self):
         return self.general.use_hardware_sync
+
+
+class MaterialMixin(BaseModel):
+    material: settings.Material = Field(default_factory=settings.Material)
+    """Stores material settings for corrosion measurements."""

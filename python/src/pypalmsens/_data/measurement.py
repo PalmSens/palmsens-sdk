@@ -6,11 +6,13 @@ from typing import TYPE_CHECKING, final
 import System
 from typing_extensions import override
 
+from pypalmsens._methods import BaseTechnique
+
 from .._fitting import FitResult
-from .._methods.method import Method
 from .curve import Curve
 from .dataset import DataSet
 from .eisdata import EISData
+from .method import Method
 from .peak import Peak
 
 if TYPE_CHECKING:
@@ -113,11 +115,11 @@ class Measurement:
         return lst
 
     @property
-    def method(self) -> Method:
+    def method(self) -> BaseTechnique:
         """Method related with this Measurement.
 
         The information from the Method is used when saving Curves."""
-        return Method(psmethod=self._psmeasurement.Method)
+        return Method(psmethod=self._psmeasurement.Method).to_settings()
 
     @property
     def channel(self) -> float:

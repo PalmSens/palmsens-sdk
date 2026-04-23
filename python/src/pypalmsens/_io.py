@@ -8,8 +8,9 @@ import PalmSens
 from System.IO import StreamReader, StreamWriter
 from System.Text import Encoding
 
+from ._data import Method
 from ._data.measurement import Measurement
-from ._methods import BaseTechnique, Method
+from ._methods import BaseTechnique
 
 
 @contextmanager
@@ -134,7 +135,7 @@ def save_method_file(path: str | Path, method: Method | BaseTechnique):
     if isinstance(method, BaseTechnique):
         psmethod = method._to_psmethod()
     elif isinstance(method, Method):
-        psmethod = method.psmethod
+        psmethod = method._psmethod
     else:
         raise ValueError(f'Unknown data type: {type(method)}')
 

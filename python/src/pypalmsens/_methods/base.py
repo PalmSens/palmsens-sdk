@@ -25,7 +25,8 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
-        cls._registry[cls.id] = cls
+        if hasattr(cls, 'id'):
+            cls._registry[cls.id] = cls
 
     def to_dict(self) -> dict[str, Any]:
         """Return the technique instance as a new key/value dictionary mapping."""

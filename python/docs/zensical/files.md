@@ -1,20 +1,6 @@
 # Working with files
 
-As of version 5 of the PalmSens SDK and PSTrace measurements, and their corresponding methods are stored in `.pssession` files.
-Methods can be stored separately in `.psmethod` files.
-
-The PalmSens SDK is backward compatible with following filetypes:
-
-| File | vs. potential (scan method) | vs. time|
-|-|-|-|
-| Method | `.psmethod` | `.psmethod` |
-| Method (before 2012) | `.pms` |`.pmt` |
-| Data (single curve) | `.pss` |`.pst` |
-| Analysis curves | `.psd` |
-| Multiplexer curves| | `.mux` |
-
-`pypalmsens` contains the functions needed to load and save methods and session files.
-The session file contains the measurement data, whereas the method file contains method information.
+PyPalmSens and PSTrace store measurements and their corresponding methods in `.pssession` files. Methods can also be stored seperately in `.psmethod` files. `pypalmsens` contains all the functions needed to work with session and method files.
 
 ## Loading and saving a method file (`.psmethod`)
 

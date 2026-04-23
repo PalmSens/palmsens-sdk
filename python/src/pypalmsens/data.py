@@ -9,7 +9,7 @@ from ._data.dataset import DataSet
 from ._data.eisdata import EISData
 from ._data.measurement import DeviceInfo, Measurement
 from ._data.peak import Peak
-from ._data.shared import AllowedArrayTypes
+from ._data.types import AllowedArrayTypes
 from ._instruments.callback import (
     CallbackData,
     CallbackDataEIS,

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import PalmSens
 from typing_extensions import override
 
-from .._methods.shared import cr_enum_to_string, pr_enum_to_string
+from .._methods.types import cr_enum_to_string, pr_enum_to_string
 from ..settings import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,

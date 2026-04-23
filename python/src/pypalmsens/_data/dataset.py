@@ -9,7 +9,7 @@ from typing_extensions import override
 
 from .curve import Curve
 from .data_array import CurrentArray, DataArray, PotentialArray
-from .shared import AllowedArrayTypes, array_enum_to_str
+from .types import AllowedArrayTypes, array_enum_to_str
 
 if TYPE_CHECKING:
     import pandas as pd

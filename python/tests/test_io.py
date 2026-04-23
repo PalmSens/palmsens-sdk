@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from pytest import approx
 
 import pypalmsens as ps
@@ -17,8 +19,9 @@ def test_save_load_session(tmpdir, data_dpv):
     meas = data_dpv[0]
     meas2 = data_dpv2[0]
 
-    assert meas2.method.filename == path
-    assert meas2.method.filename.is_absolute()
+    method_filename = Path(meas2._psmeasurement.Method.MethodFilename)
+    assert method_filename == path
+    assert method_filename.is_absolute()
 
     assert len(meas.dataset) == len(meas2.dataset) == 0
     assert meas.n_curves == meas2.n_curves == 1

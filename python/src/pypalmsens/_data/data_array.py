@@ -14,7 +14,7 @@ from ..settings import (
     AllowedTimingStatus,
 )
 from .data_value import CurrentReading, PotentialReading
-from .shared import AllowedArrayTypes, array_enum_to_str
+from .types import AllowedArrayTypes, array_enum_to_str
 
 if TYPE_CHECKING:
     import pandas as pd

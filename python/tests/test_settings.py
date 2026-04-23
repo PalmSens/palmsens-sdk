@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from PalmSens import Techniques
+from PalmSens import CorrosionTechniques, Techniques
 
 import pypalmsens as ps
-from pypalmsens._methods.shared import (
+from pypalmsens._methods.mask import (
     get_extra_value_mask,
     set_extra_value_mask,
 )
@@ -405,6 +405,30 @@ def test_CommonSettings():
     assert obj.PowerFreq == 60
 
     new_params = ps.settings.General()
+    new_params._update_params(obj)
+
+    assert new_params == params
+
+
+def test_MaterialSettings():
+    obj = CorrosionTechniques.LinearPolarization()
+
+    params = ps.settings.Material(
+        surface_area=123.0,
+        weight=456.0,
+        density=789.0,
+        b_anodic=111.0,
+        b_cathodic=222.0,
+    )
+    params._update_psmethod(obj)
+
+    assert obj.Area == 123
+    assert obj.Weight == 456
+    assert obj.Density == 789
+    assert obj.Ba == 111.0
+    assert obj.Bc == 222.0
+
+    new_params = ps.settings.Material()
     new_params._update_params(obj)
 
     assert new_params == params

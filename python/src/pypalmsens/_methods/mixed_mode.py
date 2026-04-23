@@ -11,7 +11,7 @@ from .._helpers import single_to_double
 from . import mixins
 from .base import BaseTechnique
 from .base_model import BaseModel
-from .shared import (
+from .types import (
     AllowedCurrentRanges,
     cr_enum_to_string,
     cr_string_to_enum,

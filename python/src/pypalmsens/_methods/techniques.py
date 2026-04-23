@@ -13,21 +13,25 @@ from typing_extensions import override
 from .._helpers import single_to_double
 from . import mixins
 from .base import BaseTechnique
-from .shared import (
-    AllowedCurrentRanges,
-    AllowedPotentialRanges,
+from .levels import (
     ELevel,
     ILevel,
+)
+from .mask import (
+    get_extra_value_mask,
+    set_extra_value_mask,
+)
+from .types import (
+    AllowedCurrentRanges,
+    AllowedPotentialRanges,
     cr_enum_to_string,
     cr_string_to_enum,
-    get_extra_value_mask,
     pr_enum_to_string,
     pr_string_to_enum,
-    set_extra_value_mask,
 )
 
 
-class CyclicVoltammetry(
+class BaseCyclicVoltammetry(
     BaseTechnique,
     mixins.CurrentRangeMixin,
     mixins.PretreatmentMixin,
@@ -41,18 +45,6 @@ class CyclicVoltammetry(
     mixins.DataProcessingMixin,
     mixins.GeneralMixin,
 ):
-    """Create cyclic voltammetry method parameters.
-
-    In Cyclic Voltammetry, recurrent potential scans are performed between the potentials `vertex1_potential`
-    and `vertex2_potential` going back the number of times determined by the `n_scans`.
-    The scan starts at the `begin_potential` which can be at one of these vertex potentials
-    or anywhere in between. The experiment will always terminate at the same potential set as the
-    'begin_potential'.
-    """
-
-    id: Literal['cv'] = 'cv'
-    """Unique method identifier."""
-
     equilibration_time: float = 0.0
     """Equilibration time in s."""
 
@@ -130,6 +122,20 @@ class CyclicVoltammetry(
             'enable_bipot_current',
         ):
             setattr(self, key, msk[key])
+
+
+class CyclicVoltammetry(BaseCyclicVoltammetry):
+    """Create cyclic voltammetry method parameters.
+
+    In Cyclic Voltammetry, recurrent potential scans are performed between the potentials `vertex1_potential`
+    and `vertex2_potential` going back the number of times determined by the `n_scans`.
+    The scan starts at the `begin_potential` which can be at one of these vertex potentials
+    or anywhere in between. The experiment will always terminate at the same potential set as the
+    'begin_potential'.
+    """
+
+    id: Literal['cv'] = 'cv'
+    """Unique method identifier."""
 
 
 class FastCyclicVoltammetry(
@@ -299,7 +305,7 @@ class ACVoltammetry(
         self.measure_dc_current = psmethod.MeasureDCcurrent
 
 
-class LinearSweepVoltammetry(
+class BaseLinearSweepVoltammetry(
     BaseTechnique,
     mixins.CurrentRangeMixin,
     mixins.PretreatmentMixin,
@@ -314,23 +320,6 @@ class LinearSweepVoltammetry(
     mixins.MultiplexerMixin,
     mixins.GeneralMixin,
 ):
-    """Create linear sweep method parameters.
-
-    In Linear Sweep Voltammetry a potential scan is performed from `begin_potential`,
-    to `end_potential`. The scan is not exactly linear, but small potential steps (`potential_step`)
-    are made.
-
-    The current is sampled during the last 25% interval period of each step.
-    The number of points in a curve showing the current versus potential is
-    (`begin_potential` – `end_potential`) / (`step_potential` + 1).
-
-    The scan rate is specified in V/s, which determines the time between two steps and thus the
-    sampling time. The interval time is equal to `potential_step` / `scan_rate`.
-    """
-
-    id: Literal['lsv'] = 'lsv'
-    """Unique method identifier."""
-
     equilibration_time: float = 0.0
     """Equilibration time in s.
 
@@ -401,6 +390,25 @@ class LinearSweepVoltammetry(
             'enable_bipot_current',
         ):
             setattr(self, key, msk[key])
+
+
+class LinearSweepVoltammetry(BaseLinearSweepVoltammetry):
+    """Create linear sweep method parameters.
+
+    In Linear Sweep Voltammetry a potential scan is performed from `begin_potential`,
+    to `end_potential`. The scan is not exactly linear, but small potential steps (`potential_step`)
+    are made.
+
+    The current is sampled during the last 25% interval period of each step.
+    The number of points in a curve showing the current versus potential is
+    (`begin_potential` – `end_potential`) / (`step_potential` + 1).
+
+    The scan rate is specified in V/s, which determines the time between two steps and thus the
+    sampling time. The interval time is equal to `potential_step` / `scan_rate`.
+    """
+
+    id: Literal['lsv'] = 'lsv'
+    """Unique method identifier."""
 
 
 class SquareWaveVoltammetry(
@@ -720,7 +728,7 @@ class NormalPulseVoltammetry(
             setattr(self, key, msk[key])
 
 
-class ChronoAmperometry(
+class BaseChronoAmperometry(
     BaseTechnique,
     mixins.CurrentRangeMixin,
     mixins.PretreatmentMixin,
@@ -736,15 +744,6 @@ class ChronoAmperometry(
     mixins.MultiplexerMixin,
     mixins.GeneralMixin,
 ):
-    """Create chrono amperometry method parameters.
-
-    The instrument applies a constant DC-potential (E dc) and the current is measured
-    with constant interval times.
-    """
-
-    id: Literal['ad'] = 'ad'
-    """Unique method identifier."""
-
     equilibration_time: float = 0.0
     """Equilibration time in s."""
 
@@ -805,6 +804,17 @@ class ChronoAmperometry(
             'enable_bipot_current',
         ):
             setattr(self, key, msk[key])
+
+
+class ChronoAmperometry(BaseChronoAmperometry):
+    """Create chrono amperometry method parameters.
+
+    The instrument applies a constant DC-potential (E dc) and the current is measured
+    with constant interval times.
+    """
+
+    id: Literal['ad'] = 'ad'
+    """Unique method identifier."""
 
 
 class FastAmperometry(
@@ -1134,7 +1144,7 @@ class MultiplePulseAmperometry(
         self.duration_3 = single_to_double(psmethod.t3)
 
 
-class OpenCircuitPotentiometry(
+class BaseOpenCircuitPotentiometry(
     BaseTechnique,
     mixins.CurrentRangeMixin,
     mixins.PotentialRangeMixin,
@@ -1146,22 +1156,6 @@ class OpenCircuitPotentiometry(
     mixins.MultiplexerMixin,
     mixins.GeneralMixin,
 ):
-    """Create open circuit potentiometry method parameters.
-
-    For Open Circuit Potentiometry there is no polarization, and the so-called Open Circuit
-    Potential (OCP) is measured and recorded with constant interval times. The result is a curve of
-    Potential vs. Time. The OCP is also called Open Circuit Voltage (OCV).
-
-    In corrosion, it is referred to as the "Corrosion Potential" (Ecorr), but in this context, it
-    specifically denotes the potential of a metal or electrode when exposed to a corrosive
-    environment.
-
-    This method is the same as `Chronopotentiometry(current=0)`.
-    """
-
-    id: Literal['ocp'] = 'ocp'
-    """Unique method identifier."""
-
     interval_time: float = 0.1
     """Time between two potential samples in s."""
 
@@ -1211,7 +1205,25 @@ class OpenCircuitPotentiometry(
             setattr(self, key, msk[key])
 
 
-class ChronoPotentiometry(
+class OpenCircuitPotentiometry(BaseOpenCircuitPotentiometry):
+    """Create open circuit potentiometry method parameters.
+
+    For Open Circuit Potentiometry there is no polarization, and the so-called Open Circuit
+    Potential (OCP) is measured and recorded with constant interval times. The result is a curve of
+    Potential vs. Time. The OCP is also called Open Circuit Voltage (OCV).
+
+    In corrosion, it is referred to as the "Corrosion Potential" (Ecorr), but in this context, it
+    specifically denotes the potential of a metal or electrode when exposed to a corrosive
+    environment.
+
+    This method is the same as `Chronopotentiometry(current=0)`.
+    """
+
+    id: Literal['ocp'] = 'ocp'
+    """Unique method identifier."""
+
+
+class BaseChronoPotentiometry(
     BaseTechnique,
     mixins.CurrentRangeMixin,
     mixins.PotentialRangeMixin,
@@ -1223,20 +1235,6 @@ class ChronoPotentiometry(
     mixins.MultiplexerMixin,
     mixins.GeneralMixin,
 ):
-    """Create potentiometry method parameters.
-
-    Chronopotentiometry (CP) is an electrochemical technique
-    that requires a galvanostat instead of a potentiostat.
-    In this method, a constant current is applied, and the resulting potential (voltage)
-    is continuously recorded over time in a definite time interval. This technique is particularly
-    useful for studying electrochemical reactions, kinetics, and processes under non-steady-state
-    conditions, offering valuable insights into how the electrode potential evolves in response to
-    the applied current.
-    """
-
-    id: Literal['pot'] = 'pot'
-    """Unique method identifier."""
-
     current: float = 0.0
     """The current to apply in the given current range.
 
@@ -1299,6 +1297,22 @@ class ChronoPotentiometry(
             'record_we_current',
         ):
             setattr(self, key, msk[key])
+
+
+class ChronoPotentiometry(BaseChronoPotentiometry):
+    """Create potentiometry method parameters.
+
+    Chronopotentiometry (CP) is an electrochemical technique
+    that requires a galvanostat instead of a potentiostat.
+    In this method, a constant current is applied, and the resulting potential (voltage)
+    is continuously recorded over time in a definite time interval. This technique is particularly
+    useful for studying electrochemical reactions, kinetics, and processes under non-steady-state
+    conditions, offering valuable insights into how the electrode potential evolves in response to
+    the applied current.
+    """
+
+    id: Literal['pot'] = 'pot'
+    """Unique method identifier."""
 
 
 class StrippingChronoPotentiometry(
@@ -1684,6 +1698,7 @@ class ElectrochemicalImpedanceSpectroscopy(
     mixins.PostMeasurementMixin,
     mixins.MeasurementTriggersMixin,
     mixins.EquilibrationTriggersMixin,
+    mixins.MaterialMixin,
     mixins.MultiplexerMixin,
     mixins.GeneralMixin,
 ):
@@ -1703,6 +1718,9 @@ class ElectrochemicalImpedanceSpectroscopy(
     - frequency scans at specified time intervals (time scan)
     - a single frequency applied at each dc potential in a potential scan (Mott-Schottky)
     - a repeated single frequency at specified time intervals
+
+    EIS can also be used to study corrosion and the effects of coatings.
+    For example, anodized coatings, conversion coatings or organic coatings like paints.
     """
 
     id: Literal['eis'] = 'eis'

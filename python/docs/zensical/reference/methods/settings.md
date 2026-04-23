@@ -54,3 +54,4 @@ See the technique reference pages to see which settings are supported.
         - Multiplexer
         - DataProcessing
         - General
+        - Material

@@ -1,35 +1,130 @@
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Literal
 
-from pydantic import Field
+import PalmSens
 
-from . import mixed_mode, techniques
+AllowedTimingStatus = Literal['Unknown', 'OK', 'OverStep']
+"""Possible values for measurement timing status."""
 
-TechniqueType = Annotated[
-    mixed_mode.MixedMode
-    | techniques.ACVoltammetry
-    | techniques.ChronoAmperometry
-    | techniques.ChronoCoulometry
-    | techniques.ChronoPotentiometry
-    | techniques.CyclicVoltammetry
-    | techniques.DifferentialPulseVoltammetry
-    | techniques.ElectrochemicalImpedanceSpectroscopy
-    | techniques.FastAmperometry
-    | techniques.FastCyclicVoltammetry
-    | techniques.FastGalvanostaticImpedanceSpectroscopy
-    | techniques.FastImpedanceSpectroscopy
-    | techniques.GalvanostaticImpedanceSpectroscopy
-    | techniques.LinearSweepPotentiometry
-    | techniques.LinearSweepVoltammetry
-    | techniques.MethodScript
-    | techniques.MultiStepAmperometry
-    | techniques.MultiStepPotentiometry
-    | techniques.MultiplePulseAmperometry
-    | techniques.NormalPulseVoltammetry
-    | techniques.OpenCircuitPotentiometry
-    | techniques.PulsedAmperometricDetection
-    | techniques.SquareWaveVoltammetry
-    | techniques.StrippingChronoPotentiometry,
-    Field(discriminator='id'),
+AllowedReadingStatus = Literal['OK', 'Overload', 'Underload', 'OverloadWarning']
+"""Possible values for current or potential readings."""
+
+AllowedDeviceState = Literal[
+    'Unknown', 'Idle', 'Measurement', 'Download', 'Pretreatment', 'Error', 'MeasOCP'
 ]
+"""Possible values for the device state."""
+
+AllowedCurrentRanges = Literal[
+    '100pA',
+    '1nA',
+    '10nA',
+    '100nA',
+    '1uA',
+    '10uA',
+    '100uA',
+    '1mA',
+    '10mA',
+    '100mA',
+    '2uA',
+    '4uA',
+    '8uA',
+    '16uA',
+    '32uA',
+    '63uA',
+    '125uA',
+    '250uA',
+    '500uA',
+    '5mA',
+    '6uA',
+    '13uA',
+    '25uA',
+    '50uA',
+    '200uA',
+    '1A',
+]
+"""Possible current ranges.
+
+See the device documentation or query the instrument manager
+for supported current ranges."""
+
+
+AllowedMethods = Literal[
+    'acv',
+    'ad',
+    'cp',
+    'cpot',
+    'cv',
+    'dpv',
+    'eis',
+    'eis_it',
+    'fam',
+    'fcv',
+    'fgis',
+    'fis',
+    'geis_it',
+    'gis',
+    'gs',
+    'lp',
+    'lsp',
+    'lsv',
+    'ma',
+    'mm',
+    'mp',
+    'mpad',
+    'ms',
+    'npv',
+    'pad',
+    'pot',
+    'ps',
+    'scp',
+    'swv',
+]
+"""All available method IDs.
+
+See the device documentation or query the instrument manager
+for supported methods."""
+
+
+AllowedPotentialRanges = Literal[
+    '1mV',
+    '10mV',
+    '20mV',
+    '50mV',
+    '100mV',
+    '200mV',
+    '500mV',
+    '1V',
+]
+"""Possible potential ranges.
+
+See the device documentation or query the instrument manager
+for supported potential ranges."""
+
+
+def cr_string_to_enum(s: AllowedCurrentRanges) -> PalmSens.CurrentRange:
+    """Convert literal string to CurrentRange."""
+    attr = f'cr{s}'
+    cr = getattr(PalmSens.CurrentRanges, attr)
+
+    return PalmSens.CurrentRange(cr)
+
+
+def cr_enum_to_string(enum: PalmSens.CurrentRange) -> AllowedCurrentRanges:
+    """Convert CurrentRange enum to literal string."""
+    cr = enum.Range
+    return cr.ToString().lstrip('cr')
+
+
+def pr_string_to_enum(s: AllowedPotentialRanges) -> PalmSens.PotentialRange:
+    """Convert literal string to PotentialRange."""
+    attr = f'pr{s}'
+    pr = getattr(PalmSens.PotentialRanges, attr)
+
+    return PalmSens.PotentialRange(pr)
+
+
+def pr_enum_to_string(enum: PalmSens.PotentialRange) -> AllowedPotentialRanges:
+    """Convert PotentialRange enum to literal string."""
+    pr = enum.PR
+    return pr.ToString().lstrip('pr')

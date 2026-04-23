@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from .base import BaseSettings, BaseTechnique
-from .method import Method
-from .shared import (
+from .types import (
     AllowedCurrentRanges,
     AllowedMethods,
     AllowedPotentialRanges,
@@ -22,5 +21,4 @@ __all__ = [
     'AllowedPotentialRanges',
     'BaseSettings',
     'BaseTechnique',
-    'Method',
 ]

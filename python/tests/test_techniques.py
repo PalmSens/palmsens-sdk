@@ -151,7 +151,7 @@ class CV:
         for curve in measurement.curves:
             assert curve.n_points >= 5
 
-        assert measurement.method.psmethod.nScans == 2
+        assert measurement._psmeasurement.Method.nScans == 2
 
         dataset = measurement.dataset
         assert len(dataset) == 7
@@ -190,9 +190,9 @@ class FCV:
         for curve in measurement.curves:
             assert curve.n_points >= 5
 
-        assert measurement.method.psmethod.nScans == 3
-        assert measurement.method.psmethod.nAvgScans == 2
-        assert measurement.method.psmethod.nEqScans == 2
+        assert measurement._psmeasurement.Method.nScans == 3
+        assert measurement._psmeasurement.Method.nAvgScans == 2
+        assert measurement._psmeasurement.Method.nEqScans == 2
 
         dataset = measurement.dataset
 
@@ -328,7 +328,7 @@ class SWV:
         for curve in measurement.curves:
             assert curve.n_points >= 5
 
-        assert measurement.method.psmethod.nScans == 1
+        assert measurement._psmeasurement.Method.nScans == 1
 
         dataset = measurement.dataset
         assert len(dataset) == 5
@@ -1095,7 +1095,7 @@ class MS:
 class MM:
     id = 'mm'
     kwargs = {
-        'cycles': 2,
+        'cycles': 3,
         'interval_time': 0.02,
         'stages': [
             {
@@ -1123,7 +1123,7 @@ class MM:
             {'stage_type': 'OpenCircuit', 'run_time': 0.1},
             {
                 'stage_type': 'Impedance',
-                'run_time': 0.1,
+                'run_time': 0.2,
                 'dc_potential': 0.0,
                 'ac_potential': 0.01,
                 'min_sampling_time': 0.0,
@@ -1137,7 +1137,7 @@ class MM:
         assert measurement
         assert isinstance(measurement, ps.data.Measurement)
 
-        params = measurement.method.to_settings()
+        params = measurement.method
         stages = [stage.stage_type for stage in params.stages]
 
         assert stages == ['ConstantE', 'ConstantI', 'SweepE', 'OpenCircuit', 'Impedance']

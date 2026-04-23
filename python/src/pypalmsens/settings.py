@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from ._methods.levels import (
+    ELevel,
+    ILevel,
+)
 from ._methods.settings import (
     BiPot,
     BiPotCurrentRange,
@@ -13,6 +17,7 @@ from ._methods.settings import (
     EquilibrationTriggers,
     General,
     IrDropCompensation,
+    Material,
     MeasurementTriggers,
     Multiplexer,
     PostMeasurement,
@@ -21,15 +26,13 @@ from ._methods.settings import (
     Pretreatment,
     VersusOCP,
 )
-from ._methods.shared import (
+from ._methods.types import (
     AllowedCurrentRanges,
     AllowedDeviceState,
     AllowedMethods,
     AllowedPotentialRanges,
     AllowedReadingStatus,
     AllowedTimingStatus,
-    ELevel,
-    ILevel,
 )
 
 __all__ = [
@@ -51,6 +54,7 @@ __all__ = [
     'General',
     'ILevel',
     'IrDropCompensation',
+    'Material',
     'MeasurementTriggers',
     'Multiplexer',
     'PostMeasurement',

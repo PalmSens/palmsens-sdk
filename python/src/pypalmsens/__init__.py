@@ -6,6 +6,7 @@ __sdk_version__ = _libpalmsens.load()
 __version__ = '1.8.1'
 
 from . import (
+    corrosion,
     data,
     fitting,
     mixed_mode,
@@ -52,6 +53,7 @@ from ._methods.techniques import (
 )
 
 __all__ = [
+    'corrosion',
     'settings',
     'data',
     'fitting',

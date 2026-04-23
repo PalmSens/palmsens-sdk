@@ -3,12 +3,13 @@ from __future__ import annotations
 import pytest
 
 import pypalmsens as ps
+from pypalmsens._data import Method
 from pypalmsens._methods.adapters import technique_adapter
 
 
 @pytest.fixture
 def method(data_cv_1scan):
-    return data_cv_1scan[0].method
+    return Method(psmethod=data_cv_1scan[0]._psmeasurement.Method)
 
 
 def test_properties(method):

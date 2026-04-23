@@ -40,21 +40,6 @@ class Method:
             return Path(fn)
         return None
 
-    def get_estimated_duration(self, *, instrument_manager=None):
-        """Get the estimated duration for this method.
-
-        Parameters
-        ----------
-        instrument_manager : InstrumentManager
-            Specifies the instrument manager to get the connected instruments capabilities from,
-            If not specified it will use the PalmSens4 capabilities to determine the estimated duration.
-        """
-        if instrument_manager is None or instrument_manager.__comm is None:
-            instrument_capabilities = PalmSens.Devices.PalmSens4Capabilities()
-        else:
-            instrument_capabilities = instrument_manager.__comm.Capabilities
-        return self._psmethod.GetMinimumEstimatedMeasurementDuration(instrument_capabilities)
-
     @property
     def supports_corrosion(self) -> bool:
         """Return true if corrosion is supported."""

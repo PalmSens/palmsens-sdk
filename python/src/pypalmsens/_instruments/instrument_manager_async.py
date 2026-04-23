@@ -188,7 +188,58 @@ class SupportedMixin:
         return [pr_enum_to_string(pr) for pr in capabilities.SupportedPotentialRanges]
 
 
-class InstrumentManagerAsync(SupportedMixin):
+class MethodHelpersMixin:
+    def get_estimated_duration(
+        self: HasCommProtocol,
+        method: PalmSens.Method | BaseTechnique,
+    ) -> float:
+        """Get the estimated duration for this method.
+
+        Parameters
+        -----------
+        method : Method parameters
+            The method to get the estimated duration for.
+
+        Returns
+        -------
+        float
+            Estimated duration in seconds.
+        """
+        self.ensure_connection()
+
+        if not isinstance(method, PalmSens.Method):
+            method = method._to_psmethod()
+
+        instrument_capabilities = self._comm.Capabilities
+
+        return method.GetMinimumEstimatedMeasurementDuration(instrument_capabilities)
+
+    def validate_method(
+        self: HasCommProtocol,
+        method: PalmSens.Method | BaseTechnique,
+    ) -> None:
+        """Validate method.
+
+        Raise ValueError if the method cannot be validated.
+
+        Parameters
+        -----------
+        method : Method parameters
+            The method to validate.
+        """
+        self.ensure_connection()
+
+        if not isinstance(method, PalmSens.Method):
+            method = method._to_psmethod()
+
+        errors = method.Validate(self._comm.Capabilities)
+
+        if any(error.IsFatal for error in errors):
+            message = '\n'.join([error.Message for error in errors])
+            raise MethodIncompatibleError(f'Method not compatible:\n{message}')
+
+
+class InstrumentManagerAsync(MethodHelpersMixin, SupportedMixin):
     """Asynchronous instrument manager for PalmSens instruments.
 
     Parameters
@@ -417,21 +468,6 @@ class InstrumentManagerAsync(SupportedMixin):
 
         _ = self._loop.call_soon_threadsafe(self._status_callback, status)
         return Task.CompletedTask
-
-    def validate_method(self, method: PalmSens.Method | BaseTechnique) -> None:
-        """Validate method.
-
-        Raise ValueError if the method cannot be validated."""
-        self.ensure_connection()
-
-        if not isinstance(method, PalmSens.Method):
-            method = method._to_psmethod()
-
-        errors = method.Validate(self._comm.Capabilities)
-
-        if any(error.IsFatal for error in errors):
-            message = '\n'.join([error.Message for error in errors])
-            raise MethodIncompatibleError(f'Method not compatible:\n{message}')
 
     async def measure(
         self,

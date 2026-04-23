@@ -230,3 +230,16 @@ async def test_supported_async():
         assert isinstance(manager.supported_applied_current_ranges(), list)
         assert isinstance(manager.supported_potential_ranges(), list)
         assert isinstance(manager.supported_bipot_ranges(), list)
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_get_estimated_duration():
+    instruments = await ps.discover_async()
+
+    method = ps.OpenCircuitPotentiometry(run_time=10)
+
+    async with await ps.connect_async(instruments[0]) as manager:
+        t = manager.get_estimated_duration(method)
+
+    assert t == pytest.approx(10.1)

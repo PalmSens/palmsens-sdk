@@ -25,6 +25,7 @@ from .._methods import (
 )
 from ..data import Measurement
 from .callback import Callback, CallbackEIS, CallbackStatus, Status
+from .capabilities import Capabilities, CapabilitiesInterface
 from .instrument import Instrument, discover_async
 from .measurement_manager_async import MeasurementManagerAsync
 from .shared import MethodIncompatibleError, create_future, firmware_warning
@@ -111,7 +112,23 @@ class HasCommProtocol(Protocol):
     ensure_connection: Callable[[], None]
 
 
-class SupportedMixin:
+class HasCapabilities(Protocol):
+    capabilities: Capabilities
+
+
+class CapabilitiesMixin:
+    @property
+    def capabilities(self: HasCommProtocol) -> Capabilities:
+        """Retrieve device capabilities and device info as a dataclass.
+
+        Returns
+        -------
+        capabilities: Capabilities
+            Device capabilities and device info.
+        """
+        self.ensure_connection()
+        return Capabilities._from_comm(self._comm)
+
     def supported_methods(self: HasCommProtocol) -> list[AllowedMethods]:
         """List methods supported by this device.
 
@@ -121,19 +138,7 @@ class SupportedMixin:
             List of supported methods.
         """
         self.ensure_connection()
-        capabilities = self._comm.Capabilities
-        numbers = list(capabilities.SupportedMethods)
-        method_ids = []
-
-        for number in numbers:
-            try:
-                id = PalmSens.Method.FromTechniqueNumber(number).MethodID
-            except Exception:
-                pass
-            else:
-                method_ids.append(id)
-
-        return method_ids
+        return CapabilitiesInterface(comm=self._comm).supported_methods
 
     def supported_current_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
         """List current ranges supported by this device.
@@ -144,9 +149,7 @@ class SupportedMixin:
             List of supported current ranges.
         """
         self.ensure_connection()
-        capabilities = self._comm.Capabilities
-
-        return [cr_enum_to_string(cr) for cr in capabilities.SupportedRanges]
+        return CapabilitiesInterface(comm=self._comm).supported_current_ranges
 
     def supported_applied_current_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
         """List applied current ranges supported by this device.
@@ -157,12 +160,10 @@ class SupportedMixin:
             List of supported current ranges.
         """
         self.ensure_connection()
-        capabilities = self._comm.Capabilities
+        return CapabilitiesInterface(comm=self._comm).supported_applied_current_ranges
 
-        return [cr_enum_to_string(cr) for cr in capabilities.SupportedAppliedRanges]
-
-    def supported_bipot_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
-        """List applied current ranges supported by this device.
+    def supported_bipot_current_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
+        """List bipot current ranges supported by this device.
 
         Returns
         -------
@@ -170,9 +171,7 @@ class SupportedMixin:
             List of supported current ranges.
         """
         self.ensure_connection()
-        capabilities = self._comm.Capabilities
-
-        return [cr_enum_to_string(cr) for cr in capabilities.SupportedBipotRanges]
+        return CapabilitiesInterface(comm=self._comm).supported_bipot_current_ranges
 
     def supported_potential_ranges(self: HasCommProtocol) -> list[AllowedPotentialRanges]:
         """List applied potential ranges supported by this device.
@@ -183,12 +182,8 @@ class SupportedMixin:
             List of supported potential ranges.
         """
         self.ensure_connection()
-        capabilities = self._comm.Capabilities
+        return CapabilitiesInterface(comm=self._comm).supported_potential_ranges
 
-        return [pr_enum_to_string(pr) for pr in capabilities.SupportedPotentialRanges]
-
-
-class MethodHelpersMixin:
     def get_estimated_duration(
         self: HasCommProtocol,
         method: PalmSens.Method | BaseTechnique,
@@ -210,14 +205,14 @@ class MethodHelpersMixin:
         if not isinstance(method, PalmSens.Method):
             method = method._to_psmethod()
 
-        instrument_capabilities = self._comm.Capabilities
+        capabilities = self._comm.Capabilities
 
-        return method.GetMinimumEstimatedMeasurementDuration(instrument_capabilities)
+        return method.GetMinimumEstimatedMeasurementDuration(capabilities)
 
     def validate_method(
         self: HasCommProtocol,
         method: PalmSens.Method | BaseTechnique,
-    ) -> None:
+    ):
         """Validate method.
 
         Raise ValueError if the method cannot be validated.
@@ -229,17 +224,19 @@ class MethodHelpersMixin:
         """
         self.ensure_connection()
 
+        capabilities = self._comm.Capabilities
+
         if not isinstance(method, PalmSens.Method):
             method = method._to_psmethod()
 
-        errors = method.Validate(self._comm.Capabilities)
+        errors = method.Validate(capabilities)
 
         if any(error.IsFatal for error in errors):
             message = '\n'.join([error.Message for error in errors])
             raise MethodIncompatibleError(f'Method not compatible:\n{message}')
 
 
-class InstrumentManagerAsync(MethodHelpersMixin, SupportedMixin):
+class InstrumentManagerAsync(CapabilitiesMixin):
     """Asynchronous instrument manager for PalmSens instruments.
 
     Parameters
@@ -250,7 +247,7 @@ class InstrumentManagerAsync(MethodHelpersMixin, SupportedMixin):
 
     def __init__(self, instrument: Instrument):
         self.instrument: Instrument = instrument
-        """Instrument to connect to."""
+        """Instrument being managed by this class."""
 
         self._comm: CommManager
         self._status_callback: CallbackStatus
@@ -496,7 +493,7 @@ class InstrumentManagerAsync(MethodHelpersMixin, SupportedMixin):
 
         self.ensure_connection()
 
-        self.validate_method(psmethod)
+        self.validate_method(psmethod)  # type: ignore
 
         measurement_manager = MeasurementManagerAsync(comm=self._comm)
 

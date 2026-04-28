@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .capabilities import AnalogComponent, Capabilities
 from .instrument import Instrument, discover, discover_async
 from .instrument_manager import (
     InstrumentManager,
@@ -21,6 +22,8 @@ __all__ = [
     'discover_async',
     'measure',
     'measure_async',
+    'Capabilities',
+    'AnalogComponent',
     'Instrument',
     'InstrumentManager',
     'InstrumentManagerAsync',

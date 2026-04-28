@@ -23,7 +23,7 @@ from .._methods import (
 from ..data import Measurement
 from .callback import Callback, CallbackEIS, Status
 from .instrument import Instrument, discover
-from .instrument_manager_async import MethodHelpersMixin, SupportedMixin
+from .instrument_manager_async import CapabilitiesMixin
 from .measurement_manager_async import MeasurementManagerAsync
 from .shared import firmware_warning
 
@@ -100,7 +100,7 @@ def measure(
     return measurement
 
 
-class InstrumentManager(SupportedMixin, MethodHelpersMixin):
+class InstrumentManager(CapabilitiesMixin):
     """Instrument manager for PalmSens instruments.
 
     Parameters
@@ -111,7 +111,7 @@ class InstrumentManager(SupportedMixin, MethodHelpersMixin):
 
     def __init__(self, instrument: Instrument):
         self.instrument: Instrument = instrument
-        """Instrument to connect to."""
+        """Instrument being managed by this class."""
 
         self._comm: CommManager
 
@@ -317,7 +317,7 @@ class InstrumentManager(SupportedMixin, MethodHelpersMixin):
 
         self.ensure_connection()
 
-        self.validate_method(psmethod)
+        self.validate_method(psmethod)  # type: ignore
 
         # note that the comm manager must be opened async so it sets the
         # correct async event handlers

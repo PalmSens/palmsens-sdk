@@ -217,7 +217,7 @@ def test_supported():
         assert isinstance(manager.supported_current_ranges(), list)
         assert isinstance(manager.supported_applied_current_ranges(), list)
         assert isinstance(manager.supported_potential_ranges(), list)
-        assert isinstance(manager.supported_bipot_ranges(), list)
+        assert isinstance(manager.supported_bipot_current_ranges(), list)
 
 
 @pytest.mark.instrument
@@ -229,7 +229,17 @@ async def test_supported_async():
         assert isinstance(manager.supported_current_ranges(), list)
         assert isinstance(manager.supported_applied_current_ranges(), list)
         assert isinstance(manager.supported_potential_ranges(), list)
-        assert isinstance(manager.supported_bipot_ranges(), list)
+        assert isinstance(manager.supported_bipot_current_ranges(), list)
+
+
+@pytest.mark.instrument
+def test_capabilities():
+    instruments = ps.discover()
+    with ps.connect(instruments[0]) as manager:
+        cap = manager.capabilities
+
+    # Must be accessible without connection
+    assert cap.model_dump()
 
 
 @pytest.mark.instrument

@@ -120,6 +120,7 @@ files = ["src/pypalmsens", "tests", "examples"]
 exclude = ["typings", "scr/PalmSens-stubs"]
 allow_redefinition = true
 ignore_missing_imports = true
+disable_error_code = ["prop-decorator"]
 
 [tool.pyright]
 include = ["src/pypalmsens", "tests"]

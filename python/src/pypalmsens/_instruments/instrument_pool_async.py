@@ -220,7 +220,7 @@ class InstrumentPoolAsync:
             )
 
         for manager in self.managers:
-            manager.validate_method(method._to_psmethod())
+            manager.validate_method(method)  # type: ignore
 
         for manager, callback in zip(self.managers, callbacks):
             if manager is hw_sync_manager:

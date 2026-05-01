@@ -7,7 +7,7 @@ This page takes you through setting up the SDK for your LabVIEW project.
 
 * https://www.ni.com/en/shop/labview.html[Labview]
   - The code was developed with Community Version 2025
-  - For compatibility with older versions (down to 2019), use menu:File[Save for previous versions].
+  - For compatibility with older versions (down to 2019), use menu:File[Save for previous version].
 * .NET Framework 4.7.2
 * Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the https://github.com/PalmSens/PalmSens_SDK/releases/download/drivers-5.12/PalmSens.Drivers.exe[driver installer].
 
@@ -40,6 +40,25 @@ Then click on the btn:[Unblock] checkbox and click on btn:[OK].
 |===
 
 If this does not resolve the issue you may need to do this for each file in the `PalmSens\Libraries` subfolder.
+
+== Save for previous versions
+
+The Labview SDK was developed for version 2025 (25.0).
+If you are using an older, incompatible version, you may get this error: `LabVIEW load error code 9: VI version (25.0) is newer than LabView version (21.0)`.
+
+There are 2 options:
+
+1. Use a newer version (2025 or newer)
+2. Open the SDK with a compatible version, and use menu:File[Save for previous version] to save a project compatible with your version.
+See https://knowledge.ni.com/KnowledgeArticleDetails?id=kA03q000000YGiHCAW[this page] for more information.
+
+The "Save for previous version" works for compatibility with older versions down to 2019 (19.0).
+
+[cols=".^a,.^a", frame=none, grid=none]
+|===
+| image::save_for_previous_menu.png[Save for previous version]
+| image::save_for_previous_modal.png[Select previous version]
+|===
 
 [#compatibility]
 == Compatible devices and firmware

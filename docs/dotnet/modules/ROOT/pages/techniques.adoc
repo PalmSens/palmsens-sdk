@@ -685,11 +685,11 @@ This value is multiplied by the defined current range.
 * `TechniqueID`: 13
 * `MethodID`: `"mp"`
 
-Create multi-step potentiometry method by specifying levels using `PalmSens.Techniques.ILevel`.
+Create multi-step potentiometry method by specifying levels using `PalmSens.Techniques.EILevel`.
 
 ----
 method = PalmSens.Techniques.MultistepPotentiometry();
-level = PalmSens.Techniques.ILevel();
+level = PalmSens.Techniques.EILevel();
 level.Duration = 2.0;
 level.Level = 1.0;
 method.Levels.Add(level);
@@ -720,9 +720,9 @@ method.Levels.Add(level);
 |`System.Bool`
 |===
 
-=== ILevel
+=== EILevel
 
-* Class: `PalmSens.Techniques.ILevel`
+* Class: `PalmSens.Techniques.EILevel`
 
 [cols="1,2,1"]
 |===

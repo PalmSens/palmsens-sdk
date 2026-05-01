@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 from .._methods import BaseTechnique
 from .callback import Callback, CallbackEIS
@@ -19,8 +19,7 @@ class InstrumentPool:
     Most calls are run asynchronously in the background,
     which means that measurements are running in parallel.
 
-    This is a thin wrapper around the `InstrumentManagerAsync`.
-
+    This is a thin wrapper around the `InstrumentPoolAsync` class.
 
     Parameters
     ----------
@@ -54,6 +53,12 @@ class InstrumentPool:
 
     def __iter__(self):
         yield from self.managers
+
+    def __contains__(self, obj: Any):
+        return obj in self.managers
+
+    def __getitem__(self, index: int) -> InstrumentManagerAsync:
+        return self.managers[index]
 
     def connect(self, attempts: int = 1) -> None:
         """Connect all instrument managers in the pool.

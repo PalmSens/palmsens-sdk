@@ -58,6 +58,12 @@ class InstrumentPoolAsync:
     def __iter__(self):
         yield from self.managers
 
+    def __contains__(self, obj: Any):
+        return obj in self.managers
+
+    def __getitem__(self, index: int) -> InstrumentManagerAsync:
+        return self.managers[index]
+
     async def connect(self, attempts: int = 1) -> None:
         """Connect all instrument managers in the pool.
 

@@ -37,11 +37,11 @@ def test_pool(pool):
     n = len(pool.managers)
 
     assert pool.managers
-    manager = pool.managers[0]
+    manager = pool[0]
 
     pool.remove(manager)
 
-    assert manager not in pool.managers
+    assert manager not in pool
 
     pool.add(manager)
     assert len(pool.managers) == n
@@ -56,11 +56,11 @@ async def test_pool_async(apool):
     n = len(apool.managers)
 
     assert apool.managers
-    manager = apool.managers[0]
+    manager = apool[0]
 
     await apool.remove(manager)
 
-    assert manager not in apool.managers
+    assert manager not in apool
 
     await apool.add(manager)
     assert len(apool.managers) == n

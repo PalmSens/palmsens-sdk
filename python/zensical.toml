@@ -102,6 +102,10 @@ link = "https://pypi.org/project/pypalmsens/"
 icon = "fontawesome/solid/paper-plane"
 link = "https://www.palmsens.com/contact"
 
+[project.validation]
+unresolved_references = false
+invalid_links = false  # https://github.com/zensical/zensical/issues/603
+
 [project.theme]
 name = "material"
 logo = "assets/header_icon_white.svg"

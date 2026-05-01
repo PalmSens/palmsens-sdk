@@ -63,9 +63,9 @@ publishing = [
 ]
 
 docs = [
-    "zensical >= 0.0.20",
-    "mkdocstrings >= 1.0.1",
-    "mkdocstrings-python",
+    "zensical >= 0.0.38",
+    "mkdocstrings >= 1.0.4",
+    "mkdocstrings-python >= 2.0.3",
 ]
 
 [tool.setuptools]

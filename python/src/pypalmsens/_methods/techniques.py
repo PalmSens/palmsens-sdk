@@ -1826,7 +1826,7 @@ class ElectrochemicalImpedanceSpectroscopy(
     This sets the increment to be used between `begin_potential` and `end_potential`.
     """
 
-    min_sampling_time: float = 0.5
+    min_sampling_time: float = Field(0.5, gt=0)
     """Minimum sampling time in s.
 
     Each measurement point of the impedance spectrum is performed

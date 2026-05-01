@@ -228,7 +228,7 @@ class Impedance(BaseStage):
     frequency: float = 50000.0
     """Fixed frequency in Hz."""
 
-    min_sampling_time: float = 0.5
+    min_sampling_time: float = Field(0.5, gt=0)
     """Minimum sampling time in s.
 
     Each measurement point of the impedance spectrum is performed

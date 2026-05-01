@@ -1126,7 +1126,7 @@ class MM:
                 'run_time': 0.2,
                 'dc_potential': 0.0,
                 'ac_potential': 0.01,
-                'min_sampling_time': 0.0,
+                'min_sampling_time': 0.01,
                 'max_equilibration_time': 5.0,
             },
         ],
@@ -1153,7 +1153,7 @@ class MM:
         assert dataset.array_quantities == {'Charge', 'Current', 'Potential', 'Time'}
 
         eis = measurement.eis_data
-        assert len(eis) == 2
+        assert len(eis) == 3
 
         eis_dataset = eis[0].dataset
 

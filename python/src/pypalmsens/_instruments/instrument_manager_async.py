@@ -13,15 +13,17 @@ from PalmSens.Comm import CommManager, MuxType
 from System.Threading.Tasks import Task
 from typing_extensions import AsyncIterator, override
 
-from .._methods import (
-    AllowedCurrentRanges,
-    AllowedMethods,
-    AllowedPotentialRanges,
-    BaseTechnique,
+from .._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
     pr_enum_to_string,
     pr_string_to_enum,
+)
+from .._methods import BaseTechnique
+from .._types import (
+    AllowedCurrentRanges,
+    AllowedMethods,
+    AllowedPotentialRanges,
 )
 from ..data import Measurement
 from .callback import Callback, CallbackEIS, CallbackStatus, Status

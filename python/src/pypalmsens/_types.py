@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import Literal
 
-import PalmSens
-
 AllowedTimingStatus = Literal['Unknown', 'OK', 'OverStep']
 """Possible values for measurement timing status."""
 
@@ -100,31 +98,3 @@ AllowedPotentialRanges = Literal[
 
 See the device documentation or query the instrument manager
 for supported potential ranges."""
-
-
-def cr_string_to_enum(s: AllowedCurrentRanges) -> PalmSens.CurrentRange:
-    """Convert literal string to CurrentRange."""
-    attr = f'cr{s}'
-    cr = getattr(PalmSens.CurrentRanges, attr)
-
-    return PalmSens.CurrentRange(cr)
-
-
-def cr_enum_to_string(enum: PalmSens.CurrentRange) -> AllowedCurrentRanges:
-    """Convert CurrentRange enum to literal string."""
-    cr = enum.Range
-    return cr.ToString().lstrip('cr')
-
-
-def pr_string_to_enum(s: AllowedPotentialRanges) -> PalmSens.PotentialRange:
-    """Convert literal string to PotentialRange."""
-    attr = f'pr{s}'
-    pr = getattr(PalmSens.PotentialRanges, attr)
-
-    return PalmSens.PotentialRange(pr)
-
-
-def pr_enum_to_string(enum: PalmSens.PotentialRange) -> AllowedPotentialRanges:
-    """Convert PotentialRange enum to literal string."""
-    pr = enum.PR
-    return pr.ToString().lstrip('pr')

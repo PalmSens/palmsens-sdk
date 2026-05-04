@@ -26,7 +26,7 @@ from ._methods.settings import (
     Pretreatment,
     VersusOCP,
 )
-from ._methods.types import (
+from ._types import (
     AllowedCurrentRanges,
     AllowedDeviceState,
     AllowedMethods,

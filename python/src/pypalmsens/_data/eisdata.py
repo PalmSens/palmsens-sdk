@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, final
 
 from typing_extensions import override
 
-from .._methods import cr_enum_to_string
-from ..settings import AllowedCurrentRanges
+from .._converters import cr_enum_to_string
+from .._types import AllowedCurrentRanges
 from .data_array import DataArray
 from .dataset import DataSet
 

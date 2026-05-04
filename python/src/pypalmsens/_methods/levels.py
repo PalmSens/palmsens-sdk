@@ -6,7 +6,7 @@ from typing import Literal
 
 import PalmSens
 
-from .._helpers import single_to_double
+from .._converters import single_to_double
 from .base_model import BaseModel
 
 

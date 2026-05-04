@@ -7,15 +7,17 @@ import PalmSens
 from pydantic import Field
 from typing_extensions import override
 
-from .._helpers import single_to_double
+from .._converters import (
+    cr_enum_to_string,
+    cr_string_to_enum,
+    single_to_double,
+)
+from .._types import (
+    AllowedCurrentRanges,
+)
 from . import mixins
 from .base import BaseTechnique
 from .base_model import BaseModel
-from .types import (
-    AllowedCurrentRanges,
-    cr_enum_to_string,
-    cr_string_to_enum,
-)
 
 
 class BaseStage(BaseModel, metaclass=ABCMeta):

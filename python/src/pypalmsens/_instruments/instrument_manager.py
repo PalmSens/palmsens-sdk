@@ -11,14 +11,18 @@ import PalmSens
 from PalmSens.Comm import CommManager, MuxType
 from typing_extensions import override
 
-from .._methods import (
-    AllowedCurrentRanges,
-    AllowedPotentialRanges,
-    BaseTechnique,
+from .._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
     pr_enum_to_string,
     pr_string_to_enum,
+)
+from .._methods import (
+    BaseTechnique,
+)
+from .._types import (
+    AllowedCurrentRanges,
+    AllowedPotentialRanges,
 )
 from ..data import Measurement
 from .callback import Callback, CallbackEIS, Status

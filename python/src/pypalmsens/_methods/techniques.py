@@ -10,7 +10,17 @@ from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 from pydantic import Field, field_validator
 from typing_extensions import override
 
-from .._helpers import single_to_double
+from .._converters import (
+    cr_enum_to_string,
+    cr_string_to_enum,
+    pr_enum_to_string,
+    pr_string_to_enum,
+    single_to_double,
+)
+from .._types import (
+    AllowedCurrentRanges,
+    AllowedPotentialRanges,
+)
 from . import mixins
 from .base import BaseTechnique
 from .levels import (
@@ -20,14 +30,6 @@ from .levels import (
 from .mask import (
     get_extra_value_mask,
     set_extra_value_mask,
-)
-from .types import (
-    AllowedCurrentRanges,
-    AllowedPotentialRanges,
-    cr_enum_to_string,
-    cr_string_to_enum,
-    pr_enum_to_string,
-    pr_string_to_enum,
 )
 
 

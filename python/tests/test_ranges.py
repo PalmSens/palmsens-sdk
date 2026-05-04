@@ -4,7 +4,7 @@ import pytest
 from PalmSens import AutoRanging, AutoRangingPotential
 
 import pypalmsens as ps
-from pypalmsens._methods import (
+from pypalmsens._converters import (
     cr_string_to_enum,
     pr_string_to_enum,
 )

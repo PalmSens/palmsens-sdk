@@ -6,20 +6,22 @@ import PalmSens
 from pydantic import Field
 from typing_extensions import Generator, override
 
-from .._helpers import single_to_double
+from .._converters import (
+    cr_enum_to_string,
+    cr_string_to_enum,
+    pr_enum_to_string,
+    pr_string_to_enum,
+    single_to_double,
+)
+from .._types import (
+    AllowedCurrentRanges,
+    AllowedPotentialRanges,
+)
 from .base import BaseSettings
 from .base_model import BaseModel
 from .levels import (
     convert_bools_to_int,
     convert_int_to_bools,
-)
-from .types import (
-    AllowedCurrentRanges,
-    AllowedPotentialRanges,
-    cr_enum_to_string,
-    cr_string_to_enum,
-    pr_enum_to_string,
-    pr_string_to_enum,
 )
 
 

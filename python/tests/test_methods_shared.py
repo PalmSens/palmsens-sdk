@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from pypalmsens._methods.levels import (
-    convert_bools_to_int,
-    convert_int_to_bools,
-)
-from pypalmsens._methods.types import (
+from pypalmsens._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
     pr_enum_to_string,
     pr_string_to_enum,
+)
+from pypalmsens._methods.levels import (
+    convert_bools_to_int,
+    convert_int_to_bools,
 )
 
 

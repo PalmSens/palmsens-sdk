@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any, overload
 import numpy as np
 from typing_extensions import override
 
-from .._methods import cr_enum_to_string, pr_enum_to_string
-from ..settings import (
+from .._converters import cr_enum_to_string, pr_enum_to_string
+from .._types import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
     AllowedReadingStatus,

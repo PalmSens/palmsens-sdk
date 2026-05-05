@@ -257,9 +257,7 @@ class InstrumentManagerAsync(CapabilitiesMixin):
 
     @override
     def __repr__(self):
-        return (
-            f'{self.__class__.__name__}({self.instrument.id}, connected={self.is_connected()})'
-        )
+        return f'{type(self).__name__}({self.instrument.id}, connected={self.is_connected()})'
 
     async def __aenter__(self):
         if not self.is_connected():
@@ -314,6 +312,7 @@ class InstrumentManagerAsync(CapabilitiesMixin):
 
     def status(self) -> Status:
         """Get status."""
+        self.ensure_connection()
         return Status(
             self._comm.get_Status(),
             device_state=str(self._comm.get_State()),  # type:ignore

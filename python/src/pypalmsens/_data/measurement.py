@@ -58,7 +58,7 @@ class Measurement:
 
     @override
     def __repr__(self):
-        return f'{self.__class__.__name__}(title={self.title}, timestamp={self.timestamp}, device={self.device.type})'
+        return f'{type(self).__name__}(title={self.title}, timestamp={self.timestamp}, device={self.device.type})'
 
     @property
     def title(self) -> str:

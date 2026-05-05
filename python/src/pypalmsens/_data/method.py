@@ -15,7 +15,7 @@ class Method:
         self._psmethod = psmethod
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(name={self.name!r}, id={self.id!r})'
+        return f'{type(self).__name__}(name={self.name!r}, id={self.id!r})'
 
     @property
     def id(self) -> str:

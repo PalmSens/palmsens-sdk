@@ -82,7 +82,7 @@ class DataSet(Mapping[str, DataArray]):
 
     @override
     def __repr__(self):
-        return f'{self.__class__.__name__}({list(self.keys())})'
+        return f'{type(self).__name__}({list(self.keys())})'
 
     @override
     def __getitem__(self, key: str):

@@ -31,7 +31,7 @@ class Peak:
         y_unit = self.y_unit
 
         return (
-            f'{self.__class__.__name__}('
+            f'{type(self).__name__}('
             f'x={self.x:g} {x_unit}, '
             f'y={self.y:g} {y_unit}, '
             f'y_offset={self.y_offset:g} {y_unit}, '

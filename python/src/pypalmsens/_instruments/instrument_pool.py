@@ -4,7 +4,7 @@ import asyncio
 from typing import TYPE_CHECKING, Any, Sequence
 
 from .._methods import BaseTechnique
-from .callback import Callback, CallbackEIS
+from .callback import Callback, CallbackEIS, Status
 from .instrument import Instrument
 from .instrument_manager_async import InstrumentManagerAsync
 from .instrument_pool_async import InstrumentPoolAsync
@@ -39,7 +39,7 @@ class InstrumentPool:
 
     def __repr__(self):
         ids = [manager.instrument.id for manager in self.managers]
-        return f'{self.__class__.__name__}({ids}, connected={self.is_connected()})'
+        return f'{type(self).__name__}({ids}, connected={self.is_connected()})'
 
     def __len__(self):
         return len(self.managers)
@@ -102,6 +102,16 @@ class InstrumentPool:
             Instance of an instrument manager.
         """
         self._loop.run_until_complete(self._async.add(manager))
+
+    def status(self) -> list[Status]:
+        """Return status for all managers in pool.
+
+        Returns
+        -------
+        list[Status]
+            List of status objects.
+        """
+        return [manager.status() for manager in self]
 
     def measure(
         self,

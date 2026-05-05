@@ -8,6 +8,8 @@ import PalmSens
 from PalmSens.Comm import StatusEventArgs
 from typing_extensions import override
 
+from pypalmsens._converters import single_to_double
+
 from .._types import AllowedDeviceState
 from ..data import CurrentReading, DataArray, DataSet, PotentialReading
 
@@ -128,6 +130,14 @@ class Status:
             {'current': str(self.current_reading), 'potential': str(self.potential_reading)}
         )
 
+    @override
+    def __repr__(self):
+        return (
+            f'{type(self).__name__}('
+            f'device_state={self.device_state!r}, '
+            f'potential={self.potential})'
+        )
+
     @property
     def pretreatment_phase(
         self,
@@ -138,7 +148,7 @@ class Status:
     @property
     def potential(self) -> float:
         """Potential in V"""
-        return self._status.PotentialReading.Value
+        return single_to_double(self._status.PotentialReading.Value)
 
     @property
     def potential_reading(self) -> PotentialReading:
@@ -148,7 +158,7 @@ class Status:
     @property
     def current(self) -> float:
         """Current value in µA."""
-        return self._status.CurrentReading.Value
+        return single_to_double(self._status.CurrentReading.Value)
 
     @property
     def current_reading(self) -> CurrentReading:
@@ -158,7 +168,7 @@ class Status:
     @property
     def current_we2(self) -> float:
         """Current WE2 value."""
-        return self._status.CurrentReadingWE2.Value
+        return single_to_double(self._status.CurrentReadingWE2.Value)
 
     @property
     def current_reading_we2(self) -> CurrentReading:
@@ -168,22 +178,22 @@ class Status:
     @property
     def aux_input(self) -> float:
         """Raw aux input."""
-        return self._status.AuxInput
+        return single_to_double(self._status.AuxInput)
 
     @property
     def aux_input_as_voltage(self) -> float:
         """Aux input as V."""
-        return self._status.GetAuxInputAsVoltage()
+        return single_to_double(self._status.GetAuxInputAsVoltage())
 
     @property
     def corrected_bipot_current(self) -> float:
         """Corrected bipot current in the current range."""
-        return self._status.GetCorrectedBipotCurrent()
+        return single_to_double(self._status.GetCorrectedBipotCurrent())
 
     @property
     def noise(self) -> float:
         """Measured"""
-        return self._status.Noise
+        return single_to_double(self._status.Noise)
 
 
 class CallbackStatus(Protocol):

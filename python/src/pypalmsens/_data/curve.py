@@ -29,7 +29,7 @@ class Curve:
 
     @override
     def __repr__(self):
-        return f'{self.__class__.__name__}(title={self.title}, n_points={self.n_points})'
+        return f'{type(self).__name__}(title={self.title}, n_points={self.n_points})'
 
     def copy(self) -> Curve:
         """Return a copy of this curve."""

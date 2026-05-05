@@ -44,10 +44,7 @@ class DataArray(Sequence[float]):
     @override
     def __repr__(self):
         return (
-            f'{self.__class__.__name__}('
-            f'name={self.name}, '
-            f'unit={self.unit}, '
-            f'n_points={len(self)})'
+            f'{type(self).__name__}(name={self.name}, unit={self.unit}, n_points={len(self)})'
         )
 
     @overload

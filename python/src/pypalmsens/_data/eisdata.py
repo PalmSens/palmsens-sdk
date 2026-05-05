@@ -37,7 +37,7 @@ class EISData:
             data.append(f'n_subscans={self.n_subscans}')
 
         s = ', '.join(data)
-        return f'{self.__class__.__name__}({s})'
+        return f'{type(self).__name__}({s})'
 
     @property
     def title(self) -> str:

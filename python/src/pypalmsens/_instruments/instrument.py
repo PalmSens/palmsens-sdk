@@ -139,7 +139,7 @@ class Instrument:
             )
         )
 
-        return f'{self.__class__.__name__}({args})'
+        return f'{type(self).__name__}({args})'
 
     @property
     def baudrate(self) -> int:

@@ -44,7 +44,7 @@ The following methods are supported in PyPalmSens:
 - [Galvanostatic Impedance Spectroscopy][pypalmsens.GalvanostaticImpedanceSpectroscopy]
 - [Fast Galvanostatic Impedance Spectroscopy][pypalmsens.FastGalvanostaticImpedanceSpectroscopy]
 - [Mixed Mode][pypalmsens.mixed_mode.MixedMode]
-- [Method Script][pypalmsens.MethodScript]
+- [Method Script][pypalmsens.MethodScript] | [Stages][pypalmsens.stages]
 
 ## Setting up a method
 

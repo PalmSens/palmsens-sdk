@@ -8,10 +8,8 @@ import PalmSens
 from PalmSens.Comm import StatusEventArgs
 from typing_extensions import override
 
+from .._types import AllowedDeviceState
 from ..data import CurrentReading, DataArray, DataSet, PotentialReading
-from ..settings import (
-    AllowedDeviceState,
-)
 
 
 @dataclass(slots=True)

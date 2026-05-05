@@ -60,8 +60,8 @@ nav = [
     "reference/instrument.md",
     "reference/instrument_async.md",
     "reference/fitting.md",
-    "reference/methods/enums.md",
     "reference/models.md",
+    "reference/types.md",
   ]},
   { "Changelog" = "releases/index.md" },
   { "Source code ↗" = "https://github.com/palmsens/palmsens_sdk" },
@@ -104,7 +104,7 @@ link = "https://www.palmsens.com/contact"
 
 [project.validation]
 unresolved_references = false
-invalid_links = false  # https://github.com/zensical/zensical/issues/603
+invalid_links = true  # https://github.com/zensical/zensical/issues/603
 
 [project.theme]
 name = "material"

@@ -19,7 +19,7 @@ This is a small bugfix release
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.8.0">pypalmsens-1.8.0</a>
 | :fontawesome-solid-calendar: 2026-03-26
 
-This is a relatively small release that adds support for the PalmSens Nexus. This release also updates the PalmSens dotnet libraries to 5.13.011, which brings a bunch of small fixes and improvements.
+This is a relatively small release that adds support for the PalmSens Nexus on Windows. This release also updates the PalmSens dotnet libraries to 5.13.011, which brings a bunch of small fixes and improvements.
 
 ### Nexus support
 

@@ -1,4 +1,4 @@
-"""This module contains the public api for classes representing measurement data."""
+"""Define classes for interfacing with measurement data."""
 
 from __future__ import annotations
 
@@ -9,7 +9,6 @@ from ._data.dataset import DataSet
 from ._data.eisdata import EISData
 from ._data.measurement import DeviceInfo, Measurement
 from ._data.peak import Peak
-from ._data.types import AllowedArrayTypes
 from ._instruments.callback import (
     CallbackData,
     CallbackDataEIS,
@@ -17,7 +16,6 @@ from ._instruments.callback import (
 )
 
 __all__ = [
-    'AllowedArrayTypes',
     'CallbackData',
     'CallbackDataEIS',
     'CurrentArray',

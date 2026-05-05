@@ -51,6 +51,7 @@ AllowedArrayTypes = Literal[
     'debugtext',
     'Generic',
 ]
+"""Possible array types."""
 
 
 def array_enum_to_str(enum: DataArrayType | int) -> AllowedArrayTypes:

@@ -1,6 +1,9 @@
-"""This module contains the public api for classes for method configuration."""
+"""Define classes for method configuration."""
 
 from __future__ import annotations
+
+import warnings
+from typing import Any
 
 from ._methods.levels import (
     ELevel,
@@ -26,22 +29,29 @@ from ._methods.settings import (
     Pretreatment,
     VersusOCP,
 )
-from ._types import (
-    AllowedCurrentRanges,
-    AllowedDeviceState,
-    AllowedMethods,
-    AllowedPotentialRanges,
-    AllowedReadingStatus,
-    AllowedTimingStatus,
-)
+
+
+def __getattr__(name: str) -> Any:
+    if name in (
+        'AllowedCurrentRanges',
+        'AllowedDeviceState',
+        'AllowedMethods',
+        'AllowedPotentialRanges',
+        'AllowedReadingStatus',
+        'AllowedTimingStatus',
+    ):
+        warnings.warn(
+            f"{name!r} has moved, use 'pypalmsens.types.{name}'",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        from . import types
+
+        return getattr(types, name)
+    return globals()[name]
+
 
 __all__ = [
-    'AllowedCurrentRanges',
-    'AllowedMethods',
-    'AllowedPotentialRanges',
-    'AllowedTimingStatus',
-    'AllowedReadingStatus',
-    'AllowedDeviceState',
     'BiPot',
     'BiPotCurrentRange',
     'ChargeLimits',

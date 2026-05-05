@@ -40,3 +40,12 @@ For example to set up a CP experiment:
 
     Many configuration settings are shared between methods, like the current ranges above
     or _versus OCP_ or _material_ settings. These are listed in [Settings](../methods/settings.md).
+
+## Classes
+
+- [`pypalmsens.corrosion.Potentiostatic`][pypalmsens.corrosion.Potentiostatic]
+- [`pypalmsens.corrosion.CorrosionPotential`][pypalmsens.corrosion.CorrosionPotential]
+- [`pypalmsens.corrosion.CyclicPolarization`][pypalmsens.corrosion.CyclicPolarization]
+- [`pypalmsens.corrosion.LinearPolarization`][pypalmsens.corrosion.LinearPolarization]
+- [`pypalmsens.corrosion.Galvanostatic`][pypalmsens.corrosion.Galvanostatic]
+- [`pypalmsens.corrosion.ImpedanceSpectroscopy`][pypalmsens.corrosion.ImpedanceSpectroscopy]

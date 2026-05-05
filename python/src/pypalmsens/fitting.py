@@ -1,4 +1,4 @@
-"""This module contains the public api for circuit fitting."""
+"""Define classes for circuit fitting."""
 
 from __future__ import annotations
 

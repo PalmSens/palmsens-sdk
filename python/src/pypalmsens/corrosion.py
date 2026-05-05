@@ -1,3 +1,5 @@
+"""Define classes for corrosion measurements."""
+
 from __future__ import annotations
 
 from ._methods.corrosion import (

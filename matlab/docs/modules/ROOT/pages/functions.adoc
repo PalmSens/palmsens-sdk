@@ -1,0 +1,18 @@
+# Functions
+:page-aliases: reference.adoc
+
+This is a list of the functions and classes that are available in the Matlab SDK.
+
+These wrap some of the classes and functions in the xref:dotnet:ROOT:techniques.adoc[.NET SDK] and make them accessible through Matlab.
+Look at the function docstrings for usage and parameter descriptions.
+
+- *<<_getconnecteddevices>>*: Returns a list of connected PalmSens and Emstat devices.
+- *<<_loadmethod>>*: Loads a method from a `.psmethod` file.
+- *<<_loadpssdk>>*: Loads the PalmSens Matlab SDK.
+- *<<_loadsession>>*: Load (a) measurement(s) from a `.pssession` file.
+- *<<_multichannelmeasurementloophelper>>*: Waits for multiple instruments to finish their measurements
+- *<<_newmethod>>*: Creates a new method.
+- *<<_openconnection>>*: Opens a connection to a device.
+- *<<_savemethod>>*: Saves a method.
+
+include::_functions.adoc[]

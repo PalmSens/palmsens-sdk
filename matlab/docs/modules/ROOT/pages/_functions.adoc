@@ -1,0 +1,193 @@
+[#_getconnecteddevices]
+## `GetConnectedDevices`
+
+[sidebar]
+`function` *`[deviceList] = GetConnectedDevices(bluetooth, serial)`*
+
+Return a list of all the connected comm devices.
+
+[discrete]
+### Input arguments
+
+- *`bluetooth`* (`bool`) – If true, enable scanning for bluetooth.
+  Setting bluetooth to false is faster. By default scanning for bluetooth
+  is disabled.
+- *`serial`* (`bool`) – If true, enable scanning for serial
+  devices. By default scanning for serial devices is disabled.
+
+[discrete]
+### Output arguments
+
+- *`deviceList`* (`List objects<PalmSens.Devices.Device>`) – list containing the connected devices
+
+[#_loadmethod]
+## `LoadMethod`
+
+[sidebar]
+`function` *`[method] = LoadMethod(methodPath)`*
+
+Load a method object from the specified path
+
+[discrete]
+### Input arguments
+
+- *`methodPath`* (`string`) – The path to the psmethod file this function will load.
+  The full path is required, i.e. `'C:\Data\LinearSweep.psmethod'`.
+
+[discrete]
+### Output arguments
+
+- *`method`* (`None`) – The method object containing its parameters. When the method file
+  cannot be loaded it will return false.
+
+[#_loadpssdk]
+## `LoadPSSDK`
+
+[sidebar]
+`function` *`[PSSDK] = LoadPSSDK()`*
+
+LoadPSSDK loads the PalmSens SDK and adds it to the workspace
+
+[discrete]
+### Output arguments
+
+- *`PSSDK`* (`None`) – The matlab assembly handle of the PalmSens SDK. If the SDK was
+  not loaded successfully this output is set to false.
+
+[#_loadsession]
+## `LoadSession`
+
+[sidebar]
+`function` *`[measurements] = LoadSession(sessionPath)`*
+
+Load a session from the specified path.
+
+Measurements are converted to structs to improve their compatability with
+Matlab. Each measurement is stored in its own struct and contains a
+character array with its name (`.name`), measurement technique (`.type`) and
+date (`.date`).
+
+The measurement data is stored in one or more curves.
+Generally a measurement has one curve struct, except for
+Cyclic Voltammetry and Impedance Spectroscopy. Cyclic Voltammetry measurements
+have one curve per scan and Impedance Spectroscopy measurements have
+three curves, 1. Nyquist plot (Zre vs Zim), 2. Bode plot (freq vs Z) and
+3. Bode plot (freq vs -phase). Each curve struct contains an array of x and y
+data (`.xData` & `.yData`) and their respective units (`.xUnit` & `.yUnit`).
+
+[discrete]
+### Input arguments
+
+- *`sessionPath`* (`string`) – The path to the pssession file this function will load.
+  The full path is required, i.e. `'C:\Data\LinearSweep.pssession'`.
+
+[discrete]
+### Input arguments
+
+- *`measurements`* (`None`) – a struct containing one or more measurements.
+  When the session file cannot be loaded it will return false.
+
+[#_multichannelmeasurementloophelper]
+## `MultiChannelMeasurementLoopHelper`
+
+[sidebar]
+`function` *`[busy, comms] = MultiChannelMeasurementLoopHelper(comms)`*
+
+Wait for multiple instruments to finish their measurements.
+
+[discrete]
+### Input arguments
+
+- *`comms`* (`None`) – List of channels
+
+[discrete]
+### Output arguments
+
+- *`busy`* (`bool`) – Return true if any channel is busy
+- *`comms`* (`int`) – List of channels
+
+[#_newmethod]
+## `NewMethod`
+
+[sidebar]
+`function` *`[method] = NewMethod(technique)`*
+
+Instantiate a new method object of the specified technique.
+
+The techniques are defined by their technique number:
+
+1.  Linear Sweep Voltammetry
+2.  Cyclic Voltammetry
+3.  AC Voltammetry
+4.  Differential Pulse Voltammetry
+5.  Square Wave Voltammetry
+6.  Normal Pulse Voltammetry
+7.  Chronoamperometry
+8.  MultiStep Amperometry
+9.  Fast Amperometry
+10. Pulsed Amperometric Detection
+11. Multiple Pulse Amperometry
+12. Open Circuit Potentiometry
+13. Chronopotentiometry
+14. MultiStep Potentiometry
+15. Chronopotentiometric Stripping
+16. Impedance Spectroscopy (PS3, PS4, ESPico, Sensit and ES4 only)
+17. Fast cyclic voltammetry
+18. Galvanostatic Impedance Spectroscopy (PS4 and ES4 only)
+
+[discrete]
+### Input arguments
+
+- *`technique`* (`int`) – a number specifying the index of one of the following techniques
+
+[discrete]
+### Input arguments
+
+- *`method`* (`PalmSens.Method`) – The respective technique's method object containing its parameters.
+  If an invalid method is specified this will return false.
+
+[#_openconnection]
+## `OpenConnection`
+
+[sidebar]
+`function` *`[comm] = OpenConnection(device)`*
+
+Opens a connection with the specified device and returns its CommManager.
+
+If a device's connection has allready been opened it will
+be closed (for exmpale in PSTrace or Multitrace).
+
+Note that connecting multiple devices at once may result in unexpected behaviour.
+
+[discrete]
+### Input arguments
+
+- *`device`* (`None`) – The device to open a connection with.
+
+[discrete]
+### Output arguments
+
+- *`comm`* (`None`) – CommManager object that is used to communicate with the device.
+  When to the device cannot be openened it will return false.
+
+[#_savemethod]
+## `SaveMethod`
+
+[sidebar]
+`function` *`[success] = SaveMethod(method, path, PSSDK)`*
+
+SaveMethod save a method object to a specified path
+
+[discrete]
+### Input arguments
+
+- *`method`* (`PalmSens.Method`) – A method object
+- *`path`* (`string`) – the full path (including filename) where the method file must be
+  saved. A full path is required, i.e. `'C:\Data\LinearSweep.psmethod'`.
+- *`PSSDK`* (`None`) – Handle to the PalmSens Matlab SDK library.
+  This can be obtained using the LoadPSSDK funtion.
+
+[discrete]
+### Output arguments
+
+- *`success`* (`bool`) – True if the method was successfully saved.

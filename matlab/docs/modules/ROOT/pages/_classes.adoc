@@ -1,0 +1,586 @@
+[#_equivalentcircuitfit]
+## `EquivalentCircuitFit`
+Fits the equivalent circuit specified with the
+CDC descriptor code. Optional settings are fixing
+the value of a parameter, setting the min/max bounds
+for a parameter, specifying the frequency range to fit,
+limitting the number of iterations, delta error term or
+delta parameter term
+
+*Properties*
+
+- *`Parameters`* – Model parameters
+
+*Methods*
+
+- *<<_equivalentcircuitfit-equivalentcircuitfit>>* – Construct an instance of this class
+- *<<_equivalentcircuitfit-setfitoptions>>* – Set fitting options for the minimization algorithm
+- *<<_equivalentcircuitfit-setfitrange>>* – Set the frequency range to fit the circuit over.
+- *<<_equivalentcircuitfit-fitcircuit>>* – Fits the equivalent circuit and returns the fit
+
+[#_equivalentcircuitfit-equivalentcircuitfit]
+### `EquivalentCircuitFit`
+
+[sidebar]
+`function` *`[self] = EquivalentCircuitFit(measurement, cdc)`*
+
+Construct an instance of this class
+
+*Input arguments*
+
+- *`measurement`* (`PalmSens.Measurement`) – A reference to the .NET measurement object
+- *`cdc`* (`string`) – The circuit design in the CDC format are required
+
+[#_equivalentcircuitfit-setfitoptions]
+### `SetFitOptions`
+
+[sidebar]
+`function` *`SetFitOptions(MaxIterations, MinDeltaError, MinParameterStepSize)`*
+
+Set fitting options for the minimization algorithm
+
+*Input arguments*
+
+- *`MaxIterations`* (`int`) –
+  Maximum number of iterations.
+  Minimization terminates once it reaches this number of steps (default = 500).
+- *`MinDeltaError`* (`float`) –
+  Minimum convergence error.
+  Minimization converges if the residual (squared difference)
+      falls below this value (default = 1e-9).
+- *`MinParameterStepSize`* (`float`) –
+  Minimum convergence step.
+  Minimization converges if the difference in parameter values
+      falls below this value (default = 1e-12).
+
+[#_equivalentcircuitfit-setfitrange]
+### `SetFitRange`
+
+[sidebar]
+`function` *`SetFitRange(MinHz, MaxHz)`*
+
+Set the frequency range to fit the circuit over.
+
+*Input arguments*
+
+- *`MinHz`* (`float`) –
+  Minimum fitting frequency in Hz.
+- *`MaxHz`* (`float`) –
+  Maximum fitting frequency in Hz."""
+
+[#_equivalentcircuitfit-fitcircuit]
+### `FitCircuit`
+
+[sidebar]
+`function` *`[result] = FitCircuit()`*
+
+Fits the equivalent circuit and returns the fit
+
+*Output arguments*
+
+- *`result`* (`struct`) –
+Struct containing results from minimization.
+
+[#_measurement]
+## `Measurement`
+The measurement class contains the functions for starting, stopping
+and storing the data from a measurement.
+
+This class requires the connected PalmSens or Emstat device's
+`commManager` to given in its contstructor (i.e. `m = Measurement(CommManager)`)
+Setting the properties `dispInCommandWindow` or `dispInPlot` to true
+respectively displays the results of the measurement in the
+Command Window or a Plot in Figure 1.
+
+**Recording devices idle status**:
+Idle status package can be recorded with the `GetIdleData` function
+(i.e. `m.GetIdleData(`)). Recording of idle status can be stopped with
+the StopIdleData function (i.e. `m.StopIdleData()`)
+
+**Measuring**:
+Use the `New` function in combination with a method in your workspace
+to start a new measurement (i.e. `m.New(method)`). The measurement can
+be aborted at any time with the Abort function (i.e. `m.Abort()`). The
+results of the measurement are stored in the measurement properties
+and can be retreived after the measurement has been completed
+(`measurement = m.measurement`).
+
+**Measurements**:
+Measurements are converted to structs to improve their compatability with
+Matlab. Each measurement is stored in its own struct and contains a
+character array with its name (`.name`), measurement technique (`.type`) and
+date (`.date`).
+
+The measurement data is stored in one or more curves.
+Generally a measurement has one curve struct, except for
+Cyclic Voltammetry and Impedance Spectroscopy. Cyclic Voltammetry measurements
+have one curve per scan and Impedance Spectroscopy measurements have
+three curves, 1. Nyquist plot (Zre vs Zim), 2. Bode plot (freq vs Z) and
+3. Bode plot (freq vs -phase). Each curve struct contains an array of x and y
+data (`.xData` & `.yData`) and their respective units (`.xUnit` & `.yUnit`).
+
+*Properties*
+
+- *`comm`* – Object containing handle for communication with device
+- *`measurement`* – The result of the measurement converted for use in matlab
+- *`dispInCommandWindow`* – When set to true the latest readings from the device are displayed in the command window.
+- *`dispInPlot`* – When set to true the latest readings from the device are displayed in a new Figure.
+- *`inMeasurement`* – Bool indicating whether the device is measuring
+- *`abortMeasurement`* – Used by class to indicate when abort function has been used
+- *`x_array`* – Array of idle potential readings
+- *`x_unit`* – Unit of the data recorded in the x_array.
+- *`y_array`* – Array of idle potential readings
+- *`y_unit`* – Unit of the data recorded in the y_array.
+- *`previousMeasurement`* – The result of the measurement as a .Net object
+- *`curves`* – List of .Net curve objects returned by the PalmSens Matlab SDK
+
+*Methods*
+
+- *<<_measurement-measurement>>* – Initialize measurement class.
+- *<<_measurement-stopidledata>>* – Stop recording idle data.
+- *<<_measurement-new>>* – Start a new measurement.
+- *<<_measurement-abort>>* – Abort a running measurement.
+- *<<_measurement-getidledata>>* – Record idle data.
+- *<<_measurement-idlelistener>>* – Idle listener callback.
+- *<<_measurement-beginlistener>>* – Start listener for measurement data.
+- *<<_measurement-endlistener>>* – Stop listener for measurement data.
+- *<<_measurement-datalistener>>* – Measurement listener callback.
+- *<<_measurement-curvelistener>>* – Curve listener callback.
+- *<<_measurement-processmeasurement>>* – Process previous measurement.
+- *<<_measurement-plotdatarealtime>>* – Plot data in real time.
+- *<<_measurement-processeismeasurement>>* – Process previous EIS measurement.
+- *<<_measurement-ploteisdatarealtime>>* – Plot EIS data in real time.
+
+[#_measurement-measurement]
+### `Measurement`
+
+[sidebar]
+`function` *`[self] = Measurement(commManager)`*
+
+Initialize measurement class.
+
+*Input arguments*
+
+- *`commManager`* (`PalmSens.Comm.CommManager`) –
+  The comm manager manages the connection with the device.
+
+[#_measurement-stopidledata]
+### `StopIdleData`
+
+[sidebar]
+`function` *`StopIdleData()`*
+
+Stop recording idle data.
+
+[#_measurement-new]
+### `New`
+
+[sidebar]
+`function` *`New(method)`*
+
+Start a new measurement.
+
+*Input arguments*
+
+- *`method`* (`PalmSens.Method`) –
+Method class with technique parameters.
+
+[#_measurement-abort]
+### `Abort`
+
+[sidebar]
+`function` *`Abort()`*
+
+Abort a running measurement.
+
+[#_measurement-getidledata]
+### `GetIdleData`
+
+[sidebar]
+`function` *`GetIdleData()`*
+
+Record idle data.
+
+This will be stopped once a measurement starts.
+Recording idle data will clear any previously recorded data.
+
+[#_measurement-idlelistener]
+### `idleListener`
+
+[sidebar]
+`function` *`idleListener(eventArgs)`*
+
+Idle listener callback.
+
+[#_measurement-beginlistener]
+### `beginListener`
+
+[sidebar]
+`function` *`beginListener(eventArgs)`*
+
+Start listener for measurement data.
+
+[#_measurement-endlistener]
+### `endListener`
+
+[sidebar]
+`function` *`endListener()`*
+
+Stop listener for measurement data.
+
+[#_measurement-datalistener]
+### `dataListener`
+
+[sidebar]
+`function` *`dataListener(eventArgs)`*
+
+Measurement listener callback.
+
+[#_measurement-curvelistener]
+### `curveListener`
+
+[sidebar]
+`function` *`curveListener(eventArgs)`*
+
+Curve listener callback.
+
+[#_measurement-processmeasurement]
+### `processMeasurement`
+
+[sidebar]
+`function` *`[measurement] = processMeasurement()`*
+
+Process previous measurement.
+
+Updates the `.measurement` attribute with Measurement data.
+
+[#_measurement-plotdatarealtime]
+### `plotDataRealtime`
+
+[sidebar]
+`function` *`plotDataRealtime()`*
+
+Plot data in real time.
+
+[#_measurement-processeismeasurement]
+### `processEISMeasurement`
+
+[sidebar]
+`function` *`[measurement] = processEISMeasurement()`*
+
+Process previous EIS measurement.
+
+Updates the `.measurement` attribute with EIS data and curves.
+
+[#_measurement-ploteisdatarealtime]
+### `plotEISDataRealtime`
+
+[sidebar]
+`function` *`plotEISDataRealtime()`*
+
+Plot EIS data in real time.
+
+[#_multichannelmeasurement]
+## `MultiChannelMeasurement`
+The measurement class contains the functions for starting, stopping
+and storing the data from a measurement.
+
+This class requires the connected PalmSens or Emstat device's
+commManager to given in its contstructor (i.e. `m = Measurement(CommManager)`)
+Setting the properties `dispInCommandWindow` or `dispInPlot` to true
+respectively displays the results of the measurement in the
+Command Window or a Plot in the specified figure.
+
+**Recording devices idle status**:
+Idle status package can be recorded with the `GetIdleData` function
+(i.e. `m.GetIdleData(`)). Recording of idle status can be stopped with
+the StopIdleData function (i.e. `m.StopIdleData()`)
+
+**Measuring**:
+Use the New function in combination with a method in your workspace
+to start a new measurement (i.e. `m.New(method)`). The measurement can
+be aborted at any time with the Abort function (i.e. `m.Abort()`). The
+results of the measurement are stored in the measurement properties
+and can be retreived after the measurement has been completed
+(`measurement = m.measurement`).
+
+**Measurements**:
+Measurements are converted to structs to improve their compatability with
+Matlab. Each measurement is stored in its own struct and contains a
+character array with its name (`.name`), measurement technique (`.type`) and
+date (`.date`).
+
+The measurement data is stored in one or more curves.
+Generally a measurement has one curve struct, except for
+Cyclic Voltammetry and Impedance Spectroscopy. Cyclic Voltammetry measurements
+have one curve per scan and Impedance Spectroscopy measurements have
+three curves, 1. Nyquist plot (Zre vs Zim), 2. Bode plot (freq vs Z) and
+3. Bode plot (freq vs -phase). Each curve struct contains an array of x and y
+data (`.xData` & `.yData`) and their respective units (`.xUnit` & `.yUnit`).
+
+*Properties*
+
+- *`comm`* – Object containing handle for communication with device
+- *`measurement`* – The result of the measurement converted for use in matlab
+- *`dispInCommandWindow`* – When set to true the latest readings from the device are displayed in the command window.
+- *`dispInPlot`* – When set to true the latest readings from the device are displayed in a new Figure.
+- *`figureForPlot`* – Figure to display data in
+- *`plotAxes`* – axes to plot data in
+- *`line`* – animated line to plot the data in
+- *`nPoints`* – number of points in plot
+- *`inMeasurement`* – Bool indicating whether the device is measuring
+- *`abortMeasurement`* – Used by class to indicate when abort function has been used
+- *`x_array`* – Array of idle potential readings
+- *`x_unit`* – Unit of the data recorded in the x_array.
+- *`y_array`* – Array of idle potential readings
+- *`y_unit`* – Unit of the data recorded in the y_array.
+- *`previousMeasurement`* – The result of the measurement as a .Net object
+- *`curves`* – List of .Net curve objects returned by the PalmSens Matlab SDK
+
+*Methods*
+
+- *<<_multichannelmeasurement-multichannelmeasurement>>* – Initialize measurement class.
+- *<<_multichannelmeasurement-abort>>* – Abort a running measurement.
+- *<<_multichannelmeasurement-stopidledata>>* – Stop recording idle data.
+- *<<_multichannelmeasurement-getidledata>>* – Record idle data.
+- *<<_multichannelmeasurement-new>>* – Start a new measurement.
+- *<<_multichannelmeasurement-idlelistener>>* – Idle listener callback.
+- *<<_multichannelmeasurement-beginlistener>>* – Start listener for measurement data.
+- *<<_multichannelmeasurement-endlistener>>* – Stop listener for measurement data.
+- *<<_multichannelmeasurement-datalistener>>* – Measurement listener callback.
+- *<<_multichannelmeasurement-curvelistener>>* – Curve listener callback.
+- *<<_multichannelmeasurement-processeismeasurement>>* – Process previous EIS measurement.
+- *<<_multichannelmeasurement-plotdatarealtime>>* – Plot data in real time.
+- *<<_multichannelmeasurement-processmeasurement>>* – Process previous measurement.
+- *<<_multichannelmeasurement-ploteisdatarealtime>>* – Plot EIS data in real time.
+
+[#_multichannelmeasurement-multichannelmeasurement]
+### `MultiChannelMeasurement`
+
+[sidebar]
+`function` *`[self] = MultiChannelMeasurement(commManager, figure)`*
+
+Initialize measurement class.
+
+*Input arguments*
+
+- *`commManager`* (`PalmSens.Comm.CommManager`) –
+  The comm manager manages the connection with the device.
+- *`figure`* (`int`) –
+  Figure to display data in
+
+[#_multichannelmeasurement-abort]
+### `Abort`
+
+[sidebar]
+`function` *`Abort()`*
+
+Abort a running measurement.
+
+[#_multichannelmeasurement-stopidledata]
+### `StopIdleData`
+
+[sidebar]
+`function` *`StopIdleData()`*
+
+Stop recording idle data.
+
+[#_multichannelmeasurement-getidledata]
+### `GetIdleData`
+
+[sidebar]
+`function` *`GetIdleData()`*
+
+Record idle data.
+
+This will be stopped once a measurement starts.
+Recording idle data will clear any previously recorded data.
+
+[#_multichannelmeasurement-new]
+### `New`
+
+[sidebar]
+`function` *`New(method)`*
+
+Start a new measurement.
+
+*Input arguments*
+
+- *`method`* (`PalmSens.Method`) –
+Method class with technique parameters.
+
+[#_multichannelmeasurement-idlelistener]
+### `idleListener`
+
+[sidebar]
+`function` *`idleListener(eventArgs)`*
+
+Idle listener callback.
+
+[#_multichannelmeasurement-beginlistener]
+### `beginListener`
+
+[sidebar]
+`function` *`beginListener(eventArgs)`*
+
+Start listener for measurement data.
+
+[#_multichannelmeasurement-endlistener]
+### `endListener`
+
+[sidebar]
+`function` *`endListener()`*
+
+Stop listener for measurement data.
+
+[#_multichannelmeasurement-datalistener]
+### `dataListener`
+
+[sidebar]
+`function` *`dataListener(eventArgs)`*
+
+Measurement listener callback.
+
+[#_multichannelmeasurement-curvelistener]
+### `curveListener`
+
+[sidebar]
+`function` *`curveListener(eventArgs)`*
+
+Curve listener callback.
+
+[#_multichannelmeasurement-processeismeasurement]
+### `processEISMeasurement`
+
+[sidebar]
+`function` *`[measurement] = processEISMeasurement()`*
+
+Process previous EIS measurement.
+
+Updates the `.measurement` attribute with EIS data and curves.
+
+[#_multichannelmeasurement-plotdatarealtime]
+### `plotDataRealtime`
+
+[sidebar]
+`function` *`plotDataRealtime()`*
+
+Plot data in real time.
+
+[#_multichannelmeasurement-processmeasurement]
+### `processMeasurement`
+
+[sidebar]
+`function` *`[measurement] = processMeasurement()`*
+
+Process previous measurement.
+
+Updates the `.measurement` attribute with Measurement data. m = self.previousMeasurement;
+
+[#_multichannelmeasurement-ploteisdatarealtime]
+### `plotEISDataRealtime`
+
+[sidebar]
+`function` *`plotEISDataRealtime()`*
+
+Plot EIS data in real time.
+
+[#_measurementgui]
+## `MeasurementGUI`
+The measurement class contains the functions for starting, stopping
+and storing the data from a measurements
+This is a version of the `Measurement` class that can be used with a Matlab GUIDE user interface.
+
+*Properties*
+
+- *`comm`* – Object containing handle for communication with device
+- *`inMeasurement`* – Bool indicating whether the device is measuring
+
+*Methods*
+
+- *<<_measurementgui-measurementgui>>* – Initialize measurement class.
+- *<<_measurementgui-new>>* – Start a new measurement.
+- *<<_measurementgui-stopidledata>>* – Stop recording idle data.
+- *<<_measurementgui-getidledata>>* – Record idle data.
+- *<<_measurementgui-abort>>* – Abort a running measurement.
+- *<<_measurementgui-startdatalistener>>* – Start listener for measurement data.
+- *<<_measurementgui-stopdatalistener>>* – Stop listener for measurement data.
+
+[#_measurementgui-measurementgui]
+### `MeasurementGUI`
+
+[sidebar]
+`function` *`[self] = MeasurementGUI(hObject, commManager, beginMeasurmentCallback, endMeasurementCallback, receiveCurveCallback, receiveStatusCallback)`*
+
+Initialize measurement class.
+
+*Input arguments*
+
+- *`hObject`* (`Handle`) –
+  Handle to btnConnect
+- *`commManager`* (`PalmSens.Comm.CommManager`) –
+  The comm manager manages the connection with the device.
+- *`beginMeasurmentCallback`* (`Callable`) –
+  Callback for begin measurement event.
+- *`endMeasurementCallback`* (`Callable`) –
+  Callback for end measurement event.
+- *`receiveCurveCallback`* (`Callable`) –
+  Callback for curve event.
+- *`receiveStatusCallback`* (`Callable`) –
+  Callback for status update event.
+
+[#_measurementgui-new]
+### `New`
+
+[sidebar]
+`function` *`New(method)`*
+
+Start a new measurement.
+
+*Input arguments*
+
+- *`method`* (`PalmSens.Method`) –
+Method class with technique parameters.
+
+[#_measurementgui-stopidledata]
+### `StopIdleData`
+
+[sidebar]
+`function` *`StopIdleData()`*
+
+Stop recording idle data.
+
+[#_measurementgui-getidledata]
+### `GetIdleData`
+
+[sidebar]
+`function` *`GetIdleData()`*
+
+Record idle data.
+
+This will be stopped once a measurement starts.
+Recording idle data will clear any previously recorded data.
+
+[#_measurementgui-abort]
+### `Abort`
+
+[sidebar]
+`function` *`Abort()`*
+
+Abort a running measurement.
+
+[#_measurementgui-startdatalistener]
+### `StartDataListener`
+
+[sidebar]
+`function` *`StartDataListener(hObject, dataCallback)`*
+
+Start listener for measurement data.
+
+[#_measurementgui-stopdatalistener]
+### `StopDataListener`
+
+[sidebar]
+`function` *`StopDataListener()`*
+
+Stop listener for measurement data.

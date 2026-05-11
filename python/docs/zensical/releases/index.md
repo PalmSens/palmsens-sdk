@@ -1,5 +1,6 @@
 # Changelog
 
+\\ Latest
 ## PyPalmSens 1.8.1
 
 > :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.8.1">python-1.8.1</a>

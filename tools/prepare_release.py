@@ -65,7 +65,6 @@ class SDK:
 
 
 def commit_file(path: str | Path, message: str):
-    path = str(Path)
     sp.check_call(['git', 'add', f'{path}'])
     sp.check_call(['git', 'commit', '-m', message])
 

@@ -182,3 +182,24 @@ if __name__ == '__main__':
     push_branch_and_create_pr(
         sdk=sdk, body=gh_body, release_branch=release_branch, base_branch=base_branch
     )
+
+    if sdk.name == 'python':
+        title = 'PyPalmSens'
+        notesopt = '--notes-file changelog-python.md'
+    else:
+        title = sdk.name
+        notesopt = '--generate-notes'
+
+    print(f"""
+Push additional changes to branch:
+
+    git push origin release-{sdk.name}-{sdk.version}
+
+Merge PR:
+
+    gh merge $PR --squash
+
+Make new release:
+
+    gh release create {sdk.tag} --draft --title "{title} {sdk.version}" {notesopt}
+""")

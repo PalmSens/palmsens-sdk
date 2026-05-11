@@ -84,7 +84,7 @@ def update_python(new_tag: str):
 
     lines = index_path.read_text().splitlines()
 
-    index = lines.index('// latest')
+    index = lines.index('<!-- Latest-->')
 
     if new_version in lines[index + 1]:
         print('Tag already exists, skipping')

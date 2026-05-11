@@ -15,7 +15,7 @@ for exe in ('gh', 'bump-my-version'):
 ROOT = Path(__file__).parents[1]
 
 PR_BODY = """\
-This PR prepares for a new release of the {sdk} SDK.
+This PR prepares for a new release of the {sdk.name} SDK.
 
 - branch: `release-{sdk.tag}`
 - version: `{sdk.version}`

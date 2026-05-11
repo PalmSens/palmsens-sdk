@@ -20,6 +20,10 @@ This PR prepares for a new release of the {sdk} SDK.
 - branch: `release-{sdk.tag}`
 - version: `{sdk.version}`
 - sdk: `{sdk.name}`
+
+# Release notes
+
+{body}
 """
 
 
@@ -121,14 +125,14 @@ def prepare_release_branch(sdk: SDK, base_branch: str) -> str:
     return release_branch
 
 
-def push_branch_and_create_pr(sdk: SDK, base_branch: str, release_branch: str):
+def push_branch_and_create_pr(sdk: SDK, *, body: str, base_branch: str, release_branch: str):
     sp.run(
         ['git', 'push', 'origin', f'HEAD:{release_branch}', '--force'],
         check=True,
     )
     print(f'Pushed {release_branch}')
 
-    body = PR_BODY.format(version=sdk.version, sdk=sdk, tag=sdk.tag)
+    body = PR_BODY.format(version=sdk.version, body=body, sdk=sdk, tag=sdk.tag)
     print(body)
 
     sp.run(
@@ -169,8 +173,12 @@ if __name__ == '__main__':
     if sdk.name == 'python':
         import changelog
 
-        changelog.update_python(new_tag=sdk.tag)
+        gh_body = changelog.update_python(new_tag=sdk.tag)
+    else:
+        gh_body = '-'
 
     bump_version_to(sdk)
 
-    push_branch_and_create_pr(sdk=sdk, release_branch=release_branch, base_branch=base_branch)
+    push_branch_and_create_pr(
+        sdk=sdk, body=gh_body, release_branch=release_branch, base_branch=base_branch
+    )

@@ -48,7 +48,7 @@ def get_changes_since_tag(tag: str):
     return '\n'.join(out)
 
 
-def update_python(new_tag: str):
+def update_python(new_tag: str) -> str:
     previous_tag = get_latest_tag()
     changelog = get_changes_since_tag(previous_tag)
 
@@ -105,6 +105,8 @@ def update_python(new_tag: str):
 
     with open('changelog-python.md', 'w') as f:
         f.write(gh_releases)
+
+    return gh_releases
 
 
 if __name__ == '__main__':

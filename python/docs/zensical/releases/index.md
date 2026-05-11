@@ -1,13 +1,13 @@
 # Changelog
 
 <!-- Latest-->
-# PyPalmSens 1.9.0
+## PyPalmSens 1.9.0
 
 > :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.9.0">python-1.9.0</a>
-- :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.9.0">pypalmsens-1.9.0</a>
-- :fontawesome-solid-calendar: 2026-05-11
+| :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.9.0">pypalmsens-1.9.0</a>
+| :fontawesome-solid-calendar: 2026-05-11
 
-## Corrosion methods
+### Corrosion methods
 
 This release adds support for corrosion methods to PyPalmSens. This is mostly a compatibilitey update, so that corrosion data can be read into PyPalmSens. Functionally these methods are exactly the same as the corresponding regular classes. See the [documentation](https://dev.palmsens.com/python/latest/_attachments/reference/corrosion/) for more information.
 
@@ -18,7 +18,7 @@ This release adds support for corrosion methods to PyPalmSens. This is mostly a 
 - `pypalmsens.corrosion.Potentiostatic`
 - `pypalmsens.corrosion.ElectrochemicalImpedanceSpectroscopy`
 
-## Capabilities
+### Capabilities
 
 You can now retrieve instrument capabilities using [`InstrumentManager.capabilities`](https://dev.palmsens.com/python/latest/_attachments/reference/instrument/#pypalmsens.InstrumentManager.capabilities).
 This provides information on device features, firmware versions, supported current and potential ranges, and other information.
@@ -33,7 +33,7 @@ This provides information on device features, firmware versions, supported curre
 Capabilities(device_type='EmStat4LR', firmware_version=1.5, ...)
 ```
 
-## Estimated duration
+### Estimated duration
 
 Get the estimated measurement duration using [`InstrumentManager.get_estimated_duration()`](https://dev.palmsens.com/python/latest/_attachments/reference/instrument/#pypalmsens.InstrumentManager.get_estimated_duration):
 
@@ -47,7 +47,7 @@ Get the estimated measurement duration using [`InstrumentManager.get_estimated_d
 2.099
 ```
 
-## Mixed Mode API changes
+### Mixed Mode API changes
 
 This release makes a few changes to the API for Mixed Mode.
 
@@ -65,7 +65,7 @@ See https://dev.palmsens.com/python/latest/_attachments/reference/methods/mixed_
 
 The old paths now emit `DeprecationWarnings`. They will be removed in a later version.
 
-## What's changed
+### What's changed
 
 - Add wrappers for corrosion methods ([#341](https://github.com/PalmSens/PalmSens_SDK/pull/341))
 - Move `get_estimated_duration` to instrument manager ([#342](https://github.com/PalmSens/PalmSens_SDK/pull/342))

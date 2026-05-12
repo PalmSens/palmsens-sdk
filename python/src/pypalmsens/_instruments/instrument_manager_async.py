@@ -329,6 +329,19 @@ class InstrumentManagerAsync(CapabilitiesMixin):
         async with self._lock():
             await create_future(self._comm.SetCellOnAsync(cell_on))
 
+    async def is_cell_on(self) -> bool:
+        """Get cell status.
+
+        Returns
+        -------
+        cell_on : bool
+            Return true if the cell is on
+        """
+        async with self._lock():
+            cell_on: bool = await create_future(self._comm.GetCellOnAsync())
+
+        return cell_on
+
     async def read_current(self) -> float:
         """Read the current in µA.
 

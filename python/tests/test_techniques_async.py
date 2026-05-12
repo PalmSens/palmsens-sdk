@@ -37,6 +37,16 @@ def test_status_async(manager):
 
 @pytest.mark.instrument
 @pytest.mark.asyncio
+async def test_cell_on(manager):
+    assert not await manager.is_cell_on()
+    await manager.set_cell(True)
+    assert await manager.is_cell_on()
+    await manager.set_cell(False)
+    assert not await manager.is_cell_on()
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
 async def test_read_current(manager):
     await manager.set_cell(True)
 

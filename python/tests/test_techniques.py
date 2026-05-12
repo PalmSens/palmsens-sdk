@@ -37,8 +37,19 @@ def test_status(manager):
 
 
 @pytest.mark.instrument
-def test_read_current(manager):
+def test_cell_on(manager):
+    assert not manager.is_cell_on()
     manager.set_cell(True)
+    assert manager.is_cell_on()
+    manager.set_cell(False)
+    assert not manager.is_cell_on()
+
+
+@pytest.mark.instrument
+def test_read_current(manager):
+    assert not manager.is_cell_on()
+    manager.set_cell(True)
+    assert manager.is_cell_on()
 
     manager.set_current_range('1uA')
     val1 = manager.read_current()
@@ -53,6 +64,7 @@ def test_read_current(manager):
     assert cr2 == '10uA'
 
     manager.set_cell(False)
+    assert not manager.is_cell_on()
 
 
 @pytest.mark.instrument

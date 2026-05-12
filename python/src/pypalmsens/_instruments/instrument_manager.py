@@ -197,6 +197,17 @@ class InstrumentManager(CapabilitiesMixin):
         with self._lock():
             self._comm.CellOn = cell_on
 
+    def is_cell_on(self) -> bool:
+        """Get cell status.
+
+        Returns
+        -------
+        cell_on : bool
+            Return true if the cell is on
+        """
+        with self._lock():
+            return self._comm.CellOn
+
     def read_current(self) -> float:
         """Read the current in µA.
 

@@ -68,7 +68,7 @@ async def test_pool_async(apool):
     assert len(apool.managers) == n
     assert manager in apool.managers
 
-    assert len(pool.status()) == len(apool)
+    assert len(apool.status()) == len(apool)
 
 
 @pytest.mark.instrument

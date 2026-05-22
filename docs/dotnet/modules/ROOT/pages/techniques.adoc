@@ -1209,18 +1209,16 @@ This example shows how to create a method to measure sequentially on channels 1,
 
 [,csharp]
 ----
-method = new AmperometricDetection();  <1>
+method = new AmperometricDetection();
+method.MuxMethod = MuxMethod.Sequentially;  <1>
 
-method.MuxMethod = MuxMethod.Sequentially;  <2>
-
-// Measure sequentially on channel 1, 3 and 5
-method.UseMuxChannel = new bool[] {  <3>
-    true, true, false, false, false, false, false, true
+method.UseMuxChannel = new bool[] {  <2>
+    true, false, true, false, true, false, false, false  <3>
 };
 ----
-<1> Create a new chronoamperometry method with the default settings
-<2> Set sequential mux method
-<3> Create an array of booleans indicating on which channels you would like to measure
+<1> Set sequential mux method
+<2> Create an array of booleans indicating on which channels you would like to measure
+<3> Measure sequentially on channel 1, 3 and 5
 
 For a 16 channel mux you can create a bool array for 16 channels.
 
@@ -1232,18 +1230,16 @@ For example, it is possible to alternatingly measure on channels 1 through 4 but
 
 [,csharp]
 ----
-method = new AmperometricDetection();  <1>
+method = new AmperometricDetection();
+method.MuxMethod = MuxMethod.Alternatingly;  <1>
 
-method.MuxMethod = MuxMethod.Alternatingly;  <2>
-
-// Measure sequentially on channel 1, 2, and 3
-method.UseMuxChannel = new bool[] {  <3>
-    true, true, true, false, false, false, false, false
+method.UseMuxChannel = new bool[] {  <2>
+    true, true, true, false, false, false, false, false  <3>
 };
 ----
-<1> Create a new chronoamperometry method with the default settings
-<2> Set alternating mux method
-<3> Create an array of booleans indicating on which channels you would like to measure
+<1> Set alternating mux method
+<2> Create an array of booleans indicating on which channels you would like to measure
+<3> Measure alternatingly on channel 1, 2, and 3
 
 The code above will perform a measurement on the first two and last channels of an 8-channel multiplexer.
 For a 16-channel multiplexer you would need to define a boolean array with 16 members.

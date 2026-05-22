@@ -48,7 +48,7 @@ def __getattr__(name: str) -> Any:
         from . import types
 
         return getattr(types, name)
-    return globals()[name]
+    raise AttributeError(f'module {__name__!r} has no attribute {name!r}')
 
 
 __all__ = [

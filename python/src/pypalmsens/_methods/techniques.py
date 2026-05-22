@@ -19,7 +19,9 @@ from .._converters import (
 )
 from .._types import (
     AllowedCurrentRanges,
+    AllowedFrequencyTypes,
     AllowedPotentialRanges,
+    AllowedScanTypes,
 )
 from . import mixins
 from .base import BaseTechnique
@@ -1728,12 +1730,12 @@ class ElectrochemicalImpedanceSpectroscopy(
     id: Literal['eis'] = 'eis'
     """Unique method identifier."""
 
-    _SCAN_TYPES: tuple[Literal['potential', 'time', 'fixed'], ...] = (
+    _SCAN_TYPES: tuple[AllowedScanTypes, ...] = (
         'potential',
         'time',
         'fixed',
     )
-    _FREQ_TYPES: tuple[Literal['fixed', 'scan'], ...] = ('fixed', 'scan')
+    _FREQ_TYPES: tuple[AllowedFrequencyTypes, ...] = ('fixed', 'scan')
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -1751,7 +1753,7 @@ class ElectrochemicalImpedanceSpectroscopy(
     (RMS). In many applications, a value of 0.010 V (RMS) is used.
     """
 
-    frequency_type: Literal['fixed', 'scan'] = 'scan'
+    frequency_type: AllowedFrequencyTypes = 'scan'
     """Whether to measure a single frequency or scan over a range of frequencies.
 
     Possible values: 'scan', 'fixed'.
@@ -1779,7 +1781,7 @@ class ElectrochemicalImpedanceSpectroscopy(
     including both end points.
     """
 
-    scan_type: Literal['potential', 'time', 'fixed'] = 'fixed'
+    scan_type: AllowedScanTypes = 'fixed'
     """Whether a single or multiple frequency scans are performed.
 
     Possible values: 'potential', 'time', 'fixed'.

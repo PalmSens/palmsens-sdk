@@ -98,3 +98,10 @@ AllowedPotentialRanges = Literal[
 
 See the device documentation or query the instrument manager
 for supported potential ranges."""
+
+
+AllowedScanTypes = Literal['potential', 'time', 'fixed']
+"""Possible scan types."""
+
+AllowedFrequencyTypes = Literal['fixed', 'scan']
+"""Possibl frequency types."""

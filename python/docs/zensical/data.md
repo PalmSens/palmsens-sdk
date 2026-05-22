@@ -426,9 +426,9 @@ The EISData object can be queried for metadata:
 >>> eis.title
 'FixedPotential at 71 freqs [2]'
 >>> eis.scan_type
-'Fixed'
+'fixed'
 >>> eis.frequency_type
-'Scan'
+'scan'
 >>> eis.n_points
 5
 >>> eis.n_frequencies

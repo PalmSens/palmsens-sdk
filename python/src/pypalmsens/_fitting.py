@@ -444,11 +444,11 @@ class CircuitModel:
         result : FitResult
             Returns dataclass with fit results. Can also be accessed via `.last_result`.
         """
-        if not data.frequency_type == 'Scan':
+        if not data.frequency_type == 'scan':
             raise ValueError(
                 f'Fit only supports EIS scans at a fixed potential, got {data.frequency_type=}.'
             )
-        if not data.scan_type == 'Fixed':
+        if not data.scan_type == 'fixed':
             raise ValueError(
                 f'Fit only supports EIS scans at a fixed potential, got {data.scan_type=}.'
             )

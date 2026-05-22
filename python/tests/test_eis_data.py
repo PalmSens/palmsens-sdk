@@ -22,8 +22,8 @@ def test_eis_data(eis_simple):
     assert not eis.has_subscans
     assert eis.n_subscans == 0
 
-    assert eis.scan_type == 'Fixed'
-    assert eis.frequency_type == 'Scan'
+    assert eis.scan_type == 'fixed'
+    assert eis.frequency_type == 'scan'
     assert eis.n_points == 5
     assert eis.n_frequencies == 5
 
@@ -55,8 +55,8 @@ def test_eis_data_mux_subscans(eis_mux_subscans):
     assert eis.has_subscans
     assert eis.n_subscans == 4
 
-    assert eis.scan_type == 'PGScan'
-    assert eis.frequency_type == 'Scan'
+    assert eis.scan_type == 'potential'
+    assert eis.frequency_type == 'scan'
     assert eis.n_points == 20
     assert eis.n_frequencies == 5
 

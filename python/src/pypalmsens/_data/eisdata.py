@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, final
 from typing_extensions import override
 
 from .._converters import cr_enum_to_string
-from .._types import AllowedCurrentRanges
+from .._types import AllowedCurrentRanges, AllowedFrequencyTypes, AllowedScanTypes
 from .data_array import DataArray
 from .dataset import DataSet
 
@@ -45,14 +45,16 @@ class EISData:
         return self._pseis.Title
 
     @property
-    def frequency_type(self) -> str:
+    def frequency_type(self) -> AllowedFrequencyTypes:
         """Frequency type."""
-        return str(self._pseis.FreqType)
+        return str(self._pseis.FreqType).lower()  # type: ignore
 
     @property
-    def scan_type(self) -> str:
+    def scan_type(self) -> AllowedScanTypes:
         """Scan type."""
-        return str(self._pseis.ScanType)
+        value = str(self._pseis.ScanType)
+        mapping = {'TimeScan': 'time', 'PGScan': 'potential', 'Fixed': 'fixed'}
+        return mapping[value]  # type: ignore
 
     @property
     def dataset(self) -> DataSet:

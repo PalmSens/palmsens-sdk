@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -120,7 +119,7 @@ def load_method_file(path: str | Path, as_method: bool = False) -> BaseTechnique
         return method.to_settings()
 
 
-def save_method_file(path: str | Path, method: Method | BaseTechnique):
+def save_method_file(path: str | Path, method: BaseTechnique):
     """Load a method file (.psmethod).
 
     Parameters
@@ -130,29 +129,7 @@ def save_method_file(path: str | Path, method: Method | BaseTechnique):
     method : Method
         Method to save
     """
-    from . import __sdk_version__
+    data = method._serialize()
 
-    if isinstance(method, BaseTechnique):
-        psmethod = method._to_psmethod()
-    elif isinstance(method, Method):
-        psmethod = method._psmethod
-    else:
-        raise ValueError(f'Unknown data type: {type(method)}')
-
-    path = Path(path)
-
-    with stream_writer(str(path), False, Encoding.Unicode) as stream:
-        PalmSens.DataFiles.MethodFile2.Save(
-            psmethod, stream.BaseStream, str(path), True, __sdk_version__
-        )
-
-
-def read_notes(path: str | Path, n_chars: int = 3000):
-    with open(path, encoding='utf16') as myfile:
-        contents = myfile.read()
-    raw_txt = contents[1:n_chars].split('\\r\\n')
-    notes_list = [x for x in raw_txt if 'NOTES=' in x]
-    notes_txt = (
-        notes_list[0].replace('%20', ' ').replace('NOTES=', '').replace('%crlf', os.linesep)
-    )
-    return notes_txt
+    with open(path, 'w') as f:
+        _ = f.write(data)

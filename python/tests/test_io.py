@@ -53,3 +53,10 @@ def test_save_load_method(tmpdir):
             assert v2 == approx(v)
         else:
             assert v == v2
+
+
+def test_serialize():
+    cv = ps.CyclicVoltammetry()
+    s = cv._serialize()
+
+    assert s.startswith('#PyPalmSens,')

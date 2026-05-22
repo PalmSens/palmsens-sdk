@@ -1,11 +1,23 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
+from contextlib import contextmanager
 from typing import Any, ClassVar
 
 import PalmSens
+from System.IO import StringWriter
 
+from .. import __version__
 from .base_model import BaseModel
+
+
+@contextmanager
+def string_writer(*args, **kwargs):
+    stream = StringWriter(*args, **kwargs)
+    try:
+        yield stream
+    finally:
+        stream.Close()
 
 
 class BaseSettings(BaseModel, metaclass=ABCMeta):
@@ -44,6 +56,15 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
         """Create new instance of appropriate technique from method ID."""
         new = cls._registry[id]
         return new()
+
+    def _serialize(self) -> str:
+        """Serialize to string that can be written to pssession file."""
+        psmethod = self._to_psmethod()
+        with string_writer() as stream:
+            PalmSens.DataFiles.MethodFile2.Serialize(
+                psmethod, stream, 'PyPalmSens', __version__
+            )
+            return str(stream)
 
     @classmethod
     def _from_psmethod(cls, psmethod: PalmSens.Method, /) -> BaseTechnique:

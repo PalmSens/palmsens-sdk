@@ -1197,21 +1197,56 @@ The enumerator property `PalmSens.Method.MuxMethod` defines the type multiplexer
 
 [,csharp]
 ----
-// Default setting, no multiplexer
-methodCA.MuxMethod = MuxMethod.None;
-methodCA.MuxMethod = MuxMethod.Alternatingly;
+method = new AmperometricDetection();
+method.MuxMethod = MuxMethod.None;
+method.MuxMethod = MuxMethod.Alternatingly;
+method.MuxMethod = MuxMethod.Sequentially;
+----
 
-methodCA.MuxMethod = MuxMethod.Sequentially;
+=== Sequential settings
 
-// The channels on which to measure are specified in a boolean array
-PalmSens.Method.UseMuxChannel: methodCA.UseMuxChannel = new bool[] {
+This example shows how to create a method to measure sequentially on channels 1, 3, and 5.
+
+[,csharp]
+----
+method = new AmperometricDetection();  <1>
+
+method.MuxMethod = MuxMethod.Sequentially;  <2>
+
+// Measure sequentially on channel 1, 3 and 5
+method.UseMuxChannel = new bool[] {  <3>
     true, true, false, false, false, false, false, true
 };
 ----
+<1> Create a new chronoamperometry method with the default settings
+<2> Set sequential mux method
+<3> Create an array of booleans indicating on which channels you would like to measure
 
-The code above will perform a measurement on the first two and last channels of an 8-channel multiplexer. For a 16-channel multiplexer you would also need to assign true or false to the last 8 channels.
+For a 16 channel mux you can create a bool array for 16 channels.
 
-Alternating multiplexer measurement can only measure on successive channels and must start with the first channel (i.e. it is possible to alternatingly measure on channels 1 through 4 but it is not possible to alternatingly measure on channel 1, 3 and 5). The multiplexer functionality is demonstrated in the PSSDKMultiplexerExample project.
+=== Alternating settings
+
+Note that only Chronoamperometry (Amperometric Detection) and (Open Circuit) Potentiometry support alternating measurements.
+Alternating multiplexer measurement can only measure on successive channels and must start with the first channel.
+For example, it is possible to alternatingly measure on channels 1 through 4 but it is not possible to alternatingly measure on channel 1, 3 and 5.
+
+[,csharp]
+----
+method = new AmperometricDetection();  <1>
+
+method.MuxMethod = MuxMethod.Alternatingly;  <2>
+
+// Measure sequentially on channel 1, 2, and 3
+method.UseMuxChannel = new bool[] {  <3>
+    true, true, true, false, false, false, false, false
+};
+----
+<1> Create a new chronoamperometry method with the default settings
+<2> Set alternating mux method
+<3> Create an array of booleans indicating on which channels you would like to measure
+
+The code above will perform a measurement on the first two and last channels of an 8-channel multiplexer.
+For a 16-channel multiplexer you would need to define a boolean array with 16 members.
 
 === Multiplexer settings
 

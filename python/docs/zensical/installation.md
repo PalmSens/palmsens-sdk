@@ -8,19 +8,19 @@ pip install pypalmsens
 
 ## Requirements (Windows)
 
-* [Python version 3.10, 3.11, 3.12 or 3.13.](https://python.org)
-* .NET Framework 4.7.2
+* [Python version 3.10 or newer](https://python.org)
+* [.NET Framework 4.7.2](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472)
 * Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the [driver installer](https://github.com/PalmSens/PalmSens_SDK/releases/download/drivers-5.12/PalmSens.Drivers.exe).
 
-!!! NOTE "Python 3.14"
+<!--!!! NOTE "Python 3.15"
 
-    Support for Python 3.14 or newer is anticipated, pending one of PyPalmSens's dependencies.
+    Support for Python 3.15 or newer is anticipated, pending one of PyPalmSens's dependencies.
 
-    See [this issue](https://github.com/PalmSens/PalmSens_SDK/issues/113) for more information.
+    See [this issue](https://github.com/PalmSens/PalmSens_SDK/issues/xxx) for more information.-->
 
 ## Requirements (Linux and MacOS)  {#req-linux}
 
-* [Python version 3.10, 3.11, 3.12 or 3.13.](https://python.org). Use your system’s package manager to install Python.
+* [Python version 3.10 or newer.](https://python.org). Use your system’s package manager to install Python.
 * .NET Runtime 9.0 or newer. This is called something like `dotnet-runtime-9.0` in your [package manager](https://learn.microsoft.com/en-us/dotnet/core/install/linux).
     * [Ubuntu](https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-install)
     * [Debian](https://learn.microsoft.com/en-us/dotnet/core/install/linux-debian)
@@ -169,7 +169,7 @@ python -m pip install -e .[develop]
 Alternatively, setting up a [virtual environment using Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html):
 
 ```powershell
-conda create -n pypalmsens python=3.13
+conda create -n pypalmsens python=3.14
 conda activate pypalmsens
 pip install pypalmsens
 ```

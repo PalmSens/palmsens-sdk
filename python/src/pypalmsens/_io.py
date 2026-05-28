@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -9,11 +10,11 @@ from System.Text import Encoding
 
 from ._data import Method
 from ._data.measurement import Measurement
-from ._methods import BaseTechnique
+from ._types import MethodType
 
 
 @contextmanager
-def stream_reader(*args, **kwargs):
+def stream_reader(*args, **kwargs) -> Generator[StreamReader]:
     sr = StreamReader(*args, **kwargs)
     try:
         yield sr
@@ -22,7 +23,7 @@ def stream_reader(*args, **kwargs):
 
 
 @contextmanager
-def stream_writer(*args, **kwargs):
+def stream_writer(*args, **kwargs) -> Generator[StreamWriter]:
     sw = StreamWriter(*args, **kwargs)
     try:
         yield sw
@@ -86,21 +87,7 @@ def save_session_file(path: str | Path, measurements: list[Measurement]):
         session.Save(stream.BaseStream, str(path))
 
 
-def load_method_file(path: str | Path, as_method: bool = False) -> BaseTechnique | Method:
-    """Load a method file (.psmethod).
-
-    Parameters
-    ----------
-    path : Path | str
-        Path to method file
-    as_method : bool
-        If True, load as method wrapper object
-
-    Returns
-    -------
-    method : Parameters
-        Return method parameters
-    """
+def _load_method_file(path: str | Path) -> Method:
     path = Path(path)
 
     with stream_reader(str(path)) as stream:
@@ -111,22 +98,34 @@ def load_method_file(path: str | Path, as_method: bool = False) -> BaseTechnique
 
     psmethod.MethodFilename = str(path.absolute())
 
-    method = Method(psmethod=psmethod)
-
-    if as_method:
-        return method
-    else:
-        return method.to_settings()
+    return Method(psmethod=psmethod)
 
 
-def save_method_file(path: str | Path, method: BaseTechnique):
+def load_method_file(path: str | Path) -> MethodType:
+    """Load a method file (.psmethod).
+
+    Parameters
+    ----------
+    path : Path | str
+        Path to method file
+
+    Returns
+    -------
+    method : MethodType
+        Return method parameters
+    """
+    method = _load_method_file(path)
+    return method.to_settings()
+
+
+def save_method_file(path: str | Path, method: MethodType):
     """Load a method file (.psmethod).
 
     Parameters
     ----------
     path : Path | str
         Path to save the method file
-    method : Method
+    method : MethodType
         Method to save
     """
     data = method._serialize()

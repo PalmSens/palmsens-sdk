@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any, Sequence
 
-from .._methods import BaseTechnique
+from .._types import MethodType
 from .callback import Callback, CallbackEIS, Status
 from .instrument import Instrument
 from .instrument_manager_async import InstrumentManagerAsync
@@ -115,7 +115,7 @@ class InstrumentPool:
 
     def measure(
         self,
-        method: BaseTechnique,
+        method: MethodType,
         callback: Sequence[Callback | CallbackEIS] | Callback | CallbackEIS | None = None,
         **kwargs,
     ) -> list[Measurement]:
@@ -134,7 +134,7 @@ class InstrumentPool:
 
         Parameters
         ----------
-        method : MethodSettings
+        method : MethodType
             Method parameters for measurement.
         callback : list[Callback] | Callback | CallbackEIS | None
             If specified, call these functions/this function on every new set of data points.

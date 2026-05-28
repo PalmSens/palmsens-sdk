@@ -6,9 +6,8 @@ from typing import TYPE_CHECKING, final
 import System
 from typing_extensions import override
 
-from pypalmsens._methods import BaseTechnique
-
 from .._fitting import FitResult
+from .._types import MethodTypeCompatible
 from .curve import Curve
 from .dataset import DataSet
 from .eisdata import EISData
@@ -115,7 +114,7 @@ class Measurement:
         return lst
 
     @property
-    def method(self) -> BaseTechnique:
+    def method(self) -> MethodTypeCompatible:
         """Method related with this Measurement.
 
         The information from the Method is used when saving Curves."""

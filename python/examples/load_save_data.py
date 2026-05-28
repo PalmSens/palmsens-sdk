@@ -1,12 +1,13 @@
-from pathlib import Path
+from __future__ import annotations
 
+from pathlib import Path
 
 import pypalmsens as ps
 
 examples_dir = Path(__file__).parent
 
 # load a method file
-method = ps.load_method_file(examples_dir / 'PSDummyCell_LSV.psmethod', as_method=True)
+method = ps.load_method_file(examples_dir / 'PSDummyCell_LSV.psmethod')
 
 # save the method file
 ps.save_method_file(examples_dir / 'PSDummyCell_LSV_copy.psmethod', method)

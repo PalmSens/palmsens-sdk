@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any, Awaitable, Protocol, Sequence
 
-from .._methods import BaseTechnique
+from .._types import MethodType, MethodTypeCompatible
 from .callback import Callback, CallbackEIS, Status
 from .instrument import Instrument
 from .instrument_manager_async import InstrumentManagerAsync
@@ -133,7 +133,7 @@ class InstrumentPoolAsync:
 
     async def measure(
         self,
-        method: BaseTechnique,
+        method: MethodType,
         callback: Sequence[Callback | CallbackEIS] | Callback | CallbackEIS | None = None,
         **kwargs,
     ) -> list[Measurement]:
@@ -152,7 +152,7 @@ class InstrumentPoolAsync:
 
         Parameters
         ----------
-        method : MethodSettings
+        method : MethodType
             Method parameters for measurement.
         callback : list[Callback] | Callback | CallbackEIS | None
             If specified, call these functions/this function on every new set of data points.
@@ -188,7 +188,7 @@ class InstrumentPoolAsync:
 
     async def _measure_hw_sync(
         self,
-        method: BaseTechnique,
+        method: MethodTypeCompatible,
         callbacks: Sequence[Callback | CallbackEIS | None] | None = None,
         **kwargs,
     ) -> list[Measurement]:
@@ -196,7 +196,7 @@ class InstrumentPoolAsync:
 
         Parameters
         ----------
-        method : MethodSettings
+        method : MethodType
             Method parameters for measurement.
         callbacks : list[Callback | CallbackEIS | None]
             List of callbacks, must match number of managers.

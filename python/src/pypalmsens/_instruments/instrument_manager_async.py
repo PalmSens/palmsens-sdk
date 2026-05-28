@@ -3,17 +3,16 @@ from __future__ import annotations
 import asyncio
 import sys
 import warnings
+from collections.abc import AsyncGenerator, Coroutine
 from contextlib import asynccontextmanager
-from typing import Any, Callable, Coroutine, Protocol
+from typing import Any, Protocol
 
 import clr
 import PalmSens
 from PalmSens import AsyncEventHandler
 from PalmSens.Comm import CommManager, MuxType
 from System.Threading.Tasks import Task
-from typing_extensions import AsyncIterator, override
-
-from pypalmsens._methods.adapters import EnergyTechniqueType, TechniqueType
+from typing_extensions import override
 
 from .._converters import (
     cr_enum_to_string,
@@ -21,11 +20,11 @@ from .._converters import (
     pr_enum_to_string,
     pr_string_to_enum,
 )
-from .._methods import BaseTechnique
 from .._types import (
     AllowedCurrentRanges,
     AllowedMethods,
     AllowedPotentialRanges,
+    MethodTypeCompatible,
 )
 from ..data import Measurement
 from .callback import Callback, CallbackEIS, CallbackStatus, Status
@@ -77,7 +76,7 @@ async def connect_async(
 
 
 async def measure_async(
-    method: BaseTechnique,
+    method: MethodTypeCompatible,
     instrument: None | Instrument = None,
     callback: Callback | CallbackEIS | None = None,
 ) -> Measurement:
@@ -113,7 +112,8 @@ async def measure_async(
 
 class HasCommProtocol(Protocol):
     _comm: CommManager
-    ensure_connection: Callable[[], None]
+
+    def ensure_connection(self) -> None: ...
 
 
 class HasCapabilities(Protocol):
@@ -190,13 +190,13 @@ class CapabilitiesMixin:
 
     def get_estimated_duration(
         self: HasCommProtocol,
-        method: PalmSens.Method | BaseTechnique,
+        method: PalmSens.Method | MethodTypeCompatible,
     ) -> float:
         """Get the estimated duration for this method.
 
         Parameters
         -----------
-        method : Method parameters
+        method : MethodType
             The method to get the estimated duration for.
 
         Returns
@@ -215,7 +215,7 @@ class CapabilitiesMixin:
 
     def validate_method(
         self: HasCommProtocol,
-        method: TechniqueType | EnergyTechniqueType,
+        method: MethodTypeCompatible,
     ):
         """Validate method.
 
@@ -223,7 +223,7 @@ class CapabilitiesMixin:
 
         Parameters
         -----------
-        method: TechniqueType
+        method: MethodType
             The method to validate.
         """
         self.ensure_connection()
@@ -272,7 +272,7 @@ class InstrumentManagerAsync(CapabilitiesMixin):
         return int(self._comm.State) == CommManager.DeviceState.Measurement
 
     @asynccontextmanager
-    async def _lock(self) -> AsyncIterator[CommManager]:
+    async def _lock(self) -> AsyncGenerator[CommManager]:
         self.ensure_connection()
 
         await create_future(self._comm.ClientConnection.Semaphore.WaitAsync())
@@ -482,7 +482,7 @@ class InstrumentManagerAsync(CapabilitiesMixin):
 
     async def measure(
         self,
-        method: TechniqueType,
+        method: MethodTypeCompatible,
         *,
         callback: Callback | CallbackEIS | None = None,
         sync_event: asyncio.Event | None = None,
@@ -491,7 +491,7 @@ class InstrumentManagerAsync(CapabilitiesMixin):
 
         Parameters
         ----------
-        method: MethodParameters
+        method: MethodType
             Method parameters for measurement
         callback: Callback, optional
             If specified, call this function on every new set of data points.

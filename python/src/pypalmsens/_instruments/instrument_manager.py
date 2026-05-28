@@ -4,14 +4,12 @@ import asyncio
 import warnings
 from contextlib import contextmanager
 from time import sleep
-from typing import Iterator
+from typing import Generator
 
 import clr
 import PalmSens
 from PalmSens.Comm import CommManager, MuxType
 from typing_extensions import override
-
-from pypalmsens._methods.adapters import EnergyTechniqueType, TechniqueType
 
 from .._converters import (
     cr_enum_to_string,
@@ -19,12 +17,10 @@ from .._converters import (
     pr_enum_to_string,
     pr_string_to_enum,
 )
-from .._methods import (
-    BaseTechnique,
-)
 from .._types import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
+    MethodTypeCompatible,
 )
 from ..data import Measurement
 from .callback import Callback, CallbackEIS, Status
@@ -72,7 +68,7 @@ def connect(
 
 
 def measure(
-    method: BaseTechnique,
+    method: MethodTypeCompatible,
     instrument: None | Instrument = None,
     callback: Callback | CallbackEIS | None = None,
 ) -> Measurement:
@@ -138,7 +134,7 @@ class InstrumentManager(CapabilitiesMixin):
         return int(self._comm.State) == CommManager.DeviceState.Measurement
 
     @contextmanager
-    def _lock(self) -> Iterator[CommManager]:
+    def _lock(self) -> Generator[CommManager]:
         self.ensure_connection()
 
         self._comm.ClientConnection.Semaphore.Wait()
@@ -307,7 +303,7 @@ class InstrumentManager(CapabilitiesMixin):
 
     def measure(
         self,
-        method: TechniqueType | EnergyTechniqueType,
+        method: MethodTypeCompatible,
         *,
         callback: Callback | CallbackEIS | None = None,
     ) -> Measurement:
@@ -315,7 +311,7 @@ class InstrumentManager(CapabilitiesMixin):
 
         Parameters
         ----------
-        method: TechniqueType
+        method: MethodType
             Method parameters for measurement
         callback: Callback, optional
             If specified, call this function on every new set of data points.
@@ -330,7 +326,7 @@ class InstrumentManager(CapabilitiesMixin):
             Finished measurement.
         """
         self.ensure_connection()
-        self.validate_method(method)  # type: ignore
+        self.validate_method(method)
 
         # note that the comm manager must be opened async so it sets the
         # correct async event handlers

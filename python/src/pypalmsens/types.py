@@ -12,6 +12,8 @@ from ._types import (
     AllowedReadingStatus,
     AllowedScanTypes,
     AllowedTimingStatus,
+    MethodType,
+    MethodTypeCompatible,
 )
 
 __all__ = [
@@ -24,4 +26,6 @@ __all__ = [
     'AllowedReadingStatus',
     'AllowedScanTypes',
     'AllowedTimingStatus',
+    'MethodType',
+    'MethodTypeCompatible',
 ]

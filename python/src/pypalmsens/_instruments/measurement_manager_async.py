@@ -10,7 +10,8 @@ from PalmSens.Comm import CommManager
 from System import EventHandler
 from System.Threading.Tasks import Task
 
-from pypalmsens._methods.adapters import EnergyTechniqueType, TechniqueType
+from pypalmsens._methods.adapters import EnergyTechniqueType
+from pypalmsens._types import MethodTypeCompatible
 
 from .._data import DataSet
 from ..data import DataArray, Measurement
@@ -133,7 +134,7 @@ class MeasurementManagerAsync:
 
     async def measure(
         self,
-        method: TechniqueType | EnergyTechniqueType,
+        method: MethodTypeCompatible,
         callback: Callback | CallbackEIS | None = None,
         sync_event: asyncio.Event | None = None,
     ) -> Measurement:
@@ -141,7 +142,7 @@ class MeasurementManagerAsync:
 
         Parameters
         ----------
-        method: TechniqueType
+        method: MethodType
             Method parameters for measurement
         callback: Callback, optional
             Gets called every time new data is added

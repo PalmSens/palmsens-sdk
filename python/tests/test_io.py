@@ -36,7 +36,7 @@ def test_save_load_method(tmpdir):
     cv = ps.CyclicVoltammetry()
     ps.save_method_file(path=path, method=cv)
 
-    method_cv2 = ps.load_method_file(path=path, as_method=True)
+    method_cv2 = ps._io._load_method_file(path=path)
 
     assert method_cv2.filename == path
 

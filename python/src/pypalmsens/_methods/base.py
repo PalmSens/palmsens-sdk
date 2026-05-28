@@ -8,6 +8,7 @@ import PalmSens
 from System.IO import StringWriter
 
 from .. import __version__
+from .._types import MethodType
 from .base_model import BaseModel
 
 
@@ -45,14 +46,14 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
         return self.model_dump()
 
     @classmethod
-    def from_dict(cls, obj: dict[str, Any]) -> BaseTechnique:
+    def from_dict(cls, obj: dict[str, Any]) -> MethodType:
         """Structure technique instance from dict.
 
         Opposite of `.to_dict()`"""
         return cls.model_validate(obj)
 
     @classmethod
-    def from_method_id(cls, id: str) -> BaseTechnique:
+    def from_method_id(cls, id: str) -> MethodType:
         """Create new instance of appropriate technique from method ID."""
         new = cls._registry[id]
         return new()
@@ -67,7 +68,7 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
             return str(stream)
 
     @classmethod
-    def _from_psmethod(cls, psmethod: PalmSens.Method, /) -> BaseTechnique:
+    def _from_psmethod(cls, psmethod: PalmSens.Method, /) -> MethodType:
         """Generate parameters from dotnet method object."""
         new = cls.from_method_id(psmethod.MethodID)
         new._update_params(psmethod)

@@ -11,6 +11,8 @@ import PalmSens
 from PalmSens.Comm import CommManager, MuxType
 from typing_extensions import override
 
+from pypalmsens._methods.adapters import EnergyTechniqueType, TechniqueType
+
 from .._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
@@ -305,7 +307,7 @@ class InstrumentManager(CapabilitiesMixin):
 
     def measure(
         self,
-        method: BaseTechnique,
+        method: TechniqueType | EnergyTechniqueType,
         *,
         callback: Callback | CallbackEIS | None = None,
     ) -> Measurement:
@@ -313,7 +315,7 @@ class InstrumentManager(CapabilitiesMixin):
 
         Parameters
         ----------
-        method: Method parameters
+        method: TechniqueType
             Method parameters for measurement
         callback: Callback, optional
             If specified, call this function on every new set of data points.
@@ -327,17 +329,14 @@ class InstrumentManager(CapabilitiesMixin):
         measurement : Measurement
             Finished measurement.
         """
-        psmethod = method._to_psmethod()
-
         self.ensure_connection()
-
-        self.validate_method(psmethod)  # type: ignore
+        self.validate_method(method)  # type: ignore
 
         # note that the comm manager must be opened async so it sets the
         # correct async event handlers
         measurement_manager = MeasurementManagerAsync(comm=self._comm)
 
-        return asyncio.run(measurement_manager.measure(psmethod, callback=callback))
+        return asyncio.run(measurement_manager.measure(method, callback=callback))
 
     def wait_digital_trigger(self, wait_for_high: bool):
         """Wait for digital trigger.

@@ -10,6 +10,8 @@ from PalmSens.Comm import CommManager
 from System import EventHandler
 from System.Threading.Tasks import Task
 
+from pypalmsens._methods.adapters import EnergyTechniqueType, TechniqueType
+
 from .._data import DataSet
 from ..data import DataArray, Measurement
 from .callback import Callback, CallbackData, CallbackDataEIS, CallbackEIS
@@ -131,7 +133,7 @@ class MeasurementManagerAsync:
 
     async def measure(
         self,
-        method: PalmSens.Method,
+        method: TechniqueType | EnergyTechniqueType,
         callback: Callback | CallbackEIS | None = None,
         sync_event: asyncio.Event | None = None,
     ) -> Measurement:
@@ -139,7 +141,7 @@ class MeasurementManagerAsync:
 
         Parameters
         ----------
-        method: MethodParameters
+        method: TechniqueType
             Method parameters for measurement
         callback: Callback, optional
             Gets called every time new data is added
@@ -150,6 +152,8 @@ class MeasurementManagerAsync:
         -------
         measurement : Measurement
         """
+        psmethod = method._to_psmethod()
+
         self.loop = asyncio.get_running_loop()
         self.begin_measurement_event = asyncio.Event()
         self.end_measurement_event = asyncio.Event()
@@ -157,9 +161,13 @@ class MeasurementManagerAsync:
         self.callback = callback
 
         with self._measurement_context():
-            await self.await_measurement(method=method, sync_event=sync_event)
+            await self.await_measurement(method=psmethod, sync_event=sync_event)
 
         assert self.last_measurement
+
+        if isinstance(method, EnergyTechniqueType):
+            self.last_measurement.Title = method._name
+
         return Measurement(psmeasurement=self.last_measurement)
 
     def begin_measurement_callback(self, sender, args) -> Task.CompletedTask:

@@ -143,7 +143,7 @@ Instrument(name='/dev/serial/by-id/usb-PalmSens_EmStat4_ES4HR20B0008-if00', inte
 
 Some devices, like the [PalmSens Nexus](https://www.palmsens.com/nexus/), can connect via ethernet over TCP/IP.
 
-Make sure your computer runnig PyPalmSens is on the same network.
+Make sure your computer running PyPalmSens is on the same network.
 
 You can use the [pypalmsens.Instrument][] class to manually set the IP address to connect to.
 The Nexus displays its IP in the display.

@@ -4,10 +4,15 @@ from typing import Annotated
 
 from pydantic import Field, TypeAdapter
 
-from . import mixed_mode, techniques
+from . import corrosion, energy, mixed_mode, techniques
 
 TechniqueType = Annotated[
-    mixed_mode.MixedMode
+    corrosion.CyclicPolarization
+    | corrosion.CorrosionPotential
+    | corrosion.Galvanostatic
+    | corrosion.LinearPolarization
+    | corrosion.Potentiostatic
+    | mixed_mode.MixedMode
     | techniques.ACVoltammetry
     | techniques.ChronoAmperometry
     | techniques.ChronoCoulometry
@@ -34,4 +39,7 @@ TechniqueType = Annotated[
     Field(discriminator='id'),
 ]
 
+EnergyTechniqueType = energy.experimental_BatteryCycling
+
 technique_adapter = TypeAdapter(TechniqueType)
+energy_technique_adapter = TypeAdapter(EnergyTechniqueType)

@@ -52,6 +52,10 @@ nav = [
       "reference/corrosion/corrosion_potential.md",
       "reference/corrosion/impedance_spectroscopy.md",
   ]},
+  { "Techniques (energy)" = [
+      "reference/energy/index.md",
+      "reference/energy/battery_cycling.md",
+  ]},
   { "Technique settings" = "reference/methods/settings.md" },
   { "Reference" = [
     "reference/index.md",
@@ -104,7 +108,6 @@ link = "https://www.palmsens.com/contact"
 
 [project.validation]
 unresolved_references = false
-invalid_links = true  # https://github.com/zensical/zensical/issues/603
 
 [project.theme]
 name = "material"

@@ -13,6 +13,8 @@ from PalmSens.Comm import CommManager, MuxType
 from System.Threading.Tasks import Task
 from typing_extensions import AsyncIterator, override
 
+from pypalmsens._methods.adapters import EnergyTechniqueType, TechniqueType
+
 from .._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
@@ -213,7 +215,7 @@ class CapabilitiesMixin:
 
     def validate_method(
         self: HasCommProtocol,
-        method: PalmSens.Method | BaseTechnique,
+        method: TechniqueType | EnergyTechniqueType,
     ):
         """Validate method.
 
@@ -221,17 +223,15 @@ class CapabilitiesMixin:
 
         Parameters
         -----------
-        method : Method parameters
+        method: TechniqueType
             The method to validate.
         """
         self.ensure_connection()
 
         capabilities = self._comm.Capabilities
 
-        if not isinstance(method, PalmSens.Method):
-            method = method._to_psmethod()
-
-        errors = method.Validate(capabilities)
+        psmethod = method._to_psmethod()
+        errors = psmethod.Validate(capabilities)
 
         if any(error.IsFatal for error in errors):
             message = '\n'.join([error.Message for error in errors])
@@ -482,7 +482,7 @@ class InstrumentManagerAsync(CapabilitiesMixin):
 
     async def measure(
         self,
-        method: BaseTechnique,
+        method: TechniqueType,
         *,
         callback: Callback | CallbackEIS | None = None,
         sync_event: asyncio.Event | None = None,
@@ -503,16 +503,13 @@ class InstrumentManagerAsync(CapabilitiesMixin):
             Event for hardware synchronization. Do not use directly.
             Instead, initiate hardware sync via `InstrumentPoolAsync.measure()`.
         """
-        psmethod = method._to_psmethod()
-
         self.ensure_connection()
-
-        self.validate_method(psmethod)  # type: ignore
+        self.validate_method(method)  # type: ignore
 
         measurement_manager = MeasurementManagerAsync(comm=self._comm)
 
         return await measurement_manager.measure(
-            psmethod, callback=callback, sync_event=sync_event
+            method, callback=callback, sync_event=sync_event
         )
 
     def _initiate_hardware_sync_follower_channel(

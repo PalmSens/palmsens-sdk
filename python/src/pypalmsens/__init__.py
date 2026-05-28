@@ -19,6 +19,7 @@ __version__ = '1.9.0'
 from . import (
     corrosion,
     data,
+    energy,
     fitting,
     mixed_mode,  # deprecated, use stages
     settings,
@@ -70,6 +71,7 @@ __all__ = [
     'corrosion',
     'settings',
     'data',
+    'energy',
     'fitting',
     'mixed_mode',
     'connect',

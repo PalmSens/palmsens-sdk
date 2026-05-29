@@ -86,7 +86,7 @@ For more information, see [Methods](methods.md).
 
 ## Mixed Mode
 
-This example shows how to set up a [Mixed Mode][pypalmsens.mixed_mode.MixedMode] measurement for a typicial charge / discharge cycle of a common Lithium battery.
+This example shows how to set up a [Mixed Mode][pypalmsens.MixedMode] measurement for a typicial charge / discharge cycle of a common Lithium battery.
 Note that the example has a reduced number of cycles and maximum run time.
 
 ```python title="mixed_mode.py"

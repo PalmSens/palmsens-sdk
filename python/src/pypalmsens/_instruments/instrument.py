@@ -105,19 +105,14 @@ class Instrument:
         hostname : str
             Hostname or IP to connect to.
         port : str
-            Port to connect to.
+            Port to connect to (default: Nexus default port).
 
         Returns
         -------
         instrument : Instrument
             Instrument dataclass
         """
-        ipaddr = System.Net.IPAddress.Parse(hostname)
-
-        endpoint = System.Net.IPEndPoint(ipaddr, port)
-
-        device = PSDevices.TCPDevice(endpoint)
-
+        device = PSDevices.TCPDevice(hostname, port)
         return cls._from_device(device)
 
     @classmethod

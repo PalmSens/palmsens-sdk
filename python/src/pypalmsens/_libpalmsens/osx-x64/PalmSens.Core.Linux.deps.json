@@ -7,11 +7,12 @@
   "targets": {
     ".NETCoreApp,Version=v9.0": {},
     ".NETCoreApp,Version=v9.0/osx-x64": {
-      "PalmSens.Core.Linux/5.13.011": {
+      "PalmSens.Core.Linux/5.13.012": {
         "dependencies": {
-          "PalmSens.Core": "5.13.11",
+          "PalmSens.Core": "5.13.12",
           "System.IO.Ports": "9.0.0",
-          "PalmSens.Core.Reference": "5.13.11.0"
+          "Zeroconf": "3.7.16",
+          "PalmSens.Core.Reference": "5.13.12.0"
         },
         "runtime": {
           "PalmSens.Core.Linux.dll": {}
@@ -64,7 +65,26 @@
           }
         }
       },
-      "PalmSens.Core/5.13.11": {
+      "System.Reactive/5.0.0": {
+        "runtime": {
+          "lib/net5.0/System.Reactive.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.0.1"
+          }
+        }
+      },
+      "Zeroconf/3.7.16": {
+        "dependencies": {
+          "System.Reactive": "5.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Zeroconf.dll": {
+            "assemblyVersion": "3.7.0.0",
+            "fileVersion": "3.7.16.48459"
+          }
+        }
+      },
+      "PalmSens.Core/5.13.12": {
         "dependencies": {
           "BouncyCastle.Cryptography": "2.6.2",
           "MathNet.Numerics": "5.0.0",
@@ -76,18 +96,18 @@
           }
         }
       },
-      "PalmSens.Core.Reference/5.13.11.0": {
+      "PalmSens.Core.Reference/5.13.12.0": {
         "runtime": {
           "PalmSens.Core.dll": {
-            "assemblyVersion": "5.13.11.0",
-            "fileVersion": "5.13.11.0"
+            "assemblyVersion": "5.13.12.0",
+            "fileVersion": "5.13.12.0"
           }
         }
       }
     }
   },
   "libraries": {
-    "PalmSens.Core.Linux/5.13.011": {
+    "PalmSens.Core.Linux/5.13.012": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -134,12 +154,26 @@
       "path": "system.io.ports/9.0.0",
       "hashPath": "system.io.ports.9.0.0.nupkg.sha512"
     },
-    "PalmSens.Core/5.13.11": {
+    "System.Reactive/5.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-erBZjkQHWL9jpasCE/0qKAryzVBJFxGHVBAvgRN1bzM0q2s1S4oYREEEL0Vb+1kA/6BKb5FjUZMp5VXmy+gzkQ==",
+      "path": "system.reactive/5.0.0",
+      "hashPath": "system.reactive.5.0.0.nupkg.sha512"
+    },
+    "Zeroconf/3.7.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7NrPhT8r6a76TYVIuT0jSjLrWdwFNY0GaX1VWB6WVtI+4s3E+5Skd4IASjtEG6HFxWM4dbwPA5CpUCSFWmoYUg==",
+      "path": "zeroconf/3.7.16",
+      "hashPath": "zeroconf.3.7.16.nupkg.sha512"
+    },
+    "PalmSens.Core/5.13.12": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "PalmSens.Core.Reference/5.13.11.0": {
+    "PalmSens.Core.Reference/5.13.12.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

@@ -19,7 +19,7 @@ def new_data_callback(data):
 instruments = ps.discover()
 print(instruments)
 
-method = ps.mixed_mode.MixedMode(
+method = ps.MixedMode(
     current_range={
         'min': '1mA',  # 1 mA range
         'max': '100mA',  # 100 mA range

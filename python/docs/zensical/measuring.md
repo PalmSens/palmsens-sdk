@@ -161,11 +161,6 @@ Instrument(name='192.168.0.123', interface='tcp')
 NEXUS24C0029
 ```
 
-!!! Note "Windows only"
-
-    Connecting to a device over TCP/IP is available on Windows only.
-    See https://github.com/PalmSens/PalmSens_SDK/issues/327 for more info.
-
 ### Connection issues
 
 In some cases, devices may fail to connect via USB at seemingly random moments with the following error message:

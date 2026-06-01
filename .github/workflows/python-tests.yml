@@ -30,13 +30,13 @@ jobs:
           # 'macos-latest',
           'ubuntu-latest',
         ]
-        python-version: ['3.10', '3.13']
+        python-version: ['3.10', '3.14']
     defaults:
       run:
         working-directory: ./python
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6

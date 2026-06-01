@@ -15,6 +15,7 @@ from .base_model import BaseModel
 @contextmanager
 def string_writer(*args, **kwargs):
     stream = StringWriter(*args, **kwargs)
+    stream.NewLine = '\n'
     try:
         yield stream
     finally:

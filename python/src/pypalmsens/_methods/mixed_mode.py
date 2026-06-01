@@ -290,12 +290,12 @@ StageType = Annotated[
 
 
 class MixedMode(
-    BaseTechnique,
     mixins.CurrentRangeMixin,
     mixins.PretreatmentMixin,
     mixins.PostMeasurementMixin,
     mixins.DataProcessingMixin,
     mixins.GeneralMixin,
+    BaseTechnique,
 ):
     """Create mixed mode method parameters.
 

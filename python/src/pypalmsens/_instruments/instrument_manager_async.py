@@ -5,6 +5,7 @@ import sys
 import warnings
 from collections.abc import AsyncGenerator, Coroutine
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any, Protocol
 
 import clr
@@ -485,6 +486,7 @@ class InstrumentManagerAsync(CapabilitiesMixin):
         method: MethodTypeCompatible,
         *,
         callback: Callback | CallbackEIS | None = None,
+        stream: Path | str | None = None,
         sync_event: asyncio.Event | None = None,
     ):
         """Start measurement using given method parameters.
@@ -492,13 +494,18 @@ class InstrumentManagerAsync(CapabilitiesMixin):
         Parameters
         ----------
         method: MethodType
-            Method parameters for measurement
+            Method parameters for measurement.
         callback: Callback, optional
             If specified, call this function on every new set of data points.
             New data points are batched, and contain all points since the last
             time it was called. Each point is an instance of `ps.data.CallbackData`
-            for non-impedimetric or `ps.data.CallbackDataEIS`
+            for non-impedimetric or `ps.data.CallbackDataEIS`.
             for impedimetric measurments.
+        stream: Path | str | None
+            If defined, stream data directly to this file in JSON Lines text format
+            (https://jsonlines.org). This option is useful for long-term measurements.
+            In case of a PC crash or power outage, the most recent measurement data will
+            still be available.
         sync_event: asyncio.Event
             Event for hardware synchronization. Do not use directly.
             Instead, initiate hardware sync via `InstrumentPoolAsync.measure()`.
@@ -509,7 +516,7 @@ class InstrumentManagerAsync(CapabilitiesMixin):
         measurement_manager = MeasurementManagerAsync(comm=self._comm)
 
         return await measurement_manager.measure(
-            method, callback=callback, sync_event=sync_event
+            method, callback=callback, stream=stream, sync_event=sync_event
         )
 
     def _initiate_hardware_sync_follower_channel(

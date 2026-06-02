@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Generator
 from dataclasses import dataclass, field
-from typing import Literal, Protocol
+from typing import Any, Generator, Literal, Protocol
 
 import PalmSens
 from PalmSens.Comm import StatusEventArgs
@@ -12,6 +11,18 @@ from pypalmsens._converters import single_to_double
 
 from .._types import AllowedDeviceState
 from ..data import CurrentReading, DataArray, DataSet, PotentialReading
+
+
+@dataclass(slots=True)
+class DataRow:
+    """Data entry for a single row."""
+
+    id: int
+    """Corresponding Curve or EISData identifier."""
+    data: list[float]
+    """Flat list of data.
+
+    The corresponding metadata describe the data columns."""
 
 
 @dataclass(slots=True)
@@ -27,12 +38,15 @@ class CallbackData:
     start: int
     """Start index for the new data."""
 
+    id: int = 0
+    """Curve identifier."""
+
     @property
     def index(self) -> int:
         """Index of last point."""
         return len(self.x_array) - 1
 
-    def last_datapoint(self) -> dict[str, float]:
+    def last_datapoint(self) -> dict[str, Any]:
         """Return last measured data point."""
         return {
             'index': self.index,
@@ -50,7 +64,7 @@ class CallbackData:
         """Return last measured y value."""
         return self.y_array[-1]
 
-    def new_datapoints(self) -> Generator[dict[str, float]]:
+    def new_datapoints(self) -> Generator[dict[str, Any]]:
         """Return new data points since last callback."""
         for i in range(self.start, self.index + 1):
             yield {
@@ -58,6 +72,11 @@ class CallbackData:
                 'y': self.y_array[i],
                 'index': i,
             }
+
+    def _streaming_rows(self) -> Generator[DataRow]:
+        """Return new data points for data stream."""
+        for i in range(self.start, self.index + 1):
+            yield DataRow(id=self.id, data=[self.x_array[i], self.y_array[i]])
 
     @override
     def __str__(self):
@@ -74,23 +93,34 @@ class CallbackDataEIS:
     start: int
     """Start index for the new data."""
 
-    @property
-    def index(self) -> int:
-        """Index of last point."""
-        return self.data.n_points - 1
+    index: int
+    """Index of last point."""
+
+    id: int = 0
+    """EIS Data object id."""
 
     def last_datapoint(self) -> dict[str, float]:
         """Return last measured data point."""
-        ret = {array.name: array[-1] for array in self.data.arrays()}
+        ret = {
+            array.name: array[self.index]
+            for array in self.data.arrays()
+            if not array.is_derived
+        }
         ret['index'] = self.index
         return ret
 
     def new_datapoints(self) -> Generator[dict[str, float]]:
         """Return new data points since last callback."""
         for i in range(self.start, self.index + 1):
-            ret = {array.name: array[i] for array in self.data.arrays()}
+            ret = {array.name: array[i] for array in self.data.values() if not array.is_derived}
             ret['index'] = i
             yield ret
+
+    def _streaming_rows(self) -> Generator[DataRow]:
+        """Return new data points for data stream."""
+        for i in range(self.start, self.index + 1):
+            data = [array[i] for array in self.data.values() if not array.is_derived]
+            yield DataRow(id=self.id, data=data)
 
     @override
     def __str__(self):

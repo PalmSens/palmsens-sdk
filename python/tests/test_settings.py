@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+from typing import Any
+
+import pytest
 from PalmSens import CorrosionTechniques, Techniques
 
 import pypalmsens as ps
+from pypalmsens._methods.adapters import technique_adapter
 from pypalmsens._methods.mask import (
     get_extra_value_mask,
     set_extra_value_mask,
@@ -285,9 +289,9 @@ def test_TriggerAtEquilibrationSettings():
 
     assert new_params == params
 
-    assert any(params)
+    assert any(params.to_list())
     params.clear()
-    assert not any(params)
+    assert not any(params.to_list())
 
 
 def test_TriggerAtMeasurementSettings():
@@ -309,9 +313,9 @@ def test_TriggerAtMeasurementSettings():
 
     assert new_params == params
 
-    assert any(params)
+    assert any(params.to_list())
     params.clear()
-    assert not any(params)
+    assert not any(params.to_list())
 
 
 def test_TriggerAtDelaySettings():
@@ -335,9 +339,9 @@ def test_TriggerAtDelaySettings():
 
     assert new_params == params
 
-    assert any(params)
+    assert any(params.to_list())
     params.clear()
-    assert not any(params)
+    assert not any(params.to_list())
 
 
 def test_MultiplexerSettings():
@@ -388,7 +392,7 @@ def test_PeakSettings():
     assert new_params == params
 
 
-def test_CommonSettings():
+def test_GeneralSettings():
     obj = Techniques.CyclicVoltammetry()
 
     params = ps.settings.General(
@@ -408,6 +412,20 @@ def test_CommonSettings():
     new_params._update_params(obj)
 
     assert new_params == params
+
+
+@pytest.mark.parametrize(
+    'params,expected',
+    [
+        ({'id': 'cv', 'general': {'use_hardware_sync': True}}, True),
+        ({'id': 'cv', 'general': {'use_hardware_sync': False}}, False),
+        ({'id': 'ms', 'script': 'e\nset_channel_sync 1\n\n'}, True),
+        ({'id': 'ms', 'script': 'e\nset_channel_sync 0\n\n'}, False),
+    ],
+)
+def test_hardware_sync_flag(params: dict[str, Any], expected: bool):
+    method = technique_adapter.validate_python(params)
+    assert method._use_hardware_sync is expected
 
 
 def test_MaterialSettings():

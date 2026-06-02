@@ -41,5 +41,5 @@ TechniqueType = Annotated[
 
 EnergyTechniqueType = energy.experimental_BatteryCycling
 
-technique_adapter = TypeAdapter(TechniqueType)
-energy_technique_adapter = TypeAdapter(EnergyTechniqueType)
+technique_adapter: TypeAdapter[TechniqueType] = TypeAdapter(TechniqueType)
+energy_technique_adapter: TypeAdapter[EnergyTechniqueType] = TypeAdapter(EnergyTechniqueType)

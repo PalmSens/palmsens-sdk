@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, final
+from typing import TYPE_CHECKING, Literal, final
 
+from pydantic import TypeAdapter
+from pydantic.dataclasses import dataclass as pydantic_dataclass
 from typing_extensions import override
 
 from .._converters import cr_enum_to_string
@@ -11,6 +13,28 @@ from .dataset import DataSet
 
 if TYPE_CHECKING:
     from PalmSens.Plottables import EISData as PSEISData
+
+
+@pydantic_dataclass
+class EISDataMetadata:
+    title: str
+    """Measurement title."""
+    columns: list[str]
+    """Names for data values."""
+    units: list[str]
+    """Units for data values."""
+    quantities: list[str]
+    """Quantities for data values."""
+    n_frequencies: int
+    """Number of frequencies (per subscan)."""
+    frequency_type: AllowedFrequencyTypes
+    """Frequency type."""
+    scan_type: AllowedScanTypes
+    """Scan type."""
+    id: int
+    """EIS Data identifier."""
+    type: Literal['eis_data'] = 'eis_data'
+    """Object type."""
 
 
 @final
@@ -146,3 +170,20 @@ class EISData:
     def cdc_values(self) -> list[float]:
         """Return values for circuit description code (CDC)."""
         return list(self._pseis.CDCValues)
+
+    def metadata_json(self) -> bytes:
+        """Generate eis data metadata as json."""
+        arrays = [array for array in self.dataset.values() if not array.is_derived]
+
+        return TypeAdapter(EISDataMetadata).dump_json(
+            EISDataMetadata(
+                title=self.title,
+                columns=[array.name for array in arrays],
+                units=[array.unit for array in arrays],
+                quantities=[array.quantity for array in arrays],
+                n_frequencies=self.n_frequencies,
+                frequency_type=self.frequency_type,
+                scan_type=self.scan_type,
+                id=self._pseis.GetHashCode(),
+            )
+        )

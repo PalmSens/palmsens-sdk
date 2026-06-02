@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import warnings
 from contextlib import contextmanager
+from pathlib import Path
 from time import sleep
 from typing import Generator
 
@@ -71,6 +72,7 @@ def measure(
     method: MethodTypeCompatible,
     instrument: None | Instrument = None,
     callback: Callback | CallbackEIS | None = None,
+    stream: str | Path | None = None,
 ) -> Measurement:
     """Run measurement.
 
@@ -88,6 +90,11 @@ def measure(
         time it was called. Each point is an instance of `ps.data.CallbackData`
         for non-impedimetric or `ps.data.CallbackDataEIS`
         for impedimetric measurments.
+    stream: Path | str | None
+        If defined, stream data directly to this file in JSON Lines text format
+        (https://jsonlines.org). This option is useful for long-term measurements.
+        In case of a PC crash or power outage, the most recent measurement data will
+        still be available.
 
     Returns
     -------
@@ -95,7 +102,7 @@ def measure(
         Finished measurement.
     """
     with connect(instrument=instrument) as manager:
-        measurement = manager.measure(method, callback=callback)
+        measurement = manager.measure(method, callback=callback, stream=stream)
 
     assert measurement
 
@@ -306,6 +313,7 @@ class InstrumentManager(CapabilitiesMixin):
         method: MethodTypeCompatible,
         *,
         callback: Callback | CallbackEIS | None = None,
+        stream: Path | str | None = None,
     ) -> Measurement:
         """Start measurement using given method parameters.
 
@@ -319,6 +327,11 @@ class InstrumentManager(CapabilitiesMixin):
             time it was called. Each point is an instance of `ps.data.CallbackData`
             for non-impedimetric or  `ps.data.CallbackDataEIS`
             for impedimetric measurments.
+        stream: Path | str | None
+            If defined, stream data directly to this file in JSON Lines text format
+            (https://jsonlines.org). This option is useful for long-term measurements.
+            In case of a PC crash or power outage, the most recent measurement data will
+            still be available.
 
         Returns
         -------
@@ -332,7 +345,9 @@ class InstrumentManager(CapabilitiesMixin):
         # correct async event handlers
         measurement_manager = MeasurementManagerAsync(comm=self._comm)
 
-        return asyncio.run(measurement_manager.measure(method, callback=callback))
+        return asyncio.run(
+            measurement_manager.measure(method, callback=callback, stream=stream)
+        )
 
     def wait_digital_trigger(self, wait_for_high: bool):
         """Wait for digital trigger.

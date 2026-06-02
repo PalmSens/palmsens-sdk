@@ -59,7 +59,8 @@ class BaseStage(BaseModel, metaclass=ABCMeta):
     def _update_psmethod(self, psmethod: PalmSens.Method, /) -> PalmSens.Method:
         """Add stage to dotnet method, and update paramaters on dotnet stage."""
         stage_type = getattr(
-            PalmSens.Techniques.MixedMode.EnumMixedModeStageType, self.stage_type
+            PalmSens.Techniques.MixedMode.EnumMixedModeStageType,
+            self.stage_type,  # type:ignore
         )
         psstage = psmethod.AddStage(stage_type)
         self._update_psstage(psstage)

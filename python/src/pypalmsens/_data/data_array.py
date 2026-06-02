@@ -128,6 +128,11 @@ class DataArray(Sequence[float]):
         """OCP Value."""
         return self._psarray.OCPValue
 
+    @property
+    def is_derived(self) -> bool:
+        """Return True for derived data arrays."""
+        return self.name in ('Y', 'YRe', 'YIm', 'Cs', 'CsRe', 'CsIm')
+
 
 class CurrentArray(DataArray):
     """Array of current values in μA.

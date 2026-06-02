@@ -1,4 +1,5 @@
 import asyncio
+
 import pypalmsens as ps
 
 
@@ -6,7 +7,7 @@ async def custom_loop(manager, *, method, steps):
     measurements = []
 
     for step in steps:
-        method = method.model_copy(step)
+        method = method.model_copy(update=step)
         measurements.append(await manager.measure(method))
 
     return measurements

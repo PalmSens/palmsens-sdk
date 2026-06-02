@@ -35,12 +35,12 @@ class BaseSettings(BaseModel, metaclass=ABCMeta):
 class BaseTechnique(BaseModel, metaclass=ABCMeta):
     """Protocol to provide base methods for method classes."""
 
-    _registry: ClassVar[dict[str, type[BaseTechnique]]] = {}
+    _registry: ClassVar[dict[str, type[MethodType]]] = {}
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
         if hasattr(cls, 'id'):
-            cls._registry[cls.id] = cls
+            cls._registry[cls.id] = cls  # type: ignore
 
     def to_dict(self) -> dict[str, Any]:
         """Return the technique instance as a new key/value dictionary mapping."""
@@ -51,7 +51,7 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
         """Structure technique instance from dict.
 
         Opposite of `.to_dict()`"""
-        return cls.model_validate(obj)
+        return cls.model_validate(obj)  # type:ignore
 
     @classmethod
     def from_method_id(cls, id: str) -> MethodType:
@@ -79,6 +79,11 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
     @abstractmethod
     def _update_params(self, psmethod: PalmSens.Method, /) -> None: ...
 
+    @property
+    def _use_hardware_sync(self) -> bool:
+        """Fallback method, implemented by derived classes or mixins"""
+        return False
+
     def _update_params_nested(self, psmethod: PalmSens.Method, /) -> None:
         """Retrieve and convert dotnet method for nested field parameters."""
         for field in self.__class__.model_fields:
@@ -91,7 +96,7 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
 
     def _to_psmethod(self) -> PalmSens.Method:
         """Convert parameters to dotnet method."""
-        psmethod = PalmSens.Method.FromMethodID(self.id)
+        psmethod = PalmSens.Method.FromMethodID(self.id)  # type:ignore
 
         self._update_psmethod(psmethod)
         self._update_psmethod_nested(psmethod)

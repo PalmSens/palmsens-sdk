@@ -479,3 +479,62 @@ The measurements are started via a hardware sync trigger on channel 1.
 ```
 
 See [Hardware sync](examples.md#multichannel_hw_sync) for a practical example.
+
+## Streaming data to a file
+
+When measuring, PyPalmSens can auto-save all data directly to a file.
+
+1. Streaming data to other processes
+2. Data recovery
+3. Tracking Long-running measurements
+
+This option is especially useful for long-term measurements.
+Auto-saving all data helps with data recovery.
+In case of a PC crash or power outage, the most recent measurement data will still be available.
+
+In addition, this enables streaming the data to another process for realtime analysis, e.g. monitoring live progress outside of the measurement process.
+
+To enable streaming to a file, pass the name of the data file to the [measure][pypalmsens.measure] function
+
+```python
+import pypalmsens as ps
+
+ps.measure(ps.CyclicVoltammetry(), stream='data.jsonl')
+```
+
+This will stream data directly to the file `data.json`.
+
+Passing a file to stream to is also supported on [InstrumentManager.measure][pypalmsens.InstrumentManager.measure] and [InstrumentManagerAsync.measure][pypalmsens.InstrumentManagerAsync.measure].
+
+The data stream is implemented using the [JSON lines data format](https://jsonlines.org/), which has 3 rules:
+
+1. UTF-8 Encoding
+2. Each line is a valid JSON value
+3. Line terminator is `'\n'`
+
+This means the data can be read in any programming language with a JSON parser.
+
+!!! Note "Exporting to PSTrace"
+
+    The data format was designed specifically for PyPalmSens. If you want to analyze your data in PSTrace, make sure to save the data to `.pssession` at the end of your measurement using [pypalmsens.save_session_file][].
+
+### Data format
+
+The data are self-documenting. At the top of each file, PyPalmSens writes the Measurement metadata. This block contains the timestamp, device, method parameters, and firmware, and version information, version.
+
+For impedance measurements, the start of each EIS measurement starts with an 'EIS metadata' block. For non-impedance measurements, each curve starts with a Curve metadata block.
+
+These contain the title, column headers, units, labels, and other data metadata. The `id` field is used to link the data rows back to the curve or eis metadata.
+
+The majority of the lines will be rows of data, including an `id` field which can be used to match the corresponding curve / eis data and a `data` field containing a list of data values. The number of columns matches the `columns` / `units` / `quantities` lists in the metadata.
+
+<!--EISDataMetadata
+CurveMetadata
+MeasurementMetadata
+DataRow-->
+
+!!! Note "Feedback"
+
+    The data stream and documentation are [under development](https://github.com/PalmSens/PalmSens_SDK/issues/392), and we intend to provide tooling to read the data, as well as more options to the data stream and callback system.
+
+    We welcome your feedback! Please open an issue on the [PyPalmSens repository](https://github.com/palmsens/palmsens_sdk) for thoughts, requests, or suggestions.

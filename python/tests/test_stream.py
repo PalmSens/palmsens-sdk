@@ -80,7 +80,7 @@ def test_measure_stream_cv_multiple_scans(tmpdir):
         scanrate=5,
         # use a fixed current range
         # because Measurement seems to do a post-processing step in a different CR ?
-        current_range={'1uA'},
+        current_range='1uA',
     )
 
     _ = _test_stream(method=method, path=path)

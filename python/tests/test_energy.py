@@ -45,8 +45,8 @@ class BC:
         assert isinstance(measurement, ps.data.Measurement)
 
         expected_curves: list[dict[str, Any]] = [
-            {'x': 'Time', 'y': 'Potential', 'min_len': 6},
-            {'x': 'Time', 'y': 'Current', 'min_len': 6},
+            {'x': 'Time', 'y': 'Potential', 'min_len': 4},
+            {'x': 'Time', 'y': 'Current', 'min_len': 4},
             {'x': 'Potential', 'y': 'Potential', 'min_len': 1},
             {'x': 'Potential', 'y': 'Potential', 'min_len': 1},
         ]

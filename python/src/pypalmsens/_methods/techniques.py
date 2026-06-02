@@ -1760,7 +1760,7 @@ class ElectrochemicalImpedanceSpectroscopy(
 
     - Scan: a frequency scan is performed starting at the given `max_frequency`
         to the `min_frequency`.
-    - Fixed: a single frequency given by 'fixed_frequencya is applied for
+    - Fixed: a single frequency given by 'fixed_frequency is applied for
         the given duration or at each potential step or time interval.
     """
 
@@ -1988,8 +1988,18 @@ class GalvanostaticImpedanceSpectroscopy(
     id: Literal['gis'] = 'gis'
     """Unique method identifier."""
 
+    _SCAN_TYPES: tuple[AllowedScanTypes, ...] = (
+        'current',
+        'time',
+        'fixed',
+    )
+    _FREQ_TYPES: tuple[AllowedFrequencyTypes, ...] = ('fixed', 'scan')
+
     applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
+
+    This is the range in which the specified current values (such as `ac_current`,
+    `begin_current`, or `step_current) will be applied.
 
     See `pypalmsens.settings.AllowedCurrentRanges` for options."""
 
@@ -1997,43 +2007,162 @@ class GalvanostaticImpedanceSpectroscopy(
     """Equilibration time in s."""
 
     ac_current: float = 0.01
-    """AC current in applied current range RMS."""
+    """AC current expressed in the applied current range RMS."""
 
     dc_current: float = 0.0
-    """DC current in applied current range."""
+    """DC current expressed in the applied current range."""
 
-    min_frequency: float = 1_000
-    """Minimum frequency in Hz."""
+    frequency_type: AllowedFrequencyTypes = 'scan'
+    """Whether to measure a single frequency or scan over a range of frequencies.
 
-    max_frequency: float = 50_000
-    """Maximum frequency in Hz."""
+    Possible values: 'scan', 'fixed'.
+
+    - Scan: a frequency scan is performed starting at the given `max_frequency`
+        to the `min_frequency`.
+    - Fixed: a single frequency given by `fixed_frequency` is applied for
+        the given duration or at each potential step or time interval.
+    """
+
+    fixed_frequency: float = 1_000
+    """Fixed frequency in Hz (fixed frequency only)."""
+
+    min_frequency: float = 5.0
+    """Minimum frequency in Hz (frequency scan only)."""
+
+    max_frequency: float = 10_000
+    """Maximum frequency in Hz (frequency scan only)."""
 
     n_frequencies: int = 11
-    """Number of frequencies."""
+    """Number of frequencies (frequency scan only).
+
+    Defines the range of frequencies to apply between the `max_frequency` and
+    `min_frequency`. For example, a value of 11 will measure at 11 frequencies,
+    including both end points.
+    """
+
+    scan_type: AllowedScanTypes = 'fixed'
+    """Whether a single or multiple frequency scans are performed.
+
+    Possible values: 'current', 'time', 'fixed'.
+
+    - Fixed scan: perform a single scan (default).
+    - Time scan: scans are repeated for a specific amount of time at a specific interval.
+    - Current scan: scans are repeated over a range of current values, starting at
+        `begin_current` and ending at `end_current` with step size `step_current`.
+        At each DC current level, a single fixed frequency or frequency scan is applied.
+    """
+
+    run_time: float = 10.0
+    """Minimal run time in seconds in s (time scan only).
+
+    For example, if a frequency scan takes 18 seconds and is measured
+    at an interval of 19 seconds for a `run_time` of 40 seconds, then
+    three iterations will be performed."""
+
+    interval_time: float = 0.1
+    """The interval at which a measurement iteration should be performed in s (time scan only).
+
+    The minimum interval time between each data point (`frequency_type='fixed') or
+    between each frequency scan (`frequency_type='scan').
+    We recommend a time higher than the required time to measure the data point or perform the
+    frequency scan + overhead time. While it's possible to use a shorter time, doing so may
+    lead to incorrect impedance calculations.
+
+    If a measurement iteration takes longer than the interval time the next measurement
+    will not be triggered until after it has been completed.
+    """
+
+    begin_current: float = 0.0
+    """Current at which the scan starts expressed in the applied current range (current scan only)."""
+
+    end_current: float = 0.0
+    """Current at which the scan ends expressed in the applied current range (current scan only)."""
+
+    step_current: float = 0.01
+    """Current step size expressed in the applied current range (current scan only).
+
+    This sets the increment to be used between `begin_current` and `end_current`.
+    """
+
+    min_sampling_time: float = Field(0.5, gt=0)
+    """Minimum sampling time in s.
+
+    Each measurement point of the impedance spectrum is performed
+    during the period specified by `min_sampling_time`.
+
+    This means that the number of measured sine waves is equal to `min_sampling_time * frequency`.
+    If this value is less than 1 sine wave, the sampling is extended to `1 / frequency`.
+
+    So for a measurement at a `frequency`, at least one complete sine wave is measured.
+    Reasonable values for the sampling are in the range of 0.1 to 1 s."""
+
+    max_equilibration_time: float = 5.0
+    """Max equilibration time in s.
+
+    The EIS measurement requires a stationary state.
+    This means that before the actual measurement starts, the sine wave is
+    applied during `max_equilibration_time` only to reach the stationary state.
+
+    The maximum number of equilibration sine waves is however 5.
+
+    The minimum number of equilibration sines is set to 1, but for very
+    low frequencies, this time is limited by `max_equilibration_time`.
+
+    The maximum time to wait for stationary state is determined by the
+    value of this parameter. A reasonable value might be 5 seconds.
+    In this case this parameter is only relevant when the lowest frequency
+    is less than 1/5 s so 0.2 Hz.
+    """
 
     @override
     def _update_psmethod(self, psmethod: PalmSens.Method, /):
         """Update method with galvanic impedance spectroscopy settings."""
 
-        psmethod.ScanType = enumScanType.Fixed
-        psmethod.FreqType = enumFrequencyType.Scan
+        if self.scan_type == 'current':
+            # psmethod.BeginCurrent is an alias for psmethod.Current
+            psmethod.BeginCurrent = self.begin_current
+            psmethod.EndCurrent = self.end_current
+            psmethod.StepCurrent = self.step_current
+        elif self.scan_type == 'time':
+            psmethod.RunTime = self.run_time
+            psmethod.IntervalTime = self.interval_time
+            psmethod.Idc = self.dc_current
+        else:
+            psmethod.Idc = self.dc_current
+
+        psmethod.ScanType = enumScanType(self._SCAN_TYPES.index(self.scan_type))
+        psmethod.FreqType = enumFrequencyType(self._FREQ_TYPES.index(self.frequency_type))
         psmethod.AppliedCurrentRange = cr_string_to_enum(self.applied_current_range)
         psmethod.EquilibrationTime = self.equilibration_time
         psmethod.Iac = self.ac_current
-        psmethod.Idc = self.dc_current
+        psmethod.FixedFrequency = self.fixed_frequency
         psmethod.nFrequencies = self.n_frequencies
         psmethod.MaxFrequency = self.max_frequency
         psmethod.MinFrequency = self.min_frequency
+        psmethod.SamplingTime = self.min_sampling_time
+        psmethod.MaxEqTime = self.max_equilibration_time
 
     @override
     def _update_params(self, psmethod: PalmSens.Method, /):
+        self.scan_type = self._SCAN_TYPES[int(psmethod.ScanType)]
+        self.frequency_type = self._FREQ_TYPES[int(psmethod.FreqType)]
         self.applied_current_range = cr_enum_to_string(psmethod.AppliedCurrentRange)
         self.equilibration_time = single_to_double(psmethod.EquilibrationTime)
         self.ac_current = single_to_double(psmethod.Iac)
         self.dc_current = single_to_double(psmethod.Idc)
         self.n_frequencies = psmethod.nFrequencies
+
+        self.fixed_frequency = single_to_double(psmethod.FixedFrequency)
         self.max_frequency = single_to_double(psmethod.MaxFrequency)
         self.min_frequency = single_to_double(psmethod.MinFrequency)
+
+        if self.scan_type == 'current':
+            self.begin_current = single_to_double(psmethod.BeginCurrent)
+            self.end_current = single_to_double(psmethod.EndCurrent)
+            self.step_current = single_to_double(psmethod.StepCurrent)
+        elif self.scan_type == 'time':
+            self.run_time = single_to_double(psmethod.RunTime)
+            self.interval_time = single_to_double(psmethod.IntervalTime)
 
 
 class FastGalvanostaticImpedanceSpectroscopy(

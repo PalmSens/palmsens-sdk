@@ -966,51 +966,133 @@ class GIS:
 
     @staticmethod
     def validate(measurement):
-        assert measurement
-        assert isinstance(measurement, ps.data.Measurement)
+        check_eis_measurement(measurement)
 
-        for curve in measurement.curves:
-            assert curve.n_points >= 5
+        eis_datas = measurement.eis_data
+        assert len(eis_datas) == 1
+        for eis_data in eis_datas:
+            assert eis_data.n_points == 5
+            assert eis_data.n_subscans == 0
+            assert eis_data.n_frequencies == 7
 
-        dataset = measurement.dataset
-        assert len(dataset) == 18
 
-        assert dataset.array_names == {
-            "Capacitance'",
-            "Capacitance''",
-            'Capacitance',
-            'Eac',
-            'Frequency',
-            'Iac',
-            'Idc',
-            'Phase',
-            'Y',
-            'YIm',
-            'YRe',
-            'Z',
-            'ZIm',
-            'ZRe',
-            'mEdc',
-            'miDC',
-            'potential',
-            'time',
-        }
-        assert dataset.array_quantities == {
-            "-C''",
-            '-Phase',
-            "-Z''",
-            'C',
-            "C'",
-            'Current',
-            'Frequency',
-            'Potential',
-            'Time',
-            'Y',
-            "Y'",
-            "Y''",
-            'Z',
-            "Z'",
-        }
+class GIS_cur_fixed:
+    id = 'gis'
+    kwargs = {
+        'n_frequencies': 5,
+        'max_frequency': 1e5,
+        'min_frequency': 1e3,
+        'scan_type': 'current',
+        'frequency_type': 'fixed',
+        'begin_current': 0.0,
+        'end_current': -0.1,
+        'step_current': 0.1,
+    }
+
+    @staticmethod
+    def validate(measurement):
+        check_eis_measurement(measurement)
+
+        eis_datas = measurement.eis_data
+        assert len(eis_datas) == 1
+        for eis_data in eis_datas:
+            assert eis_data.n_points == 2
+            assert eis_data.n_subscans == 0
+            assert eis_data.n_frequencies == 1
+
+
+class GIS_cur_scan:
+    id = 'gis'
+    kwargs = {
+        'n_frequencies': 5,
+        'max_frequency': 1e5,
+        'min_frequency': 1e3,
+        'scan_type': 'current',
+        'frequency_type': 'scan',
+        'begin_current': 0.0,
+        'end_current': -0.1,
+        'step_current': 0.1,
+    }
+
+    @staticmethod
+    def validate(measurement):
+        check_eis_measurement(measurement)
+
+        eis_datas = measurement.eis_data
+        assert len(eis_datas) == 1
+        for eis_data in eis_datas:
+            assert eis_data.n_points == 10
+            assert eis_data.n_subscans == 2
+            assert eis_data.n_frequencies == 5
+
+
+class GIS_time_fixed:
+    id = 'gis'
+    kwargs = {
+        'n_frequencies': 5,
+        'max_frequency': 1e5,
+        'min_frequency': 1e3,
+        'scan_type': 'time',
+        'frequency_type': 'fixed',
+        'run_time': 1.3,
+    }
+
+    @staticmethod
+    def validate(measurement):
+        check_eis_measurement(measurement)
+
+        eis_datas = measurement.eis_data
+        assert len(eis_datas) == 1
+        for eis_data in eis_datas:
+            # n_points is tricky to reproduce because of device specific timings?
+            assert eis_data.n_points > 1
+            assert eis_data.n_subscans == 0
+            assert eis_data.n_frequencies == 1
+
+
+class GIS_time_scan:
+    id = 'gis'
+    kwargs = {
+        'n_frequencies': 5,
+        'max_frequency': 1e5,
+        'min_frequency': 1e3,
+        'scan_type': 'time',
+        'frequency_type': 'scan',
+        'run_time': 0.4,
+    }
+
+    @staticmethod
+    def validate(measurement):
+        check_eis_measurement(measurement)
+
+        eis_datas = measurement.eis_data
+        assert len(eis_datas) == 1
+        for eis_data in eis_datas:
+            assert eis_data.n_points == 10
+            assert eis_data.n_subscans == 2
+            assert eis_data.n_frequencies == 5
+
+
+class GIS_single_point:
+    id = 'gis'
+    kwargs = {
+        'n_frequencies': 5,
+        'max_frequency': 1e5,
+        'min_frequency': 1e3,
+        'scan_type': 'fixed',
+        'frequency_type': 'fixed',
+    }
+
+    @staticmethod
+    def validate(measurement):
+        check_eis_measurement(measurement)
+
+        eis_datas = measurement.eis_data
+        assert len(eis_datas) == 1
+        for eis_data in eis_datas:
+            assert eis_data.n_points == 1
+            assert eis_data.n_subscans == 0
+            assert eis_data.n_frequencies == 1
 
 
 class FGIS:
@@ -1237,7 +1319,11 @@ class MM:
         EIS_time_fixed,
         EIS_single_point,
         FIS,
-        GIS,
+        GIS_cur_fixed,
+        GIS_cur_scan,
+        GIS_time_scan,
+        GIS_time_fixed,
+        GIS_single_point,
         FGIS,
         MS,
         MM,
@@ -1293,6 +1379,11 @@ def test_measure(manager, method):
         EIS_single_point,
         FIS,
         GIS,
+        GIS_cur_fixed,
+        GIS_cur_scan,
+        GIS_time_scan,
+        GIS_time_fixed,
+        GIS_single_point,
         FGIS,
         MS,
         MM,

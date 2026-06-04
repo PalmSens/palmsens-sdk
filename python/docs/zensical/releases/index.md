@@ -20,7 +20,7 @@ We added 3 new methods for energy and battery research:
 - [ps.energy.experimental_ConstantResistance](https://dev.palmsens.com/python/latest/_attachments/reference/energy/constant_resistance/#pypalmsens.energy.experimental_ConstantResistance) (Discharge at constant resistance)
 
 These classes are implemented in MethodSCRIPT. This is a new way of adding methods to PyPalmSens that we are experimenting with.
-Therefore these classes are experimental (hence the `_experimental` prefix). This means we're still working on them and trying to understand how to best incorporate them in the code.
+Therefore these classes are experimental (hence the `experimental_` prefix). This means we're still working on them and trying to understand how to best incorporate them in the code.
 
 That means these classes may change in the future. If you use these methods, we welcome any feedback and suggestions before making them a permanent part of PyPalmSens.
 
@@ -46,14 +46,14 @@ See the [documentation for more information](https://dev.palmsens.com/python/lat
 
 This required a big refactor of the callback system. We intend to expand this feature in a [future release](https://github.com/PalmSens/PalmSens_SDK/issues/392).
 
-## Nexus support on Mac and Linux support
+## Nexus support on Mac and Linux
 
 [PyPalmSens 1.8.0](https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.8.0) added support for Nexus over TCP/IP using the `from_ip` method, but for Windows only. This release extends support for Mac and Linux.
 
 ## What's changed
 
 - Add support for cell on ([#371](https://github.com/PalmSens/PalmSens_SDK/pull/371))
-- Raise Attribute error for module __getattr__ ([#377](https://github.com/PalmSens/PalmSens_SDK/pull/377))
+- Raise Attribute error for module `__getattr__` ([#377](https://github.com/PalmSens/PalmSens_SDK/pull/377))
 - Add method to serialize method parameters ([#378](https://github.com/PalmSens/PalmSens_SDK/pull/378))
 - Add literal scan/frequency types ([#380](https://github.com/PalmSens/PalmSens_SDK/pull/380))
 - Add support for Python 3.14 ([#381](https://github.com/PalmSens/PalmSens_SDK/pull/381))

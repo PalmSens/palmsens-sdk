@@ -170,4 +170,5 @@ def test_params_round_trip(method):
         ps.save_method_file(path, ms_params)
         new_params = ps.load_method_file(path)
 
-    assert new_params.script.splitlines() == params.render().splitlines()
+    # skip header/timestamp
+    assert new_params.script.splitlines()[4:] == params.render().splitlines()[4:]

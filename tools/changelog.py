@@ -10,7 +10,7 @@ ROOT = Path(__file__).parents[1]
 
 
 def get_latest_tag(component: str = 'python'):
-    cmd = 'git tag --list --sort -creatordate'
+    cmd = 'git tag --list --sort -creatordate'.split()
     p = sp.run(cmd, capture_output=True)
     tags = p.stdout.decode().splitlines()
     for line in tags:
@@ -23,7 +23,7 @@ def get_latest_tag(component: str = 'python'):
 
 
 def get_changes_since_tag(tag: str):
-    cmd = f'git log {tag}..HEAD --reverse --oneline'
+    cmd = f'git log {tag}..HEAD --reverse --oneline'.split()
     p = sp.run(cmd, capture_output=True)
     lines = p.stdout.decode().splitlines()
     lines = (line.split(maxsplit=1)[1] for line in lines)
@@ -48,7 +48,7 @@ def get_changes_since_tag(tag: str):
     return '\n'.join(out)
 
 
-def update_python(new_tag: str) -> str:
+def update_python(new_tag: str, new_version: str) -> str:
     previous_tag = get_latest_tag()
     changelog = get_changes_since_tag(previous_tag)
 
@@ -71,7 +71,7 @@ def update_python(new_tag: str) -> str:
 
     To upgrade: `pip install pypalmsens -U`.
 
-    For more information, see [the documentation](https://dev.palmsens.com/python/latest/_attachments/releases/#pypalmsens-{new_tag.replace('.', '')})
+    For more information, see [the documentation](https://dev.palmsens.com/python/latest/_attachments/releases/#{anchor})
 
     ## What's changed
 
@@ -90,7 +90,10 @@ def update_python(new_tag: str) -> str:
         print('Tag already exists, skipping')
     else:
         new_string = TEMPLATE_CHANGELOG.format(
-            new_version=new_version, new_tag=new_tag, time=time.date(), changelog=changelog
+            new_version=new_version,
+            new_tag=new_tag,
+            time=time.date(),
+            changelog=changelog,
         )
         print(new_string)
 
@@ -100,7 +103,12 @@ def update_python(new_tag: str) -> str:
         print(f'Tag added to {index_path.name}')
 
     gh_releases = TEMPLATE_GH_RELEASES.format(
-        new_version=new_version, new_tag=new_tag, time=time.date(), changelog=changelog
+        new_version=new_version,
+        new_tag=new_tag,
+        previous_tag=previous_tag,
+        time=time.date(),
+        changelog=changelog,
+        anchor='pypalmsens-' + new_version.replace('.', ''),
     )
 
     with open('changelog-python.md', 'w') as f:
@@ -119,4 +127,4 @@ if __name__ == '__main__':
     previous_tag = f'{component}-{previous_version}'
     new_tag = f'{component}-{new_version}'
 
-    update_python(new_tag)
+    update_python(new_tag, new_version)

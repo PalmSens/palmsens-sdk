@@ -14,7 +14,7 @@ from __future__ import annotations
 from . import _libpalmsens
 
 __sdk_version__: str = _libpalmsens.load()
-__version__ = '1.9.0'
+__version__ = '1.10.0'
 
 from . import (
     corrosion,

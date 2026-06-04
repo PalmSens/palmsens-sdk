@@ -1,6 +1,71 @@
 # Changelog
 
 <!-- Latest-->
+## PyPalmSens 1.10
+
+> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.10">python-1.10</a>
+| :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.10">pypalmsens-1.10</a>
+| :fontawesome-solid-calendar: 2026-06-04
+
+## Support Python 3.14
+
+This release of PyPalmSens supports Python 3.14, thanks to the release of [pythonnet 3.1.0](https://github.com/pythonnet/pythonnet/releases/tag/v3.1.0).
+
+## Add experimental energy submodule
+
+We added 3 new methods for energy and battery research:
+
+- [ps.energy.experimental_BatteryCycling](https://dev.palmsens.com/python/latest/_attachments/reference/energy/battery_cycling/#pypalmsens.energy.experimental_BatteryCycling) (CC-CV-CC)
+- [ps.energy.experimental_ConstantPower](https://dev.palmsens.com/python/latest/_attachments/reference/energy/constant_power/#pypalmsens.energy.experimental_ConstantPower) (Discharge at constant power)
+- [ps.energy.experimental_ConstantResistance](https://dev.palmsens.com/python/latest/_attachments/reference/energy/constant_resistance/#pypalmsens.energy.experimental_ConstantResistance) (Discharge at constant resistance)
+
+These classes are implemented in MethodSCRIPT. This is a new way of adding methods to PyPalmSens that we are experimenting with.
+Therefore these classes are experimental (hence the `_experimental` prefix). This means we're still working on them and trying to understand how to best incorporate them in the code.
+
+That means these classes may change in the future. If you use these methods, we welcome any feedback and suggestions before making them a permanent part of PyPalmSens.
+
+See [the documentation for more information](https://dev.palmsens.com/python/latest/_attachments/reference/energy/).
+
+## Add streaming data
+
+With this release, PyPalmSens can auto-save all data directly to a file. This is helpful for:
+
+- Streaming data to other processes
+- Data recovery
+- Tracking Long-running measurements
+
+To make use of this feature, pass a file name to the measure function:
+
+```python
+import pypalmsens as ps
+
+ps.measure(ps.CyclicVoltammetry(), stream='data.jsonl')
+```
+
+See the [documentation for more information](https://dev.palmsens.com/python/latest/_attachments/measuring/#streaming-data-to-a-file)
+
+This required a big refactor of the callback system. We intend to expand this feature in a [future release](https://github.com/PalmSens/PalmSens_SDK/issues/392).
+
+## Nexus support on Mac and Linux support
+
+[PyPalmSens 1.8.0](https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.8.0) added support for Nexus over TCP/IP using the `from_ip` method, but for Windows only. This release extends support for Mac and Linux.
+
+## What's changed
+
+- Add support for cell on ([#371](https://github.com/PalmSens/PalmSens_SDK/pull/371))
+- Raise Attribute error for module __getattr__ ([#377](https://github.com/PalmSens/PalmSens_SDK/pull/377))
+- Add method to serialize method parameters ([#378](https://github.com/PalmSens/PalmSens_SDK/pull/378))
+- Add literal scan/frequency types ([#380](https://github.com/PalmSens/PalmSens_SDK/pull/380))
+- Add support for Python 3.14 ([#381](https://github.com/PalmSens/PalmSens_SDK/pull/381))
+- Add experimental BatteryCycling technique ([#379](https://github.com/PalmSens/PalmSens_SDK/pull/379))
+- Update types and type checking ([#383](https://github.com/PalmSens/PalmSens_SDK/pull/383))
+- Add linux support for connecting over TCP\IP ([#388](https://github.com/PalmSens/PalmSens_SDK/pull/388))
+- Fix double newlines in serialize to `.psmethod` ([#389](https://github.com/PalmSens/PalmSens_SDK/pull/389))
+- Update Python version in test workfrow to 3.14 ([#390](https://github.com/PalmSens/PalmSens_SDK/pull/390))
+- Add streaming data for live measurements ([#386](https://github.com/PalmSens/PalmSens_SDK/pull/386))
+- Add missing fields for the GEIS technique ([#393](https://github.com/PalmSens/PalmSens_SDK/pull/393))
+- Add ConstantPower and ConstantResistance methods ([#394](https://github.com/PalmSens/PalmSens_SDK/pull/394))
+
 ## PyPalmSens 1.9.0
 
 > :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.9.0">python-1.9.0</a>

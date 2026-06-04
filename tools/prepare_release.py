@@ -104,16 +104,15 @@ def bump_version_to(sdk: SDK):
                 sdk.version,
                 'patch',
                 '--commit',
+                '--allow-dirty',
             ]
         )
 
     print(f'Set {sdk.name} version to {sdk.version}')
 
 
-def prepare_release_branch(sdk: SDK, base_branch: str) -> str:
+def prepare_release_branch(base_branch: str, release_branch: str) -> str:
     sp.check_call(['git', 'checkout', f'origin/{base_branch}'])
-
-    release_branch = f'release-{sdk.tag}'
 
     sp.run(
         ['git', 'checkout', '-b', release_branch, f'origin/{base_branch}'],
@@ -166,14 +165,15 @@ if __name__ == '__main__':
     print(f'New version: {sdk.tag=}')
 
     base_branch = 'main'
+    release_branch = f'release-{sdk.tag}'
 
-    release_branch = prepare_release_branch(sdk=sdk, base_branch=base_branch)
+    prepare_release_branch(base_branch=base_branch, release_branch=release_branch)
     update_releases(sdk=sdk, commit=True)
 
     if sdk.name == 'python':
         import changelog
 
-        gh_body = changelog.update_python(new_tag=sdk.tag)
+        gh_body = changelog.update_python(new_tag=sdk.tag, new_version=sdk.version)
     else:
         gh_body = '-'
 

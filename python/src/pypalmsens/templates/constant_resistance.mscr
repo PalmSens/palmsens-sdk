@@ -1,0 +1,61 @@
+e
+# MethodSCRIPT version: 1.9
+# Generated on {{ timestamp }} by PyPalmSens {{ version }}
+#
+var current
+var potential
+var time
+var load
+var cutoff
+var sampling
+var duration
+var interval
+var app_current
+var bandwidth
+# set technique parameters
+store_var load {{ model.load }} db # set constant resistance load in Ohms (make it negative for discharging)
+store_var cutoff {{ model.cutoff }}m ab # set a cut-off potential to finish the discharge step
+store_var duration {{ model.duration }} eb # set the total duration of the experiment (if the cut-off limit currents not met)
+store_var interval {{ model.interval }} eb # set the interval time of each data point
+# initialize the galvanostat
+store_var bandwidth 5850535u dc
+div_var bandwidth interval
+set_pgstat_chan 0
+set_pgstat_mode 6
+set_acquisition_frac_autoadjust {{ model.mains_frequency }}
+set_max_bandwidth bandwidth
+set_range ab 4200m
+set_autoranging ab 42m 4200m
+set_int interval
+meas 100m potential ab
+{% if model.cell_on_ocp -%}
+cell_on ocp(potential)
+{%else -%}
+cell_on
+{%endif -%}
+# start the experiment
+loop time <= duration
+    copy_var potential app_current
+    div_var app_current load
+	set_range db app_current
+    meas_loop_cp potential current app_current interval interval
+		mul_var current -1
+		timer_get time
+		set_script_output 1
+		pck_start
+			pck_add time
+			pck_add potential
+			pck_add current
+		pck_end
+		if potential < cutoff
+    		send_string f"Cut-off limit reached."
+    		wait 5
+            abort
+		endif
+		send_string f"E = {potential} V    |    I = {current} A    |    t = {time} s"
+		set_script_output 0
+	endloop
+endloop
+on_finished:
+  cell_off
+

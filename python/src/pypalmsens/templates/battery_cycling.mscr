@@ -2,7 +2,6 @@ e
 # MethodSCRIPT version: 1.9
 # Generated on {{ timestamp }} by PyPalmSens {{ version }}
 #
-# Initialize variables. All variables must be declared before first use.
 var potential_max
 var potential_min
 var current_charge
@@ -55,7 +54,7 @@ timer_start
 loop cycle <= cycles
     set_pgstat_mode 6
     set_max_bandwidth bandwidth
-    set_acquisition_frac_autoadjust {{ model.power_frequency }}
+    set_acquisition_frac_autoadjust {{ model.mains_frequency }}
     set_range_minmax ab potential_min potential_max
     set_autoranging ab potential_min potential_max
     set_range db current_charge
@@ -101,7 +100,7 @@ loop cycle <= cycles
     # Constant Voltage (CV) charge step. Many codes are similar to the CC charge step.
     set_pgstat_mode 3
     set_max_bandwidth bandwidth
-    set_acquisition_frac_autoadjust {{ model.power_frequency }}
+    set_acquisition_frac_autoadjust {{ model.mains_frequency }}
     set_range da potential_max
     set_range_minmax ba current_min current_charge
     set_autoranging ba current_min current_charge
@@ -143,7 +142,7 @@ loop cycle <= cycles
     # Constant current discharge. Codes below are almost the same as for the CC charge step.
     set_pgstat_mode 6
     set_max_bandwidth bandwidth
-    set_acquisition_frac_autoadjust {{ model.power_frequency }}
+    set_acquisition_frac_autoadjust {{ model.mains_frequency }}
     set_range_minmax ab potential_min potential_max
     set_autoranging ab potential_min potential_max
     set_range db current_discharge

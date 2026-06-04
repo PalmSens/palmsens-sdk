@@ -1,6 +1,6 @@
-# Battery Cycling
+# Constant Power
 
-This page documents the Battery Cycling (`BC`) method.
+This page documents the Constant Power (`DCP`) method.
 
 !!! Warning "Experimental"
 
@@ -8,6 +8,6 @@ This page documents the Battery Cycling (`BC`) method.
 
     We welcome any [feedback and suggestions](https://github.com/palmsens/palmsens_sdk/issues) before making them a permanent part of PyPalmSens.
 
-::: pypalmsens.energy.experimental_BatteryCycling
+::: pypalmsens.energy.experimental_ConstantPower
     options:
       members_order: source

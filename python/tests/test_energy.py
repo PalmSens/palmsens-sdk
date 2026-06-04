@@ -12,6 +12,7 @@ import pypalmsens as ps
 from pypalmsens._methods.adapters import (
     energy_technique_adapter,
 )
+from pypalmsens._methods.energy import BaseMethodScriptTechnique
 from pypalmsens.energy import experimental_BatteryCycling
 
 logger = logging.getLogger(__name__)
@@ -37,6 +38,7 @@ class BC:
         'id': 'bc',
         'cycles': 1,
         'max_time': 1,
+        'cell_on_ocp': False,
     }
 
     @staticmethod
@@ -75,15 +77,77 @@ class BC:
         assert dataset.array_quantities == {'Current', 'Potential', 'Time'}
 
 
+class DCP:
+    """Note: requires dummy circuit."""
+
+    kwargs = {
+        'id': 'dcp',
+        'duration': 3,
+        'cell_on_ocp': False,
+    }
+
+    @staticmethod
+    def validate(measurement):
+        assert measurement
+        assert isinstance(measurement, ps.data.Measurement)
+
+        assert measurement.title == 'Constant Power'
+
+        curves = measurement.curves
+
+        assert len(curves) == 2
+
+        for curve in curves:
+            assert len(curve) == 2
+
+        dataset = measurement.dataset
+
+        assert dataset.array_names == {'AppliedCurrent1_2', 'Potential1_2', 'Time1_2'}
+        assert dataset.array_quantities == {'Time', 'Potential', 'Current'}
+
+
+class DCR:
+    """Note: requires dummy circuit."""
+
+    kwargs = {
+        'id': 'dcr',
+        'duration': 3,
+        'cell_on_ocp': False,
+    }
+
+    @staticmethod
+    def validate(measurement):
+        assert measurement
+        assert isinstance(measurement, ps.data.Measurement)
+
+        assert measurement.title == 'Constant Resistance'
+
+        curves = measurement.curves
+
+        assert len(curves) == 2
+
+        for curve in curves:
+            assert len(curve) == 2
+
+        dataset = measurement.dataset
+
+        assert dataset.array_names == {'AppliedCurrent1_2', 'Potential1_2', 'Time1_2'}
+        assert dataset.array_quantities == {'Time', 'Potential', 'Current'}
+
+
 @pytest.mark.instrument
 @pytest.mark.parametrize(
     'method',
-    (BC,),
+    (
+        BC,
+        DCP,
+        DCR,
+    ),
 )
 def test_measure(manager, method):
     params = energy_technique_adapter.validate_python(method.kwargs)
 
-    assert isinstance(params, experimental_BatteryCycling)
+    assert isinstance(params, BaseMethodScriptTechnique)
 
     measurement = manager.measure(params)
     method.validate(measurement)
@@ -91,7 +155,11 @@ def test_measure(manager, method):
 
 @pytest.mark.parametrize(
     'method',
-    (BC,),
+    (
+        BC,
+        DCP,
+        DCR,
+    ),
 )
 def test_params_round_trip(method):
     params = energy_technique_adapter.validate_python(method.kwargs)
@@ -102,5 +170,4 @@ def test_params_round_trip(method):
         ps.save_method_file(path, ms_params)
         new_params = ps.load_method_file(path)
 
-    # Skip header
-    assert new_params.script.splitlines()[4:] == params.render().splitlines()[4:]
+    assert new_params.script.splitlines() == params.render().splitlines()

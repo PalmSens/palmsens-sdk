@@ -2,19 +2,23 @@
 
 This section contains a listing of all available energy techniques in PyPalmSens.
 
+In the energy submodule you will find new methods only available in PyPalmSens.
+
 !!! Note
 
     These methods are based on MethodSCRIPT and therefore behave differently than the other [electrochemistry](../methods/) or [corrosion](./corrosion/) techniques.
 
 !!! Warning "Experimental"
 
-    Methods with the `experimental_` prefix are things that we're still working on or trying to understand. In the energy submodule you will find new, experimental methods only available in PyPalmSens.
+    Classes with the `experimental_` prefix are things that we're still working on or trying to understand. That means these classes are subject to change.
 
-    These methods are subject to change or removal. We welcome any [feedback and suggestions](https://github.com/palmsens/palmsens_sdk/issues) before making them a permanent part of PyPalmSens.
+    We welcome any [feedback and suggestions](https://github.com/palmsens/palmsens_sdk/issues) before making them a permanent part of PyPalmSens.
 
 - [experimental_BatteryCycling][pypalmsens.energy.experimental_BatteryCycling] (CC-CV-CC)
+- [experimental_ConstantPower][pypalmsens.energy.experimental_ConstantPower] (Discharge at constant power)
+- [experimental_ConstantResistance][pypalmsens.energy.experimental_ConstantResistance] (Discharge at constant resistance)
 
-For example to set up a battery cyclings experiment:
+For example to set up a battery cycling experiment:
 
 ```python
 >>> import pypalmsens as ps
@@ -28,3 +32,5 @@ For example to set up a battery cyclings experiment:
 ## Classes
 
 - [`pypalmsens.energy.experimental_BatteryCycling`][pypalmsens.energy.experimental_BatteryCycling]
+- [`pypalmsens.energy.experimental_ConstantPower`][pypalmsens.energy.experimental_ConstantPower]
+- [`pypalmsens.energy.experimental_ConstantResistance`][pypalmsens.energy.experimental_ConstantResistance]

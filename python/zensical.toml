@@ -55,6 +55,8 @@ nav = [
   { "Techniques (energy)" = [
       "reference/energy/index.md",
       "reference/energy/battery_cycling.md",
+      "reference/energy/constant_power.md",
+      "reference/energy/constant_resistance.md",
   ]},
   { "Technique settings" = "reference/methods/settings.md" },
   { "Reference" = [

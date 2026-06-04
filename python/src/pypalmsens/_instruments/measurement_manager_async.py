@@ -15,7 +15,7 @@ from pydantic.dataclasses import dataclass
 from System import EventHandler
 from System.Threading.Tasks import Task
 
-from pypalmsens._methods.adapters import EnergyTechniqueType
+from pypalmsens._methods.energy import BaseMethodScriptTechnique
 from pypalmsens._types import MethodTypeCompatible
 
 from .._data import DataSet
@@ -307,8 +307,8 @@ class MeasurementManagerAsync:
 
         assert self.last_measurement
 
-        if isinstance(method, EnergyTechniqueType):
-            self.last_measurement._psmeasurement.Title = method._name
+        if isinstance(method, BaseMethodScriptTechnique):
+            self.last_measurement._psmeasurement.Title = method._name  # type: ignore
 
         return self.last_measurement
 

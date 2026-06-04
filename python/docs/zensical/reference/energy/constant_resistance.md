@@ -1,6 +1,6 @@
-# Battery Cycling
+# Constant Resistance
 
-This page documents the Battery Cycling (`BC`) method.
+This page documents the Constant Resistance (`DCR`) method.
 
 !!! Warning "Experimental"
 
@@ -8,6 +8,6 @@ This page documents the Battery Cycling (`BC`) method.
 
     We welcome any [feedback and suggestions](https://github.com/palmsens/palmsens_sdk/issues) before making them a permanent part of PyPalmSens.
 
-::: pypalmsens.energy.experimental_BatteryCycling
+::: pypalmsens.energy.experimental_ConstantResistance
     options:
       members_order: source

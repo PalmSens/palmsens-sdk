@@ -7,11 +7,11 @@
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.10">pypalmsens-1.10</a>
 | :fontawesome-solid-calendar: 2026-06-04
 
-## Support Python 3.14
+### Support Python 3.14
 
 This release of PyPalmSens supports Python 3.14, thanks to the release of [pythonnet 3.1.0](https://github.com/pythonnet/pythonnet/releases/tag/v3.1.0).
 
-## Add experimental energy submodule
+### Add experimental energy submodule
 
 We added 3 new methods for energy and battery research:
 
@@ -26,7 +26,7 @@ That means these classes may change in the future. If you use these methods, we 
 
 See [the documentation for more information](https://dev.palmsens.com/python/latest/_attachments/reference/energy/).
 
-## Add streaming data
+### Add streaming data
 
 With this release, PyPalmSens can auto-save all data directly to a file. This is helpful for:
 
@@ -46,11 +46,11 @@ See the [documentation for more information](https://dev.palmsens.com/python/lat
 
 This required a big refactor of the callback system. We intend to expand this feature in a [future release](https://github.com/PalmSens/PalmSens_SDK/issues/392).
 
-## Nexus support on Mac and Linux
+### Nexus support on Mac and Linux
 
 [PyPalmSens 1.8.0](https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.8.0) added support for Nexus over TCP/IP using the `from_ip` method, but for Windows only. This release extends support for Mac and Linux.
 
-## What's changed
+### What's changed
 
 - Add support for cell on ([#371](https://github.com/PalmSens/PalmSens_SDK/pull/371))
 - Raise Attribute error for module `__getattr__` ([#377](https://github.com/PalmSens/PalmSens_SDK/pull/377))

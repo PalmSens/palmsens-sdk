@@ -440,9 +440,10 @@ You can pass the current range directly as a dictionary of strings:
 cv = ps.CyclicVoltammetry(current_range={'min': '1uA', 'max': '10mA'})
 ```
 
-A list of allowed values is available via
-- [`ps.settings.AllowedCurrentRanges`](https://dev.palmsens.com/python/latest/_attachments/reference/methods/enums/#pypalmsens.settings.AllowedCurrentRanges)
-- [`ps.settings.AllowedPotentialRanges`](https://dev.palmsens.com/python/latest/_attachments/reference/methods/enums/#pypalmsens.settings.AllowedPotentialRanges)
+A list of allowed values is available via:
+
+- `ps.settings.AllowedCurrentRanges`
+- `ps.settings.AllowedPotentialRanges`
 
 Thanks to how the methods are validated, a warning will be raised if an incorrect value is passed:
 
@@ -612,7 +613,7 @@ method = ps.ElectrochemicalImpedanceSpectroscopy(
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.3.1">pypalmsens-1.3.1</a>
 | :fontawesome-solid-calendar: 2025-10-31
 
-This release focuses on improved support for Linux and MacOS. It contains new builds of the underlying PalmSens.Core .NET library for both x86-64 and arm. And the [documentation](https://dev.palmsens.com/python/latest/_attachments/installation.html) was updated with better installation instructions (e.g. for running the code on a Raspberry Pi).
+This release focuses on improved support for Linux and MacOS. It contains new builds of the underlying PalmSens.Core .NET library for both x86-64 and arm. And the [documentation](../installation/) was updated with better installation instructions (e.g. for running the code on a Raspberry Pi).
 
 ### What's Changed
 
@@ -622,6 +623,7 @@ This release focuses on improved support for Linux and MacOS. It contains new bu
 * Fix default value for charge limits causing ChronoAmperometry to only collect 1 data point by [@stefsmeets](https://github.com/stefsmeets) in [#144](https://github.com/PalmSens/PalmSens_SDK/pull/144)
 
 ### Documentation
+
 * Expand documentation for HW sync example by [@stefsmeets](https://github.com/stefsmeets) in [#137](https://github.com/PalmSens/PalmSens_SDK/pull/137)
 * Update installation instructions for linux distros by [@stefsmeets](https://github.com/stefsmeets) in [#138](https://github.com/PalmSens/PalmSens_SDK/pull/138)
 

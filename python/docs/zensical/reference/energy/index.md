@@ -1,12 +1,11 @@
 # Energy techniques
 
 This section contains a listing of all available energy techniques in PyPalmSens.
-
-In the energy submodule you will find new methods only available in PyPalmSens.
+These methods are only available in PyPalmSens.
 
 !!! Note
 
-    These methods are based on MethodSCRIPT and therefore behave differently than the other [electrochemistry](../methods/) or [corrosion](./corrosion/) techniques.
+    These methods are based on MethodSCRIPT and therefore behave differently than the other [electrochemistry](../methods/) or [corrosion](../corrosion/) techniques.
 
 !!! Warning "Experimental"
 

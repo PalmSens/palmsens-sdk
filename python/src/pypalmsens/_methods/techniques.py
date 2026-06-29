@@ -1895,6 +1895,8 @@ class ElectrochemicalImpedanceSpectroscopy(
         self.dc_potential = single_to_double(psmethod.Potential)
         self.ac_potential = single_to_double(psmethod.Eac)
         self.n_frequencies = psmethod.nFrequencies
+        self.min_sampling_time = single_to_double(psmethod.SamplingTime)
+        self.max_equilibration_time = single_to_double(psmethod.MaxEqTime)
 
         self.fixed_frequency = single_to_double(psmethod.FixedFrequency)
         self.max_frequency = single_to_double(psmethod.MaxFrequency)
@@ -2151,6 +2153,8 @@ class GalvanostaticImpedanceSpectroscopy(
         self.ac_current = single_to_double(psmethod.Iac)
         self.dc_current = single_to_double(psmethod.Idc)
         self.n_frequencies = psmethod.nFrequencies
+        self.min_sampling_time = single_to_double(psmethod.SamplingTime)
+        self.max_equilibration_time = single_to_double(psmethod.MaxEqTime)
 
         self.fixed_frequency = single_to_double(psmethod.FixedFrequency)
         self.max_frequency = single_to_double(psmethod.MaxFrequency)

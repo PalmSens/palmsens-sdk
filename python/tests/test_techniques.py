@@ -765,6 +765,8 @@ class EIS:
         'min_frequency': 1e3,
         'scan_type': 'fixed',
         'frequency_type': 'scan',
+        'min_sampling_time': 0.01,
+        'max_equilibration_time': 0.01,
     }
 
     @staticmethod
@@ -962,6 +964,8 @@ class GIS:
         'n_frequencies': 7,
         'max_frequency': 1e5,
         'min_frequency': 1e3,
+        'min_sampling_time': 0.01,
+        'max_equilibration_time': 0.01,
     }
 
     @staticmethod

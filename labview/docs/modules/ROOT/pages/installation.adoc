@@ -5,14 +5,14 @@ This page takes you through setting up the SDK for your LabVIEW project.
 
 == Requirements
 
-* https://www.ni.com/en/shop/labview.html[Labview]
+* https://www.ni.com/en/shop/labview.html[LabVIEW]
   - The code was developed with Community Version 2025
   - For compatibility with older versions (down to 2019), use menu:File[Save for previous version].
 * .NET Framework 4.7.2
 * Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the https://github.com/PalmSens/PalmSens_SDK/releases/download/drivers-5.12/PalmSens.Drivers.exe[driver installer].
 
 Download the latest https://github.com/palmsens/palmsens_sdk/releases[release here].
-Unzip the file and load the project file in Labview.
+Unzip the file and load the project file in LabVIEW.
 
 == Adding the PalmSens folder
 
@@ -29,7 +29,7 @@ Executing anything in the SDK that uses these libraries produces an error like t
 
 image::broken_dependency_1.png[Broken dependency error, width=49%]
 
-To prevent this error you will need to manually unblock the PalmSens SDK for LabVIEW.zip file before unpacking its contents.
+To prevent this error you will need to manually unblock the `labview-x.y.z.zip` file before unpacking its contents.
 To do this go to menu:right click on the zip file[Properties].
 Then click on the btn:[Unblock] checkbox and click on btn:[OK].
 
@@ -43,8 +43,8 @@ If this does not resolve the issue you may need to do this for each file in the 
 
 == Save for previous versions
 
-The Labview SDK was developed for version 2025 (25.0).
-If you are using an older, incompatible version, you may get this error: `LabVIEW load error code 9: VI version (25.0) is newer than LabView version (21.0)`.
+The LabVIEW SDK was developed for version 2025 (25.0).
+If you are using an older, incompatible version, you may get this error: `LabVIEW load error code 9: VI version (25.0) is newer than LabVIEW version (21.0)`.
 
 There are 2 options:
 

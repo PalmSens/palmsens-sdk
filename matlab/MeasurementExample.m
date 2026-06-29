@@ -5,7 +5,7 @@
 % 4. Plotting the measurement
 
 clear;
-%% Add PalmSens Matlab SDK to workspace
+%% Add PalmSens MATLAB SDK to workspace
 PSSDK = LoadPSSDK();
 if PSSDK == false
     disp('Error while adding the PalmSens SDK to the workspace. Please resolve before continuing.');
@@ -94,7 +94,7 @@ end
 disp(['Succesfully loaded the [ ' char(method.Name) ' ] method ' methodName '.' newline]);
 %% 3. Performing a measurement using the method
 % Measurements can be performed the Measurement.m class, this class gets the
-% measured data from you and converts it to matlab compatible structs.
+% measured data from you and converts it to MATLAB compatible structs.
 % Optionally it can display additional information on the measurement in the
 % Command Window and show a plot of the data that is updated in realtime.
 
@@ -121,7 +121,7 @@ measurement = m.measurement;
 
 %% 4. Plotting measurement data
 % Measurements are converted to structs to improve their compatability with
-% Matlab. Each measurement is stored in its own struct and contains a
+% MATLAB. Each measurement is stored in its own struct and contains a
 % character array with its name (.name), measurement technique (.type) and
 % date (.date). The measurement itself is stored in one or more curves.
 % Generally a measurement has one curve struct, however, Cyclic Voltammetry

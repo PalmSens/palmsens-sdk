@@ -2,7 +2,7 @@
 
 ## Making a release
 
-The Matlab release uses [SemVer](http://semver.org/) versioning scheme.
+The MATLAB release uses [SemVer](http://semver.org/) versioning scheme.
 
 1. Make a release on [GitHub](https://github.com/PalmSens/PalmSens_SDK/releases).
 

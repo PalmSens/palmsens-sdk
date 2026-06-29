@@ -6,7 +6,7 @@
 % 5. Safely remove a method from the workspace.
 
 clear;
-%% Add PalmSens Matlab SDK to workspace
+%% Add PalmSens MATLAB SDK to workspace
 PSSDK = LoadPSSDK();
 if PSSDK == false
     disp('Error while adding the PalmSens SDK to the workspace. Please resolve before continuing.');
@@ -71,7 +71,7 @@ disp(['Succesfully loaded the [ ' char(method.Name) ' ] method ' methodName '.' 
 % measurement.
 %
 % (A simpler alternative would be to load a method you edited in
-% PSTrace or the PalmSens Matlab SDK gUIde Example.)
+% PSTrace or the PalmSens MATLAB SDK gUIde Example.)
 
 % Check if the loaded method object is a Linear Sweep Method
 if method.TechniqueNumber == 0

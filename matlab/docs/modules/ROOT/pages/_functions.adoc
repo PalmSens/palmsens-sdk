@@ -51,7 +51,7 @@ LoadPSSDK loads the PalmSens SDK and adds it to the workspace
 [discrete]
 ### Output arguments
 
-- *`PSSDK`* (`None`) – The matlab assembly handle of the PalmSens SDK. If the SDK was
+- *`PSSDK`* (`None`) – The MATLAB assembly handle of the PalmSens SDK. If the SDK was
   not loaded successfully this output is set to false.
 
 [#_loadsession]
@@ -63,7 +63,7 @@ LoadPSSDK loads the PalmSens SDK and adds it to the workspace
 Load a session from the specified path.
 
 Measurements are converted to structs to improve their compatability with
-Matlab. Each measurement is stored in its own struct and contains a
+MATLAB. Each measurement is stored in its own struct and contains a
 character array with its name (`.name`), measurement technique (`.type`) and
 date (`.date`).
 
@@ -184,7 +184,7 @@ SaveMethod save a method object to a specified path
 - *`method`* (`PalmSens.Method`) – A method object
 - *`path`* (`string`) – the full path (including filename) where the method file must be
   saved. A full path is required, i.e. `'C:\Data\LinearSweep.psmethod'`.
-- *`PSSDK`* (`None`) – Handle to the PalmSens Matlab SDK library.
+- *`PSSDK`* (`None`) – Handle to the PalmSens MATLAB SDK library.
   This can be obtained using the LoadPSSDK funtion.
 
 [discrete]

@@ -23,7 +23,7 @@ classdef MultiChannelMeasurement < handle
     %
     % **Measurements**:
     % Measurements are converted to structs to improve their compatability with
-    % Matlab. Each measurement is stored in its own struct and contains a
+    % MATLAB. Each measurement is stored in its own struct and contains a
     % character array with its name (`.name`), measurement technique (`.type`) and
     % date (`.date`).
     %
@@ -38,7 +38,7 @@ classdef MultiChannelMeasurement < handle
     properties
 
         comm  % Object containing handle for communication with device
-        measurement  % The result of the measurement converted for use in matlab
+        measurement  % The result of the measurement converted for use in MATLAB
         dispInCommandWindow  % When set to true the latest readings from the device are displayed in the command window.
         dispInPlot  % When set to true the latest readings from the device are displayed in a new Figure.
         figureForPlot  % Figure to display data in
@@ -53,7 +53,7 @@ classdef MultiChannelMeasurement < handle
         y_array  % Array of idle potential readings
         y_unit  % Unit of the data recorded in the y_array.
         previousMeasurement  % The result of the measurement as a .Net object
-        curves  % List of .Net curve objects returned by the PalmSens Matlab SDK
+        curves  % List of .Net curve objects returned by the PalmSens MATLAB SDK
 
     end
 
@@ -282,7 +282,7 @@ classdef MultiChannelMeasurement < handle
             %
             % Updates the `.measurement` attribute with Measurement data. m = self.previousMeasurement;
             c = self.curves;
-            % Convert .NET measurement to matlab structs
+            % Convert .NET measurement to MATLAB structs
             if strcmp(char(m.Method.Name), 'Impedance Spectroscopy')  % Impedance Spectroscopy data is handled differently
                 self.processEISMeasurement();
             else

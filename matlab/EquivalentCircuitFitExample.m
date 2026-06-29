@@ -4,7 +4,7 @@
 % 3. Plot the data.
 
 % clear;
-%% Add PalmSens Matlab SDK to workspace
+%% Add PalmSens MATLAB SDK to workspace
 PSSDK = LoadPSSDK();
 if PSSDK == false
     disp('Error while adding the PalmSens SDK to the workspace. Please resolve before continuing.');
@@ -28,9 +28,9 @@ for i = 1:length(measurements)
 end
 
 %% 2. Fit an equivalent circuit
-% Fitting of an equivalent circuit can be done using the Matlab
+% Fitting of an equivalent circuit can be done using the MATLAB
 % EquivalentCircuitFit class. This class makes it easier to communicate with
-% the PalmSens Matlab SDK library. This class has two input arguments (1) a
+% the PalmSens MATLAB SDK library. This class has two input arguments (1) a
 % measurement, loaded using the LoadSession function or measured using the
 % Measurement function and (2) the circuit specified in the Circuit
 % Description Code (https://www.utwente.nl/en/tnw/ims/publications/downloads/CDC_Explained.pdf)
@@ -81,7 +81,7 @@ disp([newline 'Chi Squared = ' num2str(result.ChiSq) ', n Iteration = ' num2str(
 disp(['Exit code = ' result.ExitCode]);
 %% 3. Plot the data
 % Measurements are converted to structs to improve their compatability with
-% Matlab. Each measurement is stored in its own struct and contains a
+% MATLAB. Each measurement is stored in its own struct and contains a
 % character array with its name (.name), measurement technique (.type) and
 % date (.date). The measurement itself is stored in one or more curves.
 % Generally a measurement has one curve struct, however, Cyclic Voltammetry

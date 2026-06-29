@@ -12,10 +12,10 @@
 
 <br>
 
-# Labview SDK for PalmSens devices
+# LabVIEW SDK for PalmSens devices
 
-With this SDK, you can control your PalmSens instrument and process the data in Labview.
-Connect, control and process data from your PalmSens instrument using Labview.
+With this SDK, you can control your PalmSens instrument and process the data in LabVIEW.
+Connect, control and process data from your PalmSens instrument using LabVIEW.
 
 Download the latest [release here](https://github.com/palmsens/PalmSens_SDK/releases).
 
@@ -26,7 +26,7 @@ See [the installation guidelines](https://dev.palmsens.com/labview/latest/instal
 The PalmSens SDK contains the following .NET libraries and LabVIEW
 classes, controls and Vis in the PalmSens folder:
 
-- **Libraries Folder**: Contains all the necessary .NET libraries. Labview directly interfaces with the classes and functions defined in these libraries.
+- **Libraries Folder**: Contains all the necessary .NET libraries. LabVIEW directly interfaces with the classes and functions defined in these libraries.
 
 - **PalmSens LabVIEW class**:
 

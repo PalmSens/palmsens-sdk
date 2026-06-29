@@ -1,7 +1,7 @@
 classdef MeasurementGUI < handle
     % The measurement class contains the functions for starting, stopping
     % and storing the data from a measurements
-    % This is a version of the `Measurement` class that can be used with a Matlab GUIDE user interface.
+    % This is a version of the `Measurement` class that can be used with a MATLAB GUIDE user interface.
 
     properties
 

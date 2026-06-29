@@ -2,7 +2,7 @@ function [PSSDK] = LoadPSSDK()
     % LoadPSSDK loads the PalmSens SDK and adds it to the workspace
     %
     % Returns:
-    %   PSSDK: The matlab assembly handle of the PalmSens SDK. If the SDK was
+    %   PSSDK: The MATLAB assembly handle of the PalmSens SDK. If the SDK was
     %       not loaded successfully this output is set to false.
 
     disp([newline 'Checking presence of settings.mat']);

@@ -2,7 +2,7 @@ function [measurements] = LoadSession(sessionPath)
     % Load a session from the specified path.
     %
     % Measurements are converted to structs to improve their compatability with
-    % Matlab. Each measurement is stored in its own struct and contains a
+    % MATLAB. Each measurement is stored in its own struct and contains a
     % character array with its name (`.name`), measurement technique (`.type`) and
     % date (`.date`).
     %
@@ -53,14 +53,14 @@ function [measurements] = LoadSession(sessionPath)
     % Create empty struct to store measurements in
     measurements = struct('name', {}, 'type', {}, 'date', {}, 'curves', {}, 'measurement', {});
 
-    for i = 1:n % Convert each measurement in session file to matlab compatible format
+    for i = 1:n % Convert each measurement in session file to MATLAB compatible format
         measurements(end + 1) = processMeasurement(measurementsPS(i));
     end
 
 end
 
 function measurement = processMeasurement(measurementPS)
-    % Convert .NET measurement to matlab structs
+    % Convert .NET measurement to MATLAB structs
     if strcmp(char(measurementPS.Method.Name), 'Impedance Spectroscopy')  % Impedance Spectroscopy data is handled differently
         measurement = processEISMeasurement(measurementPS);
     else

@@ -107,7 +107,7 @@ and can be retreived after the measurement has been completed
 
 **Measurements**:
 Measurements are converted to structs to improve their compatability with
-Matlab. Each measurement is stored in its own struct and contains a
+MATLAB. Each measurement is stored in its own struct and contains a
 character array with its name (`.name`), measurement technique (`.type`) and
 date (`.date`).
 
@@ -122,7 +122,7 @@ data (`.xData` & `.yData`) and their respective units (`.xUnit` & `.yUnit`).
 *Properties*
 
 - *`comm`* – Object containing handle for communication with device
-- *`measurement`* – The result of the measurement converted for use in matlab
+- *`measurement`* – The result of the measurement converted for use in MATLAB
 - *`dispInCommandWindow`* – When set to true the latest readings from the device are displayed in the command window.
 - *`dispInPlot`* – When set to true the latest readings from the device are displayed in a new Figure.
 - *`inMeasurement`* – Bool indicating whether the device is measuring
@@ -132,7 +132,7 @@ data (`.xData` & `.yData`) and their respective units (`.xUnit` & `.yUnit`).
 - *`y_array`* – Array of idle potential readings
 - *`y_unit`* – Unit of the data recorded in the y_array.
 - *`previousMeasurement`* – The result of the measurement as a .Net object
-- *`curves`* – List of .Net curve objects returned by the PalmSens Matlab SDK
+- *`curves`* – List of .Net curve objects returned by the PalmSens MATLAB SDK
 
 *Methods*
 
@@ -306,7 +306,7 @@ and can be retreived after the measurement has been completed
 
 **Measurements**:
 Measurements are converted to structs to improve their compatability with
-Matlab. Each measurement is stored in its own struct and contains a
+MATLAB. Each measurement is stored in its own struct and contains a
 character array with its name (`.name`), measurement technique (`.type`) and
 date (`.date`).
 
@@ -321,7 +321,7 @@ data (`.xData` & `.yData`) and their respective units (`.xUnit` & `.yUnit`).
 *Properties*
 
 - *`comm`* – Object containing handle for communication with device
-- *`measurement`* – The result of the measurement converted for use in matlab
+- *`measurement`* – The result of the measurement converted for use in MATLAB
 - *`dispInCommandWindow`* – When set to true the latest readings from the device are displayed in the command window.
 - *`dispInPlot`* – When set to true the latest readings from the device are displayed in a new Figure.
 - *`figureForPlot`* – Figure to display data in
@@ -335,7 +335,7 @@ data (`.xData` & `.yData`) and their respective units (`.xUnit` & `.yUnit`).
 - *`y_array`* – Array of idle potential readings
 - *`y_unit`* – Unit of the data recorded in the y_array.
 - *`previousMeasurement`* – The result of the measurement as a .Net object
-- *`curves`* – List of .Net curve objects returned by the PalmSens Matlab SDK
+- *`curves`* – List of .Net curve objects returned by the PalmSens MATLAB SDK
 
 *Methods*
 
@@ -489,7 +489,7 @@ Plot EIS data in real time.
 ## `MeasurementGUI`
 The measurement class contains the functions for starting, stopping
 and storing the data from a measurements
-This is a version of the `Measurement` class that can be used with a Matlab GUIDE user interface.
+This is a version of the `Measurement` class that can be used with a MATLAB GUIDE user interface.
 
 *Properties*
 

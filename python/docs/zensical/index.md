@@ -33,8 +33,11 @@ To install:
 pip install pypalmsens
 ```
 
+PyPalmSens supports Windows, MacOS and Linux (including ARM-based single-board computers like Raspberry Pi).
+
 PyPalmSens is built on top of the [PalmSens .NET libraries](https://dev.palmsens.com/dotnet),
 and therefore requires the .NET runtime to be installed. See the [installation instructions](installation.md) for your platform for more information.
+
 
 ## Getting started
 

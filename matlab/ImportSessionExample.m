@@ -3,7 +3,7 @@
 % 2. Plotting the data.
 
 clear;
-%% Add PalmSens Matlab SDK to workspace
+%% Add PalmSens MATLAB SDK to workspace
 PSSDK = LoadPSSDK();
 if PSSDK == false
     disp('Error while adding the PalmSens SDK to the workspace. Please resolve before continuing.');
@@ -65,7 +65,7 @@ for i = 1:length(measurements)
 end
 %% 2. Plotting measurement data
 % Measurements are converted to structs to improve their compatability with
-% Matlab. Each measurement is stored in its own struct and contains a
+% MATLAB. Each measurement is stored in its own struct and contains a
 % character array with its name (.name), measurement technique (.type) and
 % date (.date). The measurement itself is stored in one or more curves.
 % Generally a measurement has one curve struct, however, Cyclic Voltammetry

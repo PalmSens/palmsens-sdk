@@ -8,8 +8,8 @@ Software Development Kits (SDKs) are available for the ecosystems below. See the
 |
 .Data analysis, prototyping, research
 * xref:python:ROOT:attachment$index.html[PyPalmSens] (Python SDK)
-* xref:matlab:ROOT:index.adoc[Matlab SDK]
-* xref:labview:ROOT:index.adoc[Labview SDK]
+* xref:matlab:ROOT:index.adoc[MATLAB SDK]
+* xref:labview:ROOT:index.adoc[LabVIEW SDK]
 
 .^| image:ROOT:platforms_python.png[Python logo, xref=python:ROOT:attachment$index.html]
 
@@ -24,10 +24,13 @@ Software Development Kits (SDKs) are available for the ecosystems below. See the
 
 == Which SDK should you use?
 
-For new projects, we recommend using xref:python:ROOT:index.adoc[PyPalmSens] for research, data analysis and prototyping, and the xref:maui:ROOT:index.adoc[.NET MAUI SDK] for native, cross-platform app development targeting Windows, Android, and iOS.
-Both of these SDKs are actively developed and will be first to receive new features, updates, and fixes.
+For new projects, we recommend using xref:python:ROOT:index.adoc[PyPalmSens] for research, data analysis and prototyping.
+PyPalmSens supports Windows, MacOS and Linux (including ARM-based single-board computers like Raspberry Pi).
 
-For existing codebases already using xref:matlab:ROOT:index.adoc[Matlab], xref:labview:ROOT:index.adoc[LabView], xref:winforms:ROOT:index.adoc[WinForms], or xref:wpf:ROOT:index.adoc[WPF], we maintain the other SDKs.
+Use xref:maui:ROOT:index.adoc[.NET MAUI SDK] for native, cross-platform app development targeting Windows, Android, and iOS.
+Both of these are actively developed and will be first to receive new features, updates, and fixes.
+
+For existing codebases, we offer SDKS for xref:matlab:ROOT:index.adoc[MATLAB], xref:labview:ROOT:index.adoc[LabVIEW], xref:winforms:ROOT:index.adoc[WinForms], or xref:wpf:ROOT:index.adoc[WPF].
 These SDKs will continue to receive occasional bug fixes but are no longer under active development.
 
 == Getting help

@@ -1,13 +1,13 @@
 # Classes
 
-This is a list of the classes that are available in the Matlab SDK.
+This is a list of the classes that are available in the MATLAB SDK.
 
-These wrap some of the Palmsens xref:dotnet:ROOT:techniques.adoc[.NET internal data structures] to make them more accessible in Matlab.
+These wrap some of the Palmsens xref:dotnet:ROOT:techniques.adoc[.NET internal data structures] to make them more accessible in MATLAB.
 Look at the class and method docstrings for further information on the interfaces.
 
 - *<<_equivalentcircuitfit>>*: Handles the equivalent circuit fitting using the PalmSens.Core.Matlab.dll
 - *<<_measurement>>*: Returns data measured by a device as a variable, message in the command window and/or a plot in a figure.
-- *<<_measurementgui>>*: Version of the Measurement.m class that can be used with a Matlab GUIDE user interface.
+- *<<_measurementgui>>*: Version of the Measurement.m class that can be used with a MATLAB GUIDE user interface.
 - *<<_multichannelmeasurement>>*: Used for running when connected to multiple instruments simultaneaously, please refer to the `MultiChannelMeasurementLoopExample`
 
 include::_classes.adoc[]

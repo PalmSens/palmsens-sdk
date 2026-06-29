@@ -1118,7 +1118,7 @@ function dataListener(sender, eventArgs, hObject)
 function measurement = processMeasurement(hObject, rawData)
     handles = guidata(hObject);
 
-    % Convert .NET measurement to matlab structs
+    % Convert .NET measurement to MATLAB structs
     if strcmp(char(rawData.measurement.Method.Name), 'Impedance Spectroscopy')  % Impedance Spectroscopy data is handled differently
         measurement = processEISMeasurement(hObject, rawData);
     else

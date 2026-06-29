@@ -1,6 +1,18 @@
 # Changelog
 
 <!-- Latest-->
+## PyPalmSens 1.10.1
+
+> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.10.1">python-1.10.1</a>
+| :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.10.1">pypalmsens-1.10.1</a>
+| :fontawesome-solid-calendar: 2026-06-29
+
+This release fixes a crash in 1.10.0 when importing PyPalmSens.
+
+### What's changed
+
+- Add templates to MANIFEST.in ([#403](https://github.com/PalmSens/PalmSens_SDK/pull/403))
+
 ## PyPalmSens 1.10
 
 > :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.10">python-1.10</a>

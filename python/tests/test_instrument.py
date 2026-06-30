@@ -210,6 +210,48 @@ async def test_idle_status_callback_async():
 
 
 @pytest.mark.instrument
+async def test_message_callback():
+    points = []
+
+    def callback(message: str):
+        points.append(message)
+
+    with ps.connect() as manager:
+        manager.register_receive_message_callback(callback)
+        method = method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
+
+        _ = manager.measure(method)
+
+        manager.unregister_receive_message_callback()
+
+    assert len(points) == 2
+
+    assert points == ['Running: MethodSCRIPT Sandbox', 'Hello world']
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_message_callback_async():
+    points = []
+
+    def callback(message: str):
+        points.append(message)
+
+    async with await ps.connect_async() as manager:
+        manager.register_receive_message_callback(callback)
+
+        method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
+
+        _ = await manager.measure(method)
+
+        manager.unregister_receive_message_callback()
+
+    assert len(points) == 2
+
+    assert points == ['Running: MethodSCRIPT Sandbox', 'Hello world']
+
+
+@pytest.mark.instrument
 def test_supported():
     instruments = ps.discover()
     with ps.connect(instruments[0]) as manager:

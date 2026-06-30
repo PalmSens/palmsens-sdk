@@ -288,6 +288,31 @@ Conditioning: potential=0.500 V, current=0.098 μA
 
 See [pypalmsens.data.Status][] or the provided [Status callback](examples.md#status-callback) example for more information.
 
+## Receive messages
+
+Likewise, you can register a callback for event messages.
+
+These messages are like those in the status bar in PSTrace, and can include messages like:
+
+- "Running: Cyclic Voltammetry"
+- "Measuring cycle _x_ level _y_" for multistep techniques
+- "Limit reached"
+
+These are also emitted for a `send_string` call in MethodSCRIPT.
+
+For example, using [print][] as the callback prints the messages to the terminal:
+
+```python
+>>> method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"')
+>>> manager.register_receive_message_callback(print)
+>>> await ps.measure(method)
+Running: MethodSCRIPT Sandbox
+Hello world
+>>> manager.unregister_receive_message_callback()
+```
+
+See [InstrumentManager][pypalmsens.InstrumentManager.register_receive_message_callback] and [InstrumentManagerAsync][pypalmsens.InstrumentManagerAsync.register_receive_message_callback] for more information.
+
 ## Manually controlling the device
 
 Depending on your device’s capabilities it can be used to set a potential/current and to switch current ranges.
@@ -349,13 +374,11 @@ More script features include:
 * Reading auxiliary values like pH or temperature
 * Going to sleep or hibernate mode
 
-See the [MethodSCRIPT™ documentation](https://www.palmsens.com/methodscript) for more information.
+See the [MethodSCRIPT™ documentation](https://dev.palmsens.com/msstart/methodscript_editors.html) for more information.
 
-### Sandbox Measurements
-
-PSTrace includes an option to make use MethodSCRIPT™ Sandbox to write and run scripts.
+PSTrace includes a MethodSCRIPT™ Editor to write and run scripts.
 This is a great place to test MethodSCRIPT™ measurements to see what the result would be.
-That script can then be used in the MethodScriptSandbox technique in the SDK as demonstrated below.
+That script can then be used in the [MethodScript][pypalmsens.MethodScript] technique in PyPalmSens.
 
 ![Graphical editor for MethodSCRIPT™](assets/method_script_editor.png){ width="80%" }
 

@@ -6,11 +6,10 @@ import warnings
 from collections.abc import AsyncGenerator, Coroutine
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Callable, Protocol
 
 import clr
 import PalmSens
-from PalmSens import AsyncEventHandler
 from PalmSens.Comm import CommManager, MuxType
 from System.Threading.Tasks import Task
 from typing_extensions import override
@@ -254,6 +253,7 @@ class InstrumentManagerAsync(CapabilitiesMixin):
 
         self._comm: CommManager
         self._status_callback: CallbackStatus
+        self._receive_message_callback: Callable[[str], None]
         self._loop: asyncio.AbstractEventLoop
 
     @override
@@ -455,16 +455,13 @@ class InstrumentManagerAsync(CapabilitiesMixin):
         The callback is triggered when the current/potential are updated
         durinig idle state or pretreatment phases.
 
+        Parameters
+        ----------
         callback: CallbackStatus
             The function to call when triggered
         """
         self._status_callback = callback
         self._loop = asyncio.get_running_loop()
-
-        self.status_idle_handler_async: AsyncEventHandler = AsyncEventHandler(
-            self._idle_status_handler
-        )
-
         self._comm.ReceiveStatusAsync += self._idle_status_handler
 
     def unregister_status_callback(self):
@@ -474,11 +471,34 @@ class InstrumentManagerAsync(CapabilitiesMixin):
 
     def _idle_status_handler(self, sender, args) -> Task.CompletedTask:
         """Event handler helper function to schedule the callback."""
-        assert self._status_callback
-
         status = Status._from_event_args(args)
 
         _ = self._loop.call_soon_threadsafe(self._status_callback, status)
+        return Task.CompletedTask
+
+    def register_receive_message_callback(self, callback: Callable[[str], None], /):
+        """Register callback when a message is received.
+
+        The callback is triggered, for example, when a method is started,
+        or when `send_string` is called in MethodSCRIPT.
+
+        Parameters
+        ----------
+        callback: Callable[[str], None]
+            The function to call when triggered
+        """
+        self._receive_message_callback = callback
+        self._loop = asyncio.get_running_loop()
+        self._comm.ClientConnection.ReceiveMessage += self._receive_message_handler
+
+    def unregister_receive_message_callback(self):
+        """Unregister callback from message events."""
+        self._comm.ClientConnection.ReceiveMessage -= self._receive_message_handler
+        del self._receive_message_callback
+
+    def _receive_message_handler(self, sender, message: str) -> Task.CompletedTask:
+        """Message handler helper function to schedule the callback."""
+        _ = self._loop.call_soon_threadsafe(self._receive_message_callback, message)
         return Task.CompletedTask
 
     async def measure(

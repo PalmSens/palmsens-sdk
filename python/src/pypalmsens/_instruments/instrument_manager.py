@@ -5,7 +5,7 @@ import warnings
 from contextlib import contextmanager
 from pathlib import Path
 from time import sleep
-from typing import Generator
+from typing import Callable, Generator
 
 import clr
 import PalmSens
@@ -122,6 +122,7 @@ class InstrumentManager(CapabilitiesMixin):
         self.instrument: Instrument = instrument
         """Instrument being managed by this class."""
 
+        self._receive_message_callback: Callable[[str], None]
         self._comm: CommManager
 
     @override
@@ -307,6 +308,29 @@ class InstrumentManager(CapabilitiesMixin):
             serial = self._comm.DeviceSerial.ToString()
 
         return serial
+
+    def register_receive_message_callback(self, callback: Callable[[str], None], /):
+        """Register callback when a message is received.
+
+        The callback is triggered, for example, when a method is started,
+        or when `send_string` is called in MethodSCRIPT.
+
+        Parameters
+        ----------
+        callback: Callable[[str], None]
+            The function to call when triggered
+        """
+        self._receive_message_callback = callback
+        self._comm.ClientConnection.ReceiveMessage += self._receive_message_handler
+
+    def unregister_receive_message_callback(self):
+        """Unregister callback from message events."""
+        self._comm.ClientConnection.ReceiveMessage -= self._receive_message_handler
+        del self._receive_message_callback
+
+    def _receive_message_handler(self, sender, message: str) -> None:
+        """Message handler helper function to schedule the callback."""
+        self._receive_message_callback(message)
 
     def measure(
         self,

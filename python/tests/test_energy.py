@@ -13,7 +13,12 @@ from pypalmsens._methods.adapters import (
     energy_technique_adapter,
 )
 from pypalmsens._methods.energy import BaseMethodScriptTechnique
-from pypalmsens.energy import experimental_BatteryCycling
+from pypalmsens._methodscript import validate as validate_methodscript
+from pypalmsens.energy import (
+    experimental_BatteryCycling,
+    experimental_ConstantPower,
+    experimental_ConstantResistance,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +34,19 @@ def manager():
 def test_float_gives_error():
     with pytest.raises(ValidationError):
         _ = experimental_BatteryCycling(max_time=1.123)
+
+
+@pytest.mark.parametrize(
+    'cls',
+    (
+        experimental_BatteryCycling,
+        experimental_ConstantPower,
+        experimental_ConstantResistance,
+    ),
+)
+def test_render(cls):
+    method = cls()
+    validate_methodscript(method.render())
 
 
 class BC:
@@ -145,6 +163,7 @@ class DCR:
     ),
 )
 def test_measure(manager, method):
+
     params = energy_technique_adapter.validate_python(method.kwargs)
 
     assert isinstance(params, BaseMethodScriptTechnique)
@@ -163,6 +182,7 @@ def test_measure(manager, method):
 )
 def test_params_round_trip(method):
     params = energy_technique_adapter.validate_python(method.kwargs)
+
     ms_params = params.to_methodscript()
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -171,4 +191,4 @@ def test_params_round_trip(method):
         new_params = ps.load_method_file(path)
 
     # skip header/timestamp
-    assert new_params.script.splitlines()[4:] == params.render().splitlines()[4:]
+    assert new_params.script.splitlines()[3:] == params.render().splitlines()[3:]

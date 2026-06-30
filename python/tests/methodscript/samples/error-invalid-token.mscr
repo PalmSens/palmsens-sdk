@@ -1,0 +1,5 @@
+# Error 3: non-ASCII emoji used as an unquoted token
+cell_on
+var var1
+store_var var1 😀 aa
+cell_off

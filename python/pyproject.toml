@@ -35,6 +35,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
+    'antlr4-python3-runtime>=4.13.1',
     'jinja2',
     'pydantic',
     'numpy',
@@ -119,14 +120,26 @@ quote-style = "single"
 
 [tool.mypy]
 files = ["src/pypalmsens", "tests", "examples"]
-exclude = ["typings", "scr/PalmSens-stubs"]
+exclude = [
+    "typings",
+    "src/PalmSens-stubs",
+    "src/pypalmsens/_methodscript/generated"
+]
 allow_redefinition = true
 ignore_missing_imports = true
-disable_error_code = ["prop-decorator"]
+disable_error_code = [
+    "prop-decorator",
+]
+
 
 [tool.pyright]
 include = ["src/pypalmsens", "tests"]
-ignore = ["typings", "src/PalmSens-stubs", "examples"]
+ignore = [
+    "typings",
+    "src/PalmSens-stubs",
+    "examples",
+    "python/src/pypalmsens/_methodscript/generated/.*"
+]
 reportMissingModuleSource = false
 reportAttributeAccessIssue = false
 reportUnknownMemberType = false

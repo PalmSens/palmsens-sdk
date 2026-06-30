@@ -10,6 +10,8 @@ from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 from pydantic import Field, field_validator
 from typing_extensions import override
 
+from pypalmsens._methodscript import validate as validate_methodscript
+
 from .._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
@@ -2243,12 +2245,11 @@ class MethodScript(BaseTechnique):
     id: Literal['ms'] = 'ms'
     """Unique method identifier."""
 
-    script: str = """e
+    script: str = """\
 wait 100m
 if 1 < 2
     send_string "Hello world"
 endif
-
 """
     """Script to run.
 
@@ -2258,7 +2259,7 @@ endif
     @override
     def _update_psmethod(self, psmethod: PalmSens.Method, /):
         """Update method with MethodScript."""
-        psmethod.MethodScript = self.script
+        psmethod.MethodScript = f'e\n{self.script}\n'
 
     @override
     def _update_params(self, psmethod: PalmSens.Method, /):
@@ -2314,10 +2315,13 @@ endif
     @field_validator('script')
     @classmethod
     def validate_script(cls, value: str) -> str:
-        if not (value.startswith('e\n') or value.startswith('l\n')):
-            raise ValueError('A script must start with `e\\n` or `l\\n`')
-        if not value.endswith('\n\n'):
-            raise ValueError('A script must end with 2 newlines')
+        if value.startswith('e\n'):
+            value = value.replace('e\n', '', 1)
+
+        value = value.rstrip()
+        value += '\n'
+
+        validate_methodscript(value)
 
         return value
 
@@ -2325,6 +2329,6 @@ endif
     @override
     def _use_hardware_sync(self) -> bool:
         """Return true if 'set_channel_sync 1' is set."""
-        match = re.findall(r'\n\s*(set_channel_sync\s+1)', self.script)
+        match = re.findall(r'^\s*(set_channel_sync\s+1)', self.script)
 
         return any(match)

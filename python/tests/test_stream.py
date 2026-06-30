@@ -72,7 +72,7 @@ def _test_stream(path: Path, method: MethodTypeCompatible):
 
 @pytest.mark.instrument
 def test_measure_stream_cv_multiple_scans(tmpdir):
-    path = Path('cv.jsonl')
+    path = tmpdir / 'cv.jsonl'
 
     method = ps.CyclicVoltammetry(
         n_scans=3,

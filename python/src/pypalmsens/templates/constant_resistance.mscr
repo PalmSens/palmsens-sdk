@@ -1,4 +1,3 @@
-e
 # MethodSCRIPT version: 1.9
 # Generated on {{ timestamp }} by PyPalmSens {{ version }}
 #
@@ -58,4 +57,3 @@ loop time <= duration
 endloop
 on_finished:
   cell_off
-

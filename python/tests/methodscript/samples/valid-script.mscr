@@ -1,0 +1,10 @@
+# Valid MethodScript sample
+var voltage
+var current
+set_e 500m
+beep 1i 5i 100m
+wait 1000m
+if voltage > 100m
+    cell_on
+endif
+cell_off

@@ -33,7 +33,7 @@ def test_to_settings(method):
 def test_methodscript_file_roundtrip(tmpdir):
     path = tmpdir / 'test.mscr'
 
-    method = ps.MethodScript(script='e\nsend_string "Test"\n\n')
+    method = ps.MethodScript(script='send_string "Test"\n')
     method.to_file(path)
     method2 = ps.MethodScript().from_file(path)
 

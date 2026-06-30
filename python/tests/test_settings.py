@@ -419,12 +419,13 @@ def test_GeneralSettings():
     [
         ({'id': 'cv', 'general': {'use_hardware_sync': True}}, True),
         ({'id': 'cv', 'general': {'use_hardware_sync': False}}, False),
-        ({'id': 'ms', 'script': 'e\nset_channel_sync 1\n\n'}, True),
-        ({'id': 'ms', 'script': 'e\nset_channel_sync 0\n\n'}, False),
+        ({'id': 'ms', 'script': 'set_channel_sync 1\n'}, True),
+        ({'id': 'ms', 'script': 'set_channel_sync 0\n'}, False),
     ],
 )
 def test_hardware_sync_flag(params: dict[str, Any], expected: bool):
     method = technique_adapter.validate_python(params)
+
     assert method._use_hardware_sync is expected
 
 

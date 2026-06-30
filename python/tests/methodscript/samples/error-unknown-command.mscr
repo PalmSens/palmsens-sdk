@@ -1,0 +1,5 @@
+# Error 1: unknown command "beeep" (typo)
+var voltage
+set_e 500m
+beeep 1i 5i 100m
+cell_off

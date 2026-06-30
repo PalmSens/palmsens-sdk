@@ -5,7 +5,7 @@ def new_data_callback(data):
     print(data.last_datapoint())
 
 
-script = """e
+script = """\
 var c
 var p
 var e
@@ -52,8 +52,7 @@ pck_start
 pck_end
 endloop
 on_finished:
-cell_off
-
+    cell_off
 """
 
 instruments = ps.discover()

@@ -101,11 +101,11 @@ This example shows how to set up and run a [MethodSCRIPT Sandbox measurement](me
 
 For more information, see [pypalmsens.MethodScript][].
 
-```python title="measurement_MethodSCRIPT_sandbox.py"
---8<-- "examples/measurement_MethodSCRIPT_sandbox.py"
+```python title="measurement_MethodSCRIPT.py"
+--8<-- "examples/measurement_MethodSCRIPT.py"
 ```
 
-[:fontawesome-solid-download: measurement_MethodSCRIPT_sandbox.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_MethodSCRIPT_sandbox.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: measurement_MethodSCRIPT.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_MethodSCRIPT.py){ .md-button .md-button--primary}
 
 ## Status callback
 

@@ -29,6 +29,17 @@ st.set_page_config(
     initial_sidebar_state='expanded',
 )
 
+if st.context.theme.type == 'light':
+    logo_url = 'https://dev.palmsens.com/python/latest/_attachments/assets/banner.svg'
+else:
+    logo_url = 'https://dev.palmsens.com/python/latest/_attachments/assets/banner_dark.svg'
+
+st.logo(
+    logo_url,
+    link='https://dev.palmsens.com/python/latest',
+    size='large',
+)
+
 
 @st.cache_resource
 def connect_to_device_async():
@@ -151,11 +162,11 @@ def main():
             width='stretch',
         )
 
-    manager: ps.InstrumentManager = connect_to_device()
-    assert manager.is_connected()
-
     if not st.checkbox('Connect and continue...'):
         st.stop()
+
+    manager: ps.InstrumentManager = connect_to_device()
+    assert manager.is_connected()
 
     st.markdown('---')
 
@@ -221,9 +232,6 @@ def main():
     measurement = manager.measure(method)
 
     progress_bar.progress(1.0, text='Measurement finished!')
-
-    st.subheader('Curves')
-    st.write(measurement.curves)
 
 
 if __name__ == '__main__':

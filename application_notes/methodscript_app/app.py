@@ -13,7 +13,7 @@ import asyncio
 import streamlit as st
 
 import pypalmsens as ps
-from pypalmsens.data import CallbackData
+from pypalmsens.data import CallbackData, Curve
 
 st.set_page_config(
     page_title='Battery Cycling',
@@ -148,25 +148,49 @@ def main():
 
     charts = {}
 
+    col1, col2 = st.columns(2)
+
+    chart_t_vs_e = col1.empty()
+    chart_t_vs_i = col2.empty()
+
+    def on_curve_begin(curve: Curve):
+        if curve.title.startswith('CP: t vs E'):
+            charts[curve.id] = chart_t_vs_e
+        elif curve.title.startswith('CP: t vs i'):
+            charts[curve.id] = chart_t_vs_i
+        elif curve.title.startswith('Unknown'):
+            return
+
+    def on_curve_end(curve: Curve):
+        st.write(curve.title, 'END')
+
     def on_data(data: CallbackData):
-        if data.id not in charts:
-            chart = st.empty()
-            charts[data.id] = chart
-        else:
+        try:
             chart = charts[data.id]
+        except KeyError:
+            # E vs. E curves
+            return
 
         x = f'{data.x_array.quantity} / {data.x_array.unit}'
         y = f'{data.y_array.quantity} / {data.y_array.unit}'
 
         chart.line_chart({x: data.x_array, y: data.y_array}, x=x, y=y)
 
-    async def async_measure(manager, method):
+    async def async_measure(manager: ps.InstrumentManagerAsync, method):
         def update_status_message(message: str):
             status.update(label=message)
 
+        manager.events.on_curve_begin = on_curve_begin
+        manager.events.on_curve_new_data = on_data
+        manager.events.on_curve_end = on_curve_end
+
         manager.register_receive_message_callback(update_status_message)
 
-        measurement = await manager.measure(method, callback=on_data)
+        assert manager._receive_message_callback is not None
+
+        measurement = await manager.measure(method)
+
+        assert manager._receive_message_callback is not None
 
         manager.unregister_receive_message_callback()
         return measurement

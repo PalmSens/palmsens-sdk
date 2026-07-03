@@ -171,6 +171,11 @@ class EISData:
         """Return values for circuit description code (CDC)."""
         return list(self._pseis.CDCValues)
 
+    @property
+    def id(self) -> int:
+        """Unique identifier for curve object."""
+        return self._pseis.GetHashCode()
+
     def metadata_json(self) -> bytes:
         """Generate eis data metadata as json."""
         arrays = [array for array in self.dataset.values() if not array.is_derived]
@@ -184,6 +189,6 @@ class EISData:
                 n_frequencies=self.n_frequencies,
                 frequency_type=self.frequency_type,
                 scan_type=self.scan_type,
-                id=self._pseis.GetHashCode(),
+                id=self.id,
             )
         )

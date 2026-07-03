@@ -27,7 +27,7 @@ from ..data import Measurement
 from .callback import Callback, CallbackEIS, Status
 from .instrument import Instrument, discover
 from .instrument_manager_async import CapabilitiesMixin
-from .measurement_manager_async import MeasurementManagerAsync
+from .measurement_manager_async import MeasurementEvents, MeasurementManagerAsync
 from .shared import firmware_warning
 
 warnings.simplefilter('default')
@@ -121,6 +121,9 @@ class InstrumentManager(CapabilitiesMixin):
     def __init__(self, instrument: Instrument):
         self.instrument: Instrument = instrument
         """Instrument being managed by this class."""
+
+        self.events: MeasurementEvents = MeasurementEvents()
+        """Register functions to event hooks."""
 
         self._receive_message_callback: Callable[[str], None]
         self._comm: CommManager
@@ -351,6 +354,8 @@ class InstrumentManager(CapabilitiesMixin):
             time it was called. Each point is an instance of `ps.data.CallbackData`
             for non-impedimetric or  `ps.data.CallbackDataEIS`
             for impedimetric measurments.
+
+            For more advanced hooks, use `InstrumentManager.events`
         stream: Path | str | None
             If defined, stream data directly to this file in JSON Lines text format
             (https://jsonlines.org). This option is useful for long-term measurements.
@@ -370,7 +375,12 @@ class InstrumentManager(CapabilitiesMixin):
         measurement_manager = MeasurementManagerAsync(comm=self._comm)
 
         return asyncio.run(
-            measurement_manager.measure(method, callback=callback, stream=stream)
+            measurement_manager.measure(
+                method,
+                callback=callback,
+                stream=stream,
+                events=self.events,
+            )
         )
 
     def wait_digital_trigger(self, wait_for_high: bool):

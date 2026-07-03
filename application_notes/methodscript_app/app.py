@@ -157,6 +157,8 @@ def main():
     if not st.checkbox('Connect and continue...'):
         st.stop()
 
+    st.markdown('---')
+
     charts = {}
 
     col1, col2 = st.columns(2)
@@ -172,7 +174,7 @@ def main():
         except ValueError:
             curve_no = 0
 
-        status.update(label=f'Cycle {curve_no + 1}/{cycles}')
+        progress_bar.progress(curve_no / cycles, text=f'Cycle {curve_no + 1}/{cycles}')
 
         if curve.title.startswith('CP: t vs E'):
             charts[curve.id] = chart_t_vs_e
@@ -199,7 +201,14 @@ def main():
             {'x': data.x_array[: data.index], 'y': data.y_array[: data.index]}
         )
 
-        chart = alt.Chart(source).mark_line().encode(x='x', y='y')
+        chart = (
+            alt.Chart(source, title=f'{data.x_array.quantity} vs {data.y_array.quantity}')
+            .mark_line()
+            .encode(
+                alt.X('x').title(f'{data.x_array.quantity} / {data.x_array.unit}'),
+                alt.Y('y').title(f'{data.y_array.quantity} / {data.y_array.unit}'),
+            )
+        )
 
         container.altair_chart(chart)
 
@@ -207,11 +216,11 @@ def main():
     manager.events.on_curve_new_data = on_data
     # manager.events.on_curve_end = on_curve_end
 
-    with st.status('Starting measurement') as status:
-        status.write('Collecting data...')
+    progress_bar = st.progress(0, text='Starting measurement...')
 
-        measurement = manager.measure(method)
-        status.update(label='Measurement finished!', state='complete')
+    measurement = manager.measure(method)
+
+    progress_bar.progress(1.0, text='Measurement finished!')
 
     st.subheader('Curves')
     st.write(measurement.curves)

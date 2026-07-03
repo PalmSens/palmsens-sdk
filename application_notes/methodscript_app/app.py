@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import asyncio
 
+import altair as alt
+import pandas as pd
 import streamlit as st
 
 import pypalmsens as ps
@@ -146,6 +148,9 @@ def main():
     manager: ps.InstrumentManagerAsync = connect_to_device()
     assert manager.is_connected()
 
+    if not st.checkbox('Connect and continue...'):
+        st.stop()
+
     charts = {}
 
     col1, col2 = st.columns(2)
@@ -166,15 +171,17 @@ def main():
 
     def on_data(data: CallbackData):
         try:
-            chart = charts[data.id]
+            container = charts[data.id]
         except KeyError:
             # E vs. E curves
             return
 
-        x = f'{data.x_array.quantity} / {data.x_array.unit}'
-        y = f'{data.y_array.quantity} / {data.y_array.unit}'
+        source = pd.DataFrame({'x': data.x_array, 'y': data.y_array})
 
-        chart.line_chart({x: data.x_array, y: data.y_array}, x=x, y=y)
+        chart = alt.Chart(source).mark_line().encode(x='x', y='y')
+        # chart = chart.interactive()
+
+        container.altair_chart(chart)
 
     async def async_measure(manager: ps.InstrumentManagerAsync, method):
         def update_status_message(message: str):

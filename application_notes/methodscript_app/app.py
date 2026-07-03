@@ -13,6 +13,7 @@ import asyncio
 import altair as alt
 import pandas as pd
 import streamlit as st
+from streamlit.runtime.scriptrunner_utils import script_run_context
 
 import pypalmsens as ps
 from pypalmsens.data import CallbackData, Curve
@@ -30,8 +31,13 @@ st.set_page_config(
 
 
 @st.cache_resource
-def connect_to_device():
+def connect_to_device_async():
     return asyncio.run(ps.connect_async())
+
+
+@st.cache_resource
+def connect_to_device():
+    return ps.connect()
 
 
 def main():
@@ -145,7 +151,7 @@ def main():
             width='stretch',
         )
 
-    manager: ps.InstrumentManagerAsync = connect_to_device()
+    manager: ps.InstrumentManager = connect_to_device()
     assert manager.is_connected()
 
     if not st.checkbox('Connect and continue...'):
@@ -159,6 +165,15 @@ def main():
     chart_t_vs_i = col2.empty()
 
     def on_curve_begin(curve: Curve):
+        _ = script_run_context.add_script_run_ctx()
+
+        try:
+            curve_no = int(curve.title.rsplit(maxsplit=1)[-1])
+        except ValueError:
+            curve_no = 0
+
+        status.update(label=f'Cycle {curve_no + 1}/{cycles}')
+
         if curve.title.startswith('CP: t vs E'):
             charts[curve.id] = chart_t_vs_e
         elif curve.title.startswith('CP: t vs i'):
@@ -167,45 +182,35 @@ def main():
             return
 
     def on_curve_end(curve: Curve):
-        st.write(curve.title, 'END')
+        _ = script_run_context.add_script_run_ctx()
+
+        st.write(curve.title, 'finished')
 
     def on_data(data: CallbackData):
+        _ = script_run_context.add_script_run_ctx()
+
         try:
             container = charts[data.id]
         except KeyError:
             # E vs. E curves
             return
 
-        source = pd.DataFrame({'x': data.x_array, 'y': data.y_array})
+        source = pd.DataFrame(
+            {'x': data.x_array[: data.index], 'y': data.y_array[: data.index]}
+        )
 
         chart = alt.Chart(source).mark_line().encode(x='x', y='y')
-        # chart = chart.interactive()
 
         container.altair_chart(chart)
 
-    async def async_measure(manager: ps.InstrumentManagerAsync, method):
-        def update_status_message(message: str):
-            status.update(label=message)
-
-        manager.events.on_curve_begin = on_curve_begin
-        manager.events.on_curve_new_data = on_data
-        manager.events.on_curve_end = on_curve_end
-
-        manager.register_receive_message_callback(update_status_message)
-
-        assert manager._receive_message_callback is not None
-
-        measurement = await manager.measure(method)
-
-        assert manager._receive_message_callback is not None
-
-        manager.unregister_receive_message_callback()
-        return measurement
+    manager.events.on_curve_begin = on_curve_begin
+    manager.events.on_curve_new_data = on_data
+    # manager.events.on_curve_end = on_curve_end
 
     with st.status('Starting measurement') as status:
         status.write('Collecting data...')
 
-        measurement = asyncio.run(async_measure(manager, method))
+        measurement = manager.measure(method)
         status.update(label='Measurement finished!', state='complete')
 
     st.subheader('Curves')

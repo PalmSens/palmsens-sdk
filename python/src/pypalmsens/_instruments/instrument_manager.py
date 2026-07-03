@@ -355,7 +355,8 @@ class InstrumentManager(CapabilitiesMixin):
             for non-impedimetric or  `ps.data.CallbackDataEIS`
             for impedimetric measurments.
 
-            For more advanced hooks, use `InstrumentManager.events`
+            For more advanced use cases, use `InstrumentManager.events`
+            to register callbacks to various events.
         stream: Path | str | None
             If defined, stream data directly to this file in JSON Lines text format
             (https://jsonlines.org). This option is useful for long-term measurements.

@@ -39,6 +39,7 @@ from ._instruments.instrument_manager_async import (
 )
 from ._instruments.instrument_pool import InstrumentPool
 from ._instruments.instrument_pool_async import InstrumentPoolAsync
+from ._instruments.measurement_manager_async import MeasurementEvents
 from ._io import load_method_file, load_session_file, save_method_file, save_session_file
 from ._methods.mixed_mode import MixedMode
 from ._methods.techniques import (
@@ -91,6 +92,7 @@ __all__ = [
     'InstrumentManagerAsync',
     'InstrumentPool',
     'InstrumentPoolAsync',
+    'MeasurementEvents',
     'ACVoltammetry',
     'ChronoAmperometry',
     'ChronoCoulometry',

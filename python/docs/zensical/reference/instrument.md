@@ -52,3 +52,4 @@ For more information, see the [measurement documentation](https://dev.palmsens.c
        - Instrument
        - InstrumentManager
        - InstrumentPool
+       - MeasurementEvents

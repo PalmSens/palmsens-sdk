@@ -8,12 +8,17 @@
 
 from __future__ import annotations
 
+import concurrent.futures
+import time
+from threading import Thread
+
+import altair as alt
+import pandas as pd
 import streamlit as st
-from streamlit.runtime.scriptrunner_utils import script_run_context
+from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
 
 import pypalmsens as ps
 from pypalmsens.data import CallbackData, Curve
-from pypalmsens.energy import experimental_BatteryCycling
 
 st.set_page_config(
     page_title='Battery Cycling',
@@ -43,7 +48,13 @@ if 'curves' not in session:
     session.curves = {}
     session.e_curves_metadata = {}
     session.i_curves_metadata = {}
-    session.count = 0
+    session.i_curves_current = 0
+    session.e_curves_current = 0
+
+
+@st.cache_resource
+def get_executor():
+    return concurrent.futures.ThreadPoolExecutor(max_workers=1)
 
 
 @st.cache_resource
@@ -57,54 +68,89 @@ def set_buttons_disabled(state: bool):
     print(st.session_state['buttons_disabled'])
 
 
-def start_measurement(method: experimental_BatteryCycling):
-    _ = script_run_context.add_script_run_ctx()
+class WorkerThread(Thread):
+    def __init__(self, delay):
+        super().__init__()
+        self.delay = delay
+        self.return_value = None
 
-    session.curves.clear()
-    session.i_curves_metadata.clear()
-    session.e_curves_metadata.clear()
+    def run(self):
+        start_time = time.time()
+        time.sleep(self.delay)
+        end_time = time.time()
+        self.return_value = f'start: {start_time}, end: {end_time}'
 
-    def on_curve_begin(curve: Curve):
-        _ = script_run_context.add_script_run_ctx()
 
-        try:
-            curve_no = int(curve.title.rsplit(maxsplit=1)[-1])
-        except ValueError:
-            curve_no = 0
+class MethodThread(Thread):
+    def __init__(self, method, session):
+        super().__init__()
+        self.method = method
+        self.session = session
+        self.return_value = None
 
-        progress_bar.progress(
-            curve_no / method.cycles, text=f'Cycle {curve_no + 1}/{method.cycles}'
+    def run(self):
+        session = self.session
+        method = self.method
+
+        session.curves.clear()
+        session.i_curves_metadata.clear()
+        session.e_curves_metadata.clear()
+
+        def on_curve_begin(curve: Curve):
+            # _ = script_run_context.add_script_run_ctx()
+
+            try:
+                curve_no = int(curve.title.rsplit(maxsplit=1)[-1])
+            except ValueError:
+                curve_no = 0
+
+            # progress_bar.progress(
+            #     curve_no / method.cycles, text=f"Cycle {curve_no + 1}/{method.cycles}"
+            # )
+
+            if curve.title.startswith('CP: t vs E'):
+                session.e_curves_metadata[curve.id] = curve.metadata()
+                session.e_curves_current = curve.id
+            elif curve.title.startswith('CP: t vs i'):
+                session.i_curves_metadata[curve.id] = curve.metadata()
+                session.i_curves_current = curve.id
+            elif curve.title.startswith('Unknown'):
+                pass
+
+            session.curves[curve.id] = []
+
+        def on_data(data: CallbackData):
+            for row in zip(data.x_array[data.start :], data.y_array[data.start :]):
+                session.curves[data.id].append(row)
+
+        session.manager.events.on_curve_begin = on_curve_begin
+        session.manager.events.on_curve_new_data = on_data
+
+        # progress_bar = st.progress(0, text="Starting measurement...")
+
+        measurement = session.manager.measure(method)
+
+        # progress_bar.progress(1.0, text="Measurement finished!")
+
+        self.return_value = measurement
+
+
+def make_chart(data, metadata) -> alt.Chart:
+    x_label, y_label = metadata.labels
+    x_unit, y_unit = metadata.units
+
+    source = pd.DataFrame(data, columns=metadata.columns)
+
+    chart = (
+        alt.Chart(source, title=metadata.title)
+        .mark_line()
+        .encode(
+            alt.X('x').title(f'{x_label} / {x_unit}'),
+            alt.Y('y').title(f'{y_label} / {y_unit}'),
         )
+    )
 
-        if curve.title.startswith('CP: t vs E'):
-            session.e_curves_metadata[curve.id] = curve.metadata_json()
-        elif curve.title.startswith('CP: t vs i'):
-            session.i_curves_metadata[curve.id] = curve.metadata_json()
-        elif curve.title.startswith('Unknown'):
-            return
-
-        session.curves[curve.id] = []
-
-    def on_data(data: CallbackData):
-        _ = script_run_context.add_script_run_ctx()
-
-        for row in zip(data.x_array[data.start :], data.y_array[data.start :]):
-            session.curves[data.id].append(row)
-
-    session.manager.events.on_curve_begin = on_curve_begin
-    session.manager.events.on_curve_new_data = on_data
-
-    progress_bar = st.progress(0, text='Starting measurement...')
-
-    _ = session.manager.measure(method)
-
-    progress_bar.progress(1.0, text='Measurement finished!')
-
-
-@st.fragment(parallel=True, run_every='1s')
-def update_e_chart():
-    session.count += 1
-    st.write(session.count)
+    return chart
 
 
 def main():
@@ -265,23 +311,46 @@ def main():
         disabled=session.manager.is_measuring(),
     )
 
-    update_e_chart()
+    if not start:
+        st.stop()
 
-    if start:
-        start_measurement(method)
+    st.write('---')
 
-    # source = pd.DataFrame({"x": data.x_array[: data.index], "y": data.y_array[: data.index]})
+    e_col, i_col = st.columns(2)
+    e_chart = e_col.empty()
+    i_chart = i_col.empty()
 
-    # chart = (
-    #     alt.Chart(source, title=f"{data.x_array.quantity} vs {data.y_array.quantity}")
-    #     .mark_line()
-    #     .encode(
-    #         alt.X("x").title(f"{data.x_array.quantity} / {data.x_array.unit}"),
-    #         alt.Y("y").title(f"{data.y_array.quantity} / {data.y_array.unit}"),
-    #     )
-    # )
+    method_thread = MethodThread(method=method, session=session)
 
-    # container.altair_chart(chart)
+    add_script_run_ctx(method_thread, get_script_run_ctx())
+    method_thread.start()
+
+    update_every = 1
+
+    while method_thread.is_alive():
+        time.sleep(update_every)
+
+        try:
+            i_chart.altair_chart(
+                make_chart(
+                    data=session.curves[session.i_curves_current],
+                    metadata=session.i_curves_metadata[session.i_curves_current],
+                )
+            )
+        except KeyError:
+            pass
+
+        try:
+            e_chart.altair_chart(
+                make_chart(
+                    data=session.curves[session.e_curves_current],
+                    metadata=session.e_curves_metadata[session.e_curves_current],
+                )
+            )
+        except KeyError:
+            pass
+
+    method_thread.join()
 
 
 if __name__ == '__main__':

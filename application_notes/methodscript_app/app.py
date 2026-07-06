@@ -46,11 +46,14 @@ if 'manager' not in session:
 if 'is_measuring' not in session:
     session.is_measuring = False
 
-if 'method_thread' not in session:
-    session.method_thread = None
+if 'thread' not in session:
+    session.thread = None
 
 if 'start' not in session:
     session.start = False
+
+if 'measurement' not in session:
+    session.measurement = None
 
 if 'curves' not in session:
     session.curves = {}
@@ -65,7 +68,8 @@ class MethodThread(Thread):
         super().__init__()
         self.method = method
         self.session = session
-        self.return_value = None
+        self.measurement = None
+        self.message = None
 
     def run(self):
         session = self.session
@@ -93,10 +97,14 @@ class MethodThread(Thread):
 
         session.manager.events.on_curve_begin = on_curve_begin
         session.manager.events.on_curve_new_data = on_data
+        session.manager.register_receive_message_callback(self.set_status_message)
 
         measurement = session.manager.measure(method)
 
-        self.return_value = measurement
+        self.measurement = measurement
+
+    def set_status_message(self, message: str):
+        self.message = message
 
 
 def make_chart(data, metadata) -> alt.Chart:
@@ -128,56 +136,56 @@ def main():
             'Potential Max (mV)',
             value=4300,
             help='Maximum potential to charge to (units: mV).',
-            disabled=session.method_thread is not None,
+            disabled=session.thread is not None,
         )
 
         current_min = st.number_input(
             'Current Min (μA)',
             value=5,
             help='Minimum current to stop the CV charge step (units: μA).',
-            disabled=session.method_thread is not None,
+            disabled=session.thread is not None,
         )
 
         potential_min = st.number_input(
             'Potential Min (mV)',
             value=2500,
             help='Minimum potential to discharge to (units: mV).',
-            disabled=session.method_thread is not None,
+            disabled=session.thread is not None,
         )
 
         current_charge = st.number_input(
             'Current Charge (μA)',
             value=100,
             help='Constant current to charge with (units: μA).',
-            disabled=session.method_thread is not None,
+            disabled=session.thread is not None,
         )
 
         current_discharge = st.number_input(
             'Current Discharge (μA)',
             value=-100,
             help='Constant current to discharge with (units: μA).',
-            disabled=session.method_thread is not None,
+            disabled=session.thread is not None,
         )
 
         cycles = st.number_input(
             'Cycles',
             value=1,
             help='Number of charge and discharge cycles.',
-            disabled=session.method_thread is not None,
+            disabled=session.thread is not None,
         )
 
         interval = st.number_input(
             'Interval (s)',
             value=10,
             help='Interval time of each measurement point (units: s).',
-            disabled=session.method_thread is not None,
+            disabled=session.thread is not None,
         )
 
         max_time = st.number_input(
             'Max Time (s)',
             value=3,
             help='Maximum duration of each step (if the cut-off is not met) (units: s).',
-            disabled=session.method_thread is not None,
+            disabled=session.thread is not None,
         )
 
         delta_v = st.number_input(
@@ -185,7 +193,7 @@ def main():
             value=100,
             min_value=0,
             help='Minimum potential variation required for plotting data in CC steps (units: μV).',
-            disabled=session.method_thread is not None,
+            disabled=session.thread is not None,
         )
 
         delta_i = st.number_input(
@@ -193,14 +201,14 @@ def main():
             value=500,
             min_value=0,
             help='Minimum current variation reuqired for plotting data in the CV step (units: nA).',
-            disabled=session.method_thread is not None,
+            disabled=session.thread is not None,
         )
 
         delta_t = st.number_input(
             'Delta T (ms)',
             value=100,
             help='Maximum time without plotting data (units: ms).',
-            disabled=session.method_thread is not None,
+            disabled=session.thread is not None,
         )
 
     method = ps.energy.experimental_BatteryCycling(
@@ -243,8 +251,6 @@ def main():
 
         st.code(ms.script, line_numbers=True, height=600)
 
-    start = False
-
     c1, c2, _ = st.columns(3)
 
     if not session.manager:
@@ -277,9 +283,9 @@ def main():
 
             st.rerun()
 
-    c1, c2, c3 = st.columns(3)
+    c1, c2, _ = st.columns(3)
 
-    if not session.method_thread:
+    if not session.thread:
         if c1.button(
             'Start measurement',
             type='primary',
@@ -287,14 +293,12 @@ def main():
             width='stretch',
         ):
             with c2.spinner('Starting measurement...'):
-                session.method_thread = MethodThread(method=method, session=session)
-                add_script_run_ctx(session.method_thread, get_script_run_ctx())
-                session.method_thread.start()
+                session.thread = MethodThread(method=method, session=session)
+                add_script_run_ctx(session.thread, get_script_run_ctx())
+                session.thread.start()
                 session.is_measuring = True
 
             st.rerun()
-
-        st.stop()
     else:
         if c1.button(
             'Abort measurement',
@@ -302,14 +306,10 @@ def main():
             icon=':material/cancel:',
             width='stretch',
         ):
+            session.thread.join()
             session.manager.abort()
-            session.method_thread.join()
-            session.method_thread = None
+            session.thread = None
             st.rerun()
-
-    st.space(size='small')
-
-    progress_bar = st.progress(0)
 
     st.space(size='small')
 
@@ -318,17 +318,49 @@ def main():
     e_chart = e_col.empty()
     i_chart = i_col.empty()
 
-    update_every = 1
+    if session.thread:
+        progress_bar = st.progress(0)
 
-    while session.method_thread.is_alive():
-        time.sleep(update_every)
+        update_every = 1
 
-        curve_no = len(session.e_curves_metadata)
-        progress_bar.progress(
-            curve_no / method.cycles,
-            text=f'Cycle {curve_no}/{method.cycles}',
-        )
+        while session.thread.is_alive():
+            time.sleep(update_every)
 
+            curve_no = len(session.e_curves_metadata)
+            progress_bar.progress(
+                curve_no / method.cycles,
+                text=session.thread.message,
+            )
+
+            try:
+                i_chart.altair_chart(
+                    make_chart(
+                        data=session.curves[session.i_curves_current],
+                        metadata=session.i_curves_metadata[session.i_curves_current],
+                    )
+                )
+            except KeyError:
+                pass
+
+            try:
+                e_chart.altair_chart(
+                    make_chart(
+                        data=session.curves[session.e_curves_current],
+                        metadata=session.e_curves_metadata[session.e_curves_current],
+                    )
+                )
+            except KeyError:
+                pass
+
+        session.thread.join()
+        session.measurement = session.thread.measurement
+        session.thread = None
+        session.is_measuring = False
+
+        progress_bar.progress(1.0, text='Measurement finished!')
+
+        st.rerun()
+    else:
         try:
             i_chart.altair_chart(
                 make_chart(
@@ -349,11 +381,17 @@ def main():
         except KeyError:
             pass
 
-    session.method_thread.join()
-    session.method_thread = None
-    session.is_measuring = False
+        c1, _, _ = st.columns(3)
 
-    progress_bar.progress(1.0, text='Measurement finished!')
+        if session.measurement:
+            _ = c1.download_button(
+                'Save measurement data (.pssession) ',
+                data=b'Not implemented yet =(',
+                file_name='battery_cycler.pssession',
+                mime='text/plain',
+                icon=':material/download:',
+                width='stretch',
+            )
 
 
 if __name__ == '__main__':

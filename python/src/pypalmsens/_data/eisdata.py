@@ -176,19 +176,21 @@ class EISData:
         """Unique identifier for curve object."""
         return self._pseis.GetHashCode()
 
+    def metadata(self) -> EISDataMetadata:
+        """Return eis data metadata as dataclass"""
+        arrays = [array for array in self.dataset.values() if not array.is_derived]
+        return EISDataMetadata(
+            title=self.title,
+            columns=[array.name for array in arrays],
+            units=[array.unit for array in arrays],
+            quantities=[array.quantity for array in arrays],
+            n_frequencies=self.n_frequencies,
+            frequency_type=self.frequency_type,
+            scan_type=self.scan_type,
+            id=self.id,
+        )
+
     def metadata_json(self) -> bytes:
         """Generate eis data metadata as json."""
-        arrays = [array for array in self.dataset.values() if not array.is_derived]
 
-        return TypeAdapter(EISDataMetadata).dump_json(
-            EISDataMetadata(
-                title=self.title,
-                columns=[array.name for array in arrays],
-                units=[array.unit for array in arrays],
-                quantities=[array.quantity for array in arrays],
-                n_frequencies=self.n_frequencies,
-                frequency_type=self.frequency_type,
-                scan_type=self.scan_type,
-                id=self.id,
-            )
-        )
+        return TypeAdapter(EISDataMetadata).dump_json(self.metadata())

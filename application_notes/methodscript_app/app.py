@@ -8,8 +8,6 @@
 
 from __future__ import annotations
 
-import altair as alt
-import pandas as pd
 import streamlit as st
 from streamlit.runtime.scriptrunner_utils import script_run_context
 
@@ -41,8 +39,11 @@ session = st.session_state
 if 'manager' not in session:
     session.manager = None
 
-if 'data' not in session:
-    session.data = None
+if 'curves' not in session:
+    session.curves = {}
+    session.e_curves_metadata = {}
+    session.i_curves_metadata = {}
+    session.count = 0
 
 
 @st.cache_resource
@@ -59,12 +60,9 @@ def set_buttons_disabled(state: bool):
 def start_measurement(method: experimental_BatteryCycling):
     _ = script_run_context.add_script_run_ctx()
 
-    charts = {}
-
-    col1, col2 = st.columns(2)
-
-    chart_t_vs_e = col1.empty()
-    chart_t_vs_i = col2.empty()
+    session.curves.clear()
+    session.i_curves_metadata.clear()
+    session.e_curves_metadata.clear()
 
     def on_curve_begin(curve: Curve):
         _ = script_run_context.add_script_run_ctx()
@@ -79,35 +77,19 @@ def start_measurement(method: experimental_BatteryCycling):
         )
 
         if curve.title.startswith('CP: t vs E'):
-            charts[curve.id] = chart_t_vs_e
+            session.e_curves_metadata[curve.id] = curve.metadata_json()
         elif curve.title.startswith('CP: t vs i'):
-            charts[curve.id] = chart_t_vs_i
+            session.i_curves_metadata[curve.id] = curve.metadata_json()
         elif curve.title.startswith('Unknown'):
             return
+
+        session.curves[curve.id] = []
 
     def on_data(data: CallbackData):
         _ = script_run_context.add_script_run_ctx()
 
-        try:
-            container = charts[data.id]
-        except KeyError:
-            # E vs. E curves
-            return
-
-        source = pd.DataFrame(
-            {'x': data.x_array[: data.index], 'y': data.y_array[: data.index]}
-        )
-
-        chart = (
-            alt.Chart(source, title=f'{data.x_array.quantity} vs {data.y_array.quantity}')
-            .mark_line()
-            .encode(
-                alt.X('x').title(f'{data.x_array.quantity} / {data.x_array.unit}'),
-                alt.Y('y').title(f'{data.y_array.quantity} / {data.y_array.unit}'),
-            )
-        )
-
-        container.altair_chart(chart)
+        for row in zip(data.x_array[data.start :], data.y_array[data.start :]):
+            session.curves[data.id].append(row)
 
     session.manager.events.on_curve_begin = on_curve_begin
     session.manager.events.on_curve_new_data = on_data
@@ -117,6 +99,12 @@ def start_measurement(method: experimental_BatteryCycling):
     _ = session.manager.measure(method)
 
     progress_bar.progress(1.0, text='Measurement finished!')
+
+
+@st.fragment(parallel=True, run_every='1s')
+def update_e_chart():
+    session.count += 1
+    st.write(session.count)
 
 
 def main():
@@ -265,7 +253,7 @@ def main():
         mime='text/plain',
         icon=':material/download:',
         width='stretch',
-        # disabled=session.manager.is_measuring(),
+        disabled=session.manager.is_measuring(),
     )
     _ = c3.download_button(
         'Save as method file (.psmethod)',
@@ -274,11 +262,26 @@ def main():
         mime='text/plain',
         icon=':material/download:',
         width='stretch',
-        # disabled=session.manager.is_measuring(),
+        disabled=session.manager.is_measuring(),
     )
+
+    update_e_chart()
 
     if start:
         start_measurement(method)
+
+    # source = pd.DataFrame({"x": data.x_array[: data.index], "y": data.y_array[: data.index]})
+
+    # chart = (
+    #     alt.Chart(source, title=f"{data.x_array.quantity} vs {data.y_array.quantity}")
+    #     .mark_line()
+    #     .encode(
+    #         alt.X("x").title(f"{data.x_array.quantity} / {data.x_array.unit}"),
+    #         alt.Y("y").title(f"{data.y_array.quantity} / {data.y_array.unit}"),
+    #     )
+    # )
+
+    # container.altair_chart(chart)
 
 
 if __name__ == '__main__':

@@ -29,13 +29,9 @@ st.set_page_config(
     initial_sidebar_state='expanded',
 )
 
-if st.context.theme.type == 'light':
-    logo_url = 'https://dev.palmsens.com/python/latest/_attachments/assets/banner.svg'
-else:
-    logo_url = 'https://dev.palmsens.com/python/latest/_attachments/assets/banner_dark.svg'
 
 st.logo(
-    logo_url,
+    'https://dev.palmsens.com/python/latest/_attachments/assets/banner.svg',
     link='https://dev.palmsens.com/python/latest',
     size='large',
 )

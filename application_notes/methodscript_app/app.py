@@ -8,8 +8,6 @@
 
 from __future__ import annotations
 
-import asyncio
-
 import altair as alt
 import pandas as pd
 import streamlit as st
@@ -17,6 +15,7 @@ from streamlit.runtime.scriptrunner_utils import script_run_context
 
 import pypalmsens as ps
 from pypalmsens.data import CallbackData, Curve
+from pypalmsens.energy import experimental_BatteryCycling
 
 st.set_page_config(
     page_title='Battery Cycling',
@@ -37,9 +36,13 @@ st.logo(
 )
 
 
-@st.cache_resource
-def connect_to_device_async():
-    return asyncio.run(ps.connect_async())
+session = st.session_state
+
+if 'manager' not in session:
+    session.manager = None
+
+if 'data' not in session:
+    session.data = None
 
 
 @st.cache_resource
@@ -47,7 +50,77 @@ def connect_to_device():
     return ps.connect()
 
 
+def set_buttons_disabled(state: bool):
+    print('set_state', state)
+    st.session_state['buttons_disabled'] = state
+    print(st.session_state['buttons_disabled'])
+
+
+def start_measurement(method: experimental_BatteryCycling):
+    _ = script_run_context.add_script_run_ctx()
+
+    charts = {}
+
+    col1, col2 = st.columns(2)
+
+    chart_t_vs_e = col1.empty()
+    chart_t_vs_i = col2.empty()
+
+    def on_curve_begin(curve: Curve):
+        _ = script_run_context.add_script_run_ctx()
+
+        try:
+            curve_no = int(curve.title.rsplit(maxsplit=1)[-1])
+        except ValueError:
+            curve_no = 0
+
+        progress_bar.progress(
+            curve_no / method.cycles, text=f'Cycle {curve_no + 1}/{method.cycles}'
+        )
+
+        if curve.title.startswith('CP: t vs E'):
+            charts[curve.id] = chart_t_vs_e
+        elif curve.title.startswith('CP: t vs i'):
+            charts[curve.id] = chart_t_vs_i
+        elif curve.title.startswith('Unknown'):
+            return
+
+    def on_data(data: CallbackData):
+        _ = script_run_context.add_script_run_ctx()
+
+        try:
+            container = charts[data.id]
+        except KeyError:
+            # E vs. E curves
+            return
+
+        source = pd.DataFrame(
+            {'x': data.x_array[: data.index], 'y': data.y_array[: data.index]}
+        )
+
+        chart = (
+            alt.Chart(source, title=f'{data.x_array.quantity} vs {data.y_array.quantity}')
+            .mark_line()
+            .encode(
+                alt.X('x').title(f'{data.x_array.quantity} / {data.x_array.unit}'),
+                alt.Y('y').title(f'{data.y_array.quantity} / {data.y_array.unit}'),
+            )
+        )
+
+        container.altair_chart(chart)
+
+    session.manager.events.on_curve_begin = on_curve_begin
+    session.manager.events.on_curve_new_data = on_data
+
+    progress_bar = st.progress(0, text='Starting measurement...')
+
+    _ = session.manager.measure(method)
+
+    progress_bar.progress(1.0, text='Measurement finished!')
+
+
 def main():
+
     st.title('Battery Cycling')
 
     c1, c2 = st.columns(2)
@@ -138,96 +211,74 @@ def main():
     with st.expander('Click to show generated MethodSCRIPT'):
         st.code(ms.script, line_numbers=True, height=600)
 
-    c1, c2 = st.columns(2)
-    with c1:
-        st.download_button(
-            'Save as script (.mscr)',
-            data=ms.script,
-            file_name='battery_cycler.mscr',
-            mime='text/plain',
-            icon=':material/download:',
+    start = False
+
+    row = st.columns(3)
+
+    c1, c2, c3 = st.columns(3)
+
+    if not session.manager:
+        if row[0].button(
+            'Connect',
+            type='primary',
+            icon=':material/start:',
             width='stretch',
-        )
-    with c2:
-        _ = st.download_button(
-            'Save as method file (.psmethod)',
-            data=ms._serialize(),
-            file_name='battery_cycler.psmethod',
-            mime='text/plain',
-            icon=':material/download:',
+        ):
+            with st.spinner('Connecting...'):
+                session.manager = ps.connect()
+
+            st.rerun()
+    else:
+        row[1].write(f'Connected to {session.manager.instrument.name}')
+
+        if row[0].button(
+            'Disconnect',
             width='stretch',
-        )
+        ):
+            session.manager.disconnect()
+            session.manager = None
 
-    if not st.checkbox('Connect and continue...'):
-        st.stop()
+            st.rerun()
 
-    manager: ps.InstrumentManager = connect_to_device()
-    assert manager.is_connected()
+        if session.manager.is_measuring():
+            if c1.button(
+                'Abort measurement',
+                type='primary',
+                icon=':material/start:',
+                width='stretch',
+            ):
+                session.manager.abort()
+                st.rerun()
 
-    st.markdown('---')
-
-    charts = {}
-
-    col1, col2 = st.columns(2)
-
-    chart_t_vs_e = col1.empty()
-    chart_t_vs_i = col2.empty()
-
-    def on_curve_begin(curve: Curve):
-        _ = script_run_context.add_script_run_ctx()
-
-        try:
-            curve_no = int(curve.title.rsplit(maxsplit=1)[-1])
-        except ValueError:
-            curve_no = 0
-
-        progress_bar.progress(curve_no / cycles, text=f'Cycle {curve_no + 1}/{cycles}')
-
-        if curve.title.startswith('CP: t vs E'):
-            charts[curve.id] = chart_t_vs_e
-        elif curve.title.startswith('CP: t vs i'):
-            charts[curve.id] = chart_t_vs_i
-        elif curve.title.startswith('Unknown'):
-            return
-
-    def on_curve_end(curve: Curve):
-        _ = script_run_context.add_script_run_ctx()
-
-        st.write(curve.title, 'finished')
-
-    def on_data(data: CallbackData):
-        _ = script_run_context.add_script_run_ctx()
-
-        try:
-            container = charts[data.id]
-        except KeyError:
-            # E vs. E curves
-            return
-
-        source = pd.DataFrame(
-            {'x': data.x_array[: data.index], 'y': data.y_array[: data.index]}
-        )
-
-        chart = (
-            alt.Chart(source, title=f'{data.x_array.quantity} vs {data.y_array.quantity}')
-            .mark_line()
-            .encode(
-                alt.X('x').title(f'{data.x_array.quantity} / {data.x_array.unit}'),
-                alt.Y('y').title(f'{data.y_array.quantity} / {data.y_array.unit}'),
+        else:
+            start = c1.button(
+                'Start measurement',
+                type='primary',
+                icon=':material/start:',
+                width='stretch',
             )
-        )
 
-        container.altair_chart(chart)
+    _ = c2.download_button(
+        'Save as script (.mscr)',
+        data=ms.script,
+        file_name='battery_cycler.mscr',
+        mime='text/plain',
+        icon=':material/download:',
+        width='stretch',
+        # disabled=session.manager.is_measuring(),
+    )
+    _ = c3.download_button(
+        'Save as method file (.psmethod)',
+        data=ms._serialize(),
+        file_name='battery_cycler.psmethod',
+        mime='text/plain',
+        icon=':material/download:',
+        width='stretch',
+        # disabled=session.manager.is_measuring(),
+    )
 
-    manager.events.on_curve_begin = on_curve_begin
-    manager.events.on_curve_new_data = on_data
-    # manager.events.on_curve_end = on_curve_end
-
-    progress_bar = st.progress(0, text='Starting measurement...')
-
-    measurement = manager.measure(method)
-
-    progress_bar.progress(1.0, text='Measurement finished!')
+    if start:
+        start_measurement(method)
 
 
 if __name__ == '__main__':

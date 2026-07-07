@@ -21,7 +21,7 @@ env = Environment(
 
 class BaseMethodScriptTechnique(BaseModel):
     _template: str = ''
-    _custom_units: dict[Literal['as', 'at', 'au'], CustomUnits] = {}
+    _custom_units: dict[Literal['as', 'at', 'au'], CustomUnits] = Field(default_factory=dict)
 
     def render(self) -> str:
         """Render the template with model parameters.

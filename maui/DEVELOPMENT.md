@@ -10,6 +10,6 @@ PalmSens .NET MAUI SDK uses the [SemVer](http://semver.org/) versioning scheme.
 bump-my-version minor
 ```
 
-2. Make a release on [GitHub](https://github.com/PalmSens/PalmSens_SDK/releases).
+2. Make a release on [GitHub](https://github.com/palmsens/palmsens-sdk/releases).
 
 The **release tag must start with `'maui-'`**. This triggers the build that packages the `maui/` directory and uploads the asset to the tagged release.

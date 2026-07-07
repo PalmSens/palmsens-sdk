@@ -2,7 +2,7 @@
 site_name = "PyPalmSens"
 site_url = "https://dev.palmsens.com"
 site_description = "PyPalmSens: a Python library for automating electrochemistry with PalmSens instruments"
-repo_url = "https://github.com/palmsens/palmsens_sdk"
+repo_url = "https://github.com/palmsens/palmsens-sdk"
 repo_name = "GitHub"
 docs_dir = "docs/zensical"
 copyright = "&copy; 2026 PalmSens BV"
@@ -70,8 +70,8 @@ nav = [
     "reference/types.md",
   ]},
   { "Changelog" = "releases/index.md" },
-  { "Source code ↗" = "https://github.com/palmsens/palmsens_sdk" },
-  { "Issues ↗" = "https://github.com/palmsens/palmsens_sdk/issues" },
+  { "Source code ↗" = "https://github.com/palmsens/palmsens-sdk" },
+  { "Issues ↗" = "https://github.com/palmsens/palmsens-sdk/issues" },
 ]
 
 
@@ -79,7 +79,7 @@ extra_css = [
     # Include a copy of mkdocstrings.css
     # This is a work-around for Antora not publishing
     # Underscore files (i.e. assets/_mkdocstrings.css)
-    # https://github.com/PalmSens/PalmSens_SDK/issues/176
+    # https://github.com/palmsens/palmsens-sdk/issues/176
     "stylesheets/mkdocstrings.css",
     "stylesheets/extra.css",
 ]
@@ -97,7 +97,7 @@ property = "G-BFEP0NBPD8"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
-link = "https://github.com/PalmSens/PalmSens_SDK"
+link = "https://github.com/palmsens/palmsens-sdk"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/python"

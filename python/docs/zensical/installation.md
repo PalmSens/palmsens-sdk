@@ -10,13 +10,13 @@ pip install pypalmsens
 
 * [Python version 3.10 or newer](https://python.org)
 * [.NET Framework 4.7.2](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472)
-* Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the [driver installer](https://github.com/PalmSens/PalmSens_SDK/releases/download/drivers-5.12/PalmSens.Drivers.exe).
+* Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the [driver installer](https://github.com/palmsens/palmsens-sdk/releases/download/drivers-5.12/PalmSens.Drivers.exe).
 
 <!--!!! NOTE "Python 3.15"
 
     Support for Python 3.15 or newer is anticipated, pending one of PyPalmSens's dependencies.
 
-    See [this issue](https://github.com/PalmSens/PalmSens_SDK/issues/xxx) for more information.-->
+    See [this issue](https://github.com/palmsens/palmsens-sdk/issues/xxx) for more information.-->
 
 ## Requirements (Linux and MacOS)  {#req-linux}
 
@@ -55,7 +55,7 @@ This avoids errors like `can’t open device "/dev/ttyACM0": Permission denied` 
     Linux / MacOS support is a work in progress.
     Although many features work, there are some limitations compared to the Windows version.
 
-    See [this issue](https://github.com/PalmSens/PalmSens_SDK/issues/60) for an actual list of known issues.
+    See [this issue](https://github.com/palmsens/palmsens-sdk/issues/60) for an actual list of known issues.
 
 ### FTDI devices {#ftdisetup}
 
@@ -221,7 +221,7 @@ See the chapter 'Updating firmware' in the [PSTrace user manual](https://www.pal
 | Sensit BT | 1.601 | Generic FTDI (optional) [^2] | n/a [^3] |
 | Sensit Wearable | 1.600 | Generic FTDI (optional) [^2] | n/a [^3] |
 
-[^1]: Drivers are installed with alongside the PSTrace desktop software or using [the driver installer](https://github.com/PalmSens/PalmSens_SDK/releases/download/drivers-5.12/PalmSens.Drivers.exe).
+[^1]: Drivers are installed with alongside the PSTrace desktop software or using [the driver installer](https://github.com/palmsens/palmsens-sdk/releases/download/drivers-5.12/PalmSens.Drivers.exe).
 [^2]: Available from <https://ftdichip.com/drivers/d2xx-drivers/>
 [^3]: The SDK communicates directly via the serial port. No drivers are necessary.
 [^4]: See [the installation instructions](#req-linux) for more info.

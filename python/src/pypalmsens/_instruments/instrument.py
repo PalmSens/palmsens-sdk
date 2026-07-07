@@ -39,7 +39,7 @@ class Instrument:
     Returns -1 if instrument is not part of a multichannel device."""
     interface: str
     """Type of the connection."""
-    device: PalmSens.Device.Device = field(repr=False)
+    device: PalmSens.Devices.Device = field(repr=False)
     """Device connection class."""
 
     def __post_init__(self):

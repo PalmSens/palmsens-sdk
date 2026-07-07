@@ -14,7 +14,7 @@ Connect, control and process data from your PalmSens instrument using LabVIEW.
 
 image::measuring_1.png[Control your PalmSens device from LabVIEW]
 
-Download the latest https://github.com/palmsens/palmsens_sdk/releases[release here].
+Download the latest https://github.com/palmsens/palmsens-sdk/releases[release here].
 
 See xref:installation.adoc[the installation guidelines] for more information.
 

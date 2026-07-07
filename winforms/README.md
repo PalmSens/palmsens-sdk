@@ -18,7 +18,7 @@ With this WinForms SDK you develop Windows applications in Visual Studio using [
 
 WinForms, is a free, open-source graphical user interface (GUI) class library for building Windows desktop applications, included as a part of Microsoft .NET, .NET Framework or Mono.
 
-[Click here to download the latest release](https://github.com/PalmSens/PalmSens_SDK/releases).
+[Click here to download the latest release](https://github.com/palmsens/palmsens-sdk/releases).
 
 For more information, see the [documentation](https://dev.palmsens.com/winforms/latest/index.html).
 

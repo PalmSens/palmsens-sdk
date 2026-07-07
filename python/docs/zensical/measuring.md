@@ -558,6 +558,6 @@ DataRow-->
 
 !!! Note "Feedback"
 
-    The data stream and documentation are [under development](https://github.com/PalmSens/PalmSens_SDK/issues/392), and we intend to provide tooling to read the data, as well as more options to the data stream and callback system.
+    The data stream and documentation are [under development](https://github.com/palmsens/palmsens-sdk/issues/392), and we intend to provide tooling to read the data, as well as more options to the data stream and callback system.
 
-    We welcome your feedback! Please open an issue on the [PyPalmSens repository](https://github.com/palmsens/palmsens_sdk) for thoughts, requests, or suggestions.
+    We welcome your feedback! Please open an issue on the [PyPalmSens repository](https://github.com/palmsens/palmsens-sdk) for thoughts, requests, or suggestions.

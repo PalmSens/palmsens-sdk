@@ -24,7 +24,7 @@ image:example_basic.png[Linux,200,float="right"]
 This example shows how to get started with building a simple data measurement app using the PalmSens .NET MAUI SDK.
 It demonstrates UI elements to discover devices, make a connection, run a measurement, and show the data in a table.
 
-https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/MeasureApp[Link to the code]
+https://github.com/palmsens/palmsens-sdk/blob/main/maui/Examples/MeasureApp[Link to the code]
 --
 
 [#example-aux-bipot]
@@ -35,7 +35,7 @@ image:example_bipotaux.png[Linux,200,float="right"]
 
 This app shows how to measure additional data from the auxiliary port or a bipot.
 
-https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/BiPotAuxApp[Link to the code]
+https://github.com/palmsens/palmsens-sdk/blob/main/maui/Examples/BiPotAuxApp[Link to the code]
 --
 
 [#example-data]
@@ -48,7 +48,7 @@ This app shows demonstrates various exampels how to import, analyze and save dat
 The example loads measurements from a `.pssession` file, and shows how to smooth data, manipulate data, and detect peaks.
 It also shows how to load a method from a `.psmethod files`.
 
-https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/DataProcessingApp[Link to the code]
+https://github.com/palmsens/palmsens-sdk/blob/main/maui/Examples/DataProcessingApp[Link to the code]
 --
 
 [#example-eis-fit]
@@ -59,7 +59,7 @@ image:example_eisfit.png[Linux,200,float="right"]
 
 The EIS fit examplo shows how perform an equivalent circuit analysis on an EIS frequency scan measurement.
 
-https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/EISFitApp[Link to the code]
+https://github.com/palmsens/palmsens-sdk/blob/main/maui/Examples/EISFitApp[Link to the code]
 --
 
 
@@ -71,7 +71,7 @@ image:example_internal-storage.png[Linux,200,float="right"]
 
 This example app shows how to navigate and access files on the internal storage of a EmStat Pico Development Board, Sensit BT, EmStat4 and PalmSens4.
 
-https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/InternalStorageApp[Link to the code]
+https://github.com/palmsens/palmsens-sdk/blob/main/maui/Examples/InternalStorageApp[Link to the code]
 --
 
 
@@ -83,7 +83,7 @@ image:example_liveplot.png[Linux,200,float="right"]
 
 This example app shows how to make a connection, run a measurement and plot the results while the measurement is running.
 
-https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/LivePlotApp[Link to the code]
+https://github.com/palmsens/palmsens-sdk/blob/main/maui/Examples/LivePlotApp[Link to the code]
 --
 
 
@@ -95,5 +95,5 @@ image:example_peakdetection.png[Linux,200,float="right"]
 
 This app shows how to perform an advanced peak detection for Linear Sweep Voltammetry and Cyclic Voltammetry measurements.
 
-https://github.com/palmsens/palmsens_sdk/blob/main/maui/Examples/PeakDetectionApp[Link to the code]
+https://github.com/palmsens/palmsens-sdk/blob/main/maui/Examples/PeakDetectionApp[Link to the code]
 --

@@ -37,4 +37,4 @@ These SDKs will continue to receive occasional bug fixes but are no longer under
 
 The best way to get help with the PalmSens SDKs is to https://www.palmsens.com/contact/[contact us directly].
 
-For development related matter (e.g. bug reports), https://github.com/PalmSens/PalmSens_SDK/issues[open an issue on our git repository].
+For development related matter (e.g. bug reports), https://github.com/palmsens/palmsens-sdk/issues[open an issue on our git repository].

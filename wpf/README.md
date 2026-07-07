@@ -18,7 +18,7 @@ With this WPF SDK you develop Windows applications in Visual Studio using [WPF](
 
 Windows Presentation Foundation (WPF) is a free and open-source user interface framework for Windows-based desktop applications.
 
-[Click here to download the latest release](https://github.com/PalmSens/PalmSens_SDK/releases).
+[Click here to download the latest release](https://github.com/palmsens/palmsens-sdk/releases).
 
 For more information, see the [documentation](https://dev.palmsens.com/wpf/latest/index.html).
 

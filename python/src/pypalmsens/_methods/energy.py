@@ -5,7 +5,7 @@ from typing import Literal
 
 import PalmSens
 from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescape
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 from .. import __version__
 from .settings import CustomUnits
@@ -21,7 +21,9 @@ env = Environment(
 
 class BaseMethodScriptTechnique(BaseModel):
     _template: str = ''
-    _custom_units: dict[Literal['as', 'at', 'au'], CustomUnits] = Field(default_factory=dict)
+    _custom_units: dict[Literal['as', 'at', 'au'], CustomUnits] = PrivateAttr(
+        default_factory=dict
+    )
 
     def render(self) -> str:
         """Render the template with model parameters.

@@ -35,6 +35,7 @@ from .mask import (
     get_extra_value_mask,
     set_extra_value_mask,
 )
+from .settings import CustomUnits
 
 
 class BaseCyclicVoltammetry(
@@ -2256,14 +2257,54 @@ endif
     For more info on MethodSCRIPT, see:
         https://www.palmsens.com/methodscript/ for more information."""
 
+    custom_units: dict[Literal['as', 'at', 'au'], CustomUnits] = Field(default_factory=dict)
+
     @override
     def _update_psmethod(self, psmethod: PalmSens.Method, /):
         """Update method with MethodScript."""
         psmethod.MethodScript = f'e\n{self.script}\n'
 
+        for name, unit in self.custom_units.items():
+            if name == 'as':
+                psmethod.OverrideUnitForASVarType = True
+                psmethod.CustomUnitASVarTypeQuantity = unit.quantity
+                psmethod.CustomUnitASVarTypeSymbol = unit.symbol
+                psmethod.CustomUnitASVarTypeUnit = unit.unit
+            elif name == 'at':
+                psmethod.OverrideUnitForATVarType = True
+                psmethod.CustomUnitATVarTypeQuantity = unit.quantity
+                psmethod.CustomUnitATVarTypeSymbol = unit.symbol
+                psmethod.CustomUnitATVarTypeUnit = unit.unit
+            elif name == 'au':
+                psmethod.OverrideUnitForAUVarType = True
+                psmethod.CustomUnitAUVarTypeQuantity = unit.quantity
+                psmethod.CustomUnitAUVarTypeSymbol = unit.symbol
+                psmethod.CustomUnitAUVarTypeUnit = unit.unit
+
     @override
     def _update_params(self, psmethod: PalmSens.Method, /):
         self.script = psmethod.MethodScript
+
+        if psmethod.OverrideUnitForATVarType:
+            self.custom_units['as'] = CustomUnits(
+                quantity=psmethod.CustomUnitASVarTypeQuantity,
+                symbol=psmethod.CustomUnitASVarTypeSymbol,
+                unit=psmethod.CustomUnitASVarTypeUnit,
+            )
+
+        if psmethod.OverrideUnitForATVarType:
+            self.custom_units['at'] = CustomUnits(
+                quantity=psmethod.CustomUnitATVarTypeQuantity,
+                symbol=psmethod.CustomUnitATVarTypeSymbol,
+                unit=psmethod.CustomUnitATVarTypeUnit,
+            )
+
+        if psmethod.OverrideUnitForAUVarType:
+            self.custom_units['au'] = CustomUnits(
+                quantity=psmethod.CustomUnitAUVarTypeQuantity,
+                symbol=psmethod.CustomUnitAUVarTypeSymbol,
+                unit=psmethod.CustomUnitAUVarTypeUnit,
+            )
 
     @classmethod
     def from_file(cls, path: str | Path = 'methodscript.mscr') -> MethodScript:

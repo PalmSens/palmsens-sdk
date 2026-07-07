@@ -210,7 +210,7 @@ async def test_idle_status_callback_async():
 
 
 @pytest.mark.instrument
-async def test_message_callback():
+def test_message_callback():
     points = []
 
     def callback(message: str):

@@ -753,3 +753,14 @@ class Material(BaseSettings):
         self.density = psmethod.Density
         self.b_anodic = psmethod.Ba
         self.b_cathodic = psmethod.Bc
+
+
+class CustomUnits(BaseModel):
+    """Assign a custom unit to the AS / AT / AU variable types in MethodScript."""
+
+    quantity: str | None = None
+    """The full name to assign to the variable."""
+    symbol: str | None = None
+    """Abbreviation of the quantity."""
+    unit: str | None = None
+    """Abbreviation of the unit of the quantity."""

@@ -44,10 +44,10 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://github.com/palmsens/palmsens_sdk"
-issues = "https://github.com/palmsens/palmsens_sdk/issues"
+homepage = "https://github.com/palmsens/palmsens-sdk"
+issues = "https://github.com/palmsens/palmsens-sdk/issues"
 documentation = "https://dev.palmsens.com/python/latest/_attachments/index.html"
-changelog = "https://github.com/palmsens/palmsens_sdk/releases"
+changelog = "https://github.com/palmsens/palmsens-sdk/releases"
 
 [project.optional-dependencies]
 develop = [

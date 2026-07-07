@@ -11,7 +11,7 @@ These methods are only available in PyPalmSens.
 
     Classes with the `experimental_` prefix are things that we're still working on or trying to understand. That means these classes are subject to change.
 
-    We welcome any [feedback and suggestions](https://github.com/palmsens/palmsens_sdk/issues) before making them a permanent part of PyPalmSens.
+    We welcome any [feedback and suggestions](https://github.com/palmsens/palmsens-sdk/issues) before making them a permanent part of PyPalmSens.
 
 - [experimental_BatteryCycling][pypalmsens.energy.experimental_BatteryCycling] (CC-CV-CC)
 - [experimental_ConstantPower][pypalmsens.energy.experimental_ConstantPower] (Discharge at constant power)

@@ -21,11 +21,11 @@ import plotly.express as px
 import streamlit as st
 
 st.set_page_config(
-    page_title="LPR analysis",
-    page_icon=":chart_with_upwards_trend:",
+    page_title='LPR analysis',
+    page_icon=':chart_with_upwards_trend:',
     menu_items={
-        "Get Help": "https://palmsens.com/contact",
-        "Report a bug": "https://github.com/palmsens/palmsens_sdk/issues",
+        'Get Help': 'https://palmsens.com/contact',
+        'Report a bug': 'https://github.com/palmsens/palmsens-sdk/issues',
     },
 )
 
@@ -48,7 +48,7 @@ def generate_data(n_samples: int = 1000):
         microseconds=now.microsecond, seconds=now.second, minutes=now.minute
     )
 
-    rng = pd.date_range(end=last_hour, freq="h", periods=n_samples)
+    rng = pd.date_range(end=last_hour, freq='h', periods=n_samples)
 
     noise = normal(loc=0, scale=0.01, size=n_samples)
     ocp = 1 + np.sin(np.linspace(0, abs(normal()), n_samples) + normal(scale=np.pi)) + noise
@@ -56,10 +56,10 @@ def generate_data(n_samples: int = 1000):
 
     return pd.DataFrame(
         {
-            "timestamp": rng,
-            "ocp": ocp,
-            "rp": rp,
-            "resid": np.zeros_like(ocp),
+            'timestamp': rng,
+            'ocp': ocp,
+            'rp': rp,
+            'resid': np.zeros_like(ocp),
         }
     )
 
@@ -87,9 +87,9 @@ class Device:
     def load_data(path: str):
         """Read data from path."""
         df = pd.read_csv(path)
-        df["timestamp"] = pd.to_datetime(df["timestamp"], format="ISO8601")
-        df["rp"] = df["rp"]
-        df["ocp"] = df["ocp"]
+        df['timestamp'] = pd.to_datetime(df['timestamp'], format='ISO8601')
+        df['rp'] = df['rp']
+        df['ocp'] = df['ocp']
         return df
 
     def summary(self, last_n: int = 30) -> dict[str, Any]:
@@ -98,13 +98,13 @@ class Device:
 
         last_row = self.data.iloc[-1]
         return {
-            "name": self.name,
-            "lat": self.lat,
-            "lon": self.lon,
-            "ocp": last_row["ocp"],
-            "rp": last_row["rp"],
-            "history": self.data["rp"].iloc[-last_n:].tolist(),
-            "timestamp": last_row["timestamp"],
+            'name': self.name,
+            'lat': self.lat,
+            'lon': self.lon,
+            'ocp': last_row['ocp'],
+            'rp': last_row['rp'],
+            'history': self.data['rp'].iloc[-last_n:].tolist(),
+            'timestamp': last_row['timestamp'],
         }
 
 
@@ -117,8 +117,8 @@ def load_summary(devices: list[Device]) -> pd.DataFrame:
 @st.cache_data
 def load_data(devices: list[Device]) -> pd.DataFrame:
     """Load long form data for device listing."""
-    return pd.concat({loc.name: loc.data for loc in devices}, names=["name", None]).reset_index(
-        "name"
+    return pd.concat({loc.name: loc.data for loc in devices}, names=['name', None]).reset_index(
+        'name'
     )
 
 
@@ -126,27 +126,27 @@ def make_chart(
     data: pd.DataFrame,
     *,
     selected: list[str] | None = None,
-    y: str = "rp",
+    y: str = 'rp',
 ):
     """Make line chart for rp or ocp."""
     if selected:
-        data = data[data["name"].isin(selected)]
+        data = data[data['name'].isin(selected)]
 
-    if y == "ocp":
-        title = "Open Circuit Potential"
-        ylabel = "Potential / V"
+    if y == 'ocp':
+        title = 'Open Circuit Potential'
+        ylabel = 'Potential / V'
     else:
-        assert y == "rp"
-        ylabel = "Polarization resistance / Ω"
-        title = "Linear Polarization Resistance"
+        assert y == 'rp'
+        ylabel = 'Polarization resistance / Ω'
+        title = 'Linear Polarization Resistance'
 
     fig = px.line(
         data,
-        x="timestamp",
+        x='timestamp',
         y=y,
-        color="name",
+        color='name',
         labels={
-            "timestamp": "Time",
+            'timestamp': 'Time',
             y: ylabel,
         },
         title=title,
@@ -164,27 +164,27 @@ def create_summary_table(data: pd.DataFrame):
     return st.dataframe(
         data,
         column_config={
-            "timestamp": st.column_config.DatetimeColumn(
-                "Last update",
-                help="Timestamp of the last data point.",
-                format="D MMM YYYY, H:mm",
+            'timestamp': st.column_config.DatetimeColumn(
+                'Last update',
+                help='Timestamp of the last data point.',
+                format='D MMM YYYY, H:mm',
             ),
-            "name": st.column_config.TextColumn(
-                "Name",
-                help="Name of the device or location.",
+            'name': st.column_config.TextColumn(
+                'Name',
+                help='Name of the device or location.',
             ),
-            "lat": None,
-            "lon": None,
-            "ocp": st.column_config.NumberColumn(
-                "OCP (latest)",
-                help="Open circuit potential (V)",
+            'lat': None,
+            'lon': None,
+            'ocp': st.column_config.NumberColumn(
+                'OCP (latest)',
+                help='Open circuit potential (V)',
             ),
-            "rp": st.column_config.NumberColumn(
-                "Rp (latest)",
-                help="Polarization resistance (Ω)",
+            'rp': st.column_config.NumberColumn(
+                'Rp (latest)',
+                help='Polarization resistance (Ω)',
             ),
-            "history": st.column_config.AreaChartColumn(
-                "Rp (trend)", help="Last 30 observations."
+            'history': st.column_config.AreaChartColumn(
+                'Rp (trend)', help='Last 30 observations.'
             ),
         },
         hide_index=True,
@@ -195,13 +195,13 @@ def create_map(data: pd.DataFrame, *, devices: list[Device]):
     """List devices on map."""
     fig = px.scatter_map(
         data,
-        lat="lat",
-        lon="lon",
-        color="rp",
-        hover_name="name",
+        lat='lat',
+        lon='lon',
+        color='rp',
+        hover_name='name',
         color_continuous_scale=px.colors.sequential.Viridis_r,
         zoom=10,
-        title="Device map",
+        title='Device map',
     )
 
     fig.update_layout(
@@ -211,16 +211,16 @@ def create_map(data: pd.DataFrame, *, devices: list[Device]):
         marker=dict(size=15),
     )
 
-    event = st.plotly_chart(fig, on_select="rerun")
+    event = st.plotly_chart(fig, on_select='rerun')
 
-    rows = event["selection"]["point_indices"]
+    rows = event['selection']['point_indices']
     selected = [devices[i].name for i in rows]
 
     return selected
 
 
 def main():
-    st.title("LPR analysis")
+    st.title('LPR analysis')
 
     st.write(
         dedent("""
@@ -229,40 +229,40 @@ def main():
         """)
     )
 
-    demo = st.checkbox(label="Demo mode", value=True, help="Generate semi-random noisy data.")
+    demo = st.checkbox(label='Demo mode', value=True, help='Generate semi-random noisy data.')
 
     if demo:
         col1, col2, col3 = st.columns(3)
 
-        seed = col1.number_input("Random seed", value=1234)
-        n_devices = col2.number_input("Number of devices", value=5, min_value=1)
-        n_samples = col3.number_input("Number of samples", value=200, step=10, min_value=10)
+        seed = col1.number_input('Random seed', value=1234)
+        n_devices = col2.number_input('Number of devices', value=5, min_value=1)
+        n_samples = col3.number_input('Number of samples', value=200, step=10, min_value=10)
 
         np.random.seed(seed)
         devices = [
-            generate_device(f"Device #{i + 1}", n_samples=n_samples) for i in range(n_devices)
+            generate_device(f'Device #{i + 1}', n_samples=n_samples) for i in range(n_devices)
         ]
     else:
         template = pd.DataFrame(
             [
                 {
-                    "name": "PalmSens HQ",
-                    "lon": 5.149667,
-                    "lat": 52.020198,
-                    "path": "https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/application_notes/remote_corrosion/data.csv",
+                    'name': 'PalmSens HQ',
+                    'lon': 5.149667,
+                    'lat': 52.020198,
+                    'path': 'https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/application_notes/remote_corrosion/data.csv',
                 },
             ],
         )
 
-        st.write("Use the table below to add devices or other data sources.")
+        st.write('Use the table below to add devices or other data sources.')
 
-        devices_input = st.data_editor(template, num_rows="dynamic")
+        devices_input = st.data_editor(template, num_rows='dynamic')
         devices = [Device(**row) for _, row in devices_input.iterrows()]
 
     data = load_data(devices)
     summary = load_summary(devices)
 
-    tab1, tab2 = st.tabs(["Data", "Map"])
+    tab1, tab2 = st.tabs(['Data', 'Map'])
 
     with tab1:
         st.write("""Data summary table.""")
@@ -272,13 +272,13 @@ def main():
         st.write("""Select devices on map to plot.""")
         selected = create_map(summary, devices=devices)
 
-    tab1, tab2 = st.tabs(["Rₚ", "OCP"])
+    tab1, tab2 = st.tabs(['Rₚ', 'OCP'])
 
     with tab1:
-        make_chart(data, selected=selected, y="rp")
+        make_chart(data, selected=selected, y='rp')
     with tab2:
-        make_chart(data, selected=selected, y="ocp")
+        make_chart(data, selected=selected, y='ocp')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

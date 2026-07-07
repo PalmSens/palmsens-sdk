@@ -27,9 +27,9 @@ For more information, see the [documentation](https://dev.palmsens.com/matlab/la
 
 - [MATLAB (R2018 or newer)](https://nl.mathworks.com/products/matlab.html)
 - .NET Framework 4.7.2
-- Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the [driver installer](https://github.com/PalmSens/PalmSens_SDK/releases/download/drivers-5.12/PalmSens.Drivers.exe).
+- Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the [driver installer](https://github.com/palmsens/palmsens-sdk/releases/download/drivers-5.12/PalmSens.Drivers.exe).
 
-Download the latest [release here](https://github.com/palmsens/palmsens_sdk/releases).
+Download the latest [release here](https://github.com/palmsens/palmsens-sdk/releases).
 Unzip the file and load the directory 'matlab-x.y.z' in MATLAB.
 
 ## Examples

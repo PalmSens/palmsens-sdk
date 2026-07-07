@@ -109,7 +109,7 @@ PyPalmSens uses the [SemVer](http://semver.org/) versioning scheme.
 bump-my-version minor
 ```
 
-2. Make a release on [GitHub](https://github.com/PalmSens/PalmSens_SDK/releases).
+2. Make a release on [GitHub](https://github.com/palmsens/palmsens-sdk/releases).
 
 The **release tag must start with `'python-'`**. This triggers the automated publish to [PyPi](https://pypi.org/project/pypalmsens).
 

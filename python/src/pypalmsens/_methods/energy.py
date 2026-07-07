@@ -5,9 +5,10 @@ from typing import Literal
 
 import PalmSens
 from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescape
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 from .. import __version__
+from .settings import CustomUnits
 from .techniques import MethodScript
 
 env = Environment(
@@ -20,6 +21,9 @@ env = Environment(
 
 class BaseMethodScriptTechnique(BaseModel):
     _template: str = ''
+    _custom_units: dict[Literal['as', 'at', 'au'], CustomUnits] = PrivateAttr(
+        default_factory=dict
+    )
 
     def render(self) -> str:
         """Render the template with model parameters.
@@ -45,7 +49,8 @@ class BaseMethodScriptTechnique(BaseModel):
             MethodScript class.
         """
         script = self.render()
-        return MethodScript(script=script)
+
+        return MethodScript(script=script, custom_units=self._custom_units)
 
     def _to_psmethod(self) -> PalmSens.Method:
         """Convert parameters to dotnet method."""
@@ -93,6 +98,10 @@ class BatteryCycling(BaseMethodScriptTechnique):
 
     _name: str = 'Battery Cycling'
     _template: str = 'battery_cycling.mscr'
+    _custom_units = {
+        'as': CustomUnits(quantity='Passed Q', symbol='Qpass', unit='mAh'),
+        'at': CustomUnits(quantity='Cycle', symbol='cyc', unit='n'),
+    }
 
     id: Literal['bc'] = 'bc'
     """Unique method identifier."""

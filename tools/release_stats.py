@@ -14,7 +14,7 @@ from pathlib import Path
 import pypistats
 import requests
 
-URL = 'https://api.github.com/repos/PalmSens/PalmSens_SDK/releases'
+URL = 'https://api.github.com/repos/palmsens/palmsens-sdk/releases'
 CACHE = Path('releases.json')
 
 

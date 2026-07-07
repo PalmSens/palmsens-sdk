@@ -1,5 +1,5 @@
-[![Publish to GitHub Pages](https://github.com/PalmSens/PalmSens_SDK/actions/workflows/publish-docs.yml/badge.svg)](https://github.com/PalmSens/PalmSens_SDK/actions/workflows/publish-docs.yml)
-[![Tests for Python SDK](https://github.com/PalmSens/PalmSens_SDK/actions/workflows/python-tests.yml/badge.svg)](https://github.com/PalmSens/PalmSens_SDK/actions/workflows/python-tests.yml)
+[![Publish to GitHub Pages](https://github.com/palmsens/palmsens-sdk/actions/workflows/publish-docs.yml/badge.svg)](https://github.com/palmsens/palmsens-sdk/actions/workflows/publish-docs.yml)
+[![Tests for Python SDK](https://github.com/palmsens/palmsens-sdk/actions/workflows/python-tests.yml/badge.svg)](https://github.com/palmsens/palmsens-sdk/actions/workflows/python-tests.yml)
 
 <br>
 
@@ -46,4 +46,4 @@ These SDKs will continue to receive occasional bug fixes but are no longer under
 
 The best way to get help with the PalmSens SDKs is to [contact us directly](https://www.palmsens.com/contact/).
 
-For bug reports, questions, and other development related matter [open an issue](https://github.com/PalmSens/PalmSens_SDK/issues).
+For bug reports, questions, and other development related matter [open an issue](https://github.com/palmsens/palmsens-sdk/issues).

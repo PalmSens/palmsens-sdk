@@ -4,7 +4,7 @@
 
 The MATLAB release uses [SemVer](http://semver.org/) versioning scheme.
 
-1. Make a release on [GitHub](https://github.com/PalmSens/PalmSens_SDK/releases).
+1. Make a release on [GitHub](https://github.com/palmsens/palmsens-sdk/releases).
 
 The **release tag must start with `'matlab-'`**.
 This triggers the workflow that zips the matlab directory and adds it to the release.

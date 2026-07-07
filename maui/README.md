@@ -19,7 +19,7 @@ With this PalmSens Software Development Kit you develop Windows and Android appl
 .NET MAUI is a multi-platform app UI framework that lets you build native, cross-platform desktop and mobile apps with one codebase.
 The PalmSens .NET MAUI SDK can be used with all PalmSens instruments and potentiostat modules.
 
-[Click here to download the latest release](https://github.com/PalmSens/PalmSens_SDK/releases).
+[Click here to download the latest release](https://github.com/palmsens/palmsens-sdk/releases).
 
 For more information, see the [documentation](https://dev.palmsens.com/maui/latest/index.html).
 

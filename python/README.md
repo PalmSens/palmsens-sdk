@@ -1,4 +1,4 @@
-[![Tests](https://github.com/PalmSens/PalmSens_SDK/actions/workflows/python-tests.yml/badge.svg)](https://github.com/PalmSens/PalmSens_SDK/actions/workflows/python-tests.yml)
+[![Tests](https://github.com/palmsens/palmsens-sdk/actions/workflows/python-tests.yml/badge.svg)](https://github.com/palmsens/palmsens-sdk/actions/workflows/python-tests.yml)
 ![Coverage](https://img.shields.io/badge/coverage-89%25-brightgreen)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pypalmsens)](https://pypi.org/project/pypalmsens/)
 [![PyPI](https://img.shields.io/pypi/v/pypalmsens.svg?style=flat)](https://pypi.org/project/pypalmsens/)
@@ -8,9 +8,9 @@
 <p align="center">
     <a href="https://dev.palmsens.com/python/latest" target="_blank">
         <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/docs/zensical/assets/banner_dark.svg">
-          <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/docs/zensical/assets/banner.svg">
-          <img alt="PalmSens banner" src="https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/docs/zensical/assets/banner.svg" width="80%">
+          <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/docs/zensical/assets/banner_dark.svg">
+          <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/docs/zensical/assets/banner.svg">
+          <img alt="PalmSens banner" src="https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/docs/zensical/assets/banner.svg" width="80%">
         </picture>
     </a>
 </p>

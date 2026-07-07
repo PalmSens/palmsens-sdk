@@ -41,7 +41,7 @@ def get_changes_since_tag(tag: str):
         index = line.index('(#')
         pr = line[index + 2 : -1]
         line = line.replace(
-            f'#{pr}', f'[#{pr}](https://github.com/PalmSens/PalmSens_SDK/pull/{pr})'
+            f'#{pr}', f'[#{pr}](https://github.com/palmsens/palmsens-sdk/pull/{pr})'
         )
         out.append(f'- {line}')
 
@@ -57,7 +57,7 @@ def update_python(new_tag: str, new_version: str) -> str:
     TEMPLATE_CHANGELOG = dedent("""\
     ## PyPalmSens {new_version}
 
-    > :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/{new_tag}">{new_tag}</a>
+    > :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/{new_tag}">{new_tag}</a>
     | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/{new_version}">pypalmsens-{new_version}</a>
     | :fontawesome-solid-calendar: {time}
 
@@ -77,7 +77,7 @@ def update_python(new_tag: str, new_version: str) -> str:
 
     {changelog}
 
-    **Full Changelog**: https://github.com/PalmSens/PalmSens_SDK/compare/{previous_tag}...{new_tag}
+    **Full Changelog**: https://github.com/palmsens/palmsens-sdk/compare/{previous_tag}...{new_tag}
     """)
 
     index_path = Path(ROOT / 'python' / 'docs' / 'zensical' / 'releases' / 'index.md')

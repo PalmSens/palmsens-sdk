@@ -3,7 +3,7 @@
 <!-- Latest-->
 ## PyPalmSens 1.10.1
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.10.1">python-1.10.1</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.10.1">python-1.10.1</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.10.1">pypalmsens-1.10.1</a>
 | :fontawesome-solid-calendar: 2026-06-29
 
@@ -11,11 +11,11 @@ This release fixes a crash in 1.10.0 when importing PyPalmSens.
 
 ### What's changed
 
-- Add templates to MANIFEST.in ([#403](https://github.com/PalmSens/PalmSens_SDK/pull/403))
+- Add templates to MANIFEST.in ([#403](https://github.com/palmsens/palmsens-sdk/pull/403))
 
 ## PyPalmSens 1.10
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.10">python-1.10</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.10">python-1.10</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.10">pypalmsens-1.10</a>
 | :fontawesome-solid-calendar: 2026-06-04
 
@@ -56,31 +56,31 @@ ps.measure(ps.CyclicVoltammetry(), stream='data.jsonl')
 
 See the [documentation for more information](https://dev.palmsens.com/python/latest/_attachments/measuring/#streaming-data-to-a-file)
 
-This required a big refactor of the callback system. We intend to expand this feature in a [future release](https://github.com/PalmSens/PalmSens_SDK/issues/392).
+This required a big refactor of the callback system. We intend to expand this feature in a [future release](https://github.com/palmsens/palmsens-sdk/issues/392).
 
 ### Nexus support on Mac and Linux
 
-[PyPalmSens 1.8.0](https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.8.0) added support for Nexus over TCP/IP using the `from_ip` method, but for Windows only. This release extends support for Mac and Linux.
+[PyPalmSens 1.8.0](https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.8.0) added support for Nexus over TCP/IP using the `from_ip` method, but for Windows only. This release extends support for Mac and Linux.
 
 ### What's changed
 
-- Add support for cell on ([#371](https://github.com/PalmSens/PalmSens_SDK/pull/371))
-- Raise Attribute error for module `__getattr__` ([#377](https://github.com/PalmSens/PalmSens_SDK/pull/377))
-- Add method to serialize method parameters ([#378](https://github.com/PalmSens/PalmSens_SDK/pull/378))
-- Add literal scan/frequency types ([#380](https://github.com/PalmSens/PalmSens_SDK/pull/380))
-- Add support for Python 3.14 ([#381](https://github.com/PalmSens/PalmSens_SDK/pull/381))
-- Add experimental BatteryCycling technique ([#379](https://github.com/PalmSens/PalmSens_SDK/pull/379))
-- Update types and type checking ([#383](https://github.com/PalmSens/PalmSens_SDK/pull/383))
-- Add linux support for connecting over TCP\IP ([#388](https://github.com/PalmSens/PalmSens_SDK/pull/388))
-- Fix double newlines in serialize to `.psmethod` ([#389](https://github.com/PalmSens/PalmSens_SDK/pull/389))
-- Update Python version in test workfrow to 3.14 ([#390](https://github.com/PalmSens/PalmSens_SDK/pull/390))
-- Add streaming data for live measurements ([#386](https://github.com/PalmSens/PalmSens_SDK/pull/386))
-- Add missing fields for the GEIS technique ([#393](https://github.com/PalmSens/PalmSens_SDK/pull/393))
-- Add ConstantPower and ConstantResistance methods ([#394](https://github.com/PalmSens/PalmSens_SDK/pull/394))
+- Add support for cell on ([#371](https://github.com/palmsens/palmsens-sdk/pull/371))
+- Raise Attribute error for module `__getattr__` ([#377](https://github.com/palmsens/palmsens-sdk/pull/377))
+- Add method to serialize method parameters ([#378](https://github.com/palmsens/palmsens-sdk/pull/378))
+- Add literal scan/frequency types ([#380](https://github.com/palmsens/palmsens-sdk/pull/380))
+- Add support for Python 3.14 ([#381](https://github.com/palmsens/palmsens-sdk/pull/381))
+- Add experimental BatteryCycling technique ([#379](https://github.com/palmsens/palmsens-sdk/pull/379))
+- Update types and type checking ([#383](https://github.com/palmsens/palmsens-sdk/pull/383))
+- Add linux support for connecting over TCP\IP ([#388](https://github.com/palmsens/palmsens-sdk/pull/388))
+- Fix double newlines in serialize to `.psmethod` ([#389](https://github.com/palmsens/palmsens-sdk/pull/389))
+- Update Python version in test workfrow to 3.14 ([#390](https://github.com/palmsens/palmsens-sdk/pull/390))
+- Add streaming data for live measurements ([#386](https://github.com/palmsens/palmsens-sdk/pull/386))
+- Add missing fields for the GEIS technique ([#393](https://github.com/palmsens/palmsens-sdk/pull/393))
+- Add ConstantPower and ConstantResistance methods ([#394](https://github.com/palmsens/palmsens-sdk/pull/394))
 
 ## PyPalmSens 1.9.0
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.9.0">python-1.9.0</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.9.0">python-1.9.0</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.9.0">pypalmsens-1.9.0</a>
 | :fontawesome-solid-calendar: 2026-05-11
 
@@ -144,20 +144,20 @@ The old paths now emit `DeprecationWarnings`. They will be removed in a later ve
 
 ### What's changed
 
-- Add wrappers for corrosion methods ([#341](https://github.com/PalmSens/PalmSens_SDK/pull/341))
-- Move `get_estimated_duration` to instrument manager ([#342](https://github.com/PalmSens/PalmSens_SDK/pull/342))
-- Add support for capabilities ([#346](https://github.com/PalmSens/PalmSens_SDK/pull/346))
-- Use EILevel for MSP methods ([#351](https://github.com/PalmSens/PalmSens_SDK/pull/351))
-- Min sampling time must be greater than 0 for Impedance ([#354](https://github.com/PalmSens/PalmSens_SDK/pull/354))
-- Add `__getitem__` and `__contains__` magic methods to pool ([#355](https://github.com/PalmSens/PalmSens_SDK/pull/355))
-- Move converters and types to root module ([#356](https://github.com/PalmSens/PalmSens_SDK/pull/356))
-- Update user API (types and mixed mode) ([#357](https://github.com/PalmSens/PalmSens_SDK/pull/357))
-- Update mixed mode method listing in documentation ([#360](https://github.com/PalmSens/PalmSens_SDK/pull/360))
-- Add `status()` method for `IntrumentPool` ([#361](https://github.com/PalmSens/PalmSens_SDK/pull/361))
+- Add wrappers for corrosion methods ([#341](https://github.com/palmsens/palmsens-sdk/pull/341))
+- Move `get_estimated_duration` to instrument manager ([#342](https://github.com/palmsens/palmsens-sdk/pull/342))
+- Add support for capabilities ([#346](https://github.com/palmsens/palmsens-sdk/pull/346))
+- Use EILevel for MSP methods ([#351](https://github.com/palmsens/palmsens-sdk/pull/351))
+- Min sampling time must be greater than 0 for Impedance ([#354](https://github.com/palmsens/palmsens-sdk/pull/354))
+- Add `__getitem__` and `__contains__` magic methods to pool ([#355](https://github.com/palmsens/palmsens-sdk/pull/355))
+- Move converters and types to root module ([#356](https://github.com/palmsens/palmsens-sdk/pull/356))
+- Update user API (types and mixed mode) ([#357](https://github.com/palmsens/palmsens-sdk/pull/357))
+- Update mixed mode method listing in documentation ([#360](https://github.com/palmsens/palmsens-sdk/pull/360))
+- Add `status()` method for `IntrumentPool` ([#361](https://github.com/palmsens/palmsens-sdk/pull/361))
 
 ## PyPalmSens 1.8.1
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.8.1">python-1.8.1</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.8.1">python-1.8.1</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.8.1">pypalmsens-1.8.1</a>
 | :fontawesome-solid-calendar: 2026-10-04
 
@@ -165,12 +165,12 @@ This is a small bugfix release
 
 ### What's Changed
 
-* Add retry function to `pool.connect()` by [@stefsmeets](https://github.com/stefsmeets) in [#334](https://github.com/PalmSens/PalmSens_SDK/pull/334)
-* Fix `DataSet.to_dict()` crash for datasets with no current by [@stefsmeets](https://github.com/stefsmeets) in [#338](https://github.com/PalmSens/PalmSens_SDK/pull/338)
+* Add retry function to `pool.connect()` by [@stefsmeets](https://github.com/stefsmeets) in [#334](https://github.com/palmsens/palmsens-sdk/pull/334)
+* Fix `DataSet.to_dict()` crash for datasets with no current by [@stefsmeets](https://github.com/stefsmeets) in [#338](https://github.com/palmsens/palmsens-sdk/pull/338)
 
 ## PyPalmSens 1.8.0
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.8.0">python-1.8.0</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.8.0">python-1.8.0</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.8.0">pypalmsens-1.8.0</a>
 | :fontawesome-solid-calendar: 2026-03-26
 
@@ -195,16 +195,16 @@ For more information, see [the documentation](https://dev.palmsens.com/python/la
 
 ### What's Changed
 
-* Update PalmSens.Core libraries to 5.13.011 by [@stefsmeets](https://github.com/stefsmeets) in [#281](https://github.com/PalmSens/PalmSens_SDK/pull/281)
-* Fix rare crash when deleting Zone.Identifier by [@stefsmeets](https://github.com/stefsmeets) in [#309](https://github.com/PalmSens/PalmSens_SDK/pull/309)
-* Add generic structure/unstructure using type adapter by [@stefsmeets](https://github.com/stefsmeets) in [#303](https://github.com/PalmSens/PalmSens_SDK/pull/303)
-* Add seperate dependencies for assemblies by [@stefsmeets](https://github.com/stefsmeets) in [#308](https://github.com/PalmSens/PalmSens_SDK/pull/308)
-* Add Nexus support by [@stefsmeets](https://github.com/stefsmeets) in [#328](https://github.com/PalmSens/PalmSens_SDK/pull/328)
+* Update PalmSens.Core libraries to 5.13.011 by [@stefsmeets](https://github.com/stefsmeets) in [#281](https://github.com/palmsens/palmsens-sdk/pull/281)
+* Fix rare crash when deleting Zone.Identifier by [@stefsmeets](https://github.com/stefsmeets) in [#309](https://github.com/palmsens/palmsens-sdk/pull/309)
+* Add generic structure/unstructure using type adapter by [@stefsmeets](https://github.com/stefsmeets) in [#303](https://github.com/palmsens/palmsens-sdk/pull/303)
+* Add seperate dependencies for assemblies by [@stefsmeets](https://github.com/stefsmeets) in [#308](https://github.com/palmsens/palmsens-sdk/pull/308)
+* Add Nexus support by [@stefsmeets](https://github.com/stefsmeets) in [#328](https://github.com/palmsens/palmsens-sdk/pull/328)
 
 
 ## PyPalmSens 1.7.1
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.7.1">python-1.7.1</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.7.1">python-1.7.1</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.7.1">pypalmsens-1.7.1</a>
 | :fontawesome-solid-calendar: 2026-02-24
 
@@ -219,18 +219,18 @@ ps.measure(ps.CyclicVoltammetry(), instrument=instrument)
 
 ### What's Changed
 
-* Add AllowedMethods literal string by [@stefsmeets](https://github.com/stefsmeets) in [#291](https://github.com/PalmSens/PalmSens_SDK/pull/291)
-* Refactor and add method to connect to comport by [@stefsmeets](https://github.com/stefsmeets) in [#298](https://github.com/PalmSens/PalmSens_SDK/pull/298)
+* Add AllowedMethods literal string by [@stefsmeets](https://github.com/stefsmeets) in [#291](https://github.com/palmsens/palmsens-sdk/pull/291)
+* Refactor and add method to connect to comport by [@stefsmeets](https://github.com/stefsmeets) in [#298](https://github.com/palmsens/palmsens-sdk/pull/298)
 
 ## PyPalmSens 1.7.0
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.7.0">python-1.7.0</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.7.0">python-1.7.0</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.7.0">pypalmsens-1.7.0</a>
 | :fontawesome-solid-calendar: 2026-02-20
 
 ### Current and potential readings
 
-This release revises how to access current reading and potential reading data (https://github.com/PalmSens/PalmSens_SDK/pull/279).
+This release revises how to access current reading and potential reading data (https://github.com/palmsens/palmsens-sdk/pull/279).
 
 It exposes the data in the concrete values in the underlying DataArray by adding 2 new derived classes derived from `ps.data.DataArray`:
 - [CurrentArray](https://dev.palmsens.com/python/latest/_attachments/reference/data/#pypalmsens.data.CurrentArray)
@@ -266,7 +266,7 @@ See [the documentation](https://dev.palmsens.com/python/latest/_attachments/data
 
 ### Supported methods and current ranges
 
-New methods on `InstrumentManager(Async)` to get the supported methods and current ranges (https://github.com/PalmSens/PalmSens_SDK/pull/279). See [the docs](https://dev.palmsens.com/python/latest/_attachments/reference/instrument/#pypalmsens.InstrumentManager.supported_applied_current_ranges) for more information.
+New methods on `InstrumentManager(Async)` to get the supported methods and current ranges (https://github.com/palmsens/palmsens-sdk/pull/279). See [the docs](https://dev.palmsens.com/python/latest/_attachments/reference/instrument/#pypalmsens.InstrumentManager.supported_applied_current_ranges) for more information.
 
 ```python
 >>> import pypalmsens as ps
@@ -291,24 +291,24 @@ New methods on `InstrumentManager(Async)` to get the supported methods and curre
 
 If you have a multichannel instrument, this release has 2 important changes.
 
-1. We added support for hardware sync with MethodScript (https://github.com/PalmSens/PalmSens_SDK/pull/283). PyPalmSens will now recognize if you have set `set_channel_sync 1` in your script, and set up the main/follower channels.
-2. More callbacks! `InstrumentPool.measure()` / `InstrumentPoolAsync.measure()` now supports passing a list of callbacks, so you can call a different function for every channel (https://github.com/PalmSens/PalmSens_SDK/pull/271). See [this link](https://dev.palmsens.com/python/latest/_attachments/examples/#multichannel_basic) for an example.
+1. We added support for hardware sync with MethodScript (https://github.com/palmsens/palmsens-sdk/pull/283). PyPalmSens will now recognize if you have set `set_channel_sync 1` in your script, and set up the main/follower channels.
+2. More callbacks! `InstrumentPool.measure()` / `InstrumentPoolAsync.measure()` now supports passing a list of callbacks, so you can call a different function for every channel (https://github.com/palmsens/palmsens-sdk/pull/271). See [this link](https://dev.palmsens.com/python/latest/_attachments/examples/#multichannel_basic) for an example.
 
 ### What's Changed
 
-* Add supported methods/ranges to instrument manager by [@stefsmeets](https://github.com/stefsmeets) in [#265](https://github.com/PalmSens/PalmSens_SDK/pull/265)
-* Add methods to read/write methodscript file by [@stefsmeets](https://github.com/stefsmeets) in [#266](https://github.com/PalmSens/PalmSens_SDK/pull/266)
-* Fix mistake in circuit fitting docs by [@stefsmeets](https://github.com/stefsmeets) in [#275](https://github.com/PalmSens/PalmSens_SDK/pull/275)
-* Fix lost datapoints in CalbackData.new_datapoints()` by [@stefsmeets](https://github.com/stefsmeets) in [#278](https://github.com/PalmSens/PalmSens_SDK/pull/278)
-* Revise access to CurrentReading/PotentialReading data by [@stefsmeets](https://github.com/stefsmeets) in [#279](https://github.com/PalmSens/PalmSens_SDK/pull/279)
-* Refactor ArrayType -> Literal and remove accessors from Dataset by [@stefsmeets](https://github.com/stefsmeets) in [#280](https://github.com/PalmSens/PalmSens_SDK/pull/280)
-* Add support for hardware sync with MethodScript by [@stefsmeets](https://github.com/stefsmeets) in [#283](https://github.com/PalmSens/PalmSens_SDK/pull/283)
-* Specify callback per channel in instrument pool by [@stefsmeets](https://github.com/stefsmeets) in [#271](https://github.com/PalmSens/PalmSens_SDK/pull/271)
+* Add supported methods/ranges to instrument manager by [@stefsmeets](https://github.com/stefsmeets) in [#265](https://github.com/palmsens/palmsens-sdk/pull/265)
+* Add methods to read/write methodscript file by [@stefsmeets](https://github.com/stefsmeets) in [#266](https://github.com/palmsens/palmsens-sdk/pull/266)
+* Fix mistake in circuit fitting docs by [@stefsmeets](https://github.com/stefsmeets) in [#275](https://github.com/palmsens/palmsens-sdk/pull/275)
+* Fix lost datapoints in CalbackData.new_datapoints()` by [@stefsmeets](https://github.com/stefsmeets) in [#278](https://github.com/palmsens/palmsens-sdk/pull/278)
+* Revise access to CurrentReading/PotentialReading data by [@stefsmeets](https://github.com/stefsmeets) in [#279](https://github.com/palmsens/palmsens-sdk/pull/279)
+* Refactor ArrayType -> Literal and remove accessors from Dataset by [@stefsmeets](https://github.com/stefsmeets) in [#280](https://github.com/palmsens/palmsens-sdk/pull/280)
+* Add support for hardware sync with MethodScript by [@stefsmeets](https://github.com/stefsmeets) in [#283](https://github.com/palmsens/palmsens-sdk/pull/283)
+* Specify callback per channel in instrument pool by [@stefsmeets](https://github.com/stefsmeets) in [#271](https://github.com/palmsens/palmsens-sdk/pull/271)
 
 
 ## PyPalmSens 1.6.1
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.6.1">python-1.6.1</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.6.1">python-1.6.1</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.6.1">pypalmsens-1.6.1</a>
 | :fontawesome-solid-calendar: 2026-01-23
 
@@ -329,12 +329,12 @@ method = ps.mixed_mode.MixedMode(
 
 ### What's Changed
 
-* Support digital triggers in MixedMode by [@stefsmeets](https://github.com/stefsmeets) in [#259](https://github.com/PalmSens/PalmSens_SDK/pull/259)
+* Support digital triggers in MixedMode by [@stefsmeets](https://github.com/stefsmeets) in [#259](https://github.com/palmsens/palmsens-sdk/pull/259)
 
 
 ## PyPalmSens 1.6.0
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.6.0">python-1.6.0</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.6.0">python-1.6.0</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.6.0">pypalmsens-1.6.0</a>
 | :fontawesome-solid-calendar: 2026-01-09
 
@@ -390,15 +390,15 @@ bipot = ps.settings.BiPot(
 
 ### What's Changed
 
-* Return data arrays for callbacks by [@stefsmeets](https://github.com/stefsmeets) in [#219](https://github.com/PalmSens/PalmSens_SDK/pull/219)
-* Implement callback for Idle Status events by [@stefsmeets](https://github.com/stefsmeets) in [#223](https://github.com/PalmSens/PalmSens_SDK/pull/223)
-* Add timing/reading status and current ranges to DataArray by [@stefsmeets](https://github.com/stefsmeets) in [#226](https://github.com/PalmSens/PalmSens_SDK/pull/226)
-* Make bipot configurable for CV and set default to fixed CR by [@stefsmeets](https://github.com/stefsmeets) in [#222](https://github.com/PalmSens/PalmSens_SDK/pull/222)
+* Return data arrays for callbacks by [@stefsmeets](https://github.com/stefsmeets) in [#219](https://github.com/palmsens/palmsens-sdk/pull/219)
+* Implement callback for Idle Status events by [@stefsmeets](https://github.com/stefsmeets) in [#223](https://github.com/palmsens/palmsens-sdk/pull/223)
+* Add timing/reading status and current ranges to DataArray by [@stefsmeets](https://github.com/stefsmeets) in [#226](https://github.com/palmsens/palmsens-sdk/pull/226)
+* Make bipot configurable for CV and set default to fixed CR by [@stefsmeets](https://github.com/stefsmeets) in [#222](https://github.com/palmsens/palmsens-sdk/pull/222)
 
 
 ## PyPalmSens 1.5.0
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.5.0">python-1.5.0</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.5.0">python-1.5.0</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.5.0">pypalmsens-1.5.0</a>
 | :fontawesome-solid-calendar: 2025-12-19
 
@@ -457,16 +457,16 @@ current_range.start
 
 ### What's Changed
 
-* Forbid extra keys in structure by [@stefsmeets](https://github.com/stefsmeets) in [#201](https://github.com/PalmSens/PalmSens_SDK/pull/201)
-* Improve firmware warning by [@stefsmeets](https://github.com/stefsmeets) in [#202](https://github.com/PalmSens/PalmSens_SDK/pull/202)
-* Add regression test for aux input by [@stefsmeets](https://github.com/stefsmeets) in [#205](https://github.com/PalmSens/PalmSens_SDK/pull/205)
-* Add validation to method classes by [@stefsmeets](https://github.com/stefsmeets) in [#210](https://github.com/PalmSens/PalmSens_SDK/pull/210)
-* Use literal strings for config objects by [@stefsmeets](https://github.com/stefsmeets) in [#206](https://github.com/PalmSens/PalmSens_SDK/pull/206)
+* Forbid extra keys in structure by [@stefsmeets](https://github.com/stefsmeets) in [#201](https://github.com/palmsens/palmsens-sdk/pull/201)
+* Improve firmware warning by [@stefsmeets](https://github.com/stefsmeets) in [#202](https://github.com/palmsens/palmsens-sdk/pull/202)
+* Add regression test for aux input by [@stefsmeets](https://github.com/stefsmeets) in [#205](https://github.com/palmsens/palmsens-sdk/pull/205)
+* Add validation to method classes by [@stefsmeets](https://github.com/stefsmeets) in [#210](https://github.com/palmsens/palmsens-sdk/pull/210)
+* Use literal strings for config objects by [@stefsmeets](https://github.com/stefsmeets) in [#206](https://github.com/palmsens/palmsens-sdk/pull/206)
 
 
 ## PyPalmSens 1.4.0
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.4.0">python-1.4.0</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.4.0">python-1.4.0</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.4.0">pypalmsens-1.4.0</a>
 | :fontawesome-solid-calendar: 2025-12-04
 
@@ -522,23 +522,23 @@ We also refactored the `InstrumentManager` / `InstrumentManagerAsync` to reduce 
 
 ### Better support for linux
 
-As a result of the above change, compatibility with linux also improved. All techniques should now work as expected. If you run into any issues, [let us know](https://github.com/PalmSens/PalmSens_SDK/issues/60).
+As a result of the above change, compatibility with linux also improved. All techniques should now work as expected. If you run into any issues, [let us know](https://github.com/palmsens/palmsens-sdk/issues/60).
 
 ### What's Changed
 
-* Add `pypalmsens.measure` method and improve connection handling by [@stefsmeets](https://github.com/stefsmeets) in [#173](https://github.com/PalmSens/PalmSens_SDK/pull/173)
-* Scan for ftdi devices by default by [@stefsmeets](https://github.com/stefsmeets) in [#183](https://github.com/PalmSens/PalmSens_SDK/pull/183)
-* Add locking to InstrumentManager by [@stefsmeets](https://github.com/stefsmeets) in [#184](https://github.com/PalmSens/PalmSens_SDK/pull/184)
-* Update docstrings for methods and method settings by [@stefsmeets](https://github.com/stefsmeets) in [#180](https://github.com/PalmSens/PalmSens_SDK/pull/180)
-* Single-source measurement code by [@stefsmeets](https://github.com/stefsmeets) in [#188](https://github.com/PalmSens/PalmSens_SDK/pull/188)
-* Generate python docs using mkdocs by [@stefsmeets](https://github.com/stefsmeets) in [#169](https://github.com/PalmSens/PalmSens_SDK/pull/169)
-* Fix missing css in Python api reference by [@stefsmeets](https://github.com/stefsmeets) in [#177](https://github.com/PalmSens/PalmSens_SDK/pull/177)
-* Fix method pages not showing up by [@stefsmeets](https://github.com/stefsmeets) in [#187](https://github.com/PalmSens/PalmSens_SDK/pull/187)
+* Add `pypalmsens.measure` method and improve connection handling by [@stefsmeets](https://github.com/stefsmeets) in [#173](https://github.com/palmsens/palmsens-sdk/pull/173)
+* Scan for ftdi devices by default by [@stefsmeets](https://github.com/stefsmeets) in [#183](https://github.com/palmsens/palmsens-sdk/pull/183)
+* Add locking to InstrumentManager by [@stefsmeets](https://github.com/stefsmeets) in [#184](https://github.com/palmsens/palmsens-sdk/pull/184)
+* Update docstrings for methods and method settings by [@stefsmeets](https://github.com/stefsmeets) in [#180](https://github.com/palmsens/palmsens-sdk/pull/180)
+* Single-source measurement code by [@stefsmeets](https://github.com/stefsmeets) in [#188](https://github.com/palmsens/palmsens-sdk/pull/188)
+* Generate python docs using mkdocs by [@stefsmeets](https://github.com/stefsmeets) in [#169](https://github.com/palmsens/palmsens-sdk/pull/169)
+* Fix missing css in Python api reference by [@stefsmeets](https://github.com/stefsmeets) in [#177](https://github.com/palmsens/palmsens-sdk/pull/177)
+* Fix method pages not showing up by [@stefsmeets](https://github.com/stefsmeets) in [#187](https://github.com/palmsens/palmsens-sdk/pull/187)
 
 
 ## PyPalmSens 1.3.3
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.3.3">python-1.3.3</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.3.3">python-1.3.3</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.3.3">pypalmsens-1.3.3</a>
 | :fontawesome-solid-calendar: 2025-11-14
 
@@ -548,14 +548,14 @@ This release also adds [type stubs](https://mypy.readthedocs.io/en/stable/stubs.
 
 ### What's Changed
 
-* Add type stubs for PalmSens .NET library by [@stefsmeets](https://github.com/stefsmeets) in [#145](https://github.com/PalmSens/PalmSens_SDK/pull/145)
-* Update PalmSens dlls to the latest version by [@stefsmeets](https://github.com/stefsmeets) in [#165](https://github.com/PalmSens/PalmSens_SDK/pull/165)
-* Update type stubs by [@stefsmeets](https://github.com/stefsmeets) in [#167](https://github.com/PalmSens/PalmSens_SDK/pull/167)
+* Add type stubs for PalmSens .NET library by [@stefsmeets](https://github.com/stefsmeets) in [#145](https://github.com/palmsens/palmsens-sdk/pull/145)
+* Update PalmSens dlls to the latest version by [@stefsmeets](https://github.com/stefsmeets) in [#165](https://github.com/palmsens/palmsens-sdk/pull/165)
+* Update type stubs by [@stefsmeets](https://github.com/stefsmeets) in [#167](https://github.com/palmsens/palmsens-sdk/pull/167)
 
 
 ## PyPalmSens 1.3.2
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.3.2">python-1.3.2</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.3.2">python-1.3.2</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.3.2">pypalmsens-1.3.2</a>
 | :fontawesome-solid-calendar: 2025-11-07
 
@@ -604,12 +604,12 @@ method = ps.ElectrochemicalImpedanceSpectroscopy(
 
 ### What's Changed
 
-* Expose Scan and Frequency scans in Python API by [@stefsmeets](https://github.com/stefsmeets) in [#153](https://github.com/PalmSens/PalmSens_SDK/pull/153)
+* Expose Scan and Frequency scans in Python API by [@stefsmeets](https://github.com/stefsmeets) in [#153](https://github.com/palmsens/palmsens-sdk/pull/153)
 
 
 ## PyPalmSens 1.3.1
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.3.1">python-1.3.1</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.3.1">python-1.3.1</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.3.1">pypalmsens-1.3.1</a>
 | :fontawesome-solid-calendar: 2025-10-31
 
@@ -617,20 +617,20 @@ This release focuses on improved support for Linux and MacOS. It contains new bu
 
 ### What's Changed
 
-* Add MPAD technique by [@stefsmeets](https://github.com/stefsmeets) in [#125](https://github.com/PalmSens/PalmSens_SDK/pull/125)
-* Fix pypalmsens arm linux builds by [@stefsmeets](https://github.com/stefsmeets) in [#134](https://github.com/PalmSens/PalmSens_SDK/pull/134)
-* Refactor tests and add structure/unstructure methods by [@stefsmeets](https://github.com/stefsmeets) in [#141](https://github.com/PalmSens/PalmSens_SDK/pull/141)
-* Fix default value for charge limits causing ChronoAmperometry to only collect 1 data point by [@stefsmeets](https://github.com/stefsmeets) in [#144](https://github.com/PalmSens/PalmSens_SDK/pull/144)
+* Add MPAD technique by [@stefsmeets](https://github.com/stefsmeets) in [#125](https://github.com/palmsens/palmsens-sdk/pull/125)
+* Fix pypalmsens arm linux builds by [@stefsmeets](https://github.com/stefsmeets) in [#134](https://github.com/palmsens/palmsens-sdk/pull/134)
+* Refactor tests and add structure/unstructure methods by [@stefsmeets](https://github.com/stefsmeets) in [#141](https://github.com/palmsens/palmsens-sdk/pull/141)
+* Fix default value for charge limits causing ChronoAmperometry to only collect 1 data point by [@stefsmeets](https://github.com/stefsmeets) in [#144](https://github.com/palmsens/palmsens-sdk/pull/144)
 
 ### Documentation
 
-* Expand documentation for HW sync example by [@stefsmeets](https://github.com/stefsmeets) in [#137](https://github.com/PalmSens/PalmSens_SDK/pull/137)
-* Update installation instructions for linux distros by [@stefsmeets](https://github.com/stefsmeets) in [#138](https://github.com/PalmSens/PalmSens_SDK/pull/138)
+* Expand documentation for HW sync example by [@stefsmeets](https://github.com/stefsmeets) in [#137](https://github.com/palmsens/palmsens-sdk/pull/137)
+* Update installation instructions for linux distros by [@stefsmeets](https://github.com/stefsmeets) in [#138](https://github.com/palmsens/palmsens-sdk/pull/138)
 
 
 ## PyPalmSens 1.2.2
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.2.2">python-1.2.2</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.2.2">python-1.2.2</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.2.2">pypalmsens-1.2.2</a>
 | :fontawesome-solid-calendar: 2025-10-13
 
@@ -675,16 +675,16 @@ ps.settings.DelayTriggers(delay=0.5, d0=True)
 
 ### What's Changed
 
-* Add MixedMode python interface by [@stefsmeets](https://github.com/stefsmeets) in [#114](https://github.com/PalmSens/PalmSens_SDK/pull/114)
-* Add methods by [@stefsmeets](https://github.com/stefsmeets) in [#109](https://github.com/PalmSens/PalmSens_SDK/pull/109)
-* Simplify api triggers, limits, and ir drop settings by [@stefsmeets](https://github.com/stefsmeets) in [#117](https://github.com/PalmSens/PalmSens_SDK/pull/117)
-* Improve testing for method reading / writing by [@stefsmeets](https://github.com/stefsmeets) in [#118](https://github.com/PalmSens/PalmSens_SDK/pull/118)
-* Update mixed mode example with battery cycle by [@stefsmeets](https://github.com/stefsmeets) in [#119](https://github.com/PalmSens/PalmSens_SDK/pull/119)
+* Add MixedMode python interface by [@stefsmeets](https://github.com/stefsmeets) in [#114](https://github.com/palmsens/palmsens-sdk/pull/114)
+* Add methods by [@stefsmeets](https://github.com/stefsmeets) in [#109](https://github.com/palmsens/palmsens-sdk/pull/109)
+* Simplify api triggers, limits, and ir drop settings by [@stefsmeets](https://github.com/stefsmeets) in [#117](https://github.com/palmsens/palmsens-sdk/pull/117)
+* Improve testing for method reading / writing by [@stefsmeets](https://github.com/stefsmeets) in [#118](https://github.com/palmsens/palmsens-sdk/pull/118)
+* Update mixed mode example with battery cycle by [@stefsmeets](https://github.com/stefsmeets) in [#119](https://github.com/palmsens/palmsens-sdk/pull/119)
 
 
 ## PyPalmSens 1.1.1
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.1.1">python-1.1.1</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.1.1">python-1.1.1</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.1.1">pypalmsens-1.1.1</a>
 | :fontawesome-solid-calendar: 2025-10-06
 
@@ -692,12 +692,12 @@ This is a small patch release that adds support for the EMStat4X via the WinUSB 
 
 ### What's Changed
 
-* Add support for WinUSB devices (EMStat4X) by [@stefsmeets](https://github.com/stefsmeets) in [#110](https://github.com/PalmSens/PalmSens_SDK/pull/110)
+* Add support for WinUSB devices (EMStat4X) by [@stefsmeets](https://github.com/stefsmeets) in [#110](https://github.com/palmsens/palmsens-sdk/pull/110)
 
 
 ## PyPalmSens 1.1.0
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.1.0">python-1.1.0</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.1.0">python-1.1.0</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.1.0">pypalmsens-1.1.0</a>
 | :fontawesome-solid-calendar: 2025-09-23
 
@@ -712,20 +712,20 @@ with ps.InstrumentPool(instruments) as pool:
     measurements = pool.measure(method=method)
 ```
 
-See the [documentation](https://palmsens.github.io/PalmSens_SDK/python/latest/measuring.html#_multichannel_measurements) for more information.
+See the [documentation](https://dev.palmsens.com/python/latest/measuring.html#_multichannel_measurements) for more information.
 
 ### What's Changed
 
-* Add InstrumentPool class by [@stefsmeets](https://github.com/stefsmeets) in [#95](https://github.com/PalmSens/PalmSens_SDK/pull/95)
-* Update requirements.txt by [@stefsmeets](https://github.com/stefsmeets) in [#96](https://github.com/PalmSens/PalmSens_SDK/pull/96)
-* Simplify ELevel dataclass by [@stefsmeets](https://github.com/stefsmeets) in [#97](https://github.com/PalmSens/PalmSens_SDK/pull/97)
-* Shorten pypalmsens imports and clean up examples by [@stefsmeets](https://github.com/stefsmeets) in [#104](https://github.com/PalmSens/PalmSens_SDK/pull/104)
-* Add workflow for publishing to pypi by [@stefsmeets](https://github.com/stefsmeets) in [#86](https://github.com/PalmSens/PalmSens_SDK/pull/86)
+* Add InstrumentPool class by [@stefsmeets](https://github.com/stefsmeets) in [#95](https://github.com/palmsens/palmsens-sdk/pull/95)
+* Update requirements.txt by [@stefsmeets](https://github.com/stefsmeets) in [#96](https://github.com/palmsens/palmsens-sdk/pull/96)
+* Simplify ELevel dataclass by [@stefsmeets](https://github.com/stefsmeets) in [#97](https://github.com/palmsens/palmsens-sdk/pull/97)
+* Shorten pypalmsens imports and clean up examples by [@stefsmeets](https://github.com/stefsmeets) in [#104](https://github.com/palmsens/palmsens-sdk/pull/104)
+* Add workflow for publishing to pypi by [@stefsmeets](https://github.com/stefsmeets) in [#86](https://github.com/palmsens/palmsens-sdk/pull/86)
 
 
 ## PyPalmSens 1.0.0
 
-> :fontawesome-brands-github: <a href="https://github.com/PalmSens/PalmSens_SDK/releases/tag/python-1.0.0">python-1.0.0</a>
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.0.0">python-1.0.0</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.0.0">pypalmsens-1.0.0</a>
 | :fontawesome-solid-calendar: 2025-08-28
 

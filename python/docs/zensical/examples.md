@@ -1,6 +1,6 @@
 # Examples
 
-The following examples are also available in the [examples directory](https://github.com/PalmSens/PalmSens_SDK/tree/main/python).
+The following examples are also available in the [examples directory](https://github.com/palmsens/palmsens-sdk/tree/main/python).
 
 ## Load and save data
 
@@ -10,11 +10,11 @@ This example shows how to load/save [methods][pypalmsens.load_method_file] and [
 --8<-- "examples/load_save_data.py"
 ```
 
-[:fontawesome-solid-download: load_save_data.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/load_save_data.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: load_save_data.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/load_save_data.py){ .md-button .md-button--primary}
 
-[:fontawesome-solid-download:Demo CV DPV EIS IS-C electrode.pssession](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/Demo CV DPV EIS IS-C electrode.pssession)
+[:fontawesome-solid-download:Demo CV DPV EIS IS-C electrode.pssession](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/Demo CV DPV EIS IS-C electrode.pssession)
 &nbsp;&nbsp;
-[:fontawesome-solid-download:PSDummyCell_LSV.psmethod](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/PSDummyCell_LSV.psmethod)
+[:fontawesome-solid-download:PSDummyCell_LSV.psmethod](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/PSDummyCell_LSV.psmethod)
 
 ## Manual control
 
@@ -24,7 +24,7 @@ This example shows how to [discover][pypalmsens.discover] devices, [establish a 
 --8<-- "examples/manual_control.py"
 ```
 
-[:fontawesome-solid-download: manual_control.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/manual_control.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: manual_control.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/manual_control.py){ .md-button .md-button--primary}
 
 ## Manual control async
 
@@ -34,7 +34,7 @@ This example shows how to [discover][pypalmsens.discover] devices, [establish a 
 --8<-- "examples/manual_control_async.py"
 ```
 
-[:fontawesome-solid-download: manual_control_async.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/manual_control_async.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: manual_control_async.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/manual_control_async.py){ .md-button .md-button--primary}
 
 ## Measure CA
 
@@ -46,7 +46,7 @@ For more information, see [Methods](methods.md).
 --8<-- "examples/measurement_CA.py"
 ```
 
-[:fontawesome-solid-download: measurement_CA.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_CA.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: measurement_CA.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_CA.py){ .md-button .md-button--primary}
 
 ## Measure CA async
 
@@ -58,7 +58,7 @@ For more information, see [Methods](methods.md).
 --8<-- "examples/measurement_CA_async.py"
 ```
 
-[:fontawesome-solid-download: measurement_CA_async.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_CA_async.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: measurement_CA_async.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_CA_async.py){ .md-button .md-button--primary}
 
 ## Measure CV
 
@@ -70,7 +70,7 @@ For more information, see [Methods](methods.md).
 --8<-- "examples/measurement_CV.py"
 ```
 
-[:fontawesome-solid-download: measurement_CV.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_CV.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: measurement_CV.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_CV.py){ .md-button .md-button--primary}
 
 ## Measure EIS
 
@@ -82,7 +82,7 @@ For more information, see [Methods](methods.md).
 --8<-- "examples/measurement_EIS.py"
 ```
 
-[:fontawesome-solid-download: measurement_EIS.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_EIS.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: measurement_EIS.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_EIS.py){ .md-button .md-button--primary}
 
 ## Mixed Mode
 
@@ -93,7 +93,7 @@ Note that the example has a reduced number of cycles and maximum run time.
 --8<-- "examples/mixed_mode.py"
 ```
 
-[:fontawesome-solid-download: mixed_mode.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/mixed_mode.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: mixed_mode.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/mixed_mode.py){ .md-button .md-button--primary}
 
 ## MethodSCRIPT sandbox
 
@@ -105,7 +105,7 @@ For more information, see [pypalmsens.MethodScript][].
 --8<-- "examples/measurement_MethodSCRIPT.py"
 ```
 
-[:fontawesome-solid-download: measurement_MethodSCRIPT.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_MethodSCRIPT.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: measurement_MethodSCRIPT.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_MethodSCRIPT.py){ .md-button .md-button--primary}
 
 ## Status callback
 
@@ -115,7 +115,7 @@ This example shows how to set up a callback to read out the [Status][pypalmsens.
 --8<-- "examples/measurement_status_callback.py"
 ```
 
-[:fontawesome-solid-download: measurement_status_callback.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_status_callback.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: measurement_status_callback.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_status_callback.py){ .md-button .md-button--primary}
 
 ## Stream data to CSV
 
@@ -125,7 +125,7 @@ This example shows how to set up and run a [chronoamperometry][pypalmsens.Chrono
 --8<-- "examples/measurement_stream_to_csv.py"
 ```
 
-[:fontawesome-solid-download: measurement_stream_to_csv.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_stream_to_csv.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: measurement_stream_to_csv.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_stream_to_csv.py){ .md-button .md-button--primary}
 
 ## SWV versus OCP
 
@@ -135,7 +135,7 @@ This example shows how to set up and run a [square wave voltammetry][pypalmsens.
 --8<-- "examples/measurement_SWV_vs_OCP.py"
 ```
 
-[:fontawesome-solid-download: measurement_SWV_vs_OCP.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_SWV_vs_OCP.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: measurement_SWV_vs_OCP.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_SWV_vs_OCP.py){ .md-button .md-button--primary}
 
 ## Multiplexer
 
@@ -145,7 +145,7 @@ This example shows how to [set up and control a multiplexer][pypalmsens.settings
 --8<-- "examples/multiplexer.py"
 ```
 
-[:fontawesome-solid-download: multiplexer.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/multiplexer.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: multiplexer.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/multiplexer.py){ .md-button .md-button--primary}
 
 ## Abort measurement
 
@@ -159,7 +159,7 @@ See the callback classes for an overview of which data are available: [pypalmsen
 --8<-- "examples/measurement_abort.py"
 ```
 
-[:fontawesome-solid-download: measurement_abort.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/measurement_abort.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: measurement_abort.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_abort.py){ .md-button .md-button--primary}
 
 
 ## Multichannel measurement   { #multichannel_basic }
@@ -172,7 +172,7 @@ Every channel gets its own [callback](measuring/#callback), using [functools.par
 --8<-- "examples/multichannel_measurement.py"
 ```
 
-[:fontawesome-solid-download: multichannel_measurement.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/multichannel_measurement.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: multichannel_measurement.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/multichannel_measurement.py){ .md-button .md-button--primary}
 
 ## Multichannel CSV writer  { #multichannel_csv_writer }
 
@@ -182,7 +182,7 @@ This example shows how to connect to a set up a [manage a pool of of instruments
 --8<-- "examples/multichannel_csv_callback.py"
 ```
 
-[:fontawesome-solid-download: multichannel_csv_callback.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/multichannel_csv_callback.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: multichannel_csv_callback.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/multichannel_csv_callback.py){ .md-button .md-button--primary}
 
 ## Multichannel custom loop  { #multichannel_custom_loop }
 
@@ -192,7 +192,7 @@ This example shows how to run and set up a sequence of measurements on a [collec
 --8<-- "examples/multichannel_custom_loop.py"
 ```
 
-[:fontawesome-solid-download: multichannel_custom_loop.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/multichannel_custom_loop.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: multichannel_custom_loop.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/multichannel_custom_loop.py){ .md-button .md-button--primary}
 
 ## Multichannel HW sync  { #multichannel_hw_sync }
 
@@ -219,4 +219,4 @@ Only channel 1 (the main channel) has hardware required to trigger the other cha
 --8<-- "examples/multichannel_HW_sync.py"
 ```
 
-[:fontawesome-solid-download: multichannel_HW_sync.py](https://raw.githubusercontent.com/PalmSens/PalmSens_SDK/refs/heads/main/python/examples/multichannel_HW_sync.py){ .md-button .md-button--primary}
+[:fontawesome-solid-download: multichannel_HW_sync.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/multichannel_HW_sync.py){ .md-button .md-button--primary}

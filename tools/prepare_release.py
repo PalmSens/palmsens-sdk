@@ -84,7 +84,7 @@ def update_releases(sdk: SDK, commit: bool = False):
         print('Tag already exists, skipping')
     else:
         new_line = (
-            f'- https://github.com/palmsens/palmsens_sdk/releases/tag/{sdk.tag}[{sdk.tag}]'
+            f'- https://github.com/palmsens/palmsens-sdk/releases/tag/{sdk.tag}[{sdk.tag}]'
         )
         lines.insert(index + 1, new_line)
         releases_path.write_text('\n'.join(lines) + '\n', encoding='UTF-8')

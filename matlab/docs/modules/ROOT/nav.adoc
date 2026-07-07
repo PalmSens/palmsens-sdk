@@ -2,5 +2,5 @@
 * xref:functions.adoc[]
 * xref:classes.adoc[]
 * xref:techniques.adoc[]
-* https://github.com/PalmSens/PalmSens_SDK/tree/main/matlab[Source code ↗]
-* https://github.com/PalmSens/PalmSens_SDK/releases/tag/matlab-1.0.1[Latest release ↗]
+* https://github.com/palmsens/palmsens-sdk/tree/main/matlab[Source code ↗]
+* https://github.com/palmsens/palmsens-sdk/releases/tag/matlab-1.0.1[Latest release ↗]

@@ -23,7 +23,7 @@ image:basic_example.png[Screenshot of Basic Example, 300, float="right"]
 
 Shows how to make a connection and run a measurement, with a minimum amount of code.
 
-https://github.com/palmsens/palmsens_sdk/blob/main/wpf/Examples/BasicExample[Link to the code]
+https://github.com/palmsens/palmsens-sdk/blob/main/wpf/Examples/BasicExample[Link to the code]
 --
 
 [#example-multichannel]
@@ -34,5 +34,5 @@ image:multichannel_example.png[Screenshot of Multichannel Example, 300, float="r
 
 Shows how to make a connection to multiple channels, run different types of measurements and plot the results.
 
-https://github.com/palmsens/palmsens_sdk/blob/main/wpf/Examples/MultiChannelExample[Link to the code]
+https://github.com/palmsens/palmsens-sdk/blob/main/wpf/Examples/MultiChannelExample[Link to the code]
 --

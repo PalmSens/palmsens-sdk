@@ -67,8 +67,8 @@ class BC:
         expected_curves: list[dict[str, Any]] = [
             {'x': 'Time', 'y': 'Potential', 'min_len': 4},
             {'x': 'Time', 'y': 'Current', 'min_len': 4},
-            {'x': 'Potential', 'y': 'Potential', 'min_len': 1},
-            {'x': 'Potential', 'y': 'Potential', 'min_len': 1},
+            {'x': 'Cycle', 'y': 'Passed Q', 'min_len': 1},
+            {'x': 'Cycle', 'y': 'Passed Q', 'min_len': 1},
         ]
 
         curves = measurement.curves
@@ -92,7 +92,7 @@ class BC:
             'Potential1_2',
             'Time1_2',
         }
-        assert dataset.array_quantities == {'Current', 'Potential', 'Time'}
+        assert dataset.array_quantities == {'Current', 'Potential', 'Time', 'Passed Q', 'Cycle'}
 
 
 class DCP:

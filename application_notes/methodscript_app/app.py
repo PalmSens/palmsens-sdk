@@ -336,6 +336,31 @@ def show_measurement_widget():
     """Show measurement data."""
     c1, c2 = st.columns(2)
 
+    for curve in SESSION.measurement.curves:
+        if curve.title == 'Unknown: cyc vs Qpass':
+            title = 'Charge'
+            col = c1
+        elif curve.title == 'Unknown: cyc vs Qpass 1':
+            title = 'Discharge'
+            col = c2
+        else:
+            continue
+
+        if len(curve) <= 1:
+            continue
+
+        source = pd.DataFrame({'x': curve.x_array, 'y': curve.y_array})
+
+        chart = (
+            alt.Chart(source, title=title)
+            .mark_line()
+            .encode(
+                alt.X('x').title(f'{curve.x_label} / {curve.x_unit}'),
+                alt.Y('y').title(f'{curve.y_label} / {curve.y_unit}'),
+            )
+        ).interactive()
+        col.altair_chart(chart)
+
     if SESSION.i_curves:
         c1.altair_chart(make_chart(curve_id=SESSION.i_curves[-1]).interactive())
 

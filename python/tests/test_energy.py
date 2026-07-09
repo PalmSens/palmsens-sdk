@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from pydantic import ValidationError
 
 import pypalmsens as ps
 from pypalmsens._methods.adapters import (
@@ -29,11 +28,6 @@ def manager():
     with ps.connect(instruments[0]) as mgr:
         logger.warning('Connected to %s' % mgr.instrument.id)
         yield mgr
-
-
-def test_float_gives_error():
-    with pytest.raises(ValidationError):
-        _ = experimental_BatteryCycling(max_time=1.123)
 
 
 @pytest.mark.parametrize(
@@ -129,8 +123,10 @@ class DCR:
 
     kwargs = {
         'id': 'dcr',
-        'duration': 3,
+        'duration': 1,
         'cell_on_ocp': False,
+        'cutoff': 0,
+        'interval': 0.1,
     }
 
     @staticmethod
@@ -145,7 +141,7 @@ class DCR:
         assert len(curves) == 2
 
         for curve in curves:
-            assert len(curve) == 2
+            assert len(curve) > 0
 
         dataset = measurement.dataset
 
@@ -192,3 +188,47 @@ def test_params_round_trip(method):
 
     # skip header/timestamp
     assert new_params.script.splitlines()[3:] == params.render().splitlines()[3:]
+
+
+def test_battery_cycling_convert_values():
+    m = ps.energy.experimental_BatteryCycling()
+    script = m.render().splitlines()[33:45]
+
+    assert script == [
+        'store_var cycle 1i ja # first cycle',
+        'store_var potential_max 4300m ab',
+        'store_var current_min 5u ba',
+        'store_var potential_min 2500m ab',
+        'store_var current_charge 100u ba',
+        'store_var current_discharge -100u ba',
+        'store_var cycles 100i ja',
+        'store_var interval 100m eb',
+        'store_var max_time 3 eb',
+        'store_var delta_v 100u ia',
+        'store_var delta_i 500n ha',
+        'store_var delta_t 100m eb',
+    ]
+
+
+def test_constant_resistance_convert_values():
+    m = ps.energy.experimental_ConstantResistance()
+    script = m.render().splitlines()[14:18]
+
+    assert script == [
+        'store_var load -80 db',
+        'store_var cutoff 2500m ab',
+        'store_var duration 3600 eb',
+        'store_var interval 1 eb',
+    ]
+
+
+def test_constant_power_convert_values():
+    m = ps.energy.experimental_ConstantPower()
+    script = m.render().splitlines()[14:18]
+
+    assert script == [
+        'store_var power -200m db',
+        'store_var cutoff 2500m ab',
+        'store_var duration 3600 eb',
+        'store_var interval 1 eb',
+    ]

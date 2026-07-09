@@ -19,6 +19,16 @@ env = Environment(
 )
 
 
+def convert_to_ms_value(value: float, offset: int = 0):
+    """Convert float to MethodSCRIPT compatible value.
+
+    e.g. 0.5 -> '500m'."""
+    return PalmSens.MethodScript.ConvertValue(value, offset)
+
+
+env.filters['ms_val'] = convert_to_ms_value
+
+
 class BaseMethodScriptTechnique(BaseModel):
     _template: str = ''
     _custom_units: dict[Literal['as', 'at', 'au'], CustomUnits] = PrivateAttr(
@@ -106,38 +116,38 @@ class BatteryCycling(BaseMethodScriptTechnique):
     id: Literal['bc'] = 'bc'
     """Unique method identifier."""
 
-    potential_max: int = 4300
-    """Maximum potential to charge to (units: mV)."""
+    potential_max: float = 4.3
+    """Maximum potential to charge to (units: V)."""
 
-    current_min: int = 5
-    """Minimum current to stop the CV charge step (units: μA)."""
+    current_min: float = 0.005
+    """Minimum current to stop the CV charge step (units: mA)."""
 
-    potential_min: int = 2500
-    """Minimum potential to discharge to (units: mV)."""
+    potential_min: float = 2.5
+    """Minimum potential to discharge to (units: V)."""
 
-    current_charge: int = 100
-    """Constant current to charge with (units: μA)."""
+    current_charge: float = 0.100
+    """Constant current to charge with (units: mA)."""
 
-    current_discharge: int = -100
-    """Constant current to discharge with (units: μA)."""
+    current_discharge: float = -0.100
+    """Constant current to discharge with (units: mA)."""
 
     cycles: int = Field(default=100, gt=0)
     """Number of charge and discharge cycles."""
 
-    interval: int = Field(default=100, ge=0)
+    interval: float = Field(default=0.1, ge=0)
     """Interval time of each measurement point (units: s)."""
 
-    max_time: int = Field(default=3, ge=0)
+    max_time: float = Field(default=3, ge=0)
     """Maximum duration of each step (if the cut-off is not met) (units: s)."""
 
-    delta_v: int = Field(default=100, gt=0)
-    """Minimum potential variation required for plotting data in CC steps (units: μV)."""
+    delta_v: float = Field(default=0.100, gt=0)
+    """Minimum potential variation required for plotting data in CC steps (units: mV)."""
 
-    delta_i: int = Field(default=500, gt=0)
-    """Minimum current variation reuqired for plotting data in the CV step (units: nA)."""
+    delta_i: float = Field(default=0.500, gt=0)
+    """Minimum current variation reuqired for plotting data in the CV step (units: μA)."""
 
-    delta_t: int = Field(default=100, ge=0)
-    """Maximum time without plotting data (units: ms)."""
+    delta_t: float = Field(default=0.100, ge=0)
+    """Maximum time without plotting data (units: s)."""
 
     cell_on_ocp: bool = False
     """Turns cell on with the measured OCP (Nexus only)."""
@@ -182,16 +192,16 @@ class ConstantResistance(BaseMethodScriptTechnique):
     id: Literal['dcr'] = 'dcr'
     """Unique method identifier."""
 
-    load: int = -80
+    load: float = -80
     """Constant resistance load in Ohm (make it negative for discharging)."""
 
-    cutoff: int = 2500
-    """A cut-off potential in mV to finish the discharge step."""
+    cutoff: float = 2.5
+    """A cut-off potential in V to finish the discharge step."""
 
-    duration: int = Field(3600, ge=0)
+    duration: float = Field(3600, ge=0)
     """The total duration of the experiment in s (if the cut-off limit currents not met)."""
 
-    interval: int = Field(1, ge=0)
+    interval: float = Field(1, ge=0)
     """The interval time in s of each data point."""
 
     cell_on_ocp: bool = False
@@ -237,16 +247,16 @@ class ConstantPower(BaseMethodScriptTechnique):
     id: Literal['dcp'] = 'dcp'
     """Unique method identifier."""
 
-    power: int = -200
+    power: float = -0.200
     """Constant power in Watt (negative for discharging)."""
 
-    cutoff: int = 2500
-    """A cut-off potential in mV to finish the discharge step."""
+    cutoff: float = 2.5
+    """A cut-off potential in V to finish the discharge step."""
 
-    duration: int = Field(3600, ge=0)
+    duration: float = Field(3600, ge=0)
     """The total duration of the experiment in s (if the cut-off limit currents not met)."""
 
-    interval: int = Field(1, ge=0)
+    interval: float = Field(1, ge=0)
     """The interval time in s of each data point."""
 
     cell_on_ocp: bool = False

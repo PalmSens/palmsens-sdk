@@ -84,7 +84,7 @@ loop cycle <= cycles
             store_var acc_delta_v 0 ia
             store_var acc_t 0 eb
             # Update the status bar with measured values (code below):
-            send_string f"Cycle {cycle}/{cycles}    |    E = {potential} V    |    I = {current} A    |    Qchg = {capacity_charge[cycle]} mAh   |    Qdis = {capacity_discharge[cycle]} mAh   |   t = {time} s"
+            send_string f"Cycle {cycle}/{cycles} | E = {potential} V | I = {current} A | Qchg = {capacity_charge[cycle]} mAh | Qdis = {capacity_discharge[cycle]} mAh | t = {time} s"
             set_script_output 0
         elseif acc_t > delta_t
             add_var acc_delta_v delta_v
@@ -126,7 +126,7 @@ loop cycle <= cycles
             pck_end
             store_var acc_delta_i 0 ha
             store_var acc_t 0 eb
-            send_string f"Cycle {cycle}/{cycles}    |    E = {potential} V    |    I = {current} A    |    Qchg = {capacity_charge[cycle]} mAh   |    Qdis = {capacity_discharge[cycle]} mAh   |   t = {time} s"
+            send_string f"Cycle {cycle}/{cycles} | E = {potential} V | I = {current} A | Qchg = {capacity_charge[cycle]} mAh | Qdis = {capacity_discharge[cycle]} mAh | t = {time} s"
             set_script_output 0
         elseif acc_t > delta_t
             add_var acc_delta_i delta_i
@@ -171,7 +171,7 @@ loop cycle <= cycles
             pck_end
             store_var acc_delta_v 0 ia
             store_var acc_t 0 eb
-            send_string f"Cycle {cycle}/{cycles}    |    E = {potential} V    |    I = {current} A    |    Qchg = {capacity_charge[cycle]} mAh   |    Qdis = {capacity_discharge[cycle]} mAh   |   t = {time} s"
+            send_string f"Cycle {cycle}/{cycles} | E = {potential} V | I = {current} A | Qchg = {capacity_charge[cycle]} mAh | Qdis = {capacity_discharge[cycle]} mAh | t = {time} s"
         elseif acc_t > delta_t
             add_var acc_delta_v delta_v
         else

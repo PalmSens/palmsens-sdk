@@ -20,8 +20,6 @@ from .._types import (
 class AnalogComponent(BaseModel):
     """Dataclass for analog component (DAC / ADC) configuration."""
 
-    model_config = ConfigDict(frozen=True)
-
     bits: int
     """Number of bits this device uses."""
 
@@ -49,7 +47,7 @@ class AnalogComponent(BaseModel):
     v_range: float
     """Gets the reference voltage range of the device."""
 
-    model_config['frozen'] = True
+    model_config = ConfigDict(frozen=True)
 
     @classmethod
     def _from_pscomponent(cls, obj: PalmSens.Devices.AnalogComponent) -> AnalogComponent:
@@ -72,7 +70,10 @@ class CapabilitiesInterface(BaseModel):
 
     comm: PalmSens.Comm.CommManager
 
-    model_config = {'arbitrary_types_allowed': True}
+    model_config = ConfigDict(
+        frozen=True,
+        arbitrary_types_allowed=True,
+    )
 
     @computed_field
     @property

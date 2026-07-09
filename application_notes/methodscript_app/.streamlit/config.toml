@@ -1,0 +1,9 @@
+[theme]
+base = "light"
+primaryColor="#2d9dd6"
+backgroundColor="#ffffff"
+secondaryBackgroundColor="#e3ecf7"
+baseRadius="full"
+
+[browser]
+gatherUsageStats = false

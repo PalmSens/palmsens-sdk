@@ -19,6 +19,16 @@ env = Environment(
 )
 
 
+def convert_to_ms_value(value: float, offset: int = 0):
+    """Convert float to MethodSCRIPT compatible value.
+
+    e.g. 0.5 -> '500m'."""
+    return PalmSens.MethodScript.ConvertValue(value, offset)
+
+
+env.filters['ms_val'] = convert_to_ms_value
+
+
 class BaseMethodScriptTechnique(BaseModel):
     _template: str = ''
     _custom_units: dict[Literal['as', 'at', 'au'], CustomUnits] = PrivateAttr(

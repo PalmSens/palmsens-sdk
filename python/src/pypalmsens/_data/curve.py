@@ -246,17 +246,24 @@ class Curve:
         """Set the title for the curve."""
         self._pscurve.Title = title
 
+    @property
+    def id(self) -> int:
+        """Unique identifier for curve object."""
+        return self._pscurve.GetHashCode()
+
+    def metadata(self) -> CurveMetadata:
+        """Generate curve metadata as dataclass."""
+        return CurveMetadata(
+            title=self.title,
+            columns=['x', 'y'],
+            units=[self.x_unit, self.y_unit],
+            labels=[self.x_label, self.y_label],
+            id=self.id,
+        )
+
     def metadata_json(self) -> bytes:
         """Generate curve metadata as json."""
-        return TypeAdapter(CurveMetadata).dump_json(
-            CurveMetadata(
-                title=self.title,
-                columns=['x', 'y'],
-                units=[self.x_unit, self.y_unit],
-                labels=[self.x_label, self.y_label],
-                id=self._pscurve.GetHashCode(),
-            )
-        )
+        return TypeAdapter(CurveMetadata).dump_json(self.metadata())
 
     @property
     def peaks(self) -> list[Peak]:

@@ -105,16 +105,18 @@ class Measurement:
         """Return dataclass with measurement device information."""
         return DeviceInfo._from_psmeasurement(self._psmeasurement)
 
+    def metadata(self) -> MeasurementMetadata:
+        """Return measurement metadata as dataclass"""
+        return MeasurementMetadata(
+            device=self.device,
+            timestamp=datetime.fromisoformat(self.timestamp),
+            title=self.title,
+            method=self.method,  # type:ignore
+        )
+
     def metadata_json(self) -> bytes:
         """Generate measurement metadata as json."""
-        return TypeAdapter(MeasurementMetadata).dump_json(
-            MeasurementMetadata(
-                device=self.device,
-                timestamp=datetime.fromisoformat(self.timestamp),
-                title=self.title,
-                method=self.method,  # type:ignore
-            )
-        )
+        return TypeAdapter(MeasurementMetadata).dump_json(self.metadata())
 
     @property
     def blank_curve(self) -> Curve | None:

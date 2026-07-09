@@ -542,7 +542,11 @@ class InstrumentManagerAsync(CapabilitiesMixin):
         measurement_manager = MeasurementManagerAsync(comm=self._comm)
 
         return await measurement_manager.measure(
-            method, callback=callback, stream=stream, sync_event=sync_event
+            method,
+            callback=callback,
+            stream=stream,
+            sync_event=sync_event,
+            events=self.events,
         )
 
     def _initiate_hardware_sync_follower_channel(

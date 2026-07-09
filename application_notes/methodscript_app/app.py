@@ -107,6 +107,8 @@ class MethodThread(Thread):
 
 def configure_method_widget() -> experimental_BatteryCycling:
     """Configure battery cycling method via widget."""
+    st.header('Method parameters')
+
     potential_max = st.number_input(
         'Potential Max (mV)',
         value=4300,
@@ -227,22 +229,47 @@ def show_methodscript_widget(methodscript: ps.MethodScript) -> None:
     st.code(methodscript.script, line_numbers=True, height=600)
 
 
-def connect_to_device_widget():
+def connect_to_device_widget(c1, c2):
     """Connect to device widget.
 
     Sets `session.manager`."""
-    c1, c2, _ = st.columns(3)
 
     if not SESSION.manager:
+        instruments = ps.discover()
+
+        if not instruments:
+            st.warning('No devices were discovered.')
+            st.stop()
+
+        options = {instrument.name: instrument for instrument in instruments}
+
+        name = c1.selectbox(
+            'Instrument',
+            options,
+            placeholder='Select instrument',
+            index=0,
+            label_visibility='collapsed',
+        )
+
+        instrument = options[name]
+
+        c2.metric(
+            label='device',
+            value=instrument.name,
+            delta='disconnected',
+            delta_color='red',
+            delta_arrow='off',
+        )
+
         if c1.button(
             'Connect',
             type='primary',
             icon=':material/add_link:',
             width='stretch',
         ):
-            with c2.spinner('Connecting...'):
+            with c1.spinner('Connecting...'):
                 try:
-                    SESSION.manager = ps.connect()
+                    SESSION.manager = ps.connect(instrument=instrument)
                 except ConnectionError as e:
                     st.warning(str(e))
                     st.stop()
@@ -251,7 +278,13 @@ def connect_to_device_widget():
 
         st.stop()
     else:
-        c2.write(f'Connected to {SESSION.manager.instrument.name}')
+        c2.metric(
+            label='device',
+            value=SESSION.manager.instrument.name,
+            delta='connected',
+            delta_color='green',
+            delta_arrow='off',
+        )
 
         if c1.button(
             'Disconnect',
@@ -264,9 +297,8 @@ def connect_to_device_widget():
             st.rerun()
 
 
-def start_measurement_widget(method: experimental_BatteryCycling):
+def start_measurement_widget(c1, c2, *, method: experimental_BatteryCycling):
     """This widget starts the measurement thread."""
-    c1, c2, _ = st.columns(3)
 
     if not SESSION.thread:
         if c1.button(
@@ -275,7 +307,7 @@ def start_measurement_widget(method: experimental_BatteryCycling):
             icon=':material/play_circle:',
             width='stretch',
         ):
-            with c2.spinner('Starting measurement...'):
+            with c1.spinner('Starting measurement...'):
                 SESSION.thread = MethodThread(method=method)
                 add_script_run_ctx(SESSION.thread, get_script_run_ctx())
                 SESSION.thread.start()
@@ -414,9 +446,11 @@ def main():
     with st.expander('Click to show generated MethodSCRIPT'):
         show_methodscript_widget(methodscript)
 
-    connect_to_device_widget()
+    c1, c2, _ = st.columns(3)
 
-    start_measurement_widget(method)
+    connect_to_device_widget(c1, c2)
+
+    start_measurement_widget(c1, c2, method=method)
 
     st.space(size='small')
 

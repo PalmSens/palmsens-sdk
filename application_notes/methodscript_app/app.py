@@ -1,8 +1,9 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#     "pypalmsens>=1.9",
-#     "streamlit>=1.55",
+#     "pandas==2.3",
+#     "pypalmsens==1.11",
+#     "streamlit>=1.58",
 # ]
 # ///
 

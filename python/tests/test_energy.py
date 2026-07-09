@@ -192,3 +192,26 @@ def test_params_round_trip(method):
 
     # skip header/timestamp
     assert new_params.script.splitlines()[3:] == params.render().splitlines()[3:]
+
+
+EXPECTED_SCRIPT_VARIABLES = [
+    'store_var cycle 1i ja # first cycle',
+    'store_var potential_max 4300m ab',
+    'store_var current_min 5u ba',
+    'store_var potential_min 2500m ab',
+    'store_var current_charge 100u ba',
+    'store_var current_discharge -100u ba',
+    'store_var cycles 100i ja',
+    'store_var interval 100m eb',
+    'store_var max_time 3 eb',
+    'store_var delta_v 100u ia',
+    'store_var delta_i 500n ha',
+    'store_var delta_t 100m eb',
+]
+
+
+def test_script_convert_values():
+    m = ps.energy.experimental_BatteryCycling()
+    script = m.render().splitlines()[33:45]
+
+    assert script == EXPECTED_SCRIPT_VARIABLES

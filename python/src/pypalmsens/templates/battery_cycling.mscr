@@ -32,17 +32,17 @@ array capacity_charge 10000i
 array capacity_discharge 10000i
 # Technique parameters
 store_var cycle 1i ja # first cycle
-store_var potential_max {{ model.potential_max }}m ab
-store_var current_min {{ model.current_min }}u ba
-store_var potential_min {{ model.potential_min }}m ab
-store_var current_charge {{ model.current_charge }}u ba
-store_var current_discharge {{ model.current_discharge }}u ba
+store_var potential_max {{ model.potential_max | ms_val(0) }} ab
+store_var current_min {{ model.current_min | ms_val(-3) }} ba
+store_var potential_min {{ model.potential_min | ms_val(0) }} ab
+store_var current_charge {{ model.current_charge | ms_val(-3) }} ba
+store_var current_discharge {{ model.current_discharge | ms_val(-3) }} ba
 store_var cycles {{ model.cycles }}i ja
-store_var interval {{ model.interval }}m eb
+store_var interval {{ model.interval | ms_val(0) }} eb
 store_var max_time {{ model.max_time }} eb
-store_var delta_v {{ model.delta_v }}u ia
-store_var delta_i {{ model.delta_i }}n ha
-store_var delta_t {{ model.delta_t }}m eb
+store_var delta_v {{ model.delta_v | ms_val(-3) }} ia
+store_var delta_i {{ model.delta_i | ms_val(-6) }} ha
+store_var delta_t {{ model.delta_t | ms_val(0) }} eb
 # General settings
 store_var bandwidth 5850535u dc
 div_var bandwidth interval

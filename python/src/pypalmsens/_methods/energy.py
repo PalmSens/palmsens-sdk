@@ -137,7 +137,7 @@ class BatteryCycling(BaseMethodScriptTechnique):
     interval: float = Field(default=0.1, ge=0)
     """Interval time of each measurement point (units: s)."""
 
-    max_time: int = Field(default=3, ge=0)
+    max_time: float = Field(default=3, ge=0)
     """Maximum duration of each step (if the cut-off is not met) (units: s)."""
 
     delta_v: float = Field(default=0.100, gt=0)
@@ -192,16 +192,16 @@ class ConstantResistance(BaseMethodScriptTechnique):
     id: Literal['dcr'] = 'dcr'
     """Unique method identifier."""
 
-    load: int = -80
+    load: float = -80
     """Constant resistance load in Ohm (make it negative for discharging)."""
 
-    cutoff: int = 2500
-    """A cut-off potential in mV to finish the discharge step."""
+    cutoff: float = 2.5
+    """A cut-off potential in V to finish the discharge step."""
 
-    duration: int = Field(3600, ge=0)
+    duration: float = Field(3600, ge=0)
     """The total duration of the experiment in s (if the cut-off limit currents not met)."""
 
-    interval: int = Field(1, ge=0)
+    interval: float = Field(1, ge=0)
     """The interval time in s of each data point."""
 
     cell_on_ocp: bool = False
@@ -247,16 +247,16 @@ class ConstantPower(BaseMethodScriptTechnique):
     id: Literal['dcp'] = 'dcp'
     """Unique method identifier."""
 
-    power: int = -200
+    power: float = -0.200
     """Constant power in Watt (negative for discharging)."""
 
-    cutoff: int = 2500
-    """A cut-off potential in mV to finish the discharge step."""
+    cutoff: float = 2.5
+    """A cut-off potential in V to finish the discharge step."""
 
-    duration: int = Field(3600, ge=0)
+    duration: float = Field(3600, ge=0)
     """The total duration of the experiment in s (if the cut-off limit currents not met)."""
 
-    interval: int = Field(1, ge=0)
+    interval: float = Field(1, ge=0)
     """The interval time in s of each data point."""
 
     cell_on_ocp: bool = False

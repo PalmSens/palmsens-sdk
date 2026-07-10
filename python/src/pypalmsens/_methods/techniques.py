@@ -2258,6 +2258,11 @@ endif
         https://www.palmsens.com/methodscript/ for more information."""
 
     custom_units: dict[Literal['as', 'at', 'au'], CustomUnits] = Field(default_factory=dict)
+    """Define custom quantities and units for 'as', 'at', 'au' variable types.
+
+    Use this to override the quantities for analog inputs (0, 1, and 2).
+    These default to Voltage / V. Defining custum units is purely cosmetic.
+    The values are used for labeling curves and axes."""
 
     @override
     def _update_psmethod(self, psmethod: PalmSens.Method, /):

@@ -43,11 +43,11 @@ def test_render(cls):
     validate_methodscript(method.render())
 
 
-class BC:
+class BCY:
     """Note: requires dummy circuit."""
 
     kwargs = {
-        'id': 'bc',
+        'id': 'bcy',
         'cycles': 1,
         'max_time': 1,
         'cell_on_ocp': False,
@@ -153,7 +153,7 @@ class DCR:
 @pytest.mark.parametrize(
     'method',
     (
-        BC,
+        BCY,
         DCP,
         DCR,
     ),
@@ -171,7 +171,7 @@ def test_measure(manager, method):
 @pytest.mark.parametrize(
     'method',
     (
-        BC,
+        BCY,
         DCP,
         DCR,
     ),

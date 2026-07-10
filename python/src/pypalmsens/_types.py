@@ -86,6 +86,17 @@ See the device documentation or query the instrument manager
 for supported methods."""
 
 
+AllowedMSMethods = Literal[
+    'dcp',
+    'dcr',
+    'bcy',
+]
+"""All available methodscript-based method IDs.
+
+See the device documentation or query the instrument manager
+for supported methods."""
+
+
 AllowedPotentialRanges = Literal[
     '1mV',
     '10mV',
@@ -113,7 +124,7 @@ class MethodTypeCompatible(Protocol):
     """All methods, including MethodType and those that generate compatible MethodSCRIPT."""
 
     @property
-    def id(self) -> AllowedMethods: ...
+    def id(self) -> AllowedMethods | AllowedMSMethods: ...
 
     def _to_psmethod(self) -> PalmSens.Method: ...
 

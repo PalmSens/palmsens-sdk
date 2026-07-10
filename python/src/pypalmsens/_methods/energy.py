@@ -113,7 +113,7 @@ class BatteryCycling(BaseMethodScriptTechnique):
         'at': CustomUnits(quantity='Cycle', symbol='cyc', unit='n'),
     }
 
-    id: Literal['bc'] = 'bc'
+    id: Literal['bcy'] = 'bcy'
     """Unique method identifier."""
 
     potential_max: float = 4.3

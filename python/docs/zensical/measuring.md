@@ -506,10 +506,11 @@ See [Hardware sync](examples.md#multichannel_hw_sync) for a practical example.
 ## Streaming data to a file
 
 When measuring, PyPalmSens can auto-save all data directly to a file.
+The stream can be used for:
 
 1. Streaming data to other processes
 2. Data recovery
-3. Tracking Long-running measurements
+3. Tracking long-running measurements
 
 This option is especially useful for long-term measurements.
 Auto-saving all data helps with data recovery.
@@ -541,20 +542,47 @@ This means the data can be read in any programming language with a JSON parser.
 
     The data format was designed specifically for PyPalmSens. If you want to analyze your data in PSTrace, make sure to save the data to `.pssession` at the end of your measurement using [pypalmsens.save_session_file][].
 
+### Load stream data
+
+PyPalmSens contains a parser to load such files, [pypalmsens.load_stream_file][]. Although the data structure resembles that [pypalmsans.data.Measurement][], it it is much smaller in scope, and lacks some of the more advanced features.
+
+```python
+>>> import pypalmsens as ps
+
+>>> _ = ps.measure(ps.CyclicVoltammetry(n_scans=3), stream='data.jsonl')
+>>> stream = ps.load_stream_file('data.jsonl')
+>>> stream
+>>> Measurement(Cyclic Voltammetry, timestamp=2026-07-10 15:47:12, device=EmStat4LR)
+
+>>> stream.metadata.method
+CyclicVoltammetry(begin_potential=-0.5, vertex1_potential=0.5, vertex2_potential=-0.5, step_potential=0.1, scanrate=1.0, ...)
+
+>>> stream.curves
+Out[8]:
+[Curve(CV i vs E Scan 1, n_points=20),
+ Curve(CV i vs E Scan 2, n_points=20),
+ Curve(CV i vs E Scan 3, n_points=21)]
+
+>>> stream.curves[0].metadata
+>>> CurveMetadata(title='CV i vs E Scan 1', columns=['x', 'y'], units=['V', 'µA'], labels=['Potential', 'Current'], id=45011471, type='curve')
+
+>>> stream.curves[0].data
+[[-0.499999, -50.01226],
+ [-0.400011, -40.015384],
+ ...
+ [-0.300033, -29.950316],
+ [-0.400011, -40.018056]]
+ ```
+
 ### Data format
 
-The data are self-documenting. At the top of each file, PyPalmSens writes the Measurement metadata. This block contains the timestamp, device, method parameters, and firmware, and version information, version.
+The data are self-documenting. At the top of each file, PyPalmSens writes the Measurement metadata. This block contains the timestamp, device, method parameters, firmware version, and library version.
 
 For impedance measurements, the start of each EIS measurement starts with an 'EIS metadata' block. For non-impedance measurements, each curve starts with a Curve metadata block.
 
 These contain the title, column headers, units, labels, and other data metadata. The `id` field is used to link the data rows back to the curve or eis metadata.
 
 The majority of the lines will be rows of data, including an `id` field which can be used to match the corresponding curve / eis data and a `data` field containing a list of data values. The number of columns matches the `columns` / `units` / `quantities` lists in the metadata.
-
-<!--EISDataMetadata
-CurveMetadata
-MeasurementMetadata
-DataRow-->
 
 !!! Note "Feedback"
 

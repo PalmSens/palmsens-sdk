@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Literal, final
 
 import System
-from pydantic import Field, TypeAdapter
+from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 from typing_extensions import override
 
@@ -58,12 +58,6 @@ class MeasurementMetadata:
     """Measurement title."""
     method: TechniqueType | EnergyTechniqueType
     """Method parameters."""
-    columns: list[str] = Field(default_factory=list)
-    """Column headers for data."""
-    units: list[str] = Field(default_factory=list)
-    """Column units."""
-    channels: int = 0
-    """Number of channels"""
     version_pypalmsens: str = __version__
     """PyPalmSens version."""
     version_sdk: str = __sdk_version__

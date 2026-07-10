@@ -67,6 +67,7 @@ from ._methods.techniques import (
     SquareWaveVoltammetry,
     StrippingChronoPotentiometry,
 )
+from ._stream import load_stream_file
 
 __all__ = [
     'corrosion',
@@ -83,6 +84,7 @@ __all__ = [
     'measure_async',
     'load_method_file',
     'load_session_file',
+    'load_stream_file',
     'save_method_file',
     'save_session_file',
     'stages',

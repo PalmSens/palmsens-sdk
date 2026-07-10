@@ -86,6 +86,17 @@ See the device documentation or query the instrument manager
 for supported methods."""
 
 
+AllowedMSMethods = Literal[
+    'dcp',
+    'dcr',
+    'bcy',
+]
+"""All available methodscript-based method IDs.
+
+See the device documentation or query the instrument manager
+for supported methods."""
+
+
 AllowedPotentialRanges = Literal[
     '1mV',
     '10mV',
@@ -113,7 +124,10 @@ class MethodTypeCompatible(Protocol):
     """All methods, including MethodType and those that generate compatible MethodSCRIPT."""
 
     @property
-    def id(self) -> AllowedMethods: ...
+    def id(self) -> AllowedMethods | AllowedMSMethods: ...
+
+    def to_dict(self) -> dict[str, Any]: ...
+    def from_dict(self, obj: dict[str, Any]) -> MethodTypeCompatible: ...
 
     def _to_psmethod(self) -> PalmSens.Method: ...
 
@@ -124,7 +138,6 @@ class MethodType(MethodTypeCompatible, Protocol):
     @property
     def _use_hardware_sync(self) -> bool: ...
 
-    def to_dict(self) -> dict[str, Any]: ...
     def _serialize(self) -> str: ...
     def _update_params(self, psmethod: PalmSens.Method, /) -> None: ...
     def _update_params_nested(self, psmethod: PalmSens.Method, /) -> None: ...

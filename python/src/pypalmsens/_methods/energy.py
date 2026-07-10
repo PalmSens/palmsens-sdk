@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 
 import PalmSens
 from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescape
 from pydantic import BaseModel, Field, PrivateAttr
+
+from pypalmsens.types import MethodTypeCompatible
 
 from .. import __version__
 from .settings import CustomUnits
@@ -67,6 +69,17 @@ class BaseMethodScriptTechnique(BaseModel):
         method = self.to_methodscript()
         return method._to_psmethod()
 
+    def to_dict(self) -> dict[str, Any]:
+        """Return the technique instance as a new key/value dictionary mapping."""
+        return self.model_dump()
+
+    @classmethod
+    def from_dict(cls, obj: dict[str, Any]) -> MethodTypeCompatible:
+        """Structure technique instance from dict.
+
+        Opposite of `.to_dict()`"""
+        return cls.model_validate(obj)  # type: ignore
+
 
 class BatteryCycling(BaseMethodScriptTechnique):
     """Battery cycling CC-CV-CC.
@@ -113,7 +126,7 @@ class BatteryCycling(BaseMethodScriptTechnique):
         'at': CustomUnits(quantity='Cycle', symbol='cyc', unit='n'),
     }
 
-    id: Literal['bc'] = 'bc'
+    id: Literal['bcy'] = 'bcy'
     """Unique method identifier."""
 
     potential_max: float = 4.3

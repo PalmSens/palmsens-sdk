@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, override
+from typing import Any
 
 from pydantic import Field, TypeAdapter
 from pydantic.dataclasses import dataclass
+from typing_extensions import override
 
 from pypalmsens._data.curve import CurveMetadata
 from pypalmsens._data.eisdata import EISDataMetadata

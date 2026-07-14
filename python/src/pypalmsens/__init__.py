@@ -26,6 +26,8 @@ from . import (
     stages,
     types,
 )
+from ._instruments.filesystem import DeviceFileSystem
+from ._instruments.filesystem_async import DeviceFileSystemAsync
 from ._instruments.instrument import Instrument, discover, discover_async
 from ._instruments.instrument_manager import (
     InstrumentManager,
@@ -89,6 +91,8 @@ __all__ = [
     'save_session_file',
     'stages',
     'types',
+    'DeviceFileSystem',
+    'DeviceFileSystemAsync',
     'Instrument',
     'InstrumentManager',
     'InstrumentManagerAsync',

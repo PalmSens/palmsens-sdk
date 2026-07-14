@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .capabilities import AnalogComponent, Capabilities
-from .filesystem import DeviceFileSystem
+from .filesystem import DeviceFileSystem, DevicePath, FileSystemException
 from .filesystem_async import DeviceFileSystemAsync
 from .instrument import Instrument, discover, discover_async
 from .instrument_manager import (
@@ -28,6 +28,8 @@ __all__ = [
     'AnalogComponent',
     'DeviceFileSystem',
     'DeviceFileSystemAsync',
+    'DevicePath',
+    'FileSystemException',
     'Instrument',
     'InstrumentManager',
     'InstrumentManagerAsync',

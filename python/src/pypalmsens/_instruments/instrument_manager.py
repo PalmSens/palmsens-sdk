@@ -29,7 +29,6 @@ from .instrument import Instrument, discover
 from .instrument_manager_async import CapabilitiesMixin
 from .measurement_manager_async import MeasurementEvents, MeasurementManagerAsync
 from .shared import firmware_warning
-from .internal_storage import InternalStorageManager
 
 warnings.simplefilter('default')
 
@@ -138,7 +137,7 @@ class InstrumentManager(CapabilitiesMixin):
             _ = self.connect()
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, *_):
         _ = self.disconnect()
 
     def is_measuring(self) -> bool:
@@ -502,7 +501,3 @@ class InstrumentManager(CapabilitiesMixin):
         self._comm.Disconnect()
 
         del self._comm
-
-    def internal_storage(self) -> InternalStorageManager:
-        """Return class to inspect, walk, read, and copy files on internal storage."""
-        return InternalStorageManager(self)

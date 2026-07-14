@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from .capabilities import AnalogComponent, Capabilities
+from .filesystem import DeviceFileSystem
+from .filesystem_async import DeviceFileSystemAsync
 from .instrument import Instrument, discover, discover_async
 from .instrument_manager import (
     InstrumentManager,
@@ -24,6 +26,8 @@ __all__ = [
     'measure_async',
     'Capabilities',
     'AnalogComponent',
+    'DeviceFileSystem',
+    'DeviceFileSystemAsync',
     'Instrument',
     'InstrumentManager',
     'InstrumentManagerAsync',

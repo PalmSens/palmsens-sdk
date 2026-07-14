@@ -1,12 +1,10 @@
 from __future__ import annotations
 
+import posixpath
+from contextlib import contextmanager
 from pathlib import PurePath
-from posixpath import exists
-from types import MethodType
-from typing import Iterator, Self
+from typing import Generator, Iterator, Self
 
-from pypalmsens._data import Method
-from pypalmsens._io import stream_reader
 from typing_extensions import override
 
 import pypalmsens as ps
@@ -15,6 +13,7 @@ from pypalmsens.data import Measurement
 if True:
     import PalmSens
     import System
+    from System.IO import MemoryStream
 
 manager = ps.connect()
 
@@ -25,7 +24,18 @@ def internal_storage(manager: ps.InstrumentManager) -> DevicePath:
     return DevicePath('', manager=manager)
 
 
+@contextmanager
+def memory_reader(*args, **kwargs) -> Generator[MemoryStream]:
+    mr = MemoryStream(*args, **kwargs)
+    try:
+        yield mr
+    finally:
+        mr.Close()
+
+
 class DevicePath(PurePath):
+    parser = posixpath
+
     def __init__(self, *pathsegments, manager: ps.InstrumentManager):
         super().__init__(*pathsegments)
         self.manager = manager
@@ -58,17 +68,9 @@ class DevicePath(PurePath):
     def with_segments(self, *pathsegments):
         return type(self)(*pathsegments, manager=self.manager)
 
-    def copy(self): ...
-
     def exists(self): ...
 
     def glob(self): ...
-
-    def info(self):
-        exists
-        is_dir
-        is_file
-        is_symlink
 
     def is_dir(self) -> bool:
         f = self._get_device_file()
@@ -101,28 +103,11 @@ class DevicePath(PurePath):
         return f.Size
 
     def load_measurement(self) -> Measurement:
-        method = PalmSens.Techniques.SquareWave
+        f = self._get_device_file()
 
-        psmeasurement = method().ReceiveMeasurement(
-            root._client_connection,
-            -1,  # mux ?
-            PalmSens.MeasType.New,
-            PalmSens.Comm.OfflineBuffer(self.read_text()),
-        )
+        psmeasurement = self._client_connection.LoadDeviceFile(f)
 
         return Measurement(psmeasurement=psmeasurement)
-
-    def load_method(self) -> MethodType:
-        text = self.read_text()
-
-        method_text = text.split('*')[0]
-
-        # MemoryStream
-        with stream_reader(str(...)) as stream:
-            psmethod = PalmSens.DataFiles.MethodFile2.FromStream(stream)
-
-        return Method(psmethod=psmethod).to_parameters()
-
 
     def read_bytes(self) -> bytes:
         f = self._get_device_file()
@@ -166,6 +151,10 @@ class DevicePath(PurePath):
 
 
 root = DevicePath(manager=manager)
+
+files = list(root.iterdir())
+
+lsv = files[4]
 
 
 breakpoint()

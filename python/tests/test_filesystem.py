@@ -42,14 +42,17 @@ def fs():
         yield ps.DeviceFileSystem(mgr)
 
 
+@pytest.mark.instrument
 def test_truediv(fs):
     assert fs / 'Measurements' == DevicePath('Measurements')
 
 
+@pytest.mark.instrument
 def test_root(fs):
     assert str(fs.root) == ''
 
 
+@pytest.mark.instrument
 def test_exists(fs):
     files = list(fs.iterdir())
 
@@ -57,9 +60,10 @@ def test_exists(fs):
 
     assert fs.exists(f)
     assert fs.exists(f.parent)
-    assert not fs.exists(fs.with_name('foo'))
+    assert not fs.exists(f.with_name('foo'))
 
 
+@pytest.mark.instrument
 def test_load_measurement(fs):
     f = next(fs.iterdir())
     measurement = fs.load_measurement(f)
@@ -74,75 +78,84 @@ def test_remove(fs):
 
     path = 'foo.dmeas'
 
-    with mock.patch.object(
-        fs._client_connection, 'DeleteDeviceFile', return_value=None
-    ) as mock_get:
+    with mock.patch.object(fs.manager, '_comm') as mocked:
+        mocked.ClientConnection.DeleteDeviceFile.return_value = ret
+
         fs.remove(path)
 
-    assert mock_get.assert_called_once_with(path)
+    mocked.ClientConnection.DeleteDeviceFile.assert_called_once_with(path)
 
 
+@pytest.mark.instrument
 def test_clear(fs):
-    with mock.patch.object(
-        fs._client_connection, 'ClearDeviceFiles', return_value=None
-    ) as clear_method:
+    with mock.patch.object(fs.manager, '_comm') as mocked:
         fs.delete_all_files(confirm=False)
+
+        mocked.ClientConnection.ClearDeviceFiles.assert_not_called()
+
         fs.delete_all_files(confirm=True)
 
-    assert clear_method.assert_called_once()
+        mocked.ClientConnection.ClearDeviceFiles.assert_called_once()
 
 
+@pytest.mark.instrument
 def test_free(fs):
     assert fs.free()
 
 
+@pytest.mark.instrument
 def test_size(fs):
     assert fs.size()
 
 
+@pytest.mark.instrument
 def test_timestamp_of(fs):
     ret = SimpleNamespace(Timestamp=DateTime.Now)
 
     path = 'foo.dmeas'
 
-    with mock.patch.object(
-        fs._client_connection, 'GetDeviceFile', return_value=ret
-    ) as mock_get:
+    with mock.patch.object(fs.manager, '_comm') as mocked:
+        mocked.ClientConnection.GetDeviceFile.return_value = ret
+
         timestamp = fs.timestamp_of(path)
         assert datetime.fromisoformat(timestamp)
 
-    assert mock_get.assert_called_once_with(path)
+    mocked.ClientConnection.GetDeviceFile.assert_called_once_with(path)
 
 
+@pytest.mark.instrument
 def test_size_of(fs):
     ret = SimpleNamespace(Size=123)
 
     path = 'foo.dmeas'
 
-    with mock.patch.object(
-        fs._client_connection, 'GetDeviceFile', return_value=ret
-    ) as mock_get:
+    with mock.patch.object(fs.manager, '_comm') as mocked:
+        mocked.ClientConnection.GetDeviceFile.return_value = ret
+
         assert fs.size_of(path) == 123
 
-    assert mock_get.assert_called_once_with(path)
+    mocked.ClientConnection.GetDeviceFile.assert_called_once_with(path)
 
 
+@pytest.mark.instrument
 def test_read_text(fs):
     ret = SimpleNamespace(Content='hello world')
 
     path = 'foo.dmeas'
 
-    with mock.patch.object(
-        fs._client_connection, 'GetDeviceFile', return_value=ret
-    ) as mock_get:
+    with mock.patch.object(fs.manager, '_comm') as mocked:
+        mocked.ClientConnection.GetDeviceFile.return_value = ret
+
         assert fs.read_text(path) == 'hello world'
 
-    assert mock_get.assert_called_once_with(path)
+    mocked.ClientConnection.GetDeviceFile.assert_called_once_with(path)
 
 
+@pytest.mark.instrument
 def test_tree(fs):
     assert fs.tree()
 
 
+@pytest.mark.instrument
 def test_iterdir(fs):
     assert list(fs.iterdir())

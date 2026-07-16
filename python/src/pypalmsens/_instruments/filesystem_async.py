@@ -176,7 +176,7 @@ class DeviceFileSystemAsync:
         Returns
         -------
         int
-            Free space in bytes.
+            Free space in kB (1 kB = 1024 bytes).
         """
         async with self.manager._lock():
             return await create_future(self._client_connection.GetDeviceFreeAsync())
@@ -187,7 +187,7 @@ class DeviceFileSystemAsync:
         Returns
         -------
         int
-            Total size in bytes.
+            Total size in kB (1 kB = 1024 bytes).
         """
         async with self.manager._lock():
             return await create_future(self._client_connection.GetDeviceSizeAsync())

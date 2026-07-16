@@ -49,7 +49,6 @@ async def test_exists(fs):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='SIGABRT')
 @pytest.mark.instrument
 async def test_load_measurement(fs):
     files = await fs.listdir()
@@ -123,7 +122,6 @@ async def test_read_text(fs):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason='SIGABRT')
 @pytest.mark.instrument
 async def test_tree(fs):
     assert await fs.tree()

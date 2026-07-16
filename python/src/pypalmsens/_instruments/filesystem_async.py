@@ -66,7 +66,7 @@ class DeviceFileSystemAsync:
 
         async with self.manager._lock():
             try:
-                ret: PalmSens.Data.DeviceFile = create_future(
+                ret: PalmSens.Data.DeviceFile = await create_future(
                     self._client_connection.GetDeviceFileAsync(path.__fspath__())
                 )
             except System.Exception as exc:
@@ -155,8 +155,6 @@ class DeviceFileSystemAsync:
             await create_future(
                 self._client_connection.DeleteDeviceFileAsync(path.__fspath__())
             )
-
-        return
 
     async def delete_all_files(self, confirm: bool = False) -> None:
         """Delete all files on the device.

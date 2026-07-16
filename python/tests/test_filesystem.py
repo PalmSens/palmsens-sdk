@@ -72,6 +72,7 @@ def test_load_measurement(fs):
     assert measurement.curves
 
 
+@pytest.mark.instrument
 def test_remove(fs):
     ret = fs.remove('does_not_exist')
     assert ret is None
@@ -79,7 +80,7 @@ def test_remove(fs):
     path = 'foo.dmeas'
 
     with mock.patch.object(fs.manager, '_comm') as mocked:
-        mocked.ClientConnection.DeleteDeviceFile.return_value = ret
+        mocked.ClientConnection.DeleteDeviceFile.return_value = None
 
         fs.remove(path)
 
@@ -87,7 +88,7 @@ def test_remove(fs):
 
 
 @pytest.mark.instrument
-def test_clear(fs):
+def test_delete_all_files(fs):
     with mock.patch.object(fs.manager, '_comm') as mocked:
         fs.delete_all_files(confirm=False)
 

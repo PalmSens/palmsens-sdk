@@ -50,16 +50,46 @@ def test_root(fs):
     assert str(fs.root) == ''
 
 
-def test_exists(fs): ...
+def test_exists(fs):
+    files = list(fs.iterdir())
+
+    f = files[0]
+
+    assert fs.exists(f)
+    assert fs.exists(f.parent)
+    assert not fs.exists(fs.with_name('foo'))
 
 
-def test_load_measurement(fs): ...
+def test_load_measurement(fs):
+    f = next(fs.iterdir())
+    measurement = fs.load_measurement(f)
+
+    assert measurement.method
+    assert measurement.curves
 
 
-def test_remove(fs): ...
+def test_remove(fs):
+    ret = fs.remove('does_not_exist')
+    assert ret is None
+
+    path = 'foo.dmeas'
+
+    with mock.patch.object(
+        fs._client_connection, 'DeleteDeviceFile', return_value=None
+    ) as mock_get:
+        fs.remove(path)
+
+    assert mock_get.assert_called_once_with(path)
 
 
-def test_clear(fs): ...
+def test_clear(fs):
+    with mock.patch.object(
+        fs._client_connection, 'ClearDeviceFiles', return_value=None
+    ) as clear_method:
+        fs.delete_all_files(confirm=False)
+        fs.delete_all_files(confirm=True)
+
+    assert clear_method.assert_called_once()
 
 
 def test_free(fs):
@@ -73,23 +103,41 @@ def test_size(fs):
 def test_timestamp_of(fs):
     ret = SimpleNamespace(Timestamp=DateTime.Now)
 
-    with mock.patch.object(fs, '_get_device_file', return_value=ret):
-        timestamp = fs.timestamp_of('foo.dmeas')
+    path = 'foo.dmeas'
+
+    with mock.patch.object(
+        fs._client_connection, 'GetDeviceFile', return_value=ret
+    ) as mock_get:
+        timestamp = fs.timestamp_of(path)
         assert datetime.fromisoformat(timestamp)
+
+    assert mock_get.assert_called_once_with(path)
 
 
 def test_size_of(fs):
     ret = SimpleNamespace(Size=123)
 
-    with mock.patch.object(fs, '_get_device_file', return_value=ret):
-        assert fs.size_of('foo.dmeas') == 123
+    path = 'foo.dmeas'
+
+    with mock.patch.object(
+        fs._client_connection, 'GetDeviceFile', return_value=ret
+    ) as mock_get:
+        assert fs.size_of(path) == 123
+
+    assert mock_get.assert_called_once_with(path)
 
 
 def test_read_text(fs):
     ret = SimpleNamespace(Content='hello world')
 
-    with mock.patch.object(fs, '_get_device_file', return_value=ret):
-        assert fs.read_text('foo.dmeas') == 'hello world'
+    path = 'foo.dmeas'
+
+    with mock.patch.object(
+        fs._client_connection, 'GetDeviceFile', return_value=ret
+    ) as mock_get:
+        assert fs.read_text(path) == 'hello world'
+
+    assert mock_get.assert_called_once_with(path)
 
 
 def test_tree(fs):

@@ -130,4 +130,4 @@ async def test_tree(fs):
 @pytest.mark.asyncio
 @pytest.mark.instrument
 async def test_listdir(fs):
-    assert fs.listdir()
+    assert await fs.listdir()

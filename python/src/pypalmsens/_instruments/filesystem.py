@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import posixpath
 from pathlib import PurePath
-from typing import Any, Iterator
+from typing import Any
 
 import PalmSens
 import System
@@ -273,7 +273,7 @@ class DeviceFileSystem:
             A nested dict where keys are directory names and ``'_files'``
             contains a list of filenames at each level.
         """
-        paths = self.iterdir(directory)
+        paths = self.listdir(directory)
 
         root: dict[str, Any] = {}
 
@@ -289,17 +289,17 @@ class DeviceFileSystem:
 
         return root
 
-    def iterdir(self, directory: DevicePath | str | None = None) -> Iterator[DevicePath]:
-        """Iterate over entries in a device directory.
+    def listdir(self, directory: DevicePath | str | None = None) -> list[DevicePath]:
+        """List entries in a device directory.
 
         Parameters
         ----------
         directory : DevicePath | str | None, optional
             The directory to iterate. Defaults to the root directory.
 
-        Yields
-        ------
-        DevicePath
+        Returns
+        -------
+        paths: list[DevicePath]
             Path objects for each entry in the directory.
         """
         if not directory:
@@ -311,5 +311,5 @@ class DeviceFileSystem:
         with self.manager._lock():
             ret = self._client_connection.GetDeviceFiles(directory.__fspath__())
 
-        for f in ret:
-            yield DevicePath(f.Dir, f.Name)
+        paths = [DevicePath(f.Dir, f.Name) for f in ret]
+        return paths

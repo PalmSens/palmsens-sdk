@@ -158,5 +158,5 @@ def test_tree(fs):
 
 
 @pytest.mark.instrument
-def test_iterdir(fs):
-    assert list(fs.iterdir())
+def test_listdir(fs):
+    assert list(fs.listdir())

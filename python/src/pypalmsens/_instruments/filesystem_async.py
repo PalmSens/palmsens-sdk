@@ -281,9 +281,9 @@ class DeviceFileSystemAsync:
         directory : DevicePath | str | None, optional
             The directory to iterate. Defaults to the root directory.
 
-        Yields
-        ------
-        DevicePath
+        Returns
+        -------
+        list[DevicePath]
             Path objects for each entry in the directory.
         """
         if not directory:
@@ -297,4 +297,5 @@ class DeviceFileSystemAsync:
                 self._client_connection.GetDeviceFilesAsync(directory.__fspath__())
             )
 
-        return [DevicePath(f.Dir, f.Name) for f in ret]
+        paths = [DevicePath(f.Dir, f.Name) for f in ret]
+        return paths

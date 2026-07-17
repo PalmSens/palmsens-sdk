@@ -105,7 +105,7 @@ For plain-text files on the device (such as [custom MethodSCRIPT output](https:/
 Use [pypalmsens.DeviceFileSystem.remove][] to delete a file from the device:
 
 ```python
->>> fs.remove('Measurements/exp001.pssession')
+>>> fs.remove('Measurements/17-07-2026/LSV-10-00-25-0.dmeas')
 ```
 
 ## Deleting all files
@@ -115,7 +115,8 @@ To clear all files on the device, use [pypalmsens.DeviceFileSystem.delete_all_fi
 ```python
 >>> fs.delete_all_files(confirm=True)  # (1)!
 ```
-1. The `confirm` flag defaults to `False` as a safety measure in interactive environments like Jupyter notebooks or REPL sessions. Set it to `True` to actually delete files.
+
+1. The `confirm` flag defaults to `False` as a safety measure in interactive environments like Jupyter notebooks or REPL sessions. Set it to `True` to delete all files.
 
 ## Checking if files exist
 
@@ -161,6 +162,7 @@ PyPalmSens uses [pypalmsens.DevicePath][] objects for all path operations. These
 >>> fs / 'Measurements' / '17-07-2026' / 'LSV-10-00-25-0.dmeas'  # (1)!
 DevicePath('Measurements/17-07-2026/LSV-10-00-25-0.dmeas')
 ```
+
 1. The `/` operator is overloaded on the filesystem instance to join paths.
 
 You can use standard [pathlib.PurePath][] methods:

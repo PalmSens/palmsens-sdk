@@ -34,14 +34,16 @@ class MeasurementEvents:
     """Register callbacks to measurement events.
 
     For non-impedimetric measurements, use:
-        - `on_curve_begin`
-        - `on_curve_new_data`
-        - `on_curve_end`
+
+    - `on_curve_begin`
+    - `on_curve_new_data`
+    - `on_curve_end`
 
     For impedimetric measurements, use:
-        - `on_eis_data_begin`
-        - `on_eis_new_data`
-        - `on_eis_data_end`
+
+    - `on_eis_data_begin`
+    - `on_eis_new_data`
+    - `on_eis_data_end`
     """
 
     on_error: Callable[[], None] | None = None

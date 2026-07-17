@@ -130,14 +130,14 @@ class InstrumentManager(CapabilitiesMixin):
 
     @override
     def __repr__(self):
-        return f'{type(self).__name__}({self.instrument.id}, connected={self.is_connected()})'
+        return f"{type(self).__name__}('{self.instrument.id}', connected={self.is_connected()})"
 
     def __enter__(self):
         if not self.is_connected():
             _ = self.connect()
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, *_):
         _ = self.disconnect()
 
     def is_measuring(self) -> bool:

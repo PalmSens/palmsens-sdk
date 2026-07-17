@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Literal
 
 import PalmSens
+import System
 from pydantic import BaseModel, ConfigDict, computed_field
 
 from .._converters import (
@@ -77,53 +78,83 @@ class CapabilitiesInterface(BaseModel):
 
     @computed_field
     @property
-    def acv_max_frequency(self) -> int:
-        return int(self.comm.Capabilities.MaxFrequencyACV)
+    def acv_max_frequency(self) -> int | None:
+        try:
+            return int(self.comm.Capabilities.MaxFrequencyACV)
+        except System.InvalidOperationException:
+            return None
 
     @computed_field
     @property
-    def adc_auxiliary(self) -> AnalogComponent:
-        return AnalogComponent._from_pscomponent(self.comm.Capabilities.ADCAuxiliary)
+    def adc_auxiliary(self) -> AnalogComponent | None:
+        try:
+            return AnalogComponent._from_pscomponent(self.comm.Capabilities.ADCAuxiliary)
+        except System.InvalidOperationException:
+            return None
 
     @computed_field
     @property
-    def adc_bipot(self) -> AnalogComponent:
-        return AnalogComponent._from_pscomponent(self.comm.Capabilities.ADCBiPot)
+    def adc_bipot(self) -> AnalogComponent | None:
+        try:
+            return AnalogComponent._from_pscomponent(self.comm.Capabilities.ADCBiPot)
+        except System.InvalidOperationException:
+            return None
 
     @computed_field
     @property
-    def adc_current(self) -> AnalogComponent:
-        return AnalogComponent._from_pscomponent(self.comm.Capabilities.ADCCurrent)
+    def adc_current(self) -> AnalogComponent | None:
+        try:
+            return AnalogComponent._from_pscomponent(self.comm.Capabilities.ADCCurrent)
+        except System.InvalidOperationException:
+            return None
 
     @computed_field
     @property
-    def adc_potential(self) -> AnalogComponent:
-        return AnalogComponent._from_pscomponent(self.comm.Capabilities.ADCPotential)
+    def adc_potential(self) -> AnalogComponent | None:
+        try:
+            return AnalogComponent._from_pscomponent(self.comm.Capabilities.ADCPotential)
+        except System.InvalidOperationException:
+            return None
 
     @computed_field
     @property
     def connection(self) -> str:
-        return self.comm.Capabilities.ConnDescription
+        try:
+            return self.comm.Capabilities.ConnDescription
+        except AttributeError:
+            return ''
 
     @computed_field
     @property
-    def dac_auxiliary(self) -> AnalogComponent:
-        return AnalogComponent._from_pscomponent(self.comm.Capabilities.DACAuxiliary)
+    def dac_auxiliary(self) -> AnalogComponent | None:
+        try:
+            return AnalogComponent._from_pscomponent(self.comm.Capabilities.DACAuxiliary)
+        except System.InvalidOperationException:
+            return None
 
     @computed_field
     @property
-    def dac_bipot(self) -> AnalogComponent:
-        return AnalogComponent._from_pscomponent(self.comm.Capabilities.DACBiPot)
+    def dac_bipot(self) -> AnalogComponent | None:
+        try:
+            return AnalogComponent._from_pscomponent(self.comm.Capabilities.DACBiPot)
+        except System.InvalidOperationException:
+            return None
 
     @computed_field
     @property
-    def dac_current(self) -> AnalogComponent:
-        return AnalogComponent._from_pscomponent(self.comm.Capabilities.DACCurrent)
+    def dac_current(self) -> AnalogComponent | None:
+        try:
+            return AnalogComponent._from_pscomponent(self.comm.Capabilities.DACCurrent)
+        except System.InvalidOperationException:
+            return None
 
     @computed_field
     @property
-    def dac_potential(self) -> AnalogComponent:
-        return AnalogComponent._from_pscomponent(self.comm.Capabilities.DACPotential)
+    def dac_potential(self) -> AnalogComponent | None:
+        try:
+            return AnalogComponent._from_pscomponent(self.comm.Capabilities.DACPotential)
+        except System.InvalidOperationException:
+            return None
 
     @computed_field
     @property
@@ -158,7 +189,10 @@ class CapabilitiesInterface(BaseModel):
     @computed_field
     @property
     def firmware_commit(self) -> str:
-        return self.comm.ClientConnection.GetFWCommitHash()
+        try:
+            return self.comm.ClientConnection.GetFWCommitHash()
+        except AttributeError:
+            return ''
 
     @computed_field
     @property
@@ -253,12 +287,18 @@ class CapabilitiesInterface(BaseModel):
     @computed_field
     @property
     def model_name(self) -> str:
-        return self.comm.DeviceSerial.TypeToModelName()
+        try:
+            return self.comm.DeviceSerial.TypeToModelName()
+        except AttributeError:
+            return ''
 
     @computed_field
     @property
     def model_short_name(self) -> str:
-        return self.comm.DeviceSerial.TypeToString()
+        try:
+            return self.comm.DeviceSerial.TypeToString()
+        except AttributeError:
+            return ''
 
     @computed_field
     @property
@@ -268,6 +308,9 @@ class CapabilitiesInterface(BaseModel):
     @computed_field
     @property
     def supported_applied_current_ranges(self) -> list[AllowedCurrentRanges]:
+        if not self.comm.Capabilities.SupportedAppliedRanges:
+            return []
+
         return [
             cr_enum_to_string(item) for item in self.comm.Capabilities.SupportedAppliedRanges
         ]
@@ -314,6 +357,11 @@ class CapabilitiesInterface(BaseModel):
     def supports_ir_drop_compensation(self) -> bool:
         return self.comm.Capabilities.SupportsIRDropComp
 
+    @computed_field
+    @property
+    def supports_storage(self) -> bool:
+        return self.comm.Capabilities.SupportsStorage
+
 
 class Capabilities(BaseModel):
     """Dataclass for device capabilities and info."""
@@ -323,31 +371,31 @@ class Capabilities(BaseModel):
     acv_max_frequency: int
     """The maximum frequency for ACV in Hz."""
 
-    adc_auxiliary: AnalogComponent
+    adc_auxiliary: AnalogComponent | None
     """Gets an object with values to calculate the auxiliary voltage from the integer value received from the instrument."""
 
-    adc_bipot: AnalogComponent
+    adc_bipot: AnalogComponent | None
     """Gets an object with values to calculate the bipot current from the integer value received from the instrument."""
 
-    adc_current: AnalogComponent
+    adc_current: AnalogComponent | None
     """Gets an object with values to calculate the current from the integer value received from the instrument."""
 
-    adc_potential: AnalogComponent
+    adc_potential: AnalogComponent | None
     """Gets an object with values to calculate the potential from the integer value received from the instrument."""
 
     connection: str
     """Connection type for this device."""
 
-    dac_auxiliary: AnalogComponent
+    dac_auxiliary: AnalogComponent | None
     """Gets an object with values to calculate the instrument integer value for setting the auxiliary output voltage."""
 
-    dac_bipot: AnalogComponent
+    dac_bipot: AnalogComponent | None
     """Gets an object with values to calculate the instrument integer value for setting the bipot potential."""
 
-    dac_current: AnalogComponent
+    dac_current: AnalogComponent | None
     """Gets an object with values to calculate the instrument integer value for setting the current."""
 
-    dac_potential: AnalogComponent
+    dac_potential: AnalogComponent | None
     """Gets an object with values to calculate the potential from the integer value received from the instrument."""
 
     default_baudrate: int
@@ -454,6 +502,9 @@ class Capabilities(BaseModel):
 
     supports_ir_drop_compensation: bool
     """Whether the device supports IR Drop compensation"""
+
+    supports_storage: bool
+    """Whether the device contains and supports insternal storage"""
 
     @classmethod
     def _from_comm(cls, comm: PalmSens.Comm.CommManager) -> Capabilities:

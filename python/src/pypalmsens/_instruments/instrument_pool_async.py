@@ -24,18 +24,18 @@ class InstrumentPoolAsync:
 
     Parameters
     ----------
-    devices_or_managers : list[Instrument | InstrumentManagerAsync]
-        List of devices or managers.
+    instruments_or_managers : list[Instrument | InstrumentManagerAsync]
+        List of instrumnets or managers.
     """
 
     def __init__(
         self,
-        devices_or_managers: Sequence[Instrument | InstrumentManagerAsync],
+        instruments_or_managers: Sequence[Instrument | InstrumentManagerAsync],
     ):
         self.managers: list[InstrumentManagerAsync] = []
         """List of instruments managers in the pool."""
 
-        for item in devices_or_managers:
+        for item in instruments_or_managers:
             if isinstance(item, Instrument):
                 self.managers.append(InstrumentManagerAsync(item))
             else:

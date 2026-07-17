@@ -2,11 +2,12 @@
 PyPalmSens: Take full control of your PalmSens instruments and automate electrochemistry experiments.
 
 Provides an API to:
+
 1. Discover, connect, and manage instruments
 2. Configure and automate experiments
 3. Read, write, and analyze measured data
 
-Visit https://dev.palmsens.com/python/latest/ for online documentation.
+Visit <https://dev.palmsens.com/python/latest/> for online documentation.
 """
 
 from __future__ import annotations
@@ -26,6 +27,8 @@ from . import (
     stages,
     types,
 )
+from ._instruments.filesystem import DeviceFileSystem, DevicePath
+from ._instruments.filesystem_async import DeviceFileSystemAsync
 from ._instruments.instrument import Instrument, discover, discover_async
 from ._instruments.instrument_manager import (
     InstrumentManager,
@@ -89,6 +92,9 @@ __all__ = [
     'save_session_file',
     'stages',
     'types',
+    'DeviceFileSystem',
+    'DeviceFileSystemAsync',
+    'DevicePath',
     'Instrument',
     'InstrumentManager',
     'InstrumentManagerAsync',

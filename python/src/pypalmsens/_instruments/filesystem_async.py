@@ -59,7 +59,8 @@ class DeviceFileSystemAsync:
 
     async def _get_device_file(self, path: str | DevicePath) -> PalmSens.Data.DeviceFile:
         """Retrieve the DeviceFile` for the given path."""
-        path = DevicePath(path)
+        if not isinstance(path, DevicePath):
+            path = DevicePath(path)
 
         if hasattr(path, '_cached_device_file'):
             return path._cached_device_file

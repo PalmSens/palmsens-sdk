@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pathlib import PurePosixPath
+import sys
 from typing import Any
 
 import PalmSens
@@ -17,19 +17,47 @@ class FileSystemException(OSError):
     pass
 
 
-class DevicePath(PurePosixPath):
-    """A path object representing a file or directory on the device.
+if sys.version_info < (3, 12):
+    # In 3.10 and 3.11, PurePath does not support subclassing
+    # See: https://docs.python.org/3.12/whatsnew/3.12.html#pathlib
 
-    Subclasses [pathlib.PurePath][] to provide POSIX-style path semantics
-    for PalmSens device filesystem paths.
-    """
+    from pathlib import PurePosixPath
 
-    def __str__(self):
-        try:
-            return self._str
-        except AttributeError:
-            self._str: str = self._format_parsed_parts(self.drive, self.root, self._tail) or ''
-            return self._str
+    class DevicePath(PurePosixPath):
+        """A path object representing a file or directory on the device.
+
+        Subclasses [pathlib.PurePath][] to provide POSIX-style path semantics
+        for PalmSens device filesystem paths.
+        """
+
+        def __str__(self):
+            try:
+                return self._str
+            except AttributeError:
+                self._str = self._format_parsed_parts(self._drv, self._root, self._parts) or ''
+                return self._str
+
+else:
+    import posixpath
+    from pathlib import PurePath
+
+    class DevicePath(PurePath):
+        """A path object representing a file or directory on the device.
+
+        Subclasses [pathlib.PurePath][] to provide POSIX-style path semantics
+        for PalmSens device filesystem paths.
+        """
+
+        parser = posixpath  # type:ignore
+
+        def __str__(self):
+            try:
+                return self._str
+            except AttributeError:
+                self._str: str = (
+                    self._format_parsed_parts(self.drive, self.root, self._tail) or ''
+                )
+                return self._str
 
 
 class DeviceFileSystem:

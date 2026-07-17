@@ -23,15 +23,15 @@ class InstrumentPool:
 
     Parameters
     ----------
-    devices_or_managers : list[Instrument | InstrumentManagerAsync]
-        List of devices or managers.
+    instruments_or_managers : list[Instrument | InstrumentManagerAsync]
+        List of instruments or managers.
     """
 
     def __init__(
         self,
-        devices_or_managers: Sequence[Instrument | InstrumentManagerAsync],
+        instruments_or_managers: Sequence[Instrument | InstrumentManagerAsync],
     ):
-        self._async: InstrumentPoolAsync = InstrumentPoolAsync(devices_or_managers)
+        self._async: InstrumentPoolAsync = InstrumentPoolAsync(instruments_or_managers)
         self._loop = asyncio.new_event_loop()
 
         self.managers: list[InstrumentManagerAsync] = self._async.managers

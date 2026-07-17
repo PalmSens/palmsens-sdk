@@ -5,12 +5,21 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import PalmSens
-from System.IO import StreamReader, StreamWriter
+from System.IO import MemoryStream, StreamReader, StreamWriter
 from System.Text import Encoding
 
 from ._data import Method
 from ._data.measurement import Measurement
 from ._types import MethodType
+
+
+@contextmanager
+def memory_reader(*args, **kwargs) -> Generator[MemoryStream]:
+    mr = MemoryStream(*args, **kwargs)
+    try:
+        yield mr
+    finally:
+        mr.Close()
 
 
 @contextmanager

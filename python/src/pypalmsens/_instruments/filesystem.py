@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import posixpath
-from pathlib import PurePath
+from pathlib import PurePosixPath
 from typing import Any
 
 import PalmSens
@@ -18,14 +17,12 @@ class FileSystemException(OSError):
     pass
 
 
-class DevicePath(PurePath):
+class DevicePath(PurePosixPath):
     """A path object representing a file or directory on the device.
 
     Subclasses [pathlib.PurePath][] to provide POSIX-style path semantics
     for PalmSens device filesystem paths.
     """
-
-    parser = posixpath  # type:ignore
 
     def __str__(self):
         try:

@@ -61,6 +61,11 @@ class DeviceFileSystem:
         else:
             self.manager = instrument_or_manager
 
+        if not self.manager.capabilities.supports_storage:
+            raise ValueError(
+                f'{self.manager.instrument.name!r} does not have or support internal storage.'
+            )
+
     @property
     def _client_connection(self) -> PalmSens.Comm.ClientConnection:
         """The active client connection used for device communication."""

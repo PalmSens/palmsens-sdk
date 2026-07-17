@@ -15,6 +15,14 @@ Example:
  DevicePath('Measurements/16-07-2026/CV-14-46-50-2.dmeas')]
 ```
 
+For more information how to use these classes, see [the documentation here](../filesystem.md).
+
+**Classes:**
+
+- [`pypalmsens.DevicePath`][pypalmsens.DevicePath]
+- [`pypalmsens.DeviceFileSystem`][pypalmsens.DeviceFileSystem]
+- [`pypalmsens.DeviceFileSystemAsync`][pypalmsens.DeviceFileSystemAsync]
+
 ::: pypalmsens.DevicePath
 ::: pypalmsens.DeviceFileSystem
 ::: pypalmsens.DeviceFileSystemAsync

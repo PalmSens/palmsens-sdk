@@ -46,6 +46,15 @@ Or managing the instrument connection yourself:
 
 For more information, see the [measurement documentation](https://dev.palmsens.com/python/latest/_attachments/measuring/).
 
+- [`pypalmsens.connect_async`][pypalmsens.connect_async]
+- [`pypalmsens.discover_async`][pypalmsens.discover_async]
+- [`pypalmsens.measure_async`][pypalmsens.measure_async]
+
+**Classes:**
+
+- [`pypalmsens.InstrumentManagerAsync`][pypalmsens.InstrumentManagerAsync]
+- [`pypalmsens.InstrumentPoolAsync`][pypalmsens.InstrumentPoolAsync]
+
 ::: pypalmsens.connect_async
 ::: pypalmsens.discover_async
 ::: pypalmsens.measure_async

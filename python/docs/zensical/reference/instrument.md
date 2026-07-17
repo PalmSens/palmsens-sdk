@@ -41,6 +41,19 @@ Or managing the instrument connection yourself:
 
 For more information, see the [measurement documentation](https://dev.palmsens.com/python/latest/_attachments/measuring/).
 
+**Functions:**
+
+- [`pypalmsens.connect`][pypalmsens.connect]
+- [`pypalmsens.discover`][pypalmsens.discover]
+- [`pypalmsens.measure`][pypalmsens.measure]
+
+**Classes:**
+
+- [`pypalmsens.Instrument`][pypalmsens.Instrument]
+- [`pypalmsens.InstrumentManager`][pypalmsens.InstrumentManager]
+- [`pypalmsens.InstrumentPool`][pypalmsens.InstrumentPool]
+- [`pypalmsens.MeasurementEvents`][pypalmsens.MeasurementEvents]
+
 ::: pypalmsens.connect
 ::: pypalmsens.discover
 ::: pypalmsens.measure

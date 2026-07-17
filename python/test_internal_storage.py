@@ -6,7 +6,7 @@ if __name__ == '__main__':
     manager = ps.connect()
 
     with ps.DeviceFileSystem(manager) as fs:
-        files = list(fs.iterdir())
+        files = fs.listdir()
         path = files[0]
         measurement = fs.load_measurement(path)
 

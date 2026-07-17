@@ -54,7 +54,7 @@ def test_root(fs):
 
 @pytest.mark.instrument
 def test_exists(fs):
-    files = list(fs.iterdir())
+    files = fs.listdir()
 
     f = files[0]
 
@@ -65,7 +65,8 @@ def test_exists(fs):
 
 @pytest.mark.instrument
 def test_load_measurement(fs):
-    f = next(fs.iterdir())
+    files = fs.listdir()
+    f = files[0]
     measurement = fs.load_measurement(f)
 
     assert measurement.method
@@ -121,7 +122,7 @@ def test_timestamp_of(fs):
         timestamp = fs.timestamp_of(path)
         assert datetime.fromisoformat(timestamp)
 
-    mocked.ClientConnection.GetDeviceFile.assert_called_once_with(path)
+    mocked.ClientConnection.GetDeviceFile.assert_called_once_with(f'/{path}')
 
 
 @pytest.mark.instrument
@@ -135,7 +136,7 @@ def test_size_of(fs):
 
         assert fs.size_of(path) == 123
 
-    mocked.ClientConnection.GetDeviceFile.assert_called_once_with(path)
+    mocked.ClientConnection.GetDeviceFile.assert_called_once_with(f'/{path}')
 
 
 @pytest.mark.instrument
@@ -149,7 +150,7 @@ def test_read_text(fs):
 
         assert fs.read_text(path) == 'hello world'
 
-    mocked.ClientConnection.GetDeviceFile.assert_called_once_with(path)
+    mocked.ClientConnection.GetDeviceFile.assert_called_once_with(f'/{path}')
 
 
 @pytest.mark.instrument

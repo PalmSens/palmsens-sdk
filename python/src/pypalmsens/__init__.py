@@ -2,11 +2,12 @@
 PyPalmSens: Take full control of your PalmSens instruments and automate electrochemistry experiments.
 
 Provides an API to:
+
 1. Discover, connect, and manage instruments
 2. Configure and automate experiments
 3. Read, write, and analyze measured data
 
-Visit https://dev.palmsens.com/python/latest/ for online documentation.
+Visit <https://dev.palmsens.com/python/latest/> for online documentation.
 """
 
 from __future__ import annotations

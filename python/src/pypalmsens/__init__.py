@@ -26,7 +26,7 @@ from . import (
     stages,
     types,
 )
-from ._instruments.filesystem import DeviceFileSystem
+from ._instruments.filesystem import DeviceFileSystem, DevicePath
 from ._instruments.filesystem_async import DeviceFileSystemAsync
 from ._instruments.instrument import Instrument, discover, discover_async
 from ._instruments.instrument_manager import (
@@ -93,6 +93,7 @@ __all__ = [
     'types',
     'DeviceFileSystem',
     'DeviceFileSystemAsync',
+    'DevicePath',
     'Instrument',
     'InstrumentManager',
     'InstrumentManagerAsync',

@@ -64,10 +64,14 @@ class DeviceFileSystemAsync:
         if hasattr(path, '_cached_device_file'):
             return path._cached_device_file
 
+        fspath = path.__fspath__()
+        if not fspath.startswith('/'):
+            fspath = f'{fspath}'
+
         async with self.manager._lock():
             try:
                 ret: PalmSens.Data.DeviceFile = await create_future(
-                    self._client_connection.GetDeviceFileAsync(path.__fspath__())
+                    self._client_connection.GetDeviceFileAsync(fspath)
                 )
             except System.Exception as exc:
                 # Error codes:

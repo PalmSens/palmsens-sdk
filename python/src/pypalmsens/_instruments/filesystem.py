@@ -89,7 +89,7 @@ class DeviceFileSystem:
 
         with self.manager._lock():
             try:
-                ret = self._client_connection.GetDeviceFile(path.__fspath__())
+                ret = self._client_connection.GetDeviceFile(f'/{path.__fspath__()}')
             except System.Exception as exc:
                 # Error codes:
                 # https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html#app_err_error_codes

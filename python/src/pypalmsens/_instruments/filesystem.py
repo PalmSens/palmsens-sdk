@@ -5,6 +5,7 @@ from typing import Any
 
 import PalmSens
 import System
+from PalmSens.Data import DeviceFile
 
 from ..data import Measurement
 from .instrument import Instrument
@@ -127,6 +128,18 @@ class DeviceFileSystem:
                 raise FileSystemException(exc.Message) from exc
 
         path._cached_device_file = ret  # type: ignore
+        return ret
+
+    def _get_device_files(self, directory: DevicePath | str | None = None) -> list[DeviceFile]:
+        if not directory:
+            directory = self.root
+
+        if isinstance(directory, str):
+            directory = DevicePath(directory)
+
+        with self.manager._lock():
+            ret = self._client_connection.GetDeviceFiles(directory.__fspath__())
+
         return ret
 
     @property
@@ -304,19 +317,22 @@ class DeviceFileSystem:
             A nested dict where keys are directory names and ``'_files'``
             contains a list of filenames at each level.
         """
-        paths = self.listdir(directory)
+        device_files = self._get_device_files(directory=directory)
 
         root: dict[str, Any] = {}
 
-        for path in paths:
-            *parts, filename = path.parts
+        for df in device_files:
+            *parts, name = DevicePath(df.Dir, df.Name).parts
 
             node = root
             for part in parts:
                 node = node.setdefault(part, {})
 
-            node.setdefault('_files', [])
-            node['_files'].append(filename)
+            if str(df.Type) == 'Folder':
+                node = node.setdefault(name, {})
+            else:
+                node.setdefault('_files', [])
+                node['_files'].append(name)
 
         return root
 
@@ -333,14 +349,7 @@ class DeviceFileSystem:
         paths: list[DevicePath]
             Path objects for each entry in the directory.
         """
-        if not directory:
-            directory = self.root
+        device_files = self._get_device_files(directory=directory)
 
-        if isinstance(directory, str):
-            directory = DevicePath(directory)
-
-        with self.manager._lock():
-            ret = self._client_connection.GetDeviceFiles(directory.__fspath__())
-
-        paths = [DevicePath(f.Dir, f.Name) for f in ret]
+        paths = [DevicePath(f.Dir, f.Name) for f in device_files]
         return paths

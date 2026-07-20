@@ -64,7 +64,7 @@ def test_exists(fs):
 
 @pytest.mark.instrument
 def test_load_measurement(fs):
-    for f in fs.iterdir():
+    for f in fs.walk():
         if f.suffix == '.dmeas':
             break
 

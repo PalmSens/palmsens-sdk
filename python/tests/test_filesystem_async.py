@@ -48,7 +48,7 @@ async def test_exists(fs):
 @pytest.mark.asyncio
 @pytest.mark.instrument
 async def test_load_measurement(fs):
-    async for f in fs.iterdir():
+    async for f in fs.walk():
         if f.suffix == '.dmeas':
             break
 

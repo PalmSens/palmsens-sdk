@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
-
 import PalmSens
 import System
+from PalmSens.Data import DeviceFile
+from typing_extensions import AsyncIterator
 
 from ..data import Measurement
 from .filesystem import DevicePath, FileSystemException
@@ -87,6 +87,22 @@ class DeviceFileSystemAsync:
         path._cached_device_file = ret  # type: ignore
         return ret
 
+    async def _get_device_files(
+        self, directory: DevicePath | str | None = None
+    ) -> list[DeviceFile]:
+        if not directory:
+            directory = self.root
+
+        if isinstance(directory, str):
+            directory = DevicePath(directory)
+
+        async with self.manager._lock():
+            ret: list[PalmSens.Data.DeviceFile] = await create_future(
+                self._client_connection.GetDeviceFilesAsync(directory.__fspath__())
+            )
+
+        return ret
+
     @property
     def root(self) -> DevicePath:
         """Return path of root directory.
@@ -111,22 +127,20 @@ class DeviceFileSystemAsync:
         bool
             True if the path exists, False otherwise.
         """
-        path = DevicePath(path)
+        if not isinstance(path, DevicePath):
+            path = DevicePath(path)
 
-        node = await self.tree()
-
-        *dirs, leaf = path.parts
-
-        for drc in dirs:
-            if drc not in node:
-                return False
-
-            node = node[drc]
-
-        if ('_files' in node) and (leaf in node['_files']):
+        if str(path) == '':  # root always exists
             return True
 
-        return leaf in node
+        async for entry in self.iterdir(path.parent):
+            if entry == path:  # check if direct match
+                return True
+
+            if entry.is_relative_to(path):  # check for subdirectory match
+                return True
+
+        return False
 
     async def load_measurement(self, path: str | DevicePath) -> Measurement:
         """Load measurement from path on device.
@@ -162,9 +176,7 @@ class DeviceFileSystemAsync:
             path = DevicePath(path)
 
         async with self.manager._lock():
-            await create_future(
-                self._client_connection.DeleteDeviceFileAsync(path.__fspath__())
-            )
+            await create_future(self._client_connection.DeleteDeviceFileAsync(str(path)))
 
     async def delete_all_files(self, confirm: bool = False) -> None:
         """Delete all files on the device.
@@ -253,59 +265,69 @@ class DeviceFileSystemAsync:
 
         return f.Content
 
-    async def tree(self, directory: DevicePath | str | None = None) -> dict[str, Any]:
-        """Build a nested dictionary representing the device directory structure.
-
-        Parameters
-        ----------
-        directory : DevicePath | str | None, optional
-            The directory to inspect. Defaults to the root directory.
-
-        Returns
-        -------
-        dict[str, Any]
-            A nested dict where keys are directory names and ``'_files'``
-            contains a list of filenames at each level.
-        """
-        paths = await self.listdir(directory)
-
-        root: dict[str, Any] = {}
-
-        for path in paths:
-            *parts, filename = path.parts
-
-            node = root
-            for part in parts:
-                node = node.setdefault(part, {})
-
-            node.setdefault('_files', [])
-            node['_files'].append(filename)
-
-        return root
-
     async def listdir(self, directory: DevicePath | str | None = None) -> list[DevicePath]:
-        """Iterate over entries in a device directory.
+        """List all entries in a device directory.
+
+        Note that some devices like EmStat4 return all subdirectories and files
+        at once.
 
         Parameters
         ----------
         directory : DevicePath | str | None, optional
             The directory to iterate. Defaults to the root directory.
 
-        Returns
-        -------
-        list[DevicePath]
+        Yields
+        ------
+        paths: Iterator[DevicePath]
             Path objects for each entry in the directory.
         """
-        if not directory:
-            directory = self.root
+        return [_ async for _ in self.iterdir(directory=directory)]
 
-        if isinstance(directory, str):
-            directory = DevicePath(directory)
+    async def iterdir(
+        self, directory: DevicePath | str | None = None
+    ) -> AsyncIterator[DevicePath]:
+        """Iterate over entries in a device directory.
 
-        async with self.manager._lock():
-            ret: list[PalmSens.Data.DeviceFile] = await create_future(
-                self._client_connection.GetDeviceFilesAsync(directory.__fspath__())
-            )
+        Note that some devices like EmStat4 return all subdirectories and files
+        at once.
 
-        paths = [DevicePath(f.Dir, f.Name) for f in ret]
-        return paths
+        Parameters
+        ----------
+        directory : DevicePath | str | None, optional
+            The directory to iterate. Defaults to the root directory.
+
+        Yields
+        ------
+        paths: Iterator[DevicePath]
+            Path objects for each entry in the directory.
+        """
+        paths = await self._get_device_files(directory=directory)
+
+        for path in paths:
+            yield DevicePath(path.Dir, path.Name)
+
+    async def walk(
+        self, directory: DevicePath | str | None = None
+    ) -> AsyncIterator[DevicePath]:
+        """Generate file names by walking the directory tree starting from a device directory.
+
+        Parameters
+        ----------
+        directory : DevicePath | str | None, optional
+            The directory to walk through. Defaults to the root directory.
+
+        Yields
+        ------
+        paths: Iterator[DevicePath]
+            Path objects for each entry in the directory.
+        """
+        paths = await self._get_device_files(directory=directory)
+
+        for path in paths:
+            df = DevicePath(path.Dir, path.Name)
+
+            if str(path.Type) == 'Folder':
+                async for item in self.walk(str(df)):
+                    yield item
+            else:
+                yield df

@@ -217,7 +217,7 @@ class DeviceFileSystem:
             path = DevicePath(path)
 
         with self.manager._lock():
-            self._client_connection.DeleteDeviceFile(path.__fspath__())
+            self._client_connection.DeleteDeviceFile(str(path))
 
     def delete_all_files(self, confirm: bool = False) -> None:
         """Delete all files on the device.
@@ -239,7 +239,7 @@ class DeviceFileSystem:
         Returns
         -------
         int
-            Free space in bytes.
+            Free space in bytes (1 kB = 1024 bytes).
         """
         with self.manager._lock():
             return self._client_connection.GetDeviceFree()
@@ -283,7 +283,7 @@ class DeviceFileSystem:
         Returns
         -------
         int
-            File size in bytes.
+            File size in bytes (1 kB = 1024 bytes).
         """
         f = self._get_device_file(path)
 

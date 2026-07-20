@@ -39,21 +39,18 @@ async def test_root(fs):
 @pytest.mark.asyncio
 @pytest.mark.instrument
 async def test_exists(fs):
-    files = await fs.listdir()
-
-    f = files[0]
-
-    assert await fs.exists(f)
-    assert await fs.exists(f.parent)
-    assert not await fs.exists(f.with_name('foo'))
+    async for f in fs.iterdir():
+        assert await fs.exists(f)
+        assert await fs.exists(f.parent)
+        assert not await fs.exists(f.with_name('foo'))
 
 
 @pytest.mark.asyncio
 @pytest.mark.instrument
 async def test_load_measurement(fs):
-    files = await fs.listdir()
-
-    f = files[0]
+    async for f in fs.iterdir():
+        if f.suffix == '.dmeas':
+            break
 
     measurement = await fs.load_measurement(f)
 
@@ -123,11 +120,19 @@ async def test_read_text(fs):
 
 @pytest.mark.asyncio
 @pytest.mark.instrument
-async def test_tree(fs):
-    assert await fs.tree()
+async def test_iterdir(fs):
+    assert await fs.listdir()
 
 
 @pytest.mark.asyncio
 @pytest.mark.instrument
 async def test_listdir(fs):
-    assert await fs.listdir()
+    async for item in fs.iterdir():
+        assert item
+
+
+@pytest.mark.asyncio
+@pytest.mark.instrument
+async def test_walk(fs):
+    async for item in fs.walk():
+        assert isinstance(item, DevicePath)

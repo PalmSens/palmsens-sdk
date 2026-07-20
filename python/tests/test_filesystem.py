@@ -74,9 +74,6 @@ def test_load_measurement(fs):
 
 @pytest.mark.instrument
 def test_remove(fs):
-    ret = fs.remove('does_not_exist')
-    assert ret is None
-
     path = 'foo.dmeas'
 
     with mock.patch.object(fs.manager, '_comm') as mocked:

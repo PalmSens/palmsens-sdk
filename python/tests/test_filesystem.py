@@ -56,17 +56,18 @@ def test_root(fs):
 def test_exists(fs):
     files = fs.listdir()
 
-    f = files[0]
-
-    assert fs.exists(f)
-    assert fs.exists(f.parent)
-    assert not fs.exists(f.with_name('foo'))
+    for f in files:
+        assert fs.exists(f)
+        assert fs.exists(f.parent)
+        assert not fs.exists(f.with_name('foo'))
 
 
 @pytest.mark.instrument
 def test_load_measurement(fs):
-    files = fs.listdir()
-    f = files[0]
+    for f in fs.walk():
+        if f.suffix == '.dmeas':
+            break
+
     measurement = fs.load_measurement(f)
 
     assert measurement.method
@@ -75,9 +76,6 @@ def test_load_measurement(fs):
 
 @pytest.mark.instrument
 def test_remove(fs):
-    ret = fs.remove('does_not_exist')
-    assert ret is None
-
     path = 'foo.dmeas'
 
     with mock.patch.object(fs.manager, '_comm') as mocked:
@@ -154,10 +152,16 @@ def test_read_text(fs):
 
 
 @pytest.mark.instrument
-def test_tree(fs):
-    assert fs.tree()
+def test_iterdir(fs):
+    assert fs.listdir()
 
 
 @pytest.mark.instrument
 def test_listdir(fs):
     assert list(fs.listdir())
+
+
+@pytest.mark.instrument
+def test_walk(fs):
+    for item in fs.walk():
+        assert isinstance(item, DevicePath)

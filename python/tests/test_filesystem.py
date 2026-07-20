@@ -64,8 +64,10 @@ def test_exists(fs):
 
 @pytest.mark.instrument
 def test_load_measurement(fs):
-    files = fs.listdir()
-    f = files[0]
+    for f in fs.iterdir():
+        if f.suffix == '.dmeas':
+            break
+
     measurement = fs.load_measurement(f)
 
     assert measurement.method

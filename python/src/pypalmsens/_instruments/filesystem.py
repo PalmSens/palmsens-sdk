@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import sys
-from typing import Any
 
 import PalmSens
 import System
 from PalmSens.Data import DeviceFile
+from typing_extensions import Iterator
 
 from ..data import Measurement
 from .instrument import Instrument
@@ -177,20 +177,9 @@ class DeviceFileSystem:
         if str(path) == '':
             return True
 
-        node = self.tree()
+        drc = path.parent
 
-        *dirs, leaf = path.parts
-
-        for drc in dirs:
-            if drc not in node:
-                return False
-
-            node = node[drc]
-
-        if ('_files' in node) and (leaf in node['_files']):
-            return True
-
-        return leaf in node
+        return path in self.iterdir(drc)
 
     def load_measurement(self, path: str | DevicePath) -> Measurement:
         """Load measurement from path on device.
@@ -312,53 +301,43 @@ class DeviceFileSystem:
 
         return f.Content
 
-    def tree(self, directory: DevicePath | str | None = None) -> dict[str, Any]:
-        """Build a nested dictionary representing the device directory structure.
-
-        Parameters
-        ----------
-        directory : DevicePath | str | None, optional
-            The directory to inspect. Defaults to the root directory.
-
-        Returns
-        -------
-        dict[str, Any]
-            A nested dict where keys are directory names and ``'_files'``
-            contains a list of filenames at each level.
-        """
-        device_files = self._get_device_files(directory=directory)
-
-        root: dict[str, Any] = {}
-
-        for df in device_files:
-            *parts, name = DevicePath(df.Dir, df.Name).parts
-
-            node = root
-            for part in parts:
-                node = node.setdefault(part, {})
-
-            if str(df.Type) == 'Folder':
-                node = node.setdefault(name, {})
-            else:
-                node.setdefault('_files', [])
-                node['_files'].append(name)
-
-        return root
-
-    def listdir(self, directory: DevicePath | str | None = None) -> list[DevicePath]:
-        """List entries in a device directory.
+    def iterdir(self, directory: DevicePath | str | None = None) -> Iterator[DevicePath]:
+        """Iterate over entries in a device directory.
 
         Parameters
         ----------
         directory : DevicePath | str | None, optional
             The directory to iterate. Defaults to the root directory.
 
-        Returns
-        -------
-        paths: list[DevicePath]
+        Yields
+        ------
+        paths: Iterator[DevicePath]
             Path objects for each entry in the directory.
         """
-        device_files = self._get_device_files(directory=directory)
+        paths = self._get_device_files(directory=directory)
 
-        paths = [DevicePath(f.Dir, f.Name) for f in device_files]
-        return paths
+        for path in paths:
+            yield DevicePath(path.Dir, path.Name)
+
+    def walk(self, directory: DevicePath | str | None = None) -> Iterator[DevicePath]:
+        """Generate file names by linking the directory tree starting from a device directory.
+
+        Parameters
+        ----------
+        directory : DevicePath | str | None, optional
+            The directory to walk through. Defaults to the root directory.
+
+        Yields
+        ------
+        paths: Iterator[DevicePath]
+            Path objects for each entry in the directory.
+        """
+        paths = self._get_device_files(directory=directory)
+
+        for path in paths:
+            df = DevicePath(path.Dir, path.Name)
+
+            if str(path.Type) == 'Folder':
+                yield from self.walk(str(df))
+            else:
+                yield df

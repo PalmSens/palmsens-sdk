@@ -60,6 +60,11 @@ else:
                 )
                 return self._str
 
+        def _from_parsed_string(self, path_str):
+            path = self.with_segments(path_str)
+            path._str = path_str or ''
+            return path
+
 
 class DeviceFileSystem:
     """Provide a file-system-like interface to a PalmSens device.
@@ -121,7 +126,7 @@ class DeviceFileSystem:
 
         with self.manager._lock():
             try:
-                ret = self._client_connection.GetDeviceFile(f'/{path.__fspath__()}')
+                ret = self._client_connection.GetDeviceFile(f'/{path}')
             except System.Exception as exc:
                 # Error codes:
                 # https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html#app_err_error_codes
@@ -138,7 +143,7 @@ class DeviceFileSystem:
             directory = DevicePath(directory)
 
         with self.manager._lock():
-            ret = self._client_connection.GetDeviceFiles(directory.__fspath__())
+            ret = self._client_connection.GetDeviceFiles(str(directory))
 
         return ret
 
@@ -166,7 +171,11 @@ class DeviceFileSystem:
         bool
             True if the path exists, False otherwise.
         """
-        path = DevicePath(path)
+        if not isinstance(path, DevicePath):
+            path = DevicePath(path)
+
+        if str(path) == '':
+            return True
 
         node = self.tree()
 

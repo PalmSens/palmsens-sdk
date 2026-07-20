@@ -56,11 +56,10 @@ def test_root(fs):
 def test_exists(fs):
     files = fs.listdir()
 
-    f = files[0]
-
-    assert fs.exists(f)
-    assert fs.exists(f.parent)
-    assert not fs.exists(f.with_name('foo'))
+    for f in files:
+        assert fs.exists(f)
+        assert fs.exists(f.parent)
+        assert not fs.exists(f.with_name('foo'))
 
 
 @pytest.mark.instrument

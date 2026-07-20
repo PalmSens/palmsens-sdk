@@ -152,10 +152,16 @@ def test_read_text(fs):
 
 
 @pytest.mark.instrument
-def test_tree(fs):
-    assert fs.tree()
+def test_iterdir(fs):
+    assert fs.listdir()
 
 
 @pytest.mark.instrument
 def test_listdir(fs):
     assert list(fs.listdir())
+
+
+@pytest.mark.instrument
+def test_walk(fs):
+    for item in fs.walk():
+        assert isinstance(item, DevicePath)

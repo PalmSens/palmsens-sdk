@@ -174,12 +174,17 @@ class DeviceFileSystem:
         if not isinstance(path, DevicePath):
             path = DevicePath(path)
 
-        if str(path) == '':
+        if str(path) == '':  # root always exists
             return True
 
-        drc = path.parent
+        for entry in self.iterdir(path.parent):
+            if entry == path:  # check if direct match
+                return True
 
-        return path in self.iterdir(drc)
+            if entry.is_relative_to(path):  # check for subdirectory match
+                return True
+
+        return False
 
     def load_measurement(self, path: str | DevicePath) -> Measurement:
         """Load measurement from path on device.
@@ -301,8 +306,29 @@ class DeviceFileSystem:
 
         return f.Content
 
+    def listdir(self, directory: DevicePath | str | None = None) -> list[DevicePath]:
+        """List all entries in a device directory.
+
+        Note that some devices like EmStat4 return all subdirectories and files
+        at once.
+
+        Parameters
+        ----------
+        directory : DevicePath | str | None, optional
+            The directory to iterate. Defaults to the root directory.
+
+        Yields
+        ------
+        paths: Iterator[DevicePath]
+            Path objects for each entry in the directory.
+        """
+        return list(self.iterdir(directory=directory))
+
     def iterdir(self, directory: DevicePath | str | None = None) -> Iterator[DevicePath]:
         """Iterate over entries in a device directory.
+
+        Note that some devices like EmStat4 return all subdirectories and files
+        at once.
 
         Parameters
         ----------
@@ -320,7 +346,7 @@ class DeviceFileSystem:
             yield DevicePath(path.Dir, path.Name)
 
     def walk(self, directory: DevicePath | str | None = None) -> Iterator[DevicePath]:
-        """Generate file names by linking the directory tree starting from a device directory.
+        """Generate file names by walking the directory tree starting from a device directory.
 
         Parameters
         ----------

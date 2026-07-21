@@ -10,7 +10,7 @@ from .generated.MethodScriptParser import MethodScriptParser
 
 
 @dataclass
-class MethodScriptError:
+class MethodScriptValidationError:
     text: str
     line: int
     column: int
@@ -25,10 +25,10 @@ class CollectingErrorListener(ErrorListener):
 
     def __init__(self):
         super().__init__()
-        self.errors: list[MethodScriptError] = []
+        self.errors: list[MethodScriptValidationError] = []
 
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
-        self.errors.append(MethodScriptError(line=line, column=column, text=msg))
+        self.errors.append(MethodScriptValidationError(line=line, column=column, text=msg))
 
 
 def validate(text: str) -> None:

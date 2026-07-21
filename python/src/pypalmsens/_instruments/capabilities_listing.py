@@ -177,7 +177,7 @@ COMMUNICATION_CAPABILITIES = {
     58: 'fs_unmount',  # Unmount file system
     59: 'fs_clear',  # Clear file system
     60: 'm',  # Get multi-channel serial number
-    61: 'RESERVED',
+    # 61: 'RESERVED',
     62: 'l_fs',  # Load MethodSCRIPT from file
     63: 'e_fs',  # Execute (= load and run) MethodSCRIPT from file
     64: 'sfs_put',  # Write file with cryptographic verification
@@ -569,4 +569,43 @@ METHODSCRIPT_ERRORS = {
     '4214': 'The droplet detect duration is too short',
     '4215': 'MScript argument is an interpolated string, which is not supported by this command',
     '7FFF': 'A fatal error has occurred, the device must be reset',
+}
+
+NEWLINE_TERMINATORS = {
+    't': '*\n',
+    'CC': '\n',
+    'CM': '\n',
+    'S': '\n',
+    'G': '\n',
+    'l': '\n',
+    'r': '\n\n',
+    'e': '\n\n',
+    'dlfw': '\n',
+    'Fmscr': '\n',
+    'Lmscr': '\n',
+    'i': '\n',
+    'v': '\n',
+    'fs_dir': '\n\n',
+    'fs_get': '\x1c\n',
+    'fs_put': '\n',
+    'fs_del': '\n',
+    'fs_info': 'kB\n',
+    'fs_format': '\n',
+    'fs_mount': '\n',
+    'fs_unmount': '\n',
+    'fs_clear': '\n',
+    'm': '\n',
+    'l_fs': '\n',
+    'e_fs': '\n\n',
+    'sfs_put': '\n',
+    'sfs_del': '\n',
+    'sfs_format': '\n',
+    'sfs_clear': '\n',
+    'comm_lock': '\n',
+    'comm_unlock': '\n',
+    'h': '\n',
+    'H': '\n',
+    'Z': '\n',
+    'Y': '\n',
+    'R': '\n',
 }

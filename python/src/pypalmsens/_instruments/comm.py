@@ -11,6 +11,7 @@ from .capabilities_listing import (
     COMMUNICATION_CAPABILITIES,
     METHODSCRIPT_CAPABILITIES,
     METHODSCRIPT_ERRORS,
+    NEWLINE_TERMINATORS,
 )
 from .instrument import Instrument
 
@@ -60,7 +61,8 @@ class CommunicationInterface:
         """Read timeout."""
 
         self.delay: float = 0.1  # s
-        """Delay between write and read for query commands."""
+        """Delay between write and read for query commands.
+        The delay is device and connection dependent."""
 
         self.history: deque[str] = deque(maxlen=100)
         """Response history."""
@@ -120,7 +122,7 @@ class CommunicationInterface:
 
         return response
 
-    def wait_until(self, start: str) -> str:
+    def wait_until(self, start: str, timeout: float | None = None) -> str:
         """Wait for until packet that starts with `start` is received.
 
         Parameters
@@ -128,14 +130,19 @@ class CommunicationInterface:
         start : str
             Package initiation character that marks the start of a response.
             This corresponds to the first character of a command.
+        timeout : float, optional
+            Raise TimeoutError if initiation character is not reached
+            within timeout (in s). Defaults to `self.timeout`.
 
         Returns
         -------
         response : str
             Response including termination character.
-
         """
-        deadline = time.monotonic() + self.timeout
+        if timeout is None:
+            timeout = self.timeout
+
+        deadline = time.monotonic() + timeout
 
         for response in self:
             if response.startswith(start):
@@ -161,7 +168,7 @@ class CommunicationInterface:
             with variable length responses use '\n\n', others use '\n' (default).
         delay : float, optional
             Optional delay between read calls. Defaults
-            to self.delay.
+            to `self.delay`.
 
         Returns
         -------
@@ -193,7 +200,7 @@ class CommunicationInterface:
 
         return response
 
-    def query(self, command: str, end: str = '\n', delay: float | None = None) -> str:
+    def query(self, command: str, end: str | None = None, delay: float | None = None) -> str:
         """Send a command and return the response in a single call.
 
         This is the primary method for request/response in interactive
@@ -205,13 +212,19 @@ class CommunicationInterface:
         ---------
         command : str
             Command to run
-        end : str
+        end : str, optional
             Termination character that marks the end of a response.
-            This is different for each command, scripts and other commands
-            with variable length responses use '\n\n', others use '\n' (default).
+
+            If None, use a look-up table to get the documented response
+            termination sequence.
+
+            The termination sequence is different for each command.
+            Most commands return on a single line and use '\n'.
+            Other commands with variable length responses (e.g. scripts)
+            use '\n\n' or '\1xC' for 'fs_get'.
         delay : float, optional
             Optional delay between read calls. Defaults
-            to self.delay.
+            to `self.delay`.
 
         Returns
         -------
@@ -220,6 +233,12 @@ class CommunicationInterface:
         """
         if delay is None:
             delay = self.delay
+
+        if command == '':
+            end = '\n'
+        elif not end:
+            func = command.split(maxsplit=1)[0]
+            end = NEWLINE_TERMINATORS.get(func, '\n')
 
         if not command.endswith('\n'):
             command = f'{command}\n'
@@ -248,7 +267,7 @@ class CommunicationInterface:
         """
         script = script.rstrip()
 
-        return self.query(f'e\n{script}\n\n', end='\n\n')
+        return self.query(f'e\n{script}\n\n')
 
     def get_methodscript_version(self) -> str:
         """Get MethodSCRIPT version."""
@@ -268,7 +287,7 @@ class CommunicationInterface:
 
     def get_fs_dir(self) -> str:
         """Get directory listing."""
-        return self.query('fs_dir', end='\n\n')
+        return self.query('fs_dir')
 
     def get_methodscript_capabilities(self) -> set[str]:
         """Get the MethodSCRIPT capabilities.

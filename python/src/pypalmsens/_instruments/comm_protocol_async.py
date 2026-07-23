@@ -12,7 +12,7 @@ from .capabilities_listing import (
     METHODSCRIPT_CAPABILITIES,
     NEWLINE_TERMINATORS,
 )
-from .comm import ERROR_PATTERN, MethodScriptRuntimeError, parse_capabilities
+from .comm_protocol import ERROR_PATTERN, MethodScriptRuntimeError, parse_capabilities
 from .instrument import Instrument
 
 

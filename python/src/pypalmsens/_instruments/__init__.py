@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from .capabilities import AnalogComponent, Capabilities
-from .comm import CommunicationInterface
-from .comm_async import CommunicationInterfaceAsync
+from .comm import CommProtocol
+from .comm_async import CommProtocolAsync
 from .filesystem import DeviceFileSystem, DevicePath, FileSystemException
 from .filesystem_async import DeviceFileSystemAsync
 from .instrument import Instrument, discover, discover_async
@@ -28,8 +28,8 @@ __all__ = [
     'measure_async',
     'Capabilities',
     'AnalogComponent',
-    'CommunicationInterface',
-    'CommunicationInterfaceAsync',
+    'CommProtocol',
+    'CommProtocolAsync',
     'DeviceFileSystem',
     'DeviceFileSystemAsync',
     'DevicePath',

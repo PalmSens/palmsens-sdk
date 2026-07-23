@@ -47,7 +47,7 @@ def parse_capabilities(data: str, mapping: dict[int, str]) -> set[str]:
     return features
 
 
-class CommunicationInterface:
+class CommProtocol:
     """Communication interface for MethodSCRIPT instruments.
 
     This class provides high-level communication methods that are independent
@@ -77,7 +77,7 @@ class CommunicationInterface:
     def __repr__(self) -> str:
         return f"{type(self).__name__}('{self.instrument.id}', connected={self._device.IsOpen})"
 
-    def __enter__(self) -> CommunicationInterface:
+    def __enter__(self) -> CommProtocol:
         self.open()
         return self
 

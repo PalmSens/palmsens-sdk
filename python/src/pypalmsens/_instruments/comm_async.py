@@ -16,7 +16,7 @@ from .comm import ERROR_PATTERN, MethodScriptRuntimeError, parse_capabilities
 from .instrument import Instrument
 
 
-class CommunicationInterfaceAsync:
+class CommProtocolAsync:
     """Communication interface for MethodSCRIPT instruments.
 
     This class provides high-level communication methods that are independent
@@ -46,7 +46,7 @@ class CommunicationInterfaceAsync:
     def __repr__(self) -> str:
         return f"{type(self).__name__}('{self.instrument.id}', connected={self._device.IsOpen})"
 
-    def __enter__(self) -> CommunicationInterfaceAsync:
+    def __enter__(self) -> CommProtocolAsync:
         self.open()
         return self
 

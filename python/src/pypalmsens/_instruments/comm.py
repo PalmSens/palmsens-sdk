@@ -20,13 +20,23 @@ ERROR_PATTERN = re.compile(r'.*!([0-9A-Fa-f]{4})(:.*|\n)')
 
 class MethodScriptRuntimeError(ConnectionError):
     def __init__(self, *args, error_code: str, **kwargs):
-        super().__init__(*args, **kwargs)
+        try:
+            error_code, context = error_code.split(':', maxsplit=1)
+        except ValueError:
+            context = ''
+
+        message = METHODSCRIPT_ERRORS.get(error_code, error_code)
+
+        if context:
+            message += f' ({context.strip()})'
+
+        super().__init__(message, *args, **kwargs)
         self.error_code: str = error_code
 
 
 def parse_capabilities(data: str, mapping: dict[int, str]) -> set[str]:
     try:
-        value = int(data[1:-1], 16)
+        value = int(data, 16)
     except ValueError:
         raise ValueError(f'Invalid input: {data}')
 
@@ -89,7 +99,7 @@ class CommunicationInterface:
         ----------
         data : str
             Command or data to send. To submit a command for execution,
-            append a newline character ('\n') to the end of the string.
+            append a newline character (`'\\n'`) to the end of the string.
         """
         self._device.Write(data)
 
@@ -232,10 +242,7 @@ class CommunicationInterface:
 
             if match:
                 error_code = match.group(1) + match.group(2).strip()
-                message = METHODSCRIPT_ERRORS[error_code]
-                raise MethodScriptRuntimeError(
-                    f'{message} (0x{error_code})', error_code=error_code
-                )
+                raise MethodScriptRuntimeError(error_code=error_code)
 
             if line:
                 buffer.append(line)
@@ -261,13 +268,13 @@ class CommunicationInterface:
         ----------
         command : str
             The command to send (e.g., 'i' to get the serial number).
-            If `command` does not end with '\n', one is automatically added.
+            If `command` does not end with `'\\n'`, one is automatically added.
         end : str, optional
             The termination character(s) that mark the end of the response.
 
             If `None`, a lookup table determines the appropriate terminator
-            based on the command. Most commands use '\n'. Commands with
-            variable-length responses (e.g. scripts) use '\n\n'.
+            based on the command. Most commands use `'\\n'`. Commands with
+            variable-length responses (e.g. scripts) use `'\\n\\n'`.
         delay : float, optional
             Pause (in seconds) between read attempts. Defaults to `self.delay`.
 
@@ -279,7 +286,7 @@ class CommunicationInterface:
         delay = delay or self.delay
 
         if not end:
-            func = command.split(maxsplit=1)[0]
+            func = command.split(' ', maxsplit=1)[0]
             end = NEWLINE_TERMINATORS.get(func, '\n')
 
         if not command.endswith('\n'):
@@ -287,11 +294,14 @@ class CommunicationInterface:
 
         self.write(command)
 
-        response = self.wait_until(command[0])
-        if response.endswith(end):
-            return response
+        prefix = command[0]
 
-        return response + self.read_until(end=end, delay=delay)
+        response = self.wait_until(prefix)
+
+        if not response.endswith(end):
+            response += self.read_until(end=end, delay=delay)
+
+        return response.removeprefix(prefix).removeprefix('\n').removesuffix('\n')
 
     def run_methodscript(self, script: str) -> str:
         """Load and execute a MethodSCRIPT on the instrument.
@@ -316,56 +326,6 @@ class CommunicationInterface:
         script = script.rstrip('\n')
 
         return self.query(f'e\n{script}\n\n')
-
-    def get_methodscript_version(self) -> str:
-        """Retrieve the MethodSCRIPT version running on the instrument.
-
-        Returns
-        -------
-        str
-            Version string (e.g., 'v01.09.00\n').
-        """
-        return self.query('v')
-
-    def get_firmware_version(self) -> str:
-        """Retrieve the instrument's firmware version.
-
-        Returns
-        -------
-        str
-            Firmware version string (e.g., 'tes4_lr1500#Mar 12 2026 14:28:01\nR*\n').
-        """
-        return self.query('t')
-
-    def get_serial_number(self) -> str:
-        """Retrieve the instrument's unique serial number.
-
-        Returns
-        -------
-        str
-            Serial number string.
-        """
-        return self.query('iES4LR20B0008\n')
-
-    def get_fs_info(self) -> str:
-        """Retrieve filesystem information for the instrument's internal storage.
-
-        Returns
-        -------
-        str
-            Filesystem details (uned, free, and total space).
-        """
-        return self.query('fs_info')
-
-    def get_fs_dir(self) -> str:
-        """List files and directories on the instrument's internal storage.
-
-        Returns
-        -------
-        str
-            Directory listing as a string.
-        """
-        return self.query('fs_dir')
 
     def get_methodscript_capabilities(self) -> set[str]:
         """Retrieve which MethodSCRIPT features are available on this instrument.
@@ -405,7 +365,7 @@ class CommunicationInterface:
         Returns
         -------
         str
-            The response from the device after sending '\n'.
+            The response from the device after sending `'\\n'`.
         """
         return self.query('\n')
 

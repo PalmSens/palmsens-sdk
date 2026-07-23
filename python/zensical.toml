@@ -15,7 +15,7 @@ nav = [
   "measuring.md",
   "methods.md",
   "filesystem.md",
-  "communication.md",
+  "comm_protocol.md",
   "circuit_fitting.md",
   "examples.md",
   { "Techniques" = [

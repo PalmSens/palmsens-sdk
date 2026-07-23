@@ -40,9 +40,9 @@ def parse_capabilities(data: str, mapping: dict[int, str]) -> set[str]:
 class CommunicationInterface:
     """Communication interface for MethodSCRIPT instruments.
 
-    This class contains high-level communication methods that are independent
-    of the physical interface (e.g.: serial port, USB, Bluetooth, ...). The
-    low-level communication should be provided by an istrument object.
+    This class provides high-level communication methods that are independent
+    of the physical connection type (e.g., serial port, USB, Bluetooth).
+    The low-level communication primitives are provided by an instrument object.
     """
 
     def __init__(self, instrument: Instrument):
@@ -52,12 +52,13 @@ class CommunicationInterface:
         self._device: PalmSens.Devices.Device = self.instrument.device
         """Low-level device implementing low-level communication primitives."""
 
-        self.timeout: float = 1.0  # s
-        """Read timeout."""
+        self.timeout: float = 10.0  # s
+        """Maximum time (in seconds) to wait for a response before timing out."""
 
         self.delay: float = 0.1  # s
-        """Delay between write and read for query commands.
-        The delay is device and connection dependent."""
+        """Pause (in seconds) between writing a command and reading its response.
+        This delay is necessary to ensure the device has processed the command.
+        Adjust based on your specific hardware and connection type."""
 
         self.history: deque[str] = deque(maxlen=100)
         """Response history (defaults to last 100 responses)."""
@@ -82,24 +83,28 @@ class CommunicationInterface:
         self._device.Close()
 
     def write(self, data: str):
-        """Write to device.
+        """Write a command or data to the instrument.
 
         Parameters
         ----------
         data : str
-            Data to write to device. To commit a command,
-            the data string should end with newline '\n'.
+            Command or data to send. To submit a command for execution,
+            append a newline character ('\n') to the end of the string.
         """
         self._device.Write(data)
 
     def read(self) -> str:
-        """Read response line from device.
+        """Read the next available chunk from the instrument's input buffer.
+
+        This method does not block. It returns immediately with whatever
+        data is currently available in the buffer.
 
         Returns
-        ----------
+        -------
         response : str
-            Read next packet from device buffer.
-            Returns empty string ('') if buffer is empty.
+            The next response chunk, or an empty string ('') if the buffer
+            contains no data. Each read is recorded in `self.history` for
+            debugging and inspection.
         """
         response = self._device.Read()
 
@@ -113,20 +118,25 @@ class CommunicationInterface:
         timeout: float | None = None,
         delay: float | None = None,
     ) -> Generator[str, None, None]:
-        """Yield response lines until timeout or EOF.
+        """Yield response lines until a timeout occurs or no more data arrives.
+
+        This is a generator that continuously reads from the device buffer,
+        yielding chunks as they arrive.
+        It stops when the elapsed time between responses exceeds `timeout`.
 
         Parameters
         ----------
         timeout : float, optional
-            Maximum time to wait for each line (in seconds). Defaults to `self.timeout`.
+            Maximum total time (in seconds) between responses.
+            Defaults to `self.timeout`.
         delay : float, optional
-            Optional delay between read calls. Defaults
-            to `self.delay`.
+            Pause (in seconds) between read attempts when no data is available.
+            Defaults to `self.delay`.
 
         Yields
         ------
-        str
-            Response lines as they arrive.
+        response : str
+            Response chunks as they arrive from the device.
         """
         delay = delay or self.delay
         timeout = timeout or self.timeout
@@ -138,64 +148,82 @@ class CommunicationInterface:
 
             if response:
                 yield response
+                deadline = time.monotonic() + timeout
 
-            if deadline and time.monotonic() > deadline:
-                break
+            if time.monotonic() > deadline:
+                raise TimeoutError('Timed out waiting for response')
 
             if not response:
-                time.sleep(self.delay)
+                time.sleep(delay)
 
-    def wait_until(self, start: str, timeout: float | None = None) -> str:
-        """Wait for until packet that starts with `start` is received.
+    def wait_until(self, prefix: str, timeout: float | None = None) -> str:
+        """Wait until a response line starting with `prefix` arrives.
+
+        When you send a command, the device echoes back its first character
+        before returning the actual result. Use this method to wait for
+        that echo.
 
         Parameters
         ----------
-        start : str
-            Package initiation character that marks the start of a response.
-            This corresponds to the first character of a command.
+        prefix : str
+            The first character of an expected response line. This usually
+            matches the command abbreviation (e.g., 'E' for a measurement start).
         timeout : float, optional
-            Raise TimeoutError if initiation character is not reached
-            within timeout (in s). Defaults to `self.timeout`.
+            Maximum time (in seconds) to wait before raising `TimeoutError`.
+            Defaults to `self.timeout`.
 
         Returns
         -------
         response : str
-            Response including termination character.
+            The response chunk that starts with `prefix`, including
+            its termination character.
+
+        Raises
+        ------
+        TimeoutError
+            If no matching line arrives within the timeout period.
         """
         timeout = timeout or self.timeout
 
         deadline = time.monotonic() + timeout
 
         for response in self.lines():
-            if response.startswith(start):
+            if response.startswith(prefix):
                 return response
 
             if time.monotonic() > deadline:
                 break
 
-        raise TimeoutError(f'Timed out waiting for response starting with {start!r}')
+        raise TimeoutError(f'Timed out waiting for response starting with {prefix!r}')
 
     def read_until(
         self,
         end: str = '\n',
         delay: float | None = None,
     ) -> str:
-        """Receive all lines until `end` is reached.
+        """Read lines from the device until a termination sequence is found.
+
+        Continuously reads responses and concatenates them until
+        `end` appears.
 
         Parameters
         ----------
         end : str
-            Termination character that marks the end of a response.
-            This is different for each command, scripts and other commands
-            with variable length responses use '\n\n', others use '\n' (default).
+            The termination sequence that marks the end of a response.
+            Most commands use '\n'. Scripts and variable-length responses
+            typically use '\n\n'.
         delay : float, optional
-            Optional delay between read calls. Defaults
-            to `self.delay`.
+            Pause (in seconds) between read attempts. Defaults to `self.delay`.
 
         Returns
         -------
         response : str
-            Response including termination character.
+            Accumulated response up to and including the termination sequence.
+
+        Raises
+        ------
+        MethodScriptRuntimeError
+            If the device returns an error response during reading.
         """
         buffer: list[str] = []
 
@@ -220,35 +248,33 @@ class CommunicationInterface:
         return response
 
     def query(self, command: str, end: str | None = None, delay: float | None = None) -> str:
-        """Send a command and return the response in a single call.
+        """Send a command and return its response in a single call.
 
-        This is the primary method for request/response in interactive
-        environments. It writes a command to the device, waits until the command
-        completes (termination character `end` is reached), and returns the
-        response.
+        This is the primary method for interactive communication with the
+        instrument. It writes the command to the device, waits for completion,
+        reads the full response, and returns it as a string.
+
+        For commands that run for a long time (e.g. scripts), this
+        method will block until the script completes or times out.
 
         Parameters
-        ---------
+        ----------
         command : str
-            Command to run. If None, send empty command
+            The command to send (e.g., 'i' to get the serial number).
+            If `command` does not end with '\n', one is automatically added.
         end : str, optional
-            Termination character that marks the end of a response.
+            The termination character(s) that mark the end of the response.
 
-            If None, use a look-up table to get the documented response
-            termination sequence.
-
-            The termination sequence is different for each command.
-            Most commands return on a single line and use '\n'.
-            Other commands with variable length responses (e.g. scripts)
-            use '\n\n' or '\1xC' for 'fs_get'.
+            If `None`, a lookup table determines the appropriate terminator
+            based on the command. Most commands use '\n'. Commands with
+            variable-length responses (e.g. scripts) use '\n\n'.
         delay : float, optional
-            Optional delay between read calls. Defaults
-            to `self.delay`.
+            Pause (in seconds) between read attempts. Defaults to `self.delay`.
 
         Returns
         -------
         response : str
-            Response for command
+            The complete response from the device, including termination characters.
         """
         delay = delay or self.delay
 
@@ -267,79 +293,131 @@ class CommunicationInterface:
 
         return response + self.read_until(end=end, delay=delay)
 
-    def send_methodscript(self, script: str) -> str:
-        """Load and run a MethodSCRIPT until completion.
+    def run_methodscript(self, script: str) -> str:
+        """Load and execute a MethodSCRIPT on the instrument.
+
+        MethodSCRIPTs are scripts that run directly on the PalmSens device,
+        This method uploads the script, runs it to completion,
+        and returns any output produced by the script.
+
+        See the MethodSCRIPT documentation for more information.
 
         Parameters
         ----------
         script : str
-            The MethodSCRIPT to load, terminated with _one_ empty line.
-            See the MethodSCRIPT documentation for more information.
+            The MethodSCRIPT to run. The entire script must end
+            with exactly one newline ('\n').
 
         Returns
         -------
         str
-            Script output.
+            Output produced by the running script, if any.
         """
         script = script.rstrip('\n')
 
         return self.query(f'e\n{script}\n\n')
 
     def get_methodscript_version(self) -> str:
-        """Get MethodSCRIPT version."""
+        """Retrieve the MethodSCRIPT version running on the instrument.
+
+        Returns
+        -------
+        str
+            Version string (e.g., 'v01.09.00\n').
+        """
         return self.query('v')
 
     def get_firmware_version(self) -> str:
-        """Get firmware version."""
+        """Retrieve the instrument's firmware version.
+
+        Returns
+        -------
+        str
+            Firmware version string (e.g., 'tes4_lr1500#Mar 12 2026 14:28:01\nR*\n').
+        """
         return self.query('t')
 
     def get_serial_number(self) -> str:
-        """Get serial number."""
-        return self.query('i')
+        """Retrieve the instrument's unique serial number.
+
+        Returns
+        -------
+        str
+            Serial number string.
+        """
+        return self.query('iES4LR20B0008\n')
 
     def get_fs_info(self) -> str:
-        """Get filesystem information."""
+        """Retrieve filesystem information for the instrument's internal storage.
+
+        Returns
+        -------
+        str
+            Filesystem details (uned, free, and total space).
+        """
         return self.query('fs_info')
 
     def get_fs_dir(self) -> str:
-        """Get directory listing."""
+        """List files and directories on the instrument's internal storage.
+
+        Returns
+        -------
+        str
+            Directory listing as a string.
+        """
         return self.query('fs_dir')
 
     def get_methodscript_capabilities(self) -> set[str]:
-        """Get the MethodSCRIPT capabilities.
+        """Retrieve which MethodSCRIPT features are available on this instrument.
+
+        Returns a set of command names that are licensed
+        and supported by the connected instrument's hardware and firmware.
 
         Returns
         -------
         set[str]
-            List of MethodSCRIPT commands that are licensed and supported by the instrument.
+            Set of available MethodSCRIPT command names.
         """
 
         response = self.query('CM')
         return parse_capabilities(response, mapping=METHODSCRIPT_CAPABILITIES)
 
     def get_communication_capabilities(self) -> set[str]:
-        """Get the runtime capabilities.
+        """Retrieve which communication commands are available on this instrument.
+
+        Returns a set of commands part of the communication protocol that
+        are supported by the device's firmware.
 
         Returns
         -------
         set[str]
-            list of supported commands for the instrument
+            Set of supported commands for the instrument.
         """
         response = self.query('CC')
         return parse_capabilities(response, mapping=COMMUNICATION_CAPABILITIES)
 
     def flush(self):
-        """Flush write buffer by sending '\n'."""
-        _ = self.query('\n')
+        """Send a blank line to the device and read its response.
+
+        This does not modify the write buffer. It sends
+        an empty command and reads whatever response follows.
+
+        Returns
+        -------
+        str
+            The response from the device after sending '\n'.
+        """
+        return self.query('\n')
 
     def abort(self):
-        """Abort a possibly running script and wait for it to finish.
+        """Abort any currently running script or measurement and wait for completion.
 
-        This method aborts any running script. If a script was still running, it
-        will wait for it to complete. Note that this could take a while, depending
-        on the measurement that was running.
+        This method sends the abort signal to the instrument. If a script was
+        still running, it will wait for it to complete.
+        Note that this could take a while, depending on the measurement that
+        was running.
         """
-        self.flush()
+        _ = self.flush()
 
         try:
             response = self.query('Z')

@@ -5,7 +5,7 @@ import time
 from collections import deque
 
 import PalmSens
-from typing_extensions import override
+from typing_extensions import Generator, override
 
 from .capabilities_listing import (
     COMMUNICATION_CAPABILITIES,
@@ -20,24 +20,19 @@ ERROR_PATTERN = re.compile(r'.*!([0-9A-Fa-f]{4})(:.*|\n)')
 
 class MethodScriptRuntimeError(ConnectionError):
     def __init__(self, *args, error_code: str, **kwargs):
-        super().__init__()
+        super().__init__(*args, **kwargs)
         self.error_code: str = error_code
 
 
 def parse_capabilities(data: str, mapping: dict[int, str]) -> set[str]:
     try:
-        bitmask = bin(int(data[1:-1], 16))
+        value = int(data[1:-1], 16)
     except ValueError:
         raise ValueError(f'Invalid input: {data}')
 
     features = set()
 
-    for i, n in enumerate(bitmask[2:]):
-        if not int(n):
-            continue
-
-        if feature := mapping.get(i):
-            features.add(feature)
+    features = {feature for i, feature in mapping.items() if (value >> i) & 1}
 
     return features
 
@@ -54,7 +49,7 @@ class CommunicationInterface:
         self.instrument: Instrument = instrument
         """Instrument handle."""
 
-        self.device: PalmSens.Devices.Device = self.instrument.device
+        self._device: PalmSens.Devices.Device = self.instrument.device
         """Low-level device implementing low-level communication primitives."""
 
         self.timeout: float = 1.0  # s
@@ -65,11 +60,11 @@ class CommunicationInterface:
         The delay is device and connection dependent."""
 
         self.history: deque[str] = deque(maxlen=100)
-        """Response history."""
+        """Response history (defaults to last 100 responses)."""
 
     @override
     def __repr__(self) -> str:
-        return f"{type(self).__name__}('{self.instrument.id}', connected={self.device.IsOpen})"
+        return f"{type(self).__name__}('{self.instrument.id}', connected={self._device.IsOpen})"
 
     def __enter__(self) -> CommunicationInterface:
         self.open()
@@ -78,22 +73,13 @@ class CommunicationInterface:
     def __exit__(self, *exc) -> None:
         self.close()
 
-    def __iter__(self):
-        while True:
-            response = self.read()
-
-            if response:
-                yield response
-
-            time.sleep(self.delay)
-
     def open(self) -> None:
         """Open device connection."""
-        self.device.Open()
+        self._device.Open()
 
     def close(self) -> None:
         """Close device connection."""
-        self.device.Close()
+        self._device.Close()
 
     def write(self, data: str):
         """Write to device.
@@ -104,7 +90,7 @@ class CommunicationInterface:
             Data to write to device. To commit a command,
             the data string should end with newline '\n'.
         """
-        self.device.Write(data)
+        self._device.Write(data)
 
     def read(self) -> str:
         """Read response line from device.
@@ -115,12 +101,49 @@ class CommunicationInterface:
             Read next packet from device buffer.
             Returns empty string ('') if buffer is empty.
         """
-        response = self.device.Read()
+        response = self._device.Read()
 
         if response:
             self.history.append(response)
 
         return response
+
+    def lines(
+        self,
+        timeout: float | None = None,
+        delay: float | None = None,
+    ) -> Generator[str, None, None]:
+        """Yield response lines until timeout or EOF.
+
+        Parameters
+        ----------
+        timeout : float, optional
+            Maximum time to wait for each line (in seconds). Defaults to `self.timeout`.
+        delay : float, optional
+            Optional delay between read calls. Defaults
+            to `self.delay`.
+
+        Yields
+        ------
+        str
+            Response lines as they arrive.
+        """
+        delay = delay or self.delay
+        timeout = timeout or self.timeout
+
+        deadline = time.monotonic() + timeout
+
+        while True:
+            response = self.read()
+
+            if response:
+                yield response
+
+            if deadline and time.monotonic() > deadline:
+                break
+
+            if not response:
+                time.sleep(self.delay)
 
     def wait_until(self, start: str, timeout: float | None = None) -> str:
         """Wait for until packet that starts with `start` is received.
@@ -139,25 +162,24 @@ class CommunicationInterface:
         response : str
             Response including termination character.
         """
-        if timeout is None:
-            timeout = self.timeout
+        timeout = timeout or self.timeout
 
         deadline = time.monotonic() + timeout
 
-        for response in self:
+        for response in self.lines():
             if response.startswith(start):
                 return response
 
             if time.monotonic() > deadline:
                 break
 
-        raise TimeoutError
+        raise TimeoutError(f'Timed out waiting for response starting with {start!r}')
 
     def read_until(
         self,
         end: str = '\n',
         delay: float | None = None,
-    ):
+    ) -> str:
         """Receive all lines until `end` is reached.
 
         Parameters
@@ -177,10 +199,7 @@ class CommunicationInterface:
         """
         buffer: list[str] = []
 
-        if delay is None:
-            delay = self.delay
-
-        for line in self:
+        for line in self.lines(delay=delay):
             match = ERROR_PATTERN.match(line)
 
             if match:
@@ -211,7 +230,7 @@ class CommunicationInterface:
         Parameters
         ---------
         command : str
-            Command to run
+            Command to run. If None, send empty command
         end : str, optional
             Termination character that marks the end of a response.
 
@@ -231,12 +250,9 @@ class CommunicationInterface:
         response : str
             Response for command
         """
-        if delay is None:
-            delay = self.delay
+        delay = delay or self.delay
 
-        if command == '':
-            end = '\n'
-        elif not end:
+        if not end:
             func = command.split(maxsplit=1)[0]
             end = NEWLINE_TERMINATORS.get(func, '\n')
 
@@ -265,7 +281,7 @@ class CommunicationInterface:
         str
             Script output.
         """
-        script = script.rstrip()
+        script = script.rstrip('\n')
 
         return self.query(f'e\n{script}\n\n')
 
@@ -312,6 +328,10 @@ class CommunicationInterface:
         response = self.query('CC')
         return parse_capabilities(response, mapping=COMMUNICATION_CAPABILITIES)
 
+    def flush(self):
+        """Flush write buffer by sending '\n'."""
+        _ = self.query('\n')
+
     def abort(self):
         """Abort a possibly running script and wait for it to finish.
 
@@ -319,15 +339,15 @@ class CommunicationInterface:
         will wait for it to complete. Note that this could take a while, depending
         on the measurement that was running.
         """
-        response = self.query('')
+        self.flush()
 
         try:
             response = self.query('Z')
         except MethodScriptRuntimeError as exc:
-            if not exc.error_code == '0006':
+            if exc.error_code != '0006':
                 raise
 
             time.sleep(0.1)
 
-        if response == 'Z\n':
+        if response == 'Z\n':  # type: ignore
             _ = self.read_until('\n\n')

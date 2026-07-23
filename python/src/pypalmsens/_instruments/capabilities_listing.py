@@ -572,6 +572,7 @@ METHODSCRIPT_ERRORS = {
 }
 
 NEWLINE_TERMINATORS = {
+    '\n': '\n',
     't': '*\n',
     'CC': '\n',
     'CM': '\n',

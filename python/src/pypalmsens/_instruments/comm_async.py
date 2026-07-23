@@ -1,15 +1,15 @@
 from __future__ import annotations
 
+import asyncio
 import time
 from collections import deque
 
 import PalmSens
-from typing_extensions import Generator, override
+from typing_extensions import override
 
 from .capabilities_listing import (
     COMMUNICATION_CAPABILITIES,
     METHODSCRIPT_CAPABILITIES,
-    METHODSCRIPT_ERRORS,
     NEWLINE_TERMINATORS,
 )
 from .comm import ERROR_PATTERN, MethodScriptRuntimeError, parse_capabilities
@@ -46,22 +46,22 @@ class CommProtocolAsync:
     def __repr__(self) -> str:
         return f"{type(self).__name__}('{self.instrument.id}', connected={self._device.IsOpen})"
 
-    def __enter__(self) -> CommProtocolAsync:
-        self.open()
+    async def __aenter__(self) -> CommProtocolAsync:
+        await self.open()
         return self
 
-    def __exit__(self, *exc) -> None:
-        self.close()
+    async def __aexit__(self, *exc) -> None:
+        await self.close()
 
-    def open(self) -> None:
+    async def open(self) -> None:
         """Open device connection."""
-        self._device.Open()
+        await self._device.OpenAsync()
 
-    def close(self) -> None:
+    async def close(self) -> None:
         """Close device connection."""
-        self._device.Close()
+        await self._device.CloseAsync()
 
-    def write(self, data: str):
+    async def write(self, data: str):
         """Write a command or data to the instrument.
 
         Parameters
@@ -70,9 +70,9 @@ class CommProtocolAsync:
             Command or data to send. To submit a command for execution,
             append a newline character ('\n') to the end of the string.
         """
-        self._device.Write(data)
+        await self._device.WriteAsync(data)
 
-    def read(self) -> str:
+    async def read(self) -> str:
         """Read the next available chunk from the instrument's input buffer.
 
         This method does not block. It returns immediately with whatever
@@ -85,21 +85,21 @@ class CommProtocolAsync:
             contains no data. Each read is recorded in `self.history` for
             debugging and inspection.
         """
-        response = self._device.Read()
+        response = await self._device.ReadAsync()
 
         if response:
             self.history.append(response)
 
         return response
 
-    def lines(
+    async def lines(
         self,
         timeout: float | None = None,
         delay: float | None = None,
-    ) -> Generator[str, None, None]:
-        """Yield response lines until a timeout occurs or no more data arrives.
+    ):
+        """Yield response chunks until a timeout occurs or no more data arrives.
 
-        This is a generator that continuously reads from the device buffer,
+        This is an async generator that continuously reads from the device buffer,
         yielding chunks as they arrive.
         It stops when the elapsed time between responses exceeds `timeout`.
 
@@ -123,7 +123,7 @@ class CommProtocolAsync:
         deadline = time.monotonic() + timeout
 
         while True:
-            response = self.read()
+            response = await self.read()
 
             if response:
                 yield response
@@ -133,9 +133,9 @@ class CommProtocolAsync:
                 raise TimeoutError('Timed out waiting for response')
 
             if not response:
-                time.sleep(delay)
+                await asyncio.sleep(delay)
 
-    def wait_until(self, prefix: str, timeout: float | None = None) -> str:
+    async def wait_until(self, prefix: str, timeout: float | None = None) -> str:
         """Wait until a response line starting with `prefix` arrives.
 
         When you send a command, the device echoes back its first character
@@ -166,7 +166,7 @@ class CommProtocolAsync:
 
         deadline = time.monotonic() + timeout
 
-        for response in self.lines():
+        async for response in self.lines():
             if response.startswith(prefix):
                 return response
 
@@ -175,7 +175,7 @@ class CommProtocolAsync:
 
         raise TimeoutError(f'Timed out waiting for response starting with {prefix!r}')
 
-    def read_until(
+    async def read_until(
         self,
         end: str = '\n',
         delay: float | None = None,
@@ -188,7 +188,7 @@ class CommProtocolAsync:
         Parameters
         ----------
         end : str
-            The termination sequence that marks the end of a response.
+            The termination sequence that marks the end of the response.
             Most commands use '\n'. Scripts and variable-length responses
             typically use '\n\n'.
         delay : float, optional
@@ -206,15 +206,12 @@ class CommProtocolAsync:
         """
         buffer: list[str] = []
 
-        for line in self.lines(delay=delay):
+        async for line in self.lines(delay=delay):
             match = ERROR_PATTERN.match(line)
 
             if match:
                 error_code = match.group(1) + match.group(2).strip()
-                message = METHODSCRIPT_ERRORS[error_code]
-                raise MethodScriptRuntimeError(
-                    f'{message} (0x{error_code})', error_code=error_code
-                )
+                raise MethodScriptRuntimeError(error_code=error_code)
 
             if line:
                 buffer.append(line)
@@ -226,7 +223,9 @@ class CommProtocolAsync:
 
         return response
 
-    def query(self, command: str, end: str | None = None, delay: float | None = None) -> str:
+    async def query(
+        self, command: str, end: str | None = None, delay: float | None = None
+    ) -> str:
         """Send a command and return its response in a single call.
 
         This is the primary method for interactive communication with the
@@ -240,13 +239,13 @@ class CommProtocolAsync:
         ----------
         command : str
             The command to send (e.g., 'i' to get the serial number).
-            If `command` does not end with '\n', one is automatically added.
+            If `command` does not end with `'\\n'`, one is automatically added.
         end : str, optional
             The termination character(s) that mark the end of the response.
 
             If `None`, a lookup table determines the appropriate terminator
-            based on the command. Most commands use '\n'. Commands with
-            variable-length responses (e.g. scripts) use '\n\n'.
+            based on the command. Most commands use `'\\n'`. Commands with
+            variable-length responses (e.g. scripts) use `'\\n\\n'`.
         delay : float, optional
             Pause (in seconds) between read attempts. Defaults to `self.delay`.
 
@@ -258,21 +257,23 @@ class CommProtocolAsync:
         delay = delay or self.delay
 
         if not end:
-            func = command.split(maxsplit=1)[0]
+            func = command.split(' ', maxsplit=1)[0]
             end = NEWLINE_TERMINATORS.get(func, '\n')
 
         if not command.endswith('\n'):
             command = f'{command}\n'
 
-        self.write(command)
+        await self.write(command)
 
-        response = self.wait_until(command[0])
-        if response.endswith(end):
-            return response
+        prefix = command[0]
 
-        return response + self.read_until(end=end, delay=delay)
+        response = await self.wait_until(prefix)
+        if not response.endswith(end):
+            response += await self.read_until(end=end, delay=delay)
 
-    def run_methodscript(self, script: str) -> str:
+        return response.removeprefix(prefix).removeprefix('\n').removesuffix('\n')
+
+    async def run_methodscript(self, script: str) -> str:
         """Load and execute a MethodSCRIPT on the instrument.
 
         MethodSCRIPTs are scripts that run directly on the PalmSens device,
@@ -294,59 +295,9 @@ class CommProtocolAsync:
         """
         script = script.rstrip('\n')
 
-        return self.query(f'e\n{script}\n\n')
+        return await self.query(f'e\n{script}\n\n')
 
-    def get_methodscript_version(self) -> str:
-        """Retrieve the MethodSCRIPT version running on the instrument.
-
-        Returns
-        -------
-        str
-            Version string (e.g., 'v01.09.00\n').
-        """
-        return self.query('v')
-
-    def get_firmware_version(self) -> str:
-        """Retrieve the instrument's firmware version.
-
-        Returns
-        -------
-        str
-            Firmware version string (e.g., 'tes4_lr1500#Mar 12 2026 14:28:01\nR*\n').
-        """
-        return self.query('t')
-
-    def get_serial_number(self) -> str:
-        """Retrieve the instrument's unique serial number.
-
-        Returns
-        -------
-        str
-            Serial number string.
-        """
-        return self.query('iES4LR20B0008\n')
-
-    def get_fs_info(self) -> str:
-        """Retrieve filesystem information for the instrument's internal storage.
-
-        Returns
-        -------
-        str
-            Filesystem details (uned, free, and total space).
-        """
-        return self.query('fs_info')
-
-    def get_fs_dir(self) -> str:
-        """List files and directories on the instrument's internal storage.
-
-        Returns
-        -------
-        str
-            Directory listing as a string.
-        """
-        return self.query('fs_dir')
-
-    def get_methodscript_capabilities(self) -> set[str]:
+    async def get_methodscript_capabilities(self) -> set[str]:
         """Retrieve which MethodSCRIPT features are available on this instrument.
 
         Returns a set of command names that are licensed
@@ -358,10 +309,10 @@ class CommProtocolAsync:
             Set of available MethodSCRIPT command names.
         """
 
-        response = self.query('CM')
+        response = await self.query('CM')
         return parse_capabilities(response, mapping=METHODSCRIPT_CAPABILITIES)
 
-    def get_communication_capabilities(self) -> set[str]:
+    async def get_communication_capabilities(self) -> set[str]:
         """Retrieve which communication commands are available on this instrument.
 
         Returns a set of commands part of the communication protocol that
@@ -372,10 +323,10 @@ class CommProtocolAsync:
         set[str]
             Set of supported commands for the instrument.
         """
-        response = self.query('CC')
+        response = await self.query('CC')
         return parse_capabilities(response, mapping=COMMUNICATION_CAPABILITIES)
 
-    def flush(self):
+    async def flush(self):
         """Send a blank line to the device and read its response.
 
         This does not modify the write buffer. It sends
@@ -384,11 +335,11 @@ class CommProtocolAsync:
         Returns
         -------
         str
-            The response from the device after sending '\n'.
+            The response from the device after sending `'\\n'`.
         """
-        return self.query('\n')
+        return await self.query('\n')
 
-    def abort(self):
+    async def abort(self):
         """Abort any currently running script or measurement and wait for completion.
 
         This method sends the abort signal to the instrument. If a script was
@@ -396,15 +347,15 @@ class CommProtocolAsync:
         Note that this could take a while, depending on the measurement that
         was running.
         """
-        _ = self.flush()
+        _ = await self.flush()
 
         try:
-            response = self.query('Z')
+            response = await self.query('Z')
         except MethodScriptRuntimeError as exc:
             if exc.error_code != '0006':
                 raise
 
-            time.sleep(0.1)
+            await asyncio.sleep(0.1)
 
         if response == 'Z\n':  # type: ignore
-            _ = self.read_until('\n\n')
+            _ = await self.read_until('\n\n')

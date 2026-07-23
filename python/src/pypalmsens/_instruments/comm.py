@@ -128,7 +128,7 @@ class CommProtocol:
         timeout: float | None = None,
         delay: float | None = None,
     ) -> Generator[str, None, None]:
-        """Yield response lines until a timeout occurs or no more data arrives.
+        """Yield response chunks until a timeout occurs or no more data arrives.
 
         This is a generator that continuously reads from the device buffer,
         yielding chunks as they arrive.
@@ -219,7 +219,7 @@ class CommProtocol:
         Parameters
         ----------
         end : str
-            The termination sequence that marks the end of a response.
+            The termination sequence that marks the end of the response.
             Most commands use '\n'. Scripts and variable-length responses
             typically use '\n\n'.
         delay : float, optional

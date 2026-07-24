@@ -28,7 +28,8 @@ Alternatively, you can manage the connection yourself. The repr shows the state 
 >>> comm.open()
 >>> comm
 CommProtocol('/dev/ttyACM0', connected=True)
-comm.close()
+>>> comm.close()
+>>> comm
 CommProtocol('/dev/ttyACM0', connected=False)
 ```
 
@@ -133,4 +134,31 @@ The interface maintains a history of recent responses for debugging and inspecti
 ```python
 >>> comm.history
 deque(['iES4LR20B0008\n', 'v01.09.00\n', ...], maxlen=100)
+```
+
+## Async Comm protocol
+
+For async workflows, use [pypalmsens.DeviceFileSystemAsync][]:
+
+```python
+>>> import asyncio
+>>> import pypalmsens as ps
+
+>>> async def main():
+...     instruments = await ps.discover_async()
+...     comm = ps.CommProtocol(instruments[0])
+...     await comm.open()
+...
+...     print(await comm.query('i'))  # 'ES4LR20B0008'
+...     print(await comm.query('v'))  # '01.09.00'
+...     print(await comm.query('t'))  # 'es4_lr1500#Mar 12 2026 14:28:01\nR*'
+...
+...     script = 'send_string "Hello world!"'
+...     print(await comm.run_methodscript(script))
+
+>>> asyncio.run(main())
+'ES4LR20B0008'
+'01.09.00'
+'es4_lr1500#Mar 12 2026 14:28:01\nR*'
+'THello world!\n'
 ```

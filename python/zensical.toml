@@ -68,6 +68,7 @@ nav = [
     "reference/instrument.md",
     "reference/instrument_async.md",
     "reference/filesystem.md",
+    "reference/comm_protocol.md",
     "reference/fitting.md",
     "reference/models.md",
     "reference/types.md",

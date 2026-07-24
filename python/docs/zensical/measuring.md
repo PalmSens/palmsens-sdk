@@ -382,6 +382,35 @@ That script can then be used in the [MethodScript][pypalmsens.MethodScript] tech
 
 ![Graphical editor for MethodSCRIPT™](assets/method_script_editor.png){ width="80%" }
 
+## Communication Protocol
+
+Query the device directly using the [Communication Protocol](https://dev.palmsens.com/comm_es4/latest/comm/comm_main.html). This is supported on all MethodSCRIPT devices. The Communication Protocol is an interface with which you can send commands directly to the device, e.g. to access/manipulate the state of your device, setting registers, file operations, and sending scripts. These are implemented in these classes:
+
+- [pypalmsens.CommProtocol][]
+- [pypalmsens.CommProtocolAsync][]
+
+For convenience, InstrumentManager exposes the primary [query][pypalmsens.InstrumentManager.query] method that sends a command and reads its response in one call:
+
+```python
+>>> import pypalmsens as ps
+
+>>> manager = ps.connect()
+>>> comm.query('i'))
+'ES4LR20B0008'
+>>> comm.query('v'))
+'01.09.00'
+>>> comm.query('t'))
+'es4_lr1500#Mar 12 2026 14:28:01\nR*'
+
+>>> script = 'e\nsend_string "Hello world!"\n\n'
+>>> comm.run_methodscript(script))
+'THello world!\n'
+```
+
+Asynchronous workflows are supported via [pypalmsens.InstrumentManagerAsync.query][].
+For more information on the Communication Protocol and examples, see [the documentation here][./comm_protocol.md].
+
+
 ## Multichannel measurements
 
 PyPalmSens supports multichannel experiments via [pypalmsens.InstrumentPool][] and [pypalmsens.InstrumentPoolAsync][].

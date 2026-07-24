@@ -395,6 +395,6 @@ class CommProtocol:
                 raise
 
             time.sleep(0.1)
-
-        if response == 'Z\n':  # type: ignore
-            _ = self.read_until('\n\n')
+        else:
+            if response == 'Z\n':
+                _ = self.read_until('\n\n')

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
+
 import PalmSens
 import System
 from PalmSens.Data import DeviceFile
-from typing_extensions import AsyncIterator
 
 from ..data import Measurement
 from .filesystem import DevicePath, FileSystemException

@@ -27,6 +27,8 @@ from . import (
     stages,
     types,
 )
+from ._instruments.comm_protocol import CommProtocol
+from ._instruments.comm_protocol_async import CommProtocolAsync
 from ._instruments.filesystem import DeviceFileSystem, DevicePath
 from ._instruments.filesystem_async import DeviceFileSystemAsync
 from ._instruments.instrument import Instrument, discover, discover_async
@@ -92,6 +94,8 @@ __all__ = [
     'save_session_file',
     'stages',
     'types',
+    'CommProtocol',
+    'CommProtocolAsync',
     'DeviceFileSystem',
     'DeviceFileSystemAsync',
     'DevicePath',

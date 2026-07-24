@@ -52,8 +52,8 @@ class Instrument:
             self.channel = int(ch_str[2:])
             self.name = self.id[:idx]
 
-    async def _connect_async(self) -> CommManager:
-        """Open connection to instrument, return `CommManager` object."""
+    async def _open_async(self):
+        """Open connection with instrument."""
         try:
             if self.interface == 'tcp':
                 # OpenAsync is not available on TCPDevices
@@ -68,7 +68,20 @@ class Instrument:
             # Raised if port does not exist
             raise IOError(err.Message) from err
 
-        return await create_future(CommManager.CommManagerAsync(self.device))
+        return self.device
+
+    async def _close_async(self):
+        """Close connection with instrument."""
+        try:
+            await create_future(self.device.CloseAsync())
+        except System.NotSupportedException:
+            self.device.Close()
+
+    async def _connect_async(self) -> CommManager:
+        """Open connection to instrument, return `CommManager` object."""
+        device = await self._open_async()
+
+        return await create_future(CommManager.CommManagerAsync(device))
 
     @classmethod
     def from_port(cls, port: str, *, baudrate: int | None = None) -> Instrument:

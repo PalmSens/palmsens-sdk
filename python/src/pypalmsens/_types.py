@@ -74,6 +74,7 @@ AllowedMethods = Literal[
     'mpad',
     'ms',
     'npv',
+    'ocp',
     'pad',
     'pot',
     'ps',

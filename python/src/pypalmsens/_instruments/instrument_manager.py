@@ -25,6 +25,7 @@ from .._types import (
 )
 from ..data import Measurement
 from .callback import Callback, CallbackEIS, Status
+from .comm_protocol import CommProtocol
 from .instrument import Instrument, discover
 from .instrument_manager_async import CapabilitiesMixin
 from .measurement_manager_async import MeasurementEvents, MeasurementManagerAsync
@@ -402,6 +403,49 @@ class InstrumentManager(CapabilitiesMixin):
         """Abort measurement."""
         with self._lock():
             self._comm.Abort()
+
+    def query(self, command: str, delay: float | None = None) -> str:
+        """Send a command using the communication protocol and return its response.
+
+        This is a method for direct communication with the instrument.
+        It writes the command to the device, waits for completion,
+        reads the full response, and returns it as a string.
+
+        For commands that run for a long time (e.g. scripts), this
+        method will block until the script completes or times out.
+
+        See also [pypalmsens.CommProtocol][].
+
+        Parameters
+        ----------
+        command : str
+            The command to send (e.g., 'i' to get the serial number).
+            If `command` does not end with `'\\n'`, one is automatically added.
+        delay : float, optional
+            Pause (in seconds) between read attempts. Defaults to `self.delay`.
+
+        Returns
+        -------
+        response : str
+            The complete response from the device.
+        """
+        if not isinstance(self._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS):
+            raise ValueError(
+                'The Communication Protocol is only supported on MethodSCRIPT devices.'
+            )
+
+        with self._lock():
+            # this temporarily turns off idle messages
+            status_when_idle = self._comm.get_StatusWhenIdle()
+            self._comm.set_StatusWhenIdle(False)
+            comm = CommProtocol(self.instrument)
+
+            try:
+                response = comm.query(command, delay=delay)
+            finally:
+                self._comm.set_StatusWhenIdle(status_when_idle)
+
+        return response
 
     def initialize_multiplexer(self, mux_model: int) -> int:
         """Initialize the multiplexer.

@@ -8,9 +8,9 @@ import PalmSens
 from typing_extensions import Generator, override
 
 from .comm_registry import (
+    COMM_PROTOCOL_EXCEPTIONS,
     COMMUNICATION_CAPABILITIES,
     METHODSCRIPT_CAPABILITIES,
-    METHODSCRIPT_ERRORS,
     NEWLINE_TERMINATORS,
 )
 from .instrument import Instrument
@@ -18,17 +18,16 @@ from .instrument import Instrument
 ERROR_PATTERN = re.compile(r'.*!([0-9A-Fa-f]{4})(:.*|\n)')
 
 
-class MethodScriptRuntimeError(ConnectionError):
+class CommProtocolError(ConnectionError):
     def __init__(self, *args, error_code: str, **kwargs):
         try:
             error_code, context = error_code.split(':', maxsplit=1)
+            context = f' ({context.strip()})'
         except ValueError:
             context = ''
 
-        message = METHODSCRIPT_ERRORS.get(error_code, error_code)
-
-        if context:
-            message += f' ({context.strip()})'
+        error_message = COMM_PROTOCOL_EXCEPTIONS.get(error_code, error_code)
+        message = f'[{error_code}] {error_message}{context}'
 
         super().__init__(message, *args, **kwargs)
         self.error_code: str = error_code
@@ -157,6 +156,12 @@ class CommProtocol:
             response = self.read()
 
             if response:
+                match = ERROR_PATTERN.match(response)
+
+                if match:
+                    error_code = match.group(1) + match.group(2).strip()
+                    raise CommProtocolError(error_code=error_code)
+
                 yield response
                 deadline = time.monotonic() + timeout
 
@@ -238,12 +243,6 @@ class CommProtocol:
         buffer: list[str] = []
 
         for line in self.lines(delay=delay):
-            match = ERROR_PATTERN.match(line)
-
-            if match:
-                error_code = match.group(1) + match.group(2).strip()
-                raise MethodScriptRuntimeError(error_code=error_code)
-
             if line:
                 buffer.append(line)
 
@@ -254,7 +253,12 @@ class CommProtocol:
 
         return response
 
-    def query(self, command: str, end: str | None = None, delay: float | None = None) -> str:
+    def query(
+        self,
+        command: str,
+        end: str | None = None,
+        delay: float | None = None,
+    ) -> str:
         """Send a command and return its response in a single call.
 
         This is the primary method for interactive communication with the
@@ -386,7 +390,7 @@ class CommProtocol:
 
         try:
             response = self.query('Z')
-        except MethodScriptRuntimeError as exc:
+        except CommProtocolError as exc:
             if exc.error_code != '0006':
                 raise
 

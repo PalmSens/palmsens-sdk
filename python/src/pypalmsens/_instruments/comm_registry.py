@@ -195,7 +195,7 @@ COMMUNICATION_CAPABILITIES = {
     101: 'R',  # Reverse CV sweep
 }
 
-METHODSCRIPT_ERRORS = {
+COMM_PROTOCOL_EXCEPTIONS = {
     '0001': 'An unspecified error has occurred',
     '0002': 'An invalid VarType has been used',
     '0003': 'The command was not recognized',

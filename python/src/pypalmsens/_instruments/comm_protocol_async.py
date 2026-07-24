@@ -7,7 +7,7 @@ from collections import deque
 import PalmSens
 from typing_extensions import override
 
-from .comm_protocol import ERROR_PATTERN, MethodScriptRuntimeError, parse_capabilities
+from .comm_protocol import ERROR_PATTERN, CommProtocolError, parse_capabilities
 from .comm_registry import (
     COMMUNICATION_CAPABILITIES,
     METHODSCRIPT_CAPABILITIES,
@@ -211,7 +211,7 @@ class CommProtocolAsync:
 
             if match:
                 error_code = match.group(1) + match.group(2).strip()
-                raise MethodScriptRuntimeError(error_code=error_code)
+                raise CommProtocolError(error_code=error_code)
 
             if line:
                 buffer.append(line)
@@ -351,7 +351,7 @@ class CommProtocolAsync:
 
         try:
             response = await self.query('Z')
-        except MethodScriptRuntimeError as exc:
+        except CommProtocolError as exc:
             if exc.error_code != '0006':
                 raise
 

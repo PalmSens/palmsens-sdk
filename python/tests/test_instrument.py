@@ -217,6 +217,9 @@ def test_message_callback():
         points.append(message)
 
     with ps.connect() as manager:
+        if 'ms' not in manager.supported_methods():
+            pytest.skip('Device does not support MethodSCRIPT.')
+
         manager.register_receive_message_callback(callback)
         method = method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
 
@@ -238,6 +241,9 @@ async def test_message_callback_async():
         points.append(message)
 
     async with await ps.connect_async() as manager:
+        if 'ms' not in manager.supported_methods():
+            pytest.skip('Device does not support MethodSCRIPT.')
+
         manager.register_receive_message_callback(callback)
 
         method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
@@ -295,3 +301,24 @@ async def test_get_estimated_duration():
         t = manager.get_estimated_duration(method)
 
     assert t == pytest.approx(10.1)
+
+
+@pytest.mark.instrument
+def test_query():
+    instruments = ps.discover()
+    with ps.connect(instruments[0]) as manager:
+        try:
+            assert manager.query('t')
+        except ValueError as e:
+            pytest.skip(str(e))
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_query_async():
+    instruments = await ps.discover_async()
+    async with await ps.connect_async(instruments[0]) as manager:
+        try:
+            assert await manager.query('t')
+        except ValueError as e:
+            pytest.skip(str(e))

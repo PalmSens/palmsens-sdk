@@ -642,6 +642,11 @@ class InstrumentManagerAsync(CapabilitiesMixin):
         response : str
             The complete response from the device.
         """
+        if not isinstance(self._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS):
+            raise ValueError(
+                'The Communication Protocol is only supported on MethodSCRIPT devices.'
+            )
+
         async with self._lock():
             # this temporarily turns off idle messages
             status_when_idle = self._comm.get_StatusWhenIdle()

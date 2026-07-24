@@ -18,6 +18,7 @@ def comm():
         yield comm_protocol
 
 
+@pytest.mark.instrument
 @pytest.mark.parametrize(
     'q',
     ('', '\n', 't', 'i', 'v', 'CC', 'CM'),
@@ -31,6 +32,7 @@ def test_query(comm, q):
         assert ret
 
 
+@pytest.mark.instrument
 def test_run_methodscript(comm):
     script = 'send_string "hello world!"'
 
@@ -38,6 +40,7 @@ def test_run_methodscript(comm):
     assert ret == 'Thello world!\n'
 
 
+@pytest.mark.instrument
 def test_run_methodscript_fail(comm):
     script = 'fail!'
 
@@ -45,26 +48,31 @@ def test_run_methodscript_fail(comm):
         _ = comm.run_methodscript(script)
 
 
+@pytest.mark.instrument
 def test_get_methodscript_capabilities(comm):
     ret = comm.get_methodscript_capabilities()
     assert 'var' in ret
 
 
+@pytest.mark.instrument
 def test_get_communication_capabilities(comm):
     ret = comm.get_communication_capabilities()
     assert 't' in ret
 
 
+@pytest.mark.instrument
 def test_flush(comm):
     comm.write('t')
     ret = comm.flush()
     assert ret.endswith('*\n')
 
 
+@pytest.mark.instrument
 def test_abort_nothing(comm):
     comm.abort()
 
 
+@pytest.mark.instrument
 @pytest.mark.parametrize(
     'q, error_code',
     (

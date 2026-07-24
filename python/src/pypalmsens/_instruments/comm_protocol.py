@@ -286,7 +286,11 @@ class CommProtocol:
         delay = delay or self.delay
 
         if not end:
-            func = command.split(maxsplit=1)[0]
+            try:
+                func = command.split(maxsplit=1)[0]
+            except IndexError:
+                func = ''
+
             end = NEWLINE_TERMINATORS.get(func, '\n')
 
         if not command.endswith('\n'):
@@ -367,7 +371,8 @@ class CommProtocol:
         str
             The response from the device after sending `'\\n'`.
         """
-        return self.query('\n')
+        self.write('\n')
+        return self.read_until('\n')
 
     def abort(self):
         """Abort any currently running script or measurement and wait for completion.

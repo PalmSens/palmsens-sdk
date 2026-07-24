@@ -7,12 +7,12 @@ from collections import deque
 import PalmSens
 from typing_extensions import override
 
-from .capabilities_listing import (
+from .comm_protocol import ERROR_PATTERN, MethodScriptRuntimeError, parse_capabilities
+from .comm_registry import (
     COMMUNICATION_CAPABILITIES,
     METHODSCRIPT_CAPABILITIES,
     NEWLINE_TERMINATORS,
 )
-from .comm_protocol import ERROR_PATTERN, MethodScriptRuntimeError, parse_capabilities
 from .instrument import Instrument
 
 

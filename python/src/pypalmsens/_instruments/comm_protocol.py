@@ -7,7 +7,7 @@ from collections import deque
 import PalmSens
 from typing_extensions import Generator, override
 
-from .capabilities_listing import (
+from .comm_registry import (
     COMMUNICATION_CAPABILITIES,
     METHODSCRIPT_CAPABILITIES,
     METHODSCRIPT_ERRORS,

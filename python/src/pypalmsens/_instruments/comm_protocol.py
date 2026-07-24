@@ -281,12 +281,12 @@ class CommProtocol:
         Returns
         -------
         response : str
-            The complete response from the device, including termination characters.
+            The complete response from the device.
         """
         delay = delay or self.delay
 
         if not end:
-            func = command.split(' ', maxsplit=1)[0]
+            func = command.split(maxsplit=1)[0]
             end = NEWLINE_TERMINATORS.get(func, '\n')
 
         if not command.endswith('\n'):

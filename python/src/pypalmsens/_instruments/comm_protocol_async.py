@@ -3,9 +3,12 @@ from __future__ import annotations
 import asyncio
 import time
 from collections import deque
+from collections.abc import AsyncIterator
 
 import PalmSens
 from typing_extensions import override
+
+from pypalmsens._instruments.shared import create_future
 
 from .comm_protocol import ERROR_PATTERN, CommProtocolError, parse_capabilities
 from .comm_registry import (
@@ -55,11 +58,11 @@ class CommProtocolAsync:
 
     async def open(self) -> None:
         """Open device connection."""
-        await self._device.OpenAsync()
+        await self.instrument._open_async()
 
     async def close(self) -> None:
         """Close device connection."""
-        await self._device.CloseAsync()
+        await self.instrument._close_async()
 
     async def write(self, data: str):
         """Write a command or data to the instrument.
@@ -68,9 +71,9 @@ class CommProtocolAsync:
         ----------
         data : str
             Command or data to send. To submit a command for execution,
-            append a newline character ('\n') to the end of the string.
+            append a newline character (`'\\n'`) to the end of the string.
         """
-        await self._device.WriteAsync(data)
+        await create_future(self._device.WriteAsync(data))
 
     async def read(self) -> str:
         """Read the next available chunk from the instrument's input buffer.
@@ -85,7 +88,7 @@ class CommProtocolAsync:
             contains no data. Each read is recorded in `self.history` for
             debugging and inspection.
         """
-        response = await self._device.ReadAsync()
+        response: str = await create_future(self._device.ReadAsync())
 
         if response:
             self.history.append(response)
@@ -96,7 +99,7 @@ class CommProtocolAsync:
         self,
         timeout: float | None = None,
         delay: float | None = None,
-    ):
+    ) -> AsyncIterator[str]:
         """Yield response chunks until a timeout occurs or no more data arrives.
 
         This is an async generator that continuously reads from the device buffer,
@@ -126,6 +129,12 @@ class CommProtocolAsync:
             response = await self.read()
 
             if response:
+                match = ERROR_PATTERN.match(response)
+
+                if match:
+                    error_code = match.group(1) + match.group(2).strip()
+                    raise CommProtocolError(error_code=error_code)
+
                 yield response
                 deadline = time.monotonic() + timeout
 
@@ -207,12 +216,6 @@ class CommProtocolAsync:
         buffer: list[str] = []
 
         async for line in self.lines(delay=delay):
-            match = ERROR_PATTERN.match(line)
-
-            if match:
-                error_code = match.group(1) + match.group(2).strip()
-                raise CommProtocolError(error_code=error_code)
-
             if line:
                 buffer.append(line)
 
@@ -224,7 +227,10 @@ class CommProtocolAsync:
         return response
 
     async def query(
-        self, command: str, end: str | None = None, delay: float | None = None
+        self,
+        command: str,
+        end: str | None = None,
+        delay: float | None = None,
     ) -> str:
         """Send a command and return its response in a single call.
 
@@ -257,7 +263,11 @@ class CommProtocolAsync:
         delay = delay or self.delay
 
         if not end:
-            func = command.split(' ', maxsplit=1)[0]
+            try:
+                func = command.split(maxsplit=1)[0]
+            except IndexError:
+                func = ''
+
             end = NEWLINE_TERMINATORS.get(func, '\n')
 
         if not command.endswith('\n'):
@@ -268,6 +278,7 @@ class CommProtocolAsync:
         prefix = command[0]
 
         response = await self.wait_until(prefix)
+
         if not response.endswith(end):
             response += await self.read_until(end=end, delay=delay)
 
@@ -337,7 +348,8 @@ class CommProtocolAsync:
         str
             The response from the device after sending `'\\n'`.
         """
-        return await self.query('\n')
+        await self.write('\n')
+        return await self.read_until('\n')
 
     async def abort(self):
         """Abort any currently running script or measurement and wait for completion.
@@ -355,7 +367,7 @@ class CommProtocolAsync:
             if exc.error_code != '0006':
                 raise
 
-            await asyncio.sleep(0.1)
-
-        if response == 'Z\n':  # type: ignore
-            _ = await self.read_until('\n\n')
+            time.sleep(0.1)
+        else:
+            if response == 'Z\n':
+                _ = await self.read_until('\n\n')

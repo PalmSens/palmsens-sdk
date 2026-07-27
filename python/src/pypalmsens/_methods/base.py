@@ -26,10 +26,10 @@ class BaseSettings(BaseModel, metaclass=ABCMeta):
     """Protocol to provide generic methods for parameters."""
 
     @abstractmethod
-    def _update_psmethod(self, psmethod: PalmSens.Method, /): ...
+    def _export(self, psmethod: PalmSens.Method, /): ...
 
     @abstractmethod
-    def _update_params(self, psmethod: PalmSens.Method, /): ...
+    def _import(self, psmethod: PalmSens.Method, /): ...
 
 
 class BaseTechnique(BaseModel, metaclass=ABCMeta):
@@ -72,46 +72,39 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
     def _from_psmethod(cls, psmethod: PalmSens.Method, /) -> MethodType:
         """Generate parameters from dotnet method object."""
         new = cls.from_method_id(psmethod.MethodID)
-        new._update_params(psmethod)
-        new._update_params_nested(psmethod)
+        new._import(psmethod)
+        new._import_nested(psmethod)
         return new
 
     @abstractmethod
-    def _update_params(self, psmethod: PalmSens.Method, /) -> None: ...
+    def _import(self, psmethod: PalmSens.Method, /) -> None: ...
 
     @property
     def _use_hardware_sync(self) -> bool:
         """Fallback method, implemented by derived classes or mixins"""
         return False
 
-    def _update_params_nested(self, psmethod: PalmSens.Method, /) -> None:
+    def _import_nested(self, psmethod: PalmSens.Method, /) -> None:
         """Retrieve and convert dotnet method for nested field parameters."""
         for field in self.__class__.model_fields:
             attribute = getattr(self, field)
-            try:
-                # Update parameters if attribute has the `update_params` method
-                attribute._update_params(psmethod)
-            except AttributeError:
-                pass
+            if isinstance(attribute, BaseSettings):
+                attribute._import(psmethod)
 
     def _to_psmethod(self) -> PalmSens.Method:
         """Convert parameters to dotnet method."""
         psmethod = PalmSens.Method.FromMethodID(self.id)  # type:ignore
 
-        self._update_psmethod(psmethod)
-        self._update_psmethod_nested(psmethod)
+        self._export(psmethod)
+        self._export_nested(psmethod)
         return psmethod
 
     @abstractmethod
-    def _update_psmethod(self, psmethod: PalmSens.Method, /) -> None: ...
+    def _export(self, psmethod: PalmSens.Method, /) -> None: ...
 
-    def _update_psmethod_nested(self, psmethod: PalmSens.Method, /) -> None:
+    def _export_nested(self, psmethod: PalmSens.Method, /) -> None:
         """Convert and set field parameters on dotnet method."""
         for field in self.__class__.model_fields:
             attribute = getattr(self, field)
-
-            try:
-                # Update parameters if attribute has the `update_params` method
-                attribute._update_psmethod(psmethod)
-            except AttributeError:
-                pass
+            if isinstance(attribute, BaseSettings):
+                attribute._export(psmethod)

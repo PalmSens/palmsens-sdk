@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import ABCMeta, abstractmethod
 from typing import Annotated, ClassVar, Literal
 
 import PalmSens
@@ -20,7 +19,7 @@ from .base import BaseTechnique
 from .base_model import BaseModel
 
 
-class BaseStage(BaseModel, metaclass=ABCMeta):
+class BaseStage(BaseModel):
     """Protocol to provide base methods for stage classes."""
 
     _registry: ClassVar[dict[str, type[BaseStage]]] = {}
@@ -43,8 +42,8 @@ class BaseStage(BaseModel, metaclass=ABCMeta):
         new._import_stage_nested(psstage)
         return new
 
-    @abstractmethod
-    def _import_stage(self, psstage: PalmSens.Method, /) -> None: ...
+    def _import_stage(self, psstage: PalmSens.Method, /) -> None:
+        raise NotImplementedError
 
     def _import_stage_nested(self, psstage: PalmSens.Method, /) -> None:
         """Retrieve and convert dotnet method for nested field parameters."""
@@ -64,8 +63,8 @@ class BaseStage(BaseModel, metaclass=ABCMeta):
         self._export_stage_nested(psstage)
         return psstage
 
-    @abstractmethod
-    def _export_stage(self, psstage: PalmSens.Method, /) -> None: ...
+    def _export_stage(self, psstage: PalmSens.Method, /) -> None:
+        raise NotImplementedError
 
     def _export_stage_nested(self, psstage: PalmSens.Method, /) -> None:
         """Convert and set field parameters on dotnet method."""
@@ -75,7 +74,11 @@ class BaseStage(BaseModel, metaclass=ABCMeta):
                 attribute._export(psstage)
 
 
-class ConstantE(BaseStage, mixins.CurrentLimitsMixin, mixins.MeasurementTriggersMixin):
+class ConstantE(
+    BaseStage,
+    mixins.CurrentLimitsMixin,
+    mixins.MeasurementTriggersMixin,
+):
     """Amperometric detection stage.
 
     Apply constant potential during this stage."""
@@ -100,7 +103,11 @@ class ConstantE(BaseStage, mixins.CurrentLimitsMixin, mixins.MeasurementTriggers
         self.run_time = single_to_double(psstage.RunTime)
 
 
-class ConstantI(BaseStage, mixins.PotentialLimitsMixin, mixins.MeasurementTriggersMixin):
+class ConstantI(
+    BaseStage,
+    mixins.PotentialLimitsMixin,
+    mixins.MeasurementTriggersMixin,
+):
     """Potentiometry stage.
 
     Apply constant fixed current during this stage."""
@@ -137,7 +144,11 @@ class ConstantI(BaseStage, mixins.PotentialLimitsMixin, mixins.MeasurementTrigge
         self.run_time = single_to_double(psstage.RunTime)
 
 
-class SweepE(BaseStage, mixins.CurrentLimitsMixin, mixins.MeasurementTriggersMixin):
+class SweepE(
+    BaseStage,
+    mixins.CurrentLimitsMixin,
+    mixins.MeasurementTriggersMixin,
+):
     """Linear sweep detection stage.
 
     Ramp the voltage from `begin_potential` to `end_potential` during this stage."""
@@ -177,7 +188,11 @@ class SweepE(BaseStage, mixins.CurrentLimitsMixin, mixins.MeasurementTriggersMix
         self.scanrate = single_to_double(psstage.Scanrate)
 
 
-class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin, mixins.MeasurementTriggersMixin):
+class OpenCircuit(
+    BaseStage,
+    mixins.PotentialLimitsMixin,
+    mixins.MeasurementTriggersMixin,
+):
     """Open Circuit stage.
 
     Measure the open circuit potential during this stage."""
@@ -197,7 +212,9 @@ class OpenCircuit(BaseStage, mixins.PotentialLimitsMixin, mixins.MeasurementTrig
         self.run_time = single_to_double(psstage.RunTime)
 
 
-class Impedance(BaseStage):
+class Impedance(
+    BaseStage,
+):
     """Electostatic impedance stage.
 
     This is like EIS with a single frequency step

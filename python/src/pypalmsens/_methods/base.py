@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABCMeta, abstractmethod
+import typing
 from contextlib import contextmanager
 from typing import Any, ClassVar
 
@@ -8,8 +8,10 @@ import PalmSens
 from System.IO import StringWriter
 
 from .. import __version__
-from .._types import MethodType
 from .base_model import BaseModel
+
+if typing.TYPE_CHECKING:
+    from .._types import MethodType
 
 
 @contextmanager
@@ -22,17 +24,17 @@ def string_writer(*args, **kwargs):
         stream.Close()
 
 
-class BaseSettings(BaseModel, metaclass=ABCMeta):
+class BaseSettings(BaseModel):
     """Protocol to provide generic methods for parameters."""
 
-    @abstractmethod
-    def _export(self, psmethod: PalmSens.Method, /): ...
+    def _export(self, psmethod: PalmSens.Method, /) -> None:
+        raise NotImplementedError
 
-    @abstractmethod
-    def _import(self, psmethod: PalmSens.Method, /): ...
+    def _import(self, psmethod: PalmSens.Method, /) -> None:
+        raise NotImplementedError
 
 
-class BaseTechnique(BaseModel, metaclass=ABCMeta):
+class BaseTechnique(BaseSettings):
     """Protocol to provide base methods for method classes."""
 
     _registry: ClassVar[dict[str, type[MethodType]]] = {}
@@ -76,9 +78,6 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
         new._import_nested(psmethod)
         return new
 
-    @abstractmethod
-    def _import(self, psmethod: PalmSens.Method, /) -> None: ...
-
     @property
     def _use_hardware_sync(self) -> bool:
         """Fallback method, implemented by derived classes or mixins"""
@@ -98,9 +97,6 @@ class BaseTechnique(BaseModel, metaclass=ABCMeta):
         self._export(psmethod)
         self._export_nested(psmethod)
         return psmethod
-
-    @abstractmethod
-    def _export(self, psmethod: PalmSens.Method, /) -> None: ...
 
     def _export_nested(self, psmethod: PalmSens.Method, /) -> None:
         """Convert and set field parameters on dotnet method."""

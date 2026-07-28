@@ -22,7 +22,7 @@ repos:
       - id: debug-statements
       - id: no-commit-to-branch
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.14
+    rev: v0.16.0
     hooks:
       - id: ruff-check
         args: ["--fix", "--config", "python/pyproject.toml"]
@@ -31,7 +31,7 @@ repos:
         types_or: [python, jupyter]
         args: ["--config", "python/pyproject.toml"]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.1.0
+    rev: v2.3.0
     hooks:
       - id: mypy
         types_or: [python]

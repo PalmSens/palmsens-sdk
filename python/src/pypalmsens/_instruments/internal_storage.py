@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 import typing
 from typing import Final
@@ -7,5 +8,5 @@ if typing.TYPE_CHECKING:
 
 
 class InternalStorageManager:
-    def __init__(self, manager:InstrumentManager):
+    def __init__(self, manager: InstrumentManager):
         self.manager: Final = manager

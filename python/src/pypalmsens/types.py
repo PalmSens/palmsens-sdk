@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from ._data.types import AllowedArrayTypes
+from ._instruments import AllowedEvents
 from ._types import (
     AllowedCurrentRanges,
     AllowedDeviceState,
@@ -21,6 +22,7 @@ __all__ = [
     'AllowedArrayTypes',
     'AllowedCurrentRanges',
     'AllowedDeviceState',
+    'AllowedEvents',
     'AllowedFrequencyTypes',
     'AllowedMSMethods',
     'AllowedMethods',

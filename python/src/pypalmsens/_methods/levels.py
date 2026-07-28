@@ -55,7 +55,7 @@ class ELevel(BaseModel):
 
         return use_limit_current_min or use_limit_current_max
 
-    def to_psobj(self) -> PalmSens.Techniques.ELevel:
+    def _to_psobj(self) -> PalmSens.Techniques.ELevel:
         obj = PalmSens.Techniques.ELevel()
 
         obj.Level = self.level
@@ -76,7 +76,7 @@ class ELevel(BaseModel):
         return obj
 
     @classmethod
-    def from_psobj(cls, psobj: PalmSens.Techniques.ELevel):
+    def _from_psobj(cls, psobj: PalmSens.Techniques.ELevel):
         """Construct ELevel dataclass from PalmSens.Techniques.ELevel object."""
         trigger_lines: list[Literal[0, 1, 2, 3]] = []
 
@@ -131,7 +131,7 @@ class ILevel(BaseModel):
 
         return use_limit_potential_min or use_limit_potential_max
 
-    def to_psobj(self) -> PalmSens.Techniques.EILevel:
+    def _to_psobj(self) -> PalmSens.Techniques.EILevel:
         obj = PalmSens.Techniques.EILevel()
 
         obj.Level = self.level
@@ -152,7 +152,7 @@ class ILevel(BaseModel):
         return obj
 
     @classmethod
-    def from_psobj(cls, psobj: PalmSens.Techniques.EILevel):
+    def _from_psobj(cls, psobj: PalmSens.Techniques.EILevel):
         """Construct ILevel dataclass from PalmSens.Techniques.ELevel object."""
         trigger_lines: list[Literal[0, 1, 2, 3]] = []
 

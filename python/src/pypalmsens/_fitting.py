@@ -31,7 +31,7 @@ class Parameter:
     """If True, fix the value for this parameter."""
 
     @classmethod
-    def _from_psparameter(cls, psparameter: PalmSens.Fitting.Parameter):
+    def _import(cls, psparameter: PalmSens.Fitting.Parameter):
         """Create instance from SDK Parameter object."""
         return cls(
             symbol=psparameter.Symbol,
@@ -41,7 +41,7 @@ class Parameter:
             fixed=psparameter.Fixed,
         )
 
-    def _update_psparameter(self, psparameter: PalmSens.Fitting.Parameter):
+    def _export(self, psparameter: PalmSens.Fitting.Parameter):
         """Update PalmSens SDK object with values from dataclass."""
         if self.value:
             psparameter.Value = self.value
@@ -74,7 +74,7 @@ class Parameters(Sequence[Any]):
         model = PalmSens.Fitting.Models.CircuitModel()
         model.SetCircuit(cdc)
         self._parameters = tuple(
-            Parameter._from_psparameter(psparam) for psparam in model.InitialParameters
+            Parameter._import(psparam) for psparam in model.InitialParameters
         )
 
     @override
@@ -93,7 +93,7 @@ class Parameters(Sequence[Any]):
     def __str__(self) -> str:
         return self._parameters.__str__()
 
-    def _update_psmodel_parameters(self, psmodel: PalmSens.Fitting.Models.CircuitModel) -> None:
+    def _export(self, psmodel: PalmSens.Fitting.Models.CircuitModel) -> None:
         """Update the initial parameters in the SDK model with parameters in this instance.
 
         Note that the length and type of parameters must match that of the SDK class.
@@ -102,7 +102,7 @@ class Parameters(Sequence[Any]):
             raise ValueError(f'Parameters must be of length {psmodel.NParameters}')
 
         for param, psparam in zip(self, psmodel.InitialParameters):
-            param._update_psparameter(psparam)
+            param._export(psparam)
 
 
 @dataclass(frozen=True)
@@ -380,7 +380,7 @@ class CircuitModel:
                     raise ValueError(
                         f'Parameters cdc ({self.cdc}) does not match Model ({parameters.cdc})'
                     )
-                parameters._update_psmodel_parameters(model)
+                parameters._export(model)
             else:
                 if len(parameters) != model.NParameters:
                     raise ValueError(f'Parameters must be of length {model.NParameters}')

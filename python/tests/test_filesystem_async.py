@@ -9,7 +9,6 @@ import pytest
 import pytest_asyncio
 
 import pypalmsens as ps
-from pypalmsens._instruments import DevicePath
 
 if True:
     from System import DateTime
@@ -27,7 +26,7 @@ async def fs():
 
 @pytest.mark.instrument
 def test_truediv(fs):
-    assert fs / 'Measurements' == DevicePath('Measurements')
+    assert fs / 'Measurements' == ps.DevicePath('Measurements')
 
 
 @pytest.mark.asyncio
@@ -135,4 +134,4 @@ async def test_listdir(fs):
 @pytest.mark.instrument
 async def test_walk(fs):
     async for item in fs.walk():
-        assert isinstance(item, DevicePath)
+        assert isinstance(item, ps.DevicePath)

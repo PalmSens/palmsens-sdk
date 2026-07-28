@@ -8,10 +8,10 @@ from pydantic import Field, TypeAdapter
 from pydantic.dataclasses import dataclass
 from typing_extensions import override
 
-from pypalmsens._data.curve import CurveMetadata
-from pypalmsens._data.eisdata import EISDataMetadata
-from pypalmsens._data.measurement import MeasurementMetadata
-from pypalmsens._instruments.callback import DataRow
+from ._data.curve import CurveMetadata
+from ._data.eisdata import EISDataMetadata
+from ._data.measurement import MeasurementMetadata
+from ._instruments.callback import DataRow
 
 
 @dataclass

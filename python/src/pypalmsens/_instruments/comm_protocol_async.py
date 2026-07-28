@@ -8,8 +8,6 @@ from collections.abc import AsyncIterator
 import PalmSens
 from typing_extensions import override
 
-from pypalmsens._instruments.shared import create_future
-
 from .comm_protocol import ERROR_PATTERN, CommProtocolError, parse_capabilities
 from .comm_registry import (
     COMMUNICATION_CAPABILITIES,
@@ -17,6 +15,7 @@ from .comm_registry import (
     NEWLINE_TERMINATORS,
 )
 from .instrument import Instrument
+from .shared import create_future
 
 
 class CommProtocolAsync:

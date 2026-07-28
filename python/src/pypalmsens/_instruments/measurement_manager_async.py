@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from io import BufferedWriter
 from pathlib import Path
-from typing import Any, Callable, Generator
+from typing import Any
 
 import PalmSens
 import System

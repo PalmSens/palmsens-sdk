@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any, Awaitable, Protocol, Sequence
+from collections.abc import Awaitable, Sequence
+from typing import TYPE_CHECKING, Any, Protocol
 
 from .._types import MethodType, MethodTypeCompatible
 from .callback import Callback, CallbackEIS, Status
@@ -216,10 +217,8 @@ class InstrumentPoolAsync:
 
         if len(set(manager.instrument.name for manager in self.managers)) > 1:
             raise ValueError(
-                (
-                    'Hardware synchronization is only supported when '
-                    'a single multichannel instrument is selected.'
-                )
+                'Hardware synchronization is only supported when '
+                'a single multichannel instrument is selected.'
             )
 
         for manager, callback in zip(self.managers, callbacks):
@@ -229,10 +228,8 @@ class InstrumentPoolAsync:
                 break
         else:
             raise ValueError(
-                (
-                    'Hardware synchronization requires the first channel '
-                    'of the multichannel instrument to be in the pool.'
-                )
+                'Hardware synchronization requires the first channel '
+                'of the multichannel instrument to be in the pool.'
             )
 
         for manager in self.managers:

@@ -66,7 +66,7 @@ class Instrument:
             ) from err
         except System.IO.IOException as err:
             # Raised if port does not exist
-            raise IOError(err.Message) from err
+            raise OSError(err.Message) from err
 
         return self.device
 

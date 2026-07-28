@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import asyncio
 import warnings
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from pathlib import Path
 from time import sleep
-from typing import Callable, Generator
 
 import clr
 import PalmSens

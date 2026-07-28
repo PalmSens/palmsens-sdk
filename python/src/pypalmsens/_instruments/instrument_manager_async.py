@@ -3,10 +3,10 @@ from __future__ import annotations
 import asyncio
 import sys
 import warnings
-from collections.abc import AsyncGenerator, Coroutine
+from collections.abc import AsyncGenerator, Callable, Coroutine
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any, Callable, Protocol
+from typing import Any, Protocol
 
 import clr
 import PalmSens

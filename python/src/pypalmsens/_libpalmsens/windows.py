@@ -38,11 +38,11 @@ def load() -> str:
 
     clr.AddReference('System')
 
-    from PalmSens.Windows import CoreDependencies  # noqa: E402
+    from PalmSens.Windows import CoreDependencies
 
     CoreDependencies.Init()
 
-    from System import Diagnostics  # noqa: E402
+    from System import Diagnostics
 
     return Diagnostics.FileVersionInfo.GetVersionInfo(str(core_dll)).ProductVersion
 

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Generator, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Callable, final
+from collections.abc import Callable, Iterator, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, final
 
 from PalmSens.Plottables import Curve as PSCurve
 from typing_extensions import override
@@ -89,7 +89,7 @@ class DataSet(Mapping[str, DataArray]):
         return self._mapping[key]
 
     @override
-    def __iter__(self) -> Generator[str, None, None]:
+    def __iter__(self) -> Iterator[str]:
         # Note that iterating over self.psdataset also returns the 'hidden' debug arrays
         # `.GetDataArrays()` excludes those.
         yield from self._mapping

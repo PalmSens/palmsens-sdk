@@ -517,4 +517,4 @@ if __name__ == '__main__':
     for k, v in Capabilities.model_computed_fields.items():
         print(f'{k}: {v.return_type}')
         print(f'"""{v.description}"""')
-        print('')
+        print()

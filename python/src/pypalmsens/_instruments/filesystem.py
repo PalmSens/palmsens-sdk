@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import sys
+from collections.abc import Iterator
 
 import PalmSens
 import System
 from PalmSens.Data import DeviceFile
-from typing_extensions import Iterator
 
 from ..data import Measurement
 from .instrument import Instrument
@@ -14,8 +14,6 @@ from .instrument_manager import InstrumentManager
 
 class FileSystemException(OSError):
     """Raised when a filesystem operation fails."""
-
-    pass
 
 
 if sys.version_info < (3, 12):

@@ -340,7 +340,7 @@ class CapabilitiesInterface(BaseModel):
         for number in self.comm.Capabilities.SupportedMethods:
             try:
                 id = PalmSens.Method.FromTechniqueNumber(number).MethodID
-            except Exception:
+            except System.Exception:
                 pass
             else:
                 method_ids.append(id)
@@ -517,4 +517,4 @@ if __name__ == '__main__':
     for k, v in Capabilities.model_computed_fields.items():
         print(f'{k}: {v.return_type}')
         print(f'"""{v.description}"""')
-        print('')
+        print()

@@ -39,7 +39,7 @@ def load() -> str:
     # runtime must be imported before clr is loaded
     pythonnet.load('coreclr', runtime_config=str(PSSDK_DIR / 'runtimeconfig.json'))
 
-    import clr  # noqa: E402
+    import clr
 
     core_dll = PSSDK_DIR / 'PalmSens.Core.dll'
     core_linux_dll = PSSDK_DIR / 'PalmSens.Core.Linux.dll'
@@ -58,11 +58,11 @@ def load() -> str:
 
     clr.AddReference('System')
 
-    from PalmSens.Core.Linux import CoreDependencies  # noqa: E402
+    from PalmSens.Core.Linux import CoreDependencies
 
     CoreDependencies.Init()
 
-    from System import Diagnostics  # noqa: E402
+    from System import Diagnostics
 
     return Diagnostics.FileVersionInfo.GetVersionInfo(str(core_dll)).ProductVersion
 

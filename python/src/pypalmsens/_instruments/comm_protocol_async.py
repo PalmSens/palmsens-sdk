@@ -6,7 +6,7 @@ from collections import deque
 from collections.abc import AsyncIterator
 
 import PalmSens
-from typing_extensions import override
+from typing_extensions import Self, override
 
 from .comm_protocol import ERROR_PATTERN, CommProtocolError, parse_capabilities
 from .comm_registry import (
@@ -48,7 +48,7 @@ class CommProtocolAsync:
     def __repr__(self) -> str:
         return f"{type(self).__name__}('{self.instrument.id}', connected={self._device.IsOpen})"
 
-    async def __aenter__(self) -> CommProtocolAsync:
+    async def __aenter__(self) -> Self:
         await self.open()
         return self
 
@@ -366,7 +366,7 @@ class CommProtocolAsync:
             if exc.error_code != '0006':
                 raise
 
-            time.sleep(0.1)
+            await asyncio.sleep(0.1)
         else:
             if response == 'Z\n':
                 _ = await self.read_until('\n\n')

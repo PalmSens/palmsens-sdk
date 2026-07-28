@@ -20,14 +20,8 @@ from .instrument_pool import InstrumentPool
 from .instrument_pool_async import InstrumentPoolAsync
 
 __all__ = [
-    'connect',
-    'connect_async',
-    'discover',
-    'discover_async',
-    'measure',
-    'measure_async',
-    'Capabilities',
     'AnalogComponent',
+    'Capabilities',
     'CommProtocol',
     'CommProtocolAsync',
     'DeviceFileSystem',
@@ -39,4 +33,10 @@ __all__ = [
     'InstrumentManagerAsync',
     'InstrumentPool',
     'InstrumentPoolAsync',
+    'connect',
+    'connect_async',
+    'discover',
+    'discover_async',
+    'measure',
+    'measure_async',
 ]

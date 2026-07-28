@@ -1,13 +1,14 @@
 # mypy: ignore_errors
 # Generated from MethodScriptParser.g4 by ANTLR 4.13.1
 # encoding: utf-8
-from antlr4 import *
-from io import StringIO
 import sys
+
+from antlr4 import *
+
 if sys.version_info[1] > 5:
 	from typing import TextIO
 else:
-	from typing.io import TextIO
+	from typing import TextIO
 
 def serializedATN():
     return [
@@ -505,11 +506,9 @@ class MethodScriptParser ( Parser ):
                 if token in [1, 2, 3, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 58, 59, 60, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136]:
                     self.state = 54
                     self.statement()
-                    pass
                 elif token in [156]:
                     self.state = 55
                     self.commentLine()
-                    pass
                 else:
                     raise NoViableAltException(self)
 
@@ -599,42 +598,34 @@ class MethodScriptParser ( Parser ):
                 self.enterOuterAlt(localctx, 1)
                 self.state = 63
                 self.variableDeclaration()
-                pass
             elif token in [2]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 64
                 self.arrayDeclaration()
-                pass
             elif token in [130]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 65
                 self.stringDeclaration()
-                pass
             elif token in [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 58, 59, 60, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 131, 132, 133, 134, 135, 136]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 66
                 self.commandCall()
-                pass
             elif token in [3]:
                 self.enterOuterAlt(localctx, 5)
                 self.state = 67
                 self.ifStatement()
-                pass
             elif token in [7]:
                 self.enterOuterAlt(localctx, 6)
                 self.state = 68
                 self.loopStatement()
-                pass
             elif token in [9]:
                 self.enterOuterAlt(localctx, 7)
                 self.state = 69
                 self.breakStatement()
-                pass
             elif token in [10]:
                 self.enterOuterAlt(localctx, 8)
                 self.state = 70
                 self.tag()
-                pass
             else:
                 raise NoViableAltException(self)
 
@@ -1030,11 +1021,9 @@ class MethodScriptParser ( Parser ):
                 if token in [1, 2, 3, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 58, 59, 60, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136]:
                     self.state = 104
                     self.statement()
-                    pass
                 elif token in [156]:
                     self.state = 105
                     self.commentLine()
-                    pass
                 else:
                     raise NoViableAltException(self)
 
@@ -1167,11 +1156,9 @@ class MethodScriptParser ( Parser ):
                 if token in [1, 2, 3, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 58, 59, 60, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136]:
                     self.state = 132
                     self.statement()
-                    pass
                 elif token in [156]:
                     self.state = 133
                     self.commentLine()
-                    pass
                 else:
                     raise NoViableAltException(self)
 
@@ -1267,11 +1254,9 @@ class MethodScriptParser ( Parser ):
                 if token in [1, 2, 3, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 58, 59, 60, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136]:
                     self.state = 144
                     self.statement()
-                    pass
                 elif token in [156]:
                     self.state = 145
                     self.commentLine()
-                    pass
                 else:
                     raise NoViableAltException(self)
 
@@ -1383,11 +1368,9 @@ class MethodScriptParser ( Parser ):
                 if token in [1, 2, 3, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 58, 59, 60, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136]:
                     self.state = 157
                     self.statement()
-                    pass
                 elif token in [156]:
                     self.state = 158
                     self.commentLine()
-                    pass
                 else:
                     raise NoViableAltException(self)
 
@@ -1665,7 +1648,7 @@ class MethodScriptParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 186
             _la = self._input.LA(1)
-            if not(((((_la - 137)) & ~0x3f) == 0 and ((1 << (_la - 137)) & 255) != 0)):
+            if not((((_la - 137)) & ~0x3f) == 0 and ((1 << (_la - 137)) & 255) != 0):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -1729,19 +1712,16 @@ class MethodScriptParser ( Parser ):
                 self.enterOuterAlt(localctx, 1)
                 self.state = 188
                 self.match(MethodScriptParser.IDENTIFIER)
-                pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 189
                 self.arrayAccess()
-                pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 190
                 self.literal()
-                pass
 
 
         except RecognitionException as re:
@@ -1874,12 +1854,10 @@ class MethodScriptParser ( Parser ):
                 self.enterOuterAlt(localctx, 1)
                 self.state = 198
                 self.simpleCommand()
-                pass
             elif token in [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 199
                 self.measurementLoop()
-                pass
             else:
                 raise NoViableAltException(self)
 
@@ -2118,11 +2096,9 @@ class MethodScriptParser ( Parser ):
                 if token in [1, 2, 3, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 58, 59, 60, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136]:
                     self.state = 237
                     self.statement()
-                    pass
                 elif token in [156]:
                     self.state = 238
                     self.commentLine()
-                    pass
                 else:
                     raise NoViableAltException(self)
 
@@ -2314,7 +2290,7 @@ class MethodScriptParser ( Parser ):
             self.enterOuterAlt(localctx, 1)
             self.state = 260
             _la = self._input.LA(1)
-            if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 268433408) != 0)):
+            if not(((_la) & ~0x3f) == 0 and ((1 << _la) & 268433408) != 0):
                 self._errHandler.recoverInline(self)
             else:
                 self._errHandler.reportMatch(self)
@@ -2728,25 +2704,21 @@ class MethodScriptParser ( Parser ):
                 self.enterOuterAlt(localctx, 1)
                 self.state = 264
                 self.literal()
-                pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 265
                 self.match(MethodScriptParser.IDENTIFIER)
-                pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 266
                 self.arrayAccess()
-                pass
 
             elif la_ == 4:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 267
                 self.match(MethodScriptParser.INVALID_NUMERIC_LITERAL)
-                pass
 
 
         except RecognitionException as re:
@@ -2813,27 +2785,22 @@ class MethodScriptParser ( Parser ):
                 self.enterOuterAlt(localctx, 1)
                 self.state = 270
                 self.match(MethodScriptParser.INTEGER_LITERAL)
-                pass
             elif token in [153]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 271
                 self.match(MethodScriptParser.FLOAT_LITERAL)
-                pass
             elif token in [150]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 272
                 self.match(MethodScriptParser.STRING_LITERAL)
-                pass
             elif token in [149]:
                 self.enterOuterAlt(localctx, 4)
                 self.state = 273
                 self.fstringLiteral()
-                pass
             elif token in [151]:
                 self.enterOuterAlt(localctx, 5)
                 self.state = 274
                 self.match(MethodScriptParser.INVALID_STRING_LITERAL)
-                pass
             else:
                 raise NoViableAltException(self)
 
@@ -2965,17 +2932,14 @@ class MethodScriptParser ( Parser ):
                 self.enterOuterAlt(localctx, 1)
                 self.state = 286
                 self.match(MethodScriptParser.FSTRING_TEXT)
-                pass
             elif token in [161]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 287
                 self.match(MethodScriptParser.FSTRING_ESCAPE)
-                pass
             elif token in [162]:
                 self.enterOuterAlt(localctx, 3)
                 self.state = 288
                 self.fstringInterpolation()
-                pass
             else:
                 raise NoViableAltException(self)
 

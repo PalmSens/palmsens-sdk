@@ -132,6 +132,7 @@ This release makes a few changes to the API for Mixed Mode.
 
 ```python
 import pypalmsens as ps
+
 # old
 ps.mixed_mode.MixedMode(stages=[ps.mixed_mode.ConstantE()])
 # new
@@ -320,10 +321,7 @@ The API for setting measurement triggers for stages is the same as for methods:
 import pypalmsens as ps
 
 method = ps.mixed_mode.MixedMode(
-    stages = [{
-         'stage_type': 'ConstantE',
-         'measurement_triggers': {'d0': True, 'd1': True}
-     }]
+    stages=[{'stage_type': 'ConstantE', 'measurement_triggers': {'d0': True, 'd1': True}}]
 )
 ```
 
@@ -377,14 +375,14 @@ Finally, this release fixes a bug when setting the BiPot, causing the setting no
 Note that the syntax for setting the bipot current range has changed, more in line with the rest of the code. Bipot now expects a fixed current range by default, which is the expected setting for almost all devices:
 
 ```python
-bipot = ps.settings.BiPot(current_range = '1uA')
+bipot = ps.settings.BiPot(current_range='1uA')
 ```
 
 For autoranging bipot (only available on the Nexus), you can use:
 
 ```python
 bipot = ps.settings.BiPot(
-    current_range = {'min': '1uA', 'max': '10mA', 'start': '1mA'},
+    current_range={'min': '1uA', 'max': '10mA', 'start': '1mA'},
 )
 ```
 
@@ -565,8 +563,8 @@ Single frequency scan:
 
 ```python
 method = ps.ElectrochemicalImpedanceSpectroscopy(
-    scan_type = 'fixed',
-    frequency_type = 'scan',
+    scan_type='fixed',
+    frequency_type='scan',
 )
 ```
 
@@ -574,11 +572,11 @@ Multiple frequency scans repeated over a range of DC potential values:
 
 ```python
 method = ps.ElectrochemicalImpedanceSpectroscopy(
-    scan_type = 'potential',
-    frequency_type = 'scan',
-    begin_potential = -0.5,
-    end_potential = 0.5,
-    step_potential = 0.1,
+    scan_type='potential',
+    frequency_type='scan',
+    begin_potential=-0.5,
+    end_potential=0.5,
+    step_potential=0.1,
 )
 ```
 
@@ -586,10 +584,10 @@ Multiple frequency scans repeated over a time interval:
 
 ```python
 method = ps.ElectrochemicalImpedanceSpectroscopy(
-    scan_type = 'time',
-    frequency_type = 'scan',
-	run_time = 10.0,
-    interval_time = 0.1,
+    scan_type='time',
+    frequency_type='scan',
+    run_time=10.0,
+    interval_time=0.1,
 )
 ```
 
@@ -597,8 +595,8 @@ Single frequency measurement repeated over a time interval:
 
 ```python
 method = ps.ElectrochemicalImpedanceSpectroscopy(
-    scan_type = 'time',
-    frequency_type = 'fixed',
+    scan_type='time',
+    frequency_type='fixed',
 )
 ```
 

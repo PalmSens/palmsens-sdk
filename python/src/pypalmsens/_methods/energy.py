@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+import datetime
 from typing import Any, Literal
 
 import PalmSens
@@ -48,7 +48,7 @@ class BaseMethodScriptTechnique(BaseModel):
         template = env.get_template(self._template)
         return template.render(
             model=self,
-            timestamp=datetime.today().replace(microsecond=0),
+            timestamp=datetime.datetime.now(tz=datetime.timezone.utc).replace(microsecond=0),
             version=__version__,
         )
 

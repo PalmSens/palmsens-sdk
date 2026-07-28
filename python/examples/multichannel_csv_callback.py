@@ -1,7 +1,8 @@
 import asyncio
-import pypalmsens as ps
 import csv
 import functools
+
+import pypalmsens as ps
 
 
 def stream_to_csv_callback(data, csv_writer):
@@ -13,7 +14,7 @@ async def stream_to_csv(manager, *, method):
     """Measure with a custom csv writer callback."""
     serial = await manager.get_instrument_serial()
 
-    with open(f'{serial}.csv', 'w', newline='') as csv_file:
+    with open(f'{serial}.csv', 'w', newline='') as csv_file:  # noqa: ASYNC230
         csv_writer = csv.writer(csv_file)
 
         callback = functools.partial(stream_to_csv_callback, csv_writer=csv_writer)

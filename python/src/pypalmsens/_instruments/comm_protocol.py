@@ -5,7 +5,7 @@ import time
 from collections import deque
 
 import PalmSens
-from typing_extensions import Generator, override
+from typing_extensions import Generator, Self, override
 
 from .comm_registry import (
     COMM_PROTOCOL_EXCEPTIONS,
@@ -76,7 +76,7 @@ class CommProtocol:
     def __repr__(self) -> str:
         return f"{type(self).__name__}('{self.instrument.id}', connected={self._device.IsOpen})"
 
-    def __enter__(self) -> CommProtocol:
+    def __enter__(self) -> Self:
         self.open()
         return self
 

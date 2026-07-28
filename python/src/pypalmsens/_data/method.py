@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import PalmSens
 
@@ -35,7 +35,7 @@ class Method:
         return self._psmethod.ShortName
 
     @property
-    def filename(self) -> Union[Path, None]:
+    def filename(self) -> Path | None:
         """Filename for the method if applicable."""
         fn = self._psmethod.MethodFilename
         if fn:

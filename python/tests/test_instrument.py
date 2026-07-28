@@ -220,7 +220,7 @@ def test_message_callback():
             pytest.skip('Device does not support MethodSCRIPT.')
 
         manager.register_receive_message_callback(callback)
-        method = method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
+        method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
 
         _ = manager.measure(method)
 

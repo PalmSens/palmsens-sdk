@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any, Awaitable, Protocol, Sequence
+from collections.abc import Awaitable, Sequence
+from typing import TYPE_CHECKING, Any, Protocol
 
 from .._types import MethodType, MethodTypeCompatible
 from .callback import Callback, CallbackEIS, Status
@@ -180,8 +181,8 @@ class InstrumentPoolAsync:
         if method._use_hardware_sync:
             return await self._measure_hw_sync(method, callbacks=callbacks)
 
-        for manager, callback in zip(self.managers, callbacks):
-            tasks.append(manager.measure(method, callback=callback, **kwargs))
+        for manager, _callback in zip(self.managers, callbacks):
+            tasks.append(manager.measure(method, callback=_callback, **kwargs))
 
         results = await asyncio.gather(*tasks)
         return results
@@ -214,12 +215,10 @@ class InstrumentPoolAsync:
                 'Hardware synchronization requires two channels or more in the pool'
             )
 
-        if len(set(manager.instrument.name for manager in self.managers)) > 1:
+        if len({manager.instrument.name for manager in self.managers}) > 1:
             raise ValueError(
-                (
-                    'Hardware synchronization is only supported when '
-                    'a single multichannel instrument is selected.'
-                )
+                'Hardware synchronization is only supported when '
+                'a single multichannel instrument is selected.'
             )
 
         for manager, callback in zip(self.managers, callbacks):
@@ -229,10 +228,8 @@ class InstrumentPoolAsync:
                 break
         else:
             raise ValueError(
-                (
-                    'Hardware synchronization requires the first channel '
-                    'of the multichannel instrument to be in the pool.'
-                )
+                'Hardware synchronization requires the first channel '
+                'of the multichannel instrument to be in the pool.'
             )
 
         for manager in self.managers:

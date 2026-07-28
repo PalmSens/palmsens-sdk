@@ -78,7 +78,7 @@ def load_stream_file(path: str | Path) -> Measurement:
             elif isinstance(parsed, EISDataMetadata):
                 eisdatas_metadata[parsed.id] = parsed
             else:
-                raise ValueError(f'Could not parse line {i}: {parsed}')
+                raise TypeError(f'Could not parse line {i}: {parsed}')
 
     assert measurement_metadata
 

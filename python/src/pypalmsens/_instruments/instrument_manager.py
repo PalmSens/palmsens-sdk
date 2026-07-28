@@ -137,7 +137,21 @@ class EventHandle:
     callback: Callable[..., None]
 
     def cancel(self) -> None:
-        self.emitter.off(self.event, self.callback)
+        self.emitter._listeners[self.event].remove(self.callback)
+
+
+@dataclass
+class EventHandleReceiveMessage(EventHandle):
+    def __post_init__(self):
+        self.emitter._comm.ClientConnection.ReceiveMessage += self._receive_message_handler
+
+    def _receive_message_handler(self, sender, message: str) -> None:
+        """Message handler helper function to schedule the callback."""
+        self.callback(message)
+
+    @override
+    def cancel(self):
+        self.emitter._comm.ClientConnection.ReceiveMessage -= self._receive_message_handler
 
 
 class InstrumentManager(CapabilitiesMixin):
@@ -163,7 +177,7 @@ class InstrumentManager(CapabilitiesMixin):
     ) -> EventHandle:
         """Add callback to event."""
         if event == 'receive_message':
-            self._comm.ClientConnection.ReceiveMessage += callback
+            return EventHandleReceiveMessage(emitter=self, event=event, callback=callback)
 
         self._listeners[event].append(callback)
         return EventHandle(emitter=self, event=event, callback=callback)
@@ -233,17 +247,6 @@ class InstrumentManager(CapabilitiesMixin):
             The function to call when triggered
         """
         return self.on('receive_message', callback=callback)
-
-    def off(
-        self,
-        event: AllowedEvents,
-        callback: Callable[..., None],
-    ):
-        """Remove callback for event."""
-        if event == 'receive_message':
-            self._comm.ClientConnection.ReceiveMessage -= callback
-
-        self._listeners[event].remove(callback)
 
     @override
     def __repr__(self):
@@ -440,9 +443,6 @@ class InstrumentManager(CapabilitiesMixin):
             time it was called. Each point is an instance of `ps.data.CallbackData`
             for non-impedimetric or  `ps.data.CallbackDataEIS`
             for impedimetric measurments.
-
-            For more advanced use cases, use `InstrumentManager.events`
-            to register callbacks to various events.
         stream: Path | str | None
             If defined, stream data directly to this file in JSON Lines text format
             (https://jsonlines.org). This option is useful for long-term measurements.
@@ -466,7 +466,7 @@ class InstrumentManager(CapabilitiesMixin):
                 method,
                 callback=callback,
                 stream=stream,
-                # events=self.events,
+                listeners=self._listeners,
             )
         )
 

@@ -304,14 +304,14 @@ For example, using [print][] as the callback prints the messages to the terminal
 
 ```python
 >>> method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"')
->>> manager.register_receive_message_callback(print)
+>>> handle = manager.on_receive_message(print)
 >>> await ps.measure(method)
 Running: MethodSCRIPT Sandbox
 Hello world
->>> manager.unregister_receive_message_callback()
+>>> handle.cancel()
 ```
 
-See [InstrumentManager][pypalmsens.InstrumentManager.register_receive_message_callback] and [InstrumentManagerAsync][pypalmsens.InstrumentManagerAsync.register_receive_message_callback] for more information.
+See [InstrumentManager][pypalmsens.InstrumentManager.on_receive_message] and [InstrumentManagerAsync][pypalmsens.InstrumentManagerAsync.on_receive_message] for more information.
 
 ## Manually controlling the device
 

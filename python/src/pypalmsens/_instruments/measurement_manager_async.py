@@ -29,95 +29,6 @@ from .shared import create_future
     kw_only=True,
     config=ConfigDict(
         validate_assignment=True,
-    ),
-)
-class MeasurementEvents:
-    """Register callbacks to measurement events.
-
-    For non-impedimetric measurements, use:
-
-    - `on_curve_begin`
-    - `on_curve_new_data`
-    - `on_curve_end`
-
-    For impedimetric measurements, use:
-
-    - `on_eis_data_begin`
-    - `on_eis_new_data`
-    - `on_eis_data_end`
-    """
-
-    on_error: Callable[[], None] | None = None
-    """Called when a connection or communication error occurs."""
-
-    on_measurement_begin: Callable[[Measurement], None] | None = None
-    """Called at the start of a measurement."""
-
-    on_measurement_end: Callable[[], None] | None = None
-    """Called at the end of a measurement."""
-
-    on_curve_begin: Callable[[Curve], None] | None = None
-    """Called at the start of a new curve (for EIS use on_eis_data_start)."""
-
-    on_curve_new_data: Callable[[CallbackData], None] | None = None
-    """Called when new data are received (for EIS use on_eis_new_data).
-
-    Note that the data are batched depending on available resources."""
-
-    on_curve_end: Callable[[Curve], None] | None = None
-    """Called at the end of a curve (for EIS use on_eis_data_end)."""
-
-    on_eis_data_begin: Callable[[EISData], None] | None = None
-    """Called at the start of a new EIS data set."""
-
-    on_eis_new_data: Callable[[CallbackDataEIS], None] | None = None
-    """Called when new eis data are received.
-
-    Data points are batched depending on available resources."""
-
-    on_eis_data_end: Callable[[], None] | None = None
-    """Called at the end of an EIS data set."""
-
-    setup: Callable[[], None] | None = None
-    """
-    Called before the measurement starts.
-
-    Use this to set up file resources, database connections, etc."""
-
-    teardown: Callable[[], None] | None = None
-    """Called after the measurement has ended, either succesfully or after an error occurs.
-
-    Use this to close files or clean up resources."""
-
-    def add_to(self, other: CallbackManager):
-        if self.on_error:
-            other.on_error.append(self.on_error)
-        if self.on_measurement_begin:
-            other.on_measurement_begin.append(self.on_measurement_begin)
-        if self.on_measurement_end:
-            other.on_measurement_end.append(self.on_measurement_end)
-        if self.on_curve_begin:
-            other.on_curve_begin.append(self.on_curve_begin)
-        if self.on_curve_new_data:
-            other.on_curve_new_data.append(self.on_curve_new_data)
-        if self.on_curve_end:
-            other.on_curve_end.append(self.on_curve_end)
-        if self.on_eis_data_begin:
-            other.on_eis_data_begin.append(self.on_eis_data_begin)
-        if self.on_eis_new_data:
-            other.on_eis_new_data.append(self.on_eis_new_data)
-        if self.on_eis_data_end:
-            other.on_eis_data_end.append(self.on_eis_data_end)
-        if self.setup:
-            other.setup.append(self.setup)
-        if self.teardown:
-            other.teardown.append(self.teardown)
-
-
-@dataclass(
-    kw_only=True,
-    config=ConfigDict(
-        validate_assignment=True,
         arbitrary_types_allowed=True,
     ),
 )
@@ -139,8 +50,8 @@ class JSONWriter:
         other.on_curve_new_data.append(self.on_curve_new_data)
         other.on_eis_data_begin.append(self.on_eis_data_begin)
         other.on_eis_new_data.append(self.on_eis_new_data)
-        other.setup.append(self.setup)
-        other.teardown.append(self.teardown)
+        other.on_measurement_setup.append(self.setup)
+        other.on_measurement_teardown.append(self.teardown)
 
     def on_measurement_begin(self, measurement: Measurement):
         assert self._stream
@@ -203,8 +114,21 @@ class CallbackManager:
     on_eis_data_begin: list[Callable[[EISData], None]] = Field(default_factory=list)
     on_eis_new_data: list[Callable[[CallbackDataEIS], None]] = Field(default_factory=list)
     on_eis_data_end: list[Callable[[], None]] = Field(default_factory=list)
-    setup: list[Callable[[], None]] = Field(default_factory=list)
-    teardown: list[Callable[[], None]] = Field(default_factory=list)
+    on_measurement_setup: list[Callable[[], None]] = Field(default_factory=list)
+    on_measurement_teardown: list[Callable[[], None]] = Field(default_factory=list)
+
+    def add_listeners(self, listeners: dict[str, list[Callable[..., None]]]) -> None:
+        self.on_error.extend(listeners['error'])
+        self.on_measurement_begin.extend(listeners['measurement_begin'])
+        self.on_measurement_end.extend(listeners['measurement_end'])
+        self.on_curve_begin.extend(listeners['curve_begin'])
+        self.on_curve_new_data.extend(listeners['curve_new_data'])
+        self.on_curve_end.extend(listeners['curve_end'])
+        self.on_eis_data_begin.extend(listeners['eis_data_begin'])
+        self.on_eis_new_data.extend(listeners['eis_new_data'])
+        self.on_eis_data_end.extend(listeners['eis_data_end'])
+        self.on_measurement_setup.extend(listeners['measurement_setup'])
+        self.on_measurement_teardown.extend(listeners['measurement_teardown'])
 
 
 class MeasurementManagerAsync:
@@ -292,7 +216,7 @@ class MeasurementManagerAsync:
     def _measurement_context(self) -> Generator[None, Any, Any]:
         """Context manager to manage the connection to the communication object."""
         try:
-            for setup in self.callbacks.setup:
+            for setup in self.callbacks.on_measurement_setup:
                 setup()
 
             self.setup()
@@ -308,7 +232,7 @@ class MeasurementManagerAsync:
         finally:
             self.teardown()
 
-            for teardown in self.callbacks.teardown:
+            for teardown in self.callbacks.on_measurement_teardown:
                 teardown()
 
     async def await_measurement(
@@ -339,7 +263,7 @@ class MeasurementManagerAsync:
         callback: Callback | CallbackEIS | None = None,
         sync_event: asyncio.Event | None = None,
         stream: Path | str | None = None,
-        events: MeasurementEvents | None = None,
+        listeners: dict[str, list[Callable[..., None]]] | None = None,
     ) -> Measurement:
         """Measure given method.
 
@@ -367,8 +291,8 @@ class MeasurementManagerAsync:
         if stream:
             JSONWriter(filename=stream).add_to(self.callbacks)
 
-        if events:
-            events.add_to(self.callbacks)
+        if listeners:
+            self.callbacks.add_listeners(listeners)
 
         if callback:
             if method.id in ('eis', 'geis', 'fis', 'fgis'):

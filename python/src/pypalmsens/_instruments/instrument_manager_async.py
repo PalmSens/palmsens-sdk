@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import sys
 import warnings
+from collections import defaultdict
 from collections.abc import AsyncGenerator, Callable, Coroutine
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -31,7 +32,7 @@ from .callback import Callback, CallbackEIS, CallbackStatus, Status
 from .capabilities import Capabilities, CapabilitiesInterface
 from .comm_protocol_async import CommProtocolAsync
 from .instrument import Instrument, discover_async
-from .measurement_manager_async import MeasurementEvents, MeasurementManagerAsync
+from .measurement_manager_async import MeasurementManagerAsync
 from .shared import MethodIncompatibleError, create_future, firmware_warning
 
 WINDOWS = sys.platform == 'win32'
@@ -252,10 +253,8 @@ class InstrumentManagerAsync(CapabilitiesMixin):
         self.instrument: Instrument = instrument
         """Instrument being managed by this class."""
 
-        self.events: MeasurementEvents = MeasurementEvents()
-        """Register functions to event hooks."""
-
         self._comm: CommManager
+        self._listeners: dict[str, Callable[..., None]] = defaultdict(list)
         self._status_callback: CallbackStatus
         self._receive_message_callback: Callable[[str], None]
         self._loop: asyncio.AbstractEventLoop
@@ -516,9 +515,6 @@ class InstrumentManagerAsync(CapabilitiesMixin):
             time it was called. Each point is an instance of `ps.data.CallbackData`
             for non-impedimetric or `ps.data.CallbackDataEIS`.
             for impedimetric measurments.
-
-            For more advanced use cases, use `InstrumentManagerAsync.events`
-            to register callbacks to various events.
         stream: Path | str | None
             If defined, stream data directly to this file in JSON Lines text format
             (https://jsonlines.org). This option is useful for long-term measurements.
@@ -538,7 +534,7 @@ class InstrumentManagerAsync(CapabilitiesMixin):
             callback=callback,
             stream=stream,
             sync_event=sync_event,
-            events=self.events,
+            listeners=self._listeners,
         )
 
     def _initiate_hardware_sync_follower_channel(

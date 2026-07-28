@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Any, Sequence
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any
 
 from .._types import MethodType
 from .callback import Callback, CallbackEIS, Status

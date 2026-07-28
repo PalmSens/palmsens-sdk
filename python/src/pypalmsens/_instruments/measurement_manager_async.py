@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from io import BufferedWriter
 from pathlib import Path
-from typing import Any, Callable, Generator
+from typing import Any
 
 import PalmSens
 import System
@@ -177,7 +178,7 @@ class JSONWriter:
         self._stream.flush()
 
     def setup(self):
-        self._stream = open(self.filename, 'wb')
+        self._stream = open(self.filename, 'wb')  # noqa: SIM115
 
     def teardown(self):
         assert self._stream

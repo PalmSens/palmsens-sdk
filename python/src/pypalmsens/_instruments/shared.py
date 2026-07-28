@@ -69,7 +69,7 @@ def firmware_warning(capabilities: DeviceCapabilities, /) -> None:
         enumDeviceType.EmStat4LR,
         enumDeviceType.EmStat4HR,
     ):
-        not_supported = int(floor(firmware_version * 10)) < int(floor(min_version * 10))
+        not_supported = floor(firmware_version * 10) < floor(min_version * 10)
     else:
         return
 

@@ -6,9 +6,11 @@ The following examples are also available in the [examples directory](https://gi
 
 This example shows how to load/save [methods][pypalmsens.load_method_file] and [measurements][pypalmsens.load_session_file], and how to [work with the the data](files.md).
 
+<!-- fmt: off -->
 ```python title="load_save_data.py"
 --8<-- "examples/load_save_data.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: load_save_data.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/load_save_data.py){ .md-button .md-button--primary}
 
@@ -20,9 +22,11 @@ This example shows how to load/save [methods][pypalmsens.load_method_file] and [
 
 This example shows how to [discover][pypalmsens.discover] devices, [establish a connection][pypalmsens.connect] and control an instrument manually using the [instrument manager][pypalmsens.InstrumentManager].
 
+<!-- fmt: off -->
 ```python title="manual_control.py"
 --8<-- "examples/manual_control.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: manual_control.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/manual_control.py){ .md-button .md-button--primary}
 
@@ -30,9 +34,11 @@ This example shows how to [discover][pypalmsens.discover] devices, [establish a 
 
 This example shows how to [discover][pypalmsens.discover] devices, [establish a connection][pypalmsens.connect] and control an instrument manually using the [asynchronous instrument manager][pypalmsens.InstrumentManagerAsync].
 
+<!-- fmt: off -->
 ```python title="manual_control_async.py"
 --8<-- "examples/manual_control_async.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: manual_control_async.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/manual_control_async.py){ .md-button .md-button--primary}
 
@@ -42,9 +48,11 @@ This example shows how to set up and run a [chronoamperometry][pypalmsens.Chrono
 
 For more information, see [Methods](methods.md).
 
+<!-- fmt: off -->
 ```python title="measurement_CA.py"
 --8<-- "examples/measurement_CA.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: measurement_CA.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_CA.py){ .md-button .md-button--primary}
 
@@ -54,9 +62,11 @@ This example shows how to set up and run a [chronoamperometry][pypalmsens.Chrono
 
 For more information, see [Methods](methods.md).
 
+<!-- fmt: off -->
 ```python title="measurement_CA_async.py"
 --8<-- "examples/measurement_CA_async.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: measurement_CA_async.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_CA_async.py){ .md-button .md-button--primary}
 
@@ -66,9 +76,11 @@ This example shows how to set up and run a [cyclic voltammetry][pypalmsens.Cycli
 
 For more information, see [Methods](methods.md).
 
+<!-- fmt: off -->
 ```python title="measurement_CV.py"
 --8<-- "examples/measurement_CV.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: measurement_CV.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_CV.py){ .md-button .md-button--primary}
 
@@ -78,9 +90,11 @@ This example shows how to set up and run a [EIS measurement][pypalmsens.Electroc
 
 For more information, see [Methods](methods.md).
 
+<!-- fmt: off -->
 ```python title="measurement_EIS.py"
 --8<-- "examples/measurement_EIS.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: measurement_EIS.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_EIS.py){ .md-button .md-button--primary}
 
@@ -89,9 +103,11 @@ For more information, see [Methods](methods.md).
 This example shows how to set up a [Mixed Mode][pypalmsens.MixedMode] measurement for a typicial charge / discharge cycle of a common Lithium battery.
 Note that the example has a reduced number of cycles and maximum run time.
 
+<!-- fmt: off -->
 ```python title="mixed_mode.py"
 --8<-- "examples/mixed_mode.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: mixed_mode.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/mixed_mode.py){ .md-button .md-button--primary}
 
@@ -101,9 +117,11 @@ This example shows how to set up and run a [MethodSCRIPT Sandbox measurement](me
 
 For more information, see [pypalmsens.MethodScript][].
 
+<!-- fmt: off -->
 ```python title="measurement_MethodSCRIPT.py"
 --8<-- "examples/measurement_MethodSCRIPT.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: measurement_MethodSCRIPT.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_MethodSCRIPT.py){ .md-button .md-button--primary}
 
@@ -111,9 +129,11 @@ For more information, see [pypalmsens.MethodScript][].
 
 This example shows how to set up a callback to read out the [Status][pypalmsens.data.Status] (current/potential) and store the pretreatment data using the [idle status events](measuring/#idle-status-updates).
 
+<!-- fmt: off -->
 ```python title="measurement_status_callback.py"
 --8<-- "examples/measurement_status_callback.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: measurement_status_callback.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_status_callback.py){ .md-button .md-button--primary}
 
@@ -121,9 +141,11 @@ This example shows how to set up a callback to read out the [Status][pypalmsens.
 
 This example shows how to set up and run a [chronoamperometry][pypalmsens.ChronoAmperometry] measurement and write the results to a CSV file in real-time using [callbacks][pypalmsens.data.CallbackData].
 
+<!-- fmt: off -->
 ```python title="measurement_stream_to_csv.py"
 --8<-- "examples/measurement_stream_to_csv.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: measurement_stream_to_csv.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_stream_to_csv.py){ .md-button .md-button--primary}
 
@@ -131,9 +153,11 @@ This example shows how to set up and run a [chronoamperometry][pypalmsens.Chrono
 
 This example shows how to set up and run a [square wave voltammetry][pypalmsens.SquareWaveVoltammetry] measurement [versus OCP][pypalmsens.settings.VersusOCP].
 
+<!-- fmt: off -->
 ```python title="measurement_SWV_vs_OCP.py"
 --8<-- "examples/measurement_SWV_vs_OCP.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: measurement_SWV_vs_OCP.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_SWV_vs_OCP.py){ .md-button .md-button--primary}
 
@@ -141,9 +165,11 @@ This example shows how to set up and run a [square wave voltammetry][pypalmsens.
 
 This example shows how to [set up and control a multiplexer][pypalmsens.settings.Multiplexer] and run consecutive and alternating multiplexer measurments.
 
+<!-- fmt: off -->
 ```python title="multiplexer.py"
 --8<-- "examples/multiplexer.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: multiplexer.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/multiplexer.py){ .md-button .md-button--primary}
 
@@ -155,9 +181,11 @@ This pattern is quite flexible. For the [CA][pypalmsens.ChronoAmperometry] examp
 
 See the callback classes for an overview of which data are available: [pypalmsens.data.CallbackData][] and [pypalmsens.data.CallbackDataEIS][].
 
+<!-- fmt: off -->
 ```python title="measurement_abort.py"
 --8<-- "examples/measurement_abort.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: measurement_abort.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/measurement_abort.py){ .md-button .md-button--primary}
 
@@ -168,9 +196,11 @@ This example shows how to [manage a pool of of instruments](measuring/#multichan
 
 Every channel gets its own [callback](measuring/#callback), using [functools.partial][] to attach some metadata (the channel number) to your callback. Note that the callbacks are completely optional.
 
+<!-- fmt: off -->
 ```python title="multichannel_measurement.py"
 --8<-- "examples/multichannel_measurement.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: multichannel_measurement.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/multichannel_measurement.py){ .md-button .md-button--primary}
 
@@ -178,9 +208,11 @@ Every channel gets its own [callback](measuring/#callback), using [functools.par
 
 This example shows how to connect to a set up a [manage a pool of of instruments](measuring/#multichannel-measurements) using [pypalmsens.InstrumentPoolAsync][], and use a custom callback to automatically store data to a csv file in parallel.
 
+<!-- fmt: off -->
 ```python title="multichannel_csv_callback.py"
 --8<-- "examples/multichannel_csv_callback.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: multichannel_csv_callback.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/multichannel_csv_callback.py){ .md-button .md-button--primary}
 
@@ -188,9 +220,11 @@ This example shows how to connect to a set up a [manage a pool of of instruments
 
 This example shows how to run and set up a sequence of measurements on a [collection of channels](measuring.md#multichannel-measurements) simultaneously.
 
+<!-- fmt: off -->
 ```python title="multichannel_custom_loop.py"
 --8<-- "examples/multichannel_custom_loop.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: multichannel_custom_loop.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/multichannel_custom_loop.py){ .md-button .md-button--primary}
 
@@ -215,8 +249,10 @@ All instruments are prepared and put in a waiting state.
 The measurements are started via a hardware sync trigger on channel 1.
 Only channel 1 (the main channel) has hardware required to trigger the other channels.
 
+<!-- fmt: off -->
 ```python title="multichannel_HW_sync.py"
 --8<-- "examples/multichannel_HW_sync.py"
 ```
+<!-- fmt: on -->
 
 [:fontawesome-solid-download: multichannel_HW_sync.py](https://raw.githubusercontent.com/palmsens/palmsens-sdk/refs/heads/main/python/examples/multichannel_HW_sync.py){ .md-button .md-button--primary}

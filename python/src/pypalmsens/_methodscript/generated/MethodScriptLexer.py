@@ -1,12 +1,13 @@
 # mypy: ignore_errors
 # Generated from MethodScriptLexer.g4 by ANTLR 4.13.1
-from antlr4 import *
-from io import StringIO
 import sys
+
+from antlr4 import *
+
 if sys.version_info[1] > 5:
     from typing import TextIO
 else:
-    from typing.io import TextIO
+    from typing import TextIO
 
 
 def serializedATN():
@@ -1015,7 +1016,7 @@ class MethodScriptLexer(Lexer):
     FSTRING_INTERP_END = 168
     FSTRING_WS_INTERP = 169
 
-    channelNames = [ u"DEFAULT_TOKEN_CHANNEL", u"HIDDEN" ]
+    channelNames = [ "DEFAULT_TOKEN_CHANNEL", "HIDDEN" ]
 
     modeNames = [ "DEFAULT_MODE", "FSTRING_MODE", "FSTRING_INTERP_MODE" ]
 

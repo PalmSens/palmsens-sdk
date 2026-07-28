@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 async def manager():
     instruments = await ps.discover_async()
     async with await ps.connect_async(instruments[0]) as mgr:
-        logger.warning('Connected to %s' % mgr.instrument.id)
+        logger.warning('Connected to %s', mgr.instrument.id)
         yield mgr
 
 

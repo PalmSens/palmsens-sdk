@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import warnings
-from collections.abc import Generator, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Callable, final
+from collections.abc import Callable, Iterator, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, final
 
 from PalmSens.Plottables import Curve as PSCurve
 from typing_extensions import override
@@ -89,7 +89,7 @@ class DataSet(Mapping[str, DataArray]):
         return self._mapping[key]
 
     @override
-    def __iter__(self) -> Generator[str, None, None]:
+    def __iter__(self) -> Iterator[str]:
         # Note that iterating over self.psdataset also returns the 'hidden' debug arrays
         # `.GetDataArrays()` excludes those.
         yield from self._mapping
@@ -186,17 +186,17 @@ class DataSet(Mapping[str, DataArray]):
     @property
     def array_types(self) -> set[AllowedArrayTypes]:
         """Return unique set of array types for arrays in dataset."""
-        return set(array.type for array in self.values())
+        return {array.type for array in self.values()}
 
     @property
     def array_names(self) -> set[str]:
         """Return unique set of names for arrays in dataset."""
-        return set(array.name for array in self.values())
+        return {array.name for array in self.values()}
 
     @property
     def array_quantities(self) -> set[str]:
         """Return unique set of quantities for arrays in dataset."""
-        return set(arr.quantity for arr in self.values())
+        return {arr.quantity for arr in self.values()}
 
     def to_dict(self) -> dict[str, list[Any]]:
         """Return dataset as key/value mapping.

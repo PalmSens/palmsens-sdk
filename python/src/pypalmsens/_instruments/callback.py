@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Generator
 from dataclasses import dataclass, field
-from typing import Any, Generator, Literal, Protocol
+from typing import Any, Literal, Protocol
 
 import PalmSens
 from PalmSens.Comm import StatusEventArgs

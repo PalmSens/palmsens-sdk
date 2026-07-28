@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
         (['a'], 'a'),
         (['a', 'b'], 'a/b'),
         (['a', 'b/c.x'], 'a/b/c.x'),
-        (['a', 'b/c.x'], 'a/b/c.x'),
         (['a/b', 'c.x'], 'a/b/c.x'),
         (['', 'c.x'], 'c.x'),
         (['a/b', ''], 'a/b'),
@@ -37,7 +36,7 @@ def test_device_path(parts, expected):
 def fs():
     instruments = ps.discover()
     with ps.connect(instruments[0]) as mgr:
-        logger.warning('Connected to %s' % mgr.instrument.id)
+        logger.warning('Connected to %s', mgr.instrument.id)
         yield ps.DeviceFileSystem(mgr)
 
 

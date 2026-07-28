@@ -10,9 +10,9 @@ from .method import Method
 from .peak import Peak
 
 __all__ = [
-    'Curve',
     'CurrentArray',
     'CurrentReading',
+    'Curve',
     'DataArray',
     'DataSet',
     'DeviceInfo',

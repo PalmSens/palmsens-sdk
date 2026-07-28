@@ -366,7 +366,7 @@ class CommProtocolAsync:
             if exc.error_code != '0006':
                 raise
 
-            time.sleep(0.1)
+            await asyncio.sleep(0.1)
         else:
             if response == 'Z\n':
                 _ = await self.read_until('\n\n')

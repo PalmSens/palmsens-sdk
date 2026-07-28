@@ -154,21 +154,13 @@ class InstrumentManager(CapabilitiesMixin):
         try:
             yield self._comm
 
-        except Exception:
-            raise
-
         finally:
             if self._comm.ClientConnection.Semaphore.CurrentCount == 0:
                 _ = self._comm.ClientConnection.Semaphore.Release()
 
     def is_connected(self) -> bool:
         """Return True if an instrument connection exists."""
-        try:
-            self._comm
-        except AttributeError:
-            return False
-        else:
-            return True
+        return hasattr(self, '_comm')
 
     def ensure_connection(self):
         """Raises connection error if the instrument is not connected."""
@@ -430,7 +422,7 @@ class InstrumentManager(CapabilitiesMixin):
             The complete response from the device.
         """
         if not isinstance(self._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS):
-            raise ValueError(
+            raise TypeError(
                 'The Communication Protocol is only supported on MethodSCRIPT devices.'
             )
 

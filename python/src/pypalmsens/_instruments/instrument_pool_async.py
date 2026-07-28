@@ -181,8 +181,8 @@ class InstrumentPoolAsync:
         if method._use_hardware_sync:
             return await self._measure_hw_sync(method, callbacks=callbacks)
 
-        for manager, callback in zip(self.managers, callbacks):
-            tasks.append(manager.measure(method, callback=callback, **kwargs))
+        for manager, _callback in zip(self.managers, callbacks):
+            tasks.append(manager.measure(method, callback=_callback, **kwargs))
 
         results = await asyncio.gather(*tasks)
         return results

@@ -178,7 +178,7 @@ class JSONWriter:
         self._stream.flush()
 
     def setup(self):
-        self._stream = open(self.filename, 'wb')
+        self._stream = open(self.filename, 'wb')  # noqa: SIM115
 
     def teardown(self):
         assert self._stream

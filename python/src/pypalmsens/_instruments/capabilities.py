@@ -340,7 +340,7 @@ class CapabilitiesInterface(BaseModel):
         for number in self.comm.Capabilities.SupportedMethods:
             try:
                 id = PalmSens.Method.FromTechniqueNumber(number).MethodID
-            except Exception:
+            except System.Exception:
                 pass
             else:
                 method_ids.append(id)

@@ -14,6 +14,6 @@ EXAMPLES = [pytest.param(path, id=path.stem) for path in EXAMPLES_DIR.glob('*.py
 def test_examples(path: Path):
     assert path.exists(), f'Missing {path}'
 
-    ret = sp.run([sys.executable, path])
+    ret = sp.run([sys.executable, path], check=False)
 
     assert ret.returncode == 0

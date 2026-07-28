@@ -339,7 +339,7 @@ class Curve:
         import matplotlib.pyplot as plt
 
         if not ax:
-            fig, ax = plt.subplots()
+            _, ax = plt.subplots()
 
         _ = ax.plot(self.x_array, self.y_array, label=self.title, **plot_kwargs)
         _ = ax.set_xlabel(f'{self.x_label} ({self.x_unit})')

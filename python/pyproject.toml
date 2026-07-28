@@ -90,19 +90,22 @@ log_cli_level = "INFO"
 src = ['src/pypalmsens']
 line-length = 96
 target-version = "py310"
-exclude = ["src/PalmSens-stubs"]
-
+exclude = [
+    "src/PalmSens-stubs",
+    "src/pypalmsens/_methodscript/generated",
+]
 
 [tool.ruff.lint]
 # Enable Pyflakes `E` and `F` codes by default.
-select = [
-	"F",  # Pyflakes
-	"E",  # pycodestyle (error)
-	"W",  # pycodestyle (warning)
-    "I",  # isort
-]
+# select = [
+# 	"F",  # Pyflakes
+# 	"E",  # pycodestyle (error)
+# 	"W",  # pycodestyle (warning)
+#     "I",  # isort
+# ]
 ignore = [
-    "E501",  # line-too-long
+    "E501",   # line-too-long
+    "RUF012", # Mutable default value for class attribute
 ]
 
 

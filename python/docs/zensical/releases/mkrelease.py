@@ -9,7 +9,7 @@ from textwrap import dedent
 
 def get_releases(name: str = 'python') -> list[str]:
     cmd = ['gh', 'release', 'list']
-    p = sp.run(cmd, capture_output=True)
+    p = sp.run(cmd, capture_output=True, check=True)
     lines = p.stdout.decode().splitlines()
 
     releases = []
@@ -35,7 +35,7 @@ for release in releases:
             data = json.load(f)
     except OSError:
         cmd = f'gh release view {release} --json name,body,url,tagName,publishedAt'.split()
-        p = sp.run(cmd, capture_output=True)
+        p = sp.run(cmd, capture_output=True, check=True)
         payload = p.stdout.decode()
 
         with open(f'{release}.json', 'w') as f:

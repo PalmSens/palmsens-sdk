@@ -215,7 +215,7 @@ class InstrumentPoolAsync:
                 'Hardware synchronization requires two channels or more in the pool'
             )
 
-        if len(set(manager.instrument.name for manager in self.managers)) > 1:
+        if len({manager.instrument.name for manager in self.managers}) > 1:
             raise ValueError(
                 'Hardware synchronization is only supported when '
                 'a single multichannel instrument is selected.'

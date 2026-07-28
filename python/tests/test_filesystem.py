@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
         (['a'], 'a'),
         (['a', 'b'], 'a/b'),
         (['a', 'b/c.x'], 'a/b/c.x'),
-        (['a', 'b/c.x'], 'a/b/c.x'),
         (['a/b', 'c.x'], 'a/b/c.x'),
         (['', 'c.x'], 'c.x'),
         (['a/b', ''], 'a/b'),

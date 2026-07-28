@@ -186,17 +186,17 @@ class DataSet(Mapping[str, DataArray]):
     @property
     def array_types(self) -> set[AllowedArrayTypes]:
         """Return unique set of array types for arrays in dataset."""
-        return set(array.type for array in self.values())
+        return {array.type for array in self.values()}
 
     @property
     def array_names(self) -> set[str]:
         """Return unique set of names for arrays in dataset."""
-        return set(array.name for array in self.values())
+        return {array.name for array in self.values()}
 
     @property
     def array_quantities(self) -> set[str]:
         """Return unique set of quantities for arrays in dataset."""
-        return set(arr.quantity for arr in self.values())
+        return {arr.quantity for arr in self.values()}
 
     def to_dict(self) -> dict[str, list[Any]]:
         """Return dataset as key/value mapping.

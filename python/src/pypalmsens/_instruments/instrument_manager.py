@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import warnings
+from collections import defaultdict
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 from time import sleep
+from typing import Literal
 
 import clr
 import PalmSens
@@ -23,12 +26,12 @@ from .._types import (
     AllowedPotentialRanges,
     MethodTypeCompatible,
 )
-from ..data import Measurement
-from .callback import Callback, CallbackEIS, Status
+from ..data import Curve, EISData, Measurement
+from .callback import Callback, CallbackData, CallbackDataEIS, CallbackEIS, Status
 from .comm_protocol import CommProtocol
 from .instrument import Instrument, discover
 from .instrument_manager_async import CapabilitiesMixin
-from .measurement_manager_async import MeasurementEvents, MeasurementManagerAsync
+from .measurement_manager_async import MeasurementManagerAsync
 from .shared import firmware_warning
 
 warnings.simplefilter('default')
@@ -110,6 +113,33 @@ def measure(
     return measurement
 
 
+AllowedEvents = Literal[
+    'error',
+    'measurement_begin',
+    'measurement_end',
+    'curve_begin',
+    'curve_new_data',
+    'curve_end',
+    'eis_data_begin',
+    'eis_new_data',
+    'eis_data_end',
+    'measurement_setup',
+    'measurement_teardown',
+    'receive_message',
+    'receive_status',
+]
+
+
+@dataclass
+class EventHandle:
+    emitter: InstrumentManager
+    event: AllowedEvents
+    callback: Callable[..., None]
+
+    def cancel(self) -> None:
+        self.emitter.off(self.event, self.callback)
+
+
 class InstrumentManager(CapabilitiesMixin):
     """Instrument manager for PalmSens instruments.
 
@@ -123,11 +153,97 @@ class InstrumentManager(CapabilitiesMixin):
         self.instrument: Instrument = instrument
         """Instrument being managed by this class."""
 
-        self.events: MeasurementEvents = MeasurementEvents()
-        """Register functions to event hooks."""
-
-        self._receive_message_callback: Callable[[str], None]
+        self._listeners: dict[str, list[Callable[..., None]]] = defaultdict(list)
         self._comm: CommManager
+
+    def on(
+        self,
+        event: AllowedEvents,
+        callback: Callable[..., None],
+    ) -> EventHandle:
+        """Add callback to event."""
+        if event == 'receive_message':
+            self._comm.ClientConnection.ReceiveMessage += callback
+
+        self._listeners[event].append(callback)
+        return EventHandle(emitter=self, event=event, callback=callback)
+
+    def on_error(self, callback: Callable[..., None]) -> EventHandle:
+        """Called when a connection or communication error occurs."""
+        return self.on('error', callback=callback)
+
+    def on_measurement_begin(self, callback: Callable[[Measurement], None]) -> EventHandle:
+        """Called at the start of a measurement."""
+        return self.on('measurement_begin', callback=callback)
+
+    def on_measurement_end(self, callback: Callable[..., None]) -> EventHandle:
+        """Called at the end of a measurement."""
+        return self.on('measurement_end', callback=callback)
+
+    def on_curve_begin(self, callback: Callable[[Curve], None]) -> EventHandle:
+        """Called at the start of a new curve (for EIS use on_eis_data_start)."""
+        return self.on('curve_begin', callback=callback)
+
+    def on_curve_new_data(self, callback: Callable[[CallbackData], None]) -> EventHandle:
+        """Called when new data are received (for EIS use on_eis_new_data).
+
+        Note that the data are batched depending on available resources."""
+        return self.on('curve_new_data', callback=callback)
+
+    def on_curve_end(self, callback: Callable[[Curve], None]) -> EventHandle:
+        """Called at the end of a curve (for EIS use on_eis_data_end)."""
+        return self.on('curve_end', callback=callback)
+
+    def on_eis_data_begin(self, callback: Callable[[EISData], None]) -> EventHandle:
+        """Called at the start of a new EIS data set."""
+        return self.on('eis_data_begin', callback=callback)
+
+    def on_eis_new_data(self, callback: Callable[[CallbackDataEIS], None]) -> EventHandle:
+        """Called when new eis data are received.
+
+        Data points are batched depending on available resources."""
+        return self.on('eis_new_data', callback=callback)
+
+    def on_eis_data_end(self, callback: Callable[..., None]) -> EventHandle:
+        """Called at the end of an EIS data set."""
+        return self.on('eis_data_end', callback=callback)
+
+    def on_measurement_setup(self, callback: Callable[..., None]) -> EventHandle:
+        """
+        Called before the measurement starts.
+
+        Use this to set up file resources, database connections, etc."""
+        return self.on('measurement_setup', callback=callback)
+
+    def on_measurement_teardown(self, callback: Callable[..., None]) -> EventHandle:
+        """Called after the measurement has ended, either succesfully or after an error occurs.
+
+        Use this to close files or clean up resources."""
+        return self.on('measurement_teardown', callback=callback)
+
+    def on_receive_message(self, callback: Callable[[str], None], /):
+        """Register callback when a message is received.
+
+        The callback is triggered, for example, when a method is started,
+        or when `send_string` is called in MethodSCRIPT.
+
+        Parameters
+        ----------
+        callback: Callable[[str], None]
+            The function to call when triggered
+        """
+        return self.on('receive_message', callback=callback)
+
+    def off(
+        self,
+        event: AllowedEvents,
+        callback: Callable[..., None],
+    ):
+        """Remove callback for event."""
+        if event == 'receive_message':
+            self._comm.ClientConnection.ReceiveMessage -= callback
+
+        self._listeners[event].remove(callback)
 
     @override
     def __repr__(self):
@@ -305,29 +421,6 @@ class InstrumentManager(CapabilitiesMixin):
 
         return serial
 
-    def register_receive_message_callback(self, callback: Callable[[str], None], /):
-        """Register callback when a message is received.
-
-        The callback is triggered, for example, when a method is started,
-        or when `send_string` is called in MethodSCRIPT.
-
-        Parameters
-        ----------
-        callback: Callable[[str], None]
-            The function to call when triggered
-        """
-        self._receive_message_callback = callback
-        self._comm.ClientConnection.ReceiveMessage += self._receive_message_handler
-
-    def unregister_receive_message_callback(self):
-        """Unregister callback from message events."""
-        self._comm.ClientConnection.ReceiveMessage -= self._receive_message_handler
-        del self._receive_message_callback
-
-    def _receive_message_handler(self, sender, message: str) -> None:
-        """Message handler helper function to schedule the callback."""
-        self._receive_message_callback(message)
-
     def measure(
         self,
         method: MethodTypeCompatible,
@@ -373,7 +466,7 @@ class InstrumentManager(CapabilitiesMixin):
                 method,
                 callback=callback,
                 stream=stream,
-                events=self.events,
+                # events=self.events,
             )
         )
 

@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import asyncio
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Literal
 
+from System.Threading.Tasks import Task
 from typing_extensions import override
 
 from ..data import Curve, EISData, Measurement
-from .callback import CallbackData, CallbackDataEIS
+from .callback import CallbackData, CallbackDataEIS, Status
 
 AllowedEvents = Literal[
     'error',
@@ -39,16 +41,74 @@ class EventHandle:
 
 @dataclass
 class EventHandleReceiveMessage(EventHandle):
+    _loop: asyncio.AbstractEventLoop | None = None
+
     def __post_init__(self):
-        self.emitter._comm.ClientConnection.ReceiveMessage += self._receive_message_handler
+        try:
+            self._loop = asyncio.get_running_loop()
+        except RuntimeError:
+            handler = self._receive_message_handler
+        else:
+            handler = self._receive_message_handler_async
+
+        self.emitter._comm.ClientConnection.ReceiveMessage += handler
 
     def _receive_message_handler(self, sender, message: str) -> None:
         """Message handler helper function to schedule the callback."""
         self.callback(message)
 
+    def _receive_message_handler_async(self, sender, message: str) -> None:
+        """Async message handler helper function to schedule the callback."""
+        assert self._loop
+        _ = self._loop.call_soon_threadsafe(self.callback, message)
+        return Task.CompletedTask
+
     @override
     def cancel(self):
-        self.emitter._comm.ClientConnection.ReceiveMessage -= self._receive_message_handler
+        if self._loop:
+            self.emitter._comm.ClientConnection.ReceiveMessage -= (
+                self._receive_message_handler_async
+            )
+        else:
+            self.emitter._comm.ClientConnection.ReceiveMessage -= self._receive_message_handler
+
+
+@dataclass
+class EventHandleStatus(EventHandle):
+    _loop: asyncio.AbstractEventLoop | None = None
+
+    def __post_init__(self):
+        try:
+            self._loop = asyncio.get_running_loop()
+        except RuntimeError:
+            handler = self._idle_status_handler
+        else:
+            handler = self._idle_status_handler_async
+
+        self.emitter._comm.ClientConnection.ReceiveMessage += handler
+
+    def _idle_status_handler(self, sender, args) -> None:
+        """Message handler helper function to schedule the callback."""
+        status = Status._from_event_args(args)
+
+        self.callback(status)
+
+    def _idle_status_handler_async(self, sender, args) -> None:
+        """Async message handler helper function to schedule the callback."""
+        status = Status._from_event_args(args)
+
+        assert self._loop
+        _ = self._loop.call_soon_threadsafe(self.callback, status)
+        return Task.CompletedTask
+
+    @override
+    def cancel(self):
+        if self._loop:
+            handler = self._idle_status_handler_async
+        else:
+            handler = self._idle_status_handler
+
+        self.emitter._comm.ClientConnection.ReceiveMessage -= handler
 
 
 class EventsMixin:
@@ -132,3 +192,16 @@ class EventsMixin:
             The function to call when triggered
         """
         return self.on('receive_message', callback=callback)
+
+    def on_status(self, callback: Callable[[Status], None], /):
+        """Register callback for idle status events.
+
+        The callback is triggered when the current/potential are updated
+        durinig idle state or pretreatment phases.
+
+        Parameters
+        ----------
+        callback: Callable[[Status], None]
+            The function to call when triggered
+        """
+        return self.on('receive_status', callback=callback)

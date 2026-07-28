@@ -3,8 +3,7 @@ from __future__ import annotations
 import asyncio
 import sys
 import warnings
-from collections import defaultdict
-from collections.abc import AsyncGenerator, Callable, Coroutine
+from collections.abc import AsyncGenerator, Coroutine
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
@@ -12,7 +11,6 @@ from typing import Any
 import clr
 import PalmSens
 from PalmSens.Comm import CommManager, MuxType
-from System.Threading.Tasks import Task
 from typing_extensions import override
 
 from .._converters import (
@@ -30,6 +28,7 @@ from ..data import Measurement
 from .callback import Callback, CallbackEIS, CallbackStatus, Status
 from .capabilities_mixin import CapabilitiesMixin
 from .comm_protocol_async import CommProtocolAsync
+from .events_mixin import EventsMixin
 from .instrument import Instrument, discover_async
 from .measurement_manager_async import MeasurementManagerAsync
 from .shared import create_future, firmware_warning
@@ -111,7 +110,7 @@ async def measure_async(
     return measurement
 
 
-class InstrumentManagerAsync(CapabilitiesMixin):
+class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
     """Asynchronous instrument manager for PalmSens instruments.
 
     Parameters
@@ -121,13 +120,13 @@ class InstrumentManagerAsync(CapabilitiesMixin):
     """
 
     def __init__(self, instrument: Instrument):
+        super().__init__()
+
         self.instrument: Instrument = instrument
         """Instrument being managed by this class."""
 
         self._comm: CommManager
-        self._listeners: dict[str, Callable[..., None]] = defaultdict(list)
         self._status_callback: CallbackStatus
-        self._receive_message_callback: Callable[[str], None]
         self._loop: asyncio.AbstractEventLoop
 
     @override
@@ -313,58 +312,6 @@ class InstrumentManagerAsync(CapabilitiesMixin):
             )
 
         return serial.ToString()
-
-    def register_status_callback(self, callback: CallbackStatus, /):
-        """Register callback for idle status events.
-
-        The callback is triggered when the current/potential are updated
-        durinig idle state or pretreatment phases.
-
-        Parameters
-        ----------
-        callback: CallbackStatus
-            The function to call when triggered
-        """
-        self._status_callback = callback
-        self._loop = asyncio.get_running_loop()
-        self._comm.ReceiveStatusAsync += self._idle_status_handler
-
-    def unregister_status_callback(self):
-        """Unregister callback from idle status events."""
-        self._comm.ReceiveStatusAsync -= self._idle_status_handler
-        del self._status_callback
-
-    def _idle_status_handler(self, sender, args) -> Task.CompletedTask:
-        """Event handler helper function to schedule the callback."""
-        status = Status._from_event_args(args)
-
-        _ = self._loop.call_soon_threadsafe(self._status_callback, status)
-        return Task.CompletedTask
-
-    def register_receive_message_callback(self, callback: Callable[[str], None], /):
-        """Register callback when a message is received.
-
-        The callback is triggered, for example, when a method is started,
-        or when `send_string` is called in MethodSCRIPT.
-
-        Parameters
-        ----------
-        callback: Callable[[str], None]
-            The function to call when triggered
-        """
-        self._receive_message_callback = callback
-        self._loop = asyncio.get_running_loop()
-        self._comm.ClientConnection.ReceiveMessage += self._receive_message_handler
-
-    def unregister_receive_message_callback(self):
-        """Unregister callback from message events."""
-        self._comm.ClientConnection.ReceiveMessage -= self._receive_message_handler
-        del self._receive_message_callback
-
-    def _receive_message_handler(self, sender, message: str) -> Task.CompletedTask:
-        """Message handler helper function to schedule the callback."""
-        _ = self._loop.call_soon_threadsafe(self._receive_message_callback, message)
-        return Task.CompletedTask
 
     async def measure(
         self,

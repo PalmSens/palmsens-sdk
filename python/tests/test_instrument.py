@@ -244,13 +244,13 @@ async def test_message_callback_async():
         if 'ms' not in manager.supported_methods():
             pytest.skip('Device does not support MethodSCRIPT.')
 
-        manager.register_receive_message_callback(callback)
+        handle = manager.on_receive_message(callback)
 
         method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
 
         _ = await manager.measure(method)
 
-        manager.unregister_receive_message_callback()
+        handle.cancel()
 
     assert len(points) == 2
 

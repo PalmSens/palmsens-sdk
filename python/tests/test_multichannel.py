@@ -4,8 +4,8 @@ import pytest
 import pytest_asyncio
 
 import pypalmsens as ps
-from pypalmsens._data.measurement import Measurement
-from pypalmsens._instruments import Instrument
+from pypalmsens import Instrument
+from pypalmsens.data import Measurement
 
 
 @pytest.fixture

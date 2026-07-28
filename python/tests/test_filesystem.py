@@ -8,7 +8,6 @@ from unittest import mock
 import pytest
 
 import pypalmsens as ps
-from pypalmsens._instruments import DevicePath
 
 if True:
     from System import DateTime
@@ -30,7 +29,7 @@ logger = logging.getLogger(__name__)
     ),
 )
 def test_device_path(parts, expected):
-    p = DevicePath(*parts)
+    p = ps.DevicePath(*parts)
     assert p.__fspath__() == expected
 
 
@@ -44,7 +43,7 @@ def fs():
 
 @pytest.mark.instrument
 def test_truediv(fs):
-    assert fs / 'Measurements' == DevicePath('Measurements')
+    assert fs / 'Measurements' == ps.DevicePath('Measurements')
 
 
 @pytest.mark.instrument
@@ -164,4 +163,4 @@ def test_listdir(fs):
 @pytest.mark.instrument
 def test_walk(fs):
     for item in fs.walk():
-        assert isinstance(item, DevicePath)
+        assert isinstance(item, ps.DevicePath)

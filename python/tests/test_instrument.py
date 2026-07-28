@@ -9,7 +9,6 @@ import pytest
 from PalmSens.Comm import enumDeviceType
 
 import pypalmsens as ps
-from pypalmsens._instruments.instrument import Instrument
 from pypalmsens._instruments.shared import firmware_warning
 from pypalmsens.data import Measurement
 
@@ -105,14 +104,14 @@ def test_connect_serial_port():
 
     portname = instrument.device.portname
 
-    new_instrument = Instrument.from_port(portname)
+    new_instrument = ps.Instrument.from_port(portname)
     with ps.connect(new_instrument) as manager:
         assert manager.instrument.name == portname
         assert manager.get_instrument_serial()
 
 
 def test_connect_serial_port_fail():
-    instrument = Instrument.from_port('COM_IMAGINARY')
+    instrument = ps.Instrument.from_port('COM_IMAGINARY')
     with pytest.raises(IOError):
         _ = ps.connect(instrument)
 

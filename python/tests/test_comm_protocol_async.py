@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 async def comm():
     instruments = await ps.discover_async()
     async with ps.CommProtocolAsync(instruments[0]) as comm_protocol:
-        logger.warning('Connected to %s' % comm_protocol.instrument.id)
+        logger.warning('Connected to %s', comm_protocol.instrument.id)
         yield comm_protocol
 
 

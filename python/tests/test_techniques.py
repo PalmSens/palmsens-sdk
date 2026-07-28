@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 def manager():
     instruments = ps.discover()
     with ps.connect(instruments[0]) as mgr:
-        logger.warning('Connected to %s' % mgr.instrument.id)
+        logger.warning('Connected to %s', mgr.instrument.id)
         yield mgr
 
 

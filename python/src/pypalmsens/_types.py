@@ -4,6 +4,23 @@ from typing import Any, Literal, Protocol
 
 import PalmSens
 
+AllowedEvents = Literal[
+    'error',
+    'measurement_begin',
+    'measurement_end',
+    'curve_begin',
+    'curve_new_data',
+    'curve_end',
+    'eis_data_begin',
+    'eis_new_data',
+    'eis_data_end',
+    'measurement_setup',
+    'measurement_teardown',
+    'receive_message',
+    'receive_status',
+]
+"""Possible names for instrument and measurement events."""
+
 AllowedTimingStatus = Literal['Unknown', 'OK', 'OverStep']
 """Possible values for measurement timing status."""
 

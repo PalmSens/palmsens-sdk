@@ -256,12 +256,12 @@ The event is fired every second and every 0.25 seconds during pretreatment.
 For example, using print as the callback prints the status to the terminal:
 
 ```python
->>> manager.register_status_callback(print)
+>>> handle = manager.on_receive_status(print)
 >>> await asyncio.sleep(3)  # (1)!
 Idle: {'current': '0.000 * 1uA', 'potential': '0.527 V'}
 Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
 Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
->>> manager.unregister_status_callback()
+>>> handle.cancel()
 ```
 
 1. Sleep is used here to simulate another task
@@ -275,7 +275,7 @@ For example, to print data during the pretreatment phases:
 ...     if status.device_state == 'Pretreatment':
 ...         print(f'{status.pretreatment_phase}: potential={status.potential:.3f} V, current={status.current:.3f} μA')
 
->>> manager.register_status_callback(callback)
+>>> handle = manager.on_receive_status(callback)
 >>> await manager.measure(ps.ChronoAmperometry(
 ...     pretreatment={'conditioning_time':2, 'conditioning_potential': 0.5},
 ... ))
@@ -283,7 +283,7 @@ Conditioning: potential=0.500 V, current=0.100 μA
 Conditioning: potential=0.500 V, current=0.101 μA
 ...
 Conditioning: potential=0.500 V, current=0.098 μA
->>> manager.unregister_status_callback()
+>>> handle.cancel()
 ```
 
 See [pypalmsens.data.Status][] or the provided [Status callback](examples.md#status-callback) example for more information.

@@ -4,29 +4,17 @@ import asyncio
 from collections import defaultdict
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Literal
+from typing import TYPE_CHECKING
 
 from System.Threading.Tasks import Task
 from typing_extensions import override
 
-from ..data import Curve, EISData, Measurement
-from .callback import CallbackData, CallbackDataEIS, Status
+from ..types import AllowedEvents
+from .callback import Status
 
-AllowedEvents = Literal[
-    'error',
-    'measurement_begin',
-    'measurement_end',
-    'curve_begin',
-    'curve_new_data',
-    'curve_end',
-    'eis_data_begin',
-    'eis_new_data',
-    'eis_data_end',
-    'measurement_setup',
-    'measurement_teardown',
-    'receive_message',
-    'receive_status',
-]
+if TYPE_CHECKING:
+    from ..data import Curve, EISData, Measurement
+    from .callback import CallbackData, CallbackDataEIS
 
 
 @dataclass
@@ -81,11 +69,11 @@ class EventHandleStatus(EventHandle):
         try:
             self._loop = asyncio.get_running_loop()
         except RuntimeError:
-            handler = self._idle_status_handler
+            self.emitter._comm.ClientConnection.ReceiveStatus += self._idle_status_handler
         else:
-            handler = self._idle_status_handler_async
-
-        self.emitter._comm.ClientConnection.ReceiveMessage += handler
+            self.emitter._comm.ClientConnection.ReceiveStatusAsync += (
+                self._idle_status_handler_async
+            )
 
     def _idle_status_handler(self, sender, args) -> None:
         """Message handler helper function to schedule the callback."""
@@ -104,11 +92,11 @@ class EventHandleStatus(EventHandle):
     @override
     def cancel(self):
         if self._loop:
-            handler = self._idle_status_handler_async
+            self.emitter._comm.ClientConnection.ReceiveStatusAsync -= (
+                self._idle_status_handler_async
+            )
         else:
-            handler = self._idle_status_handler
-
-        self.emitter._comm.ClientConnection.ReceiveMessage -= handler
+            self.emitter._comm.ClientConnection.ReceiveStatus -= self._idle_status_handler
 
 
 class EventsMixin:
@@ -123,6 +111,9 @@ class EventsMixin:
         """Add callback to event."""
         if event == 'receive_message':
             return EventHandleReceiveMessage(emitter=self, event=event, callback=callback)
+
+        elif event == 'receive_status':
+            return EventHandleStatus(emitter=self, event=event, callback=callback)
 
         self._listeners[event].append(callback)
         return EventHandle(emitter=self, event=event, callback=callback)
@@ -193,7 +184,7 @@ class EventsMixin:
         """
         return self.on('receive_message', callback=callback)
 
-    def on_status(self, callback: Callable[[Status], None], /):
+    def on_receive_status(self, callback: Callable[[Status], None], /):
         """Register callback for idle status events.
 
         The callback is triggered when the current/potential are updated

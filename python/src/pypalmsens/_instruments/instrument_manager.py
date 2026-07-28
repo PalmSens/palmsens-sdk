@@ -134,11 +134,11 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
 
     def __enter__(self):
         if not self.is_connected():
-            _ = self.connect()
+            self.connect()
         return self
 
     def __exit__(self, *_):
-        _ = self.disconnect()
+        self.disconnect()
 
     def is_measuring(self) -> bool:
         """Return True if device is measuring."""

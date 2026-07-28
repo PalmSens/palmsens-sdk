@@ -135,11 +135,11 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
     async def __aenter__(self):
         if not self.is_connected():
-            _ = await self.connect()
+            await self.connect()
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
-        _ = await self.disconnect()
+        await self.disconnect()
 
     def is_measuring(self) -> bool:
         """Return True if device is measuring."""

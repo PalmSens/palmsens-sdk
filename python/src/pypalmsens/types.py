@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 from ._data.types import AllowedArrayTypes
-from ._instruments import AllowedEvents
 from ._types import (
     AllowedCurrentRanges,
     AllowedDeviceState,
+    AllowedEvents,
     AllowedFrequencyTypes,
     AllowedMethods,
     AllowedMSMethods,

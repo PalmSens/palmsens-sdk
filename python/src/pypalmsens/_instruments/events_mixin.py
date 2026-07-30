@@ -109,14 +109,13 @@ class EventsMixin:
         event: AllowedEvents,
         callback: Callable[..., None],
     ) -> EventHandle:
-        """
-        Register a callback for the specified *event*.
+        """Register a callback to invoke for the specified event.
 
         Parameters
         ----------
         event : AllowedEvents
             Name of the event to subscribe to. For most events this simply
-            appends *callback* to the internal listeners dictionary.
+            appends callback to the internal listeners dictionary.
         callback : Callable[..., None]
             Function that will be invoked when the event is triggered.
 
@@ -142,7 +141,9 @@ class EventsMixin:
         return EventHandle(emitter=self, event=event, callback=callback)
 
     def on_error(self, callback: Callable[..., None]) -> EventHandle:
-        """Called when a connection or communication error occurs.
+        """Register a callback to invoke when an error occurs.
+
+        This happens on a connection or communication error.
 
         Parameters
         ----------
@@ -157,7 +158,7 @@ class EventsMixin:
         return self.on('error', callback=callback)
 
     def on_measurement_begin(self, callback: Callable[[Measurement], None]) -> EventHandle:
-        """Called at the start of a measurement.
+        """Register a callback to invoke at the start of a measurement.
 
         Parameters
         ----------
@@ -172,7 +173,7 @@ class EventsMixin:
         return self.on('measurement_begin', callback=callback)
 
     def on_measurement_end(self, callback: Callable[..., None]) -> EventHandle:
-        """Called at the end of a measurement.
+        """Register a callback to invoke at the end of a measurement.
 
         Parameters
         ----------
@@ -187,7 +188,9 @@ class EventsMixin:
         return self.on('measurement_end', callback=callback)
 
     def on_curve_begin(self, callback: Callable[[Curve], None]) -> EventHandle:
-        """Called at the start of a new curve (for EIS use on_eis_data_start).
+        """Register a callback to invoke at the start of a new curve.
+
+        For EIS use `on_eis_data_start`.
 
         Parameters
         ----------
@@ -202,9 +205,11 @@ class EventsMixin:
         return self.on('curve_begin', callback=callback)
 
     def on_curve_new_data(self, callback: Callable[[CallbackData], None]) -> EventHandle:
-        """Called when new data are received (for EIS use on_eis_new_data).
+        """Register a callback to invoke when new data are received
 
         Note that the data are batched depending on available resources.
+
+        For EIS use `on_eis_new_data`.
 
         Parameters
         ----------
@@ -219,7 +224,9 @@ class EventsMixin:
         return self.on('curve_new_data', callback=callback)
 
     def on_curve_end(self, callback: Callable[[Curve], None]) -> EventHandle:
-        """Called at the end of a curve (for EIS use on_eis_data_end).
+        """Register a callback to invoke at the end of a curve.
+
+        For EIS use `on_eis_data_end`.
 
         Parameters
         ----------
@@ -234,7 +241,7 @@ class EventsMixin:
         return self.on('curve_end', callback=callback)
 
     def on_eis_data_begin(self, callback: Callable[[EISData], None]) -> EventHandle:
-        """Called at the start of a new EIS data set.
+        """Register a callback to invoke at the start of a new EIS data set.
 
         Parameters
         ----------
@@ -249,7 +256,7 @@ class EventsMixin:
         return self.on('eis_data_begin', callback=callback)
 
     def on_eis_new_data(self, callback: Callable[[CallbackDataEIS], None]) -> EventHandle:
-        """Called when new eis data are received.
+        """Register a callback to invoke when new eis data are received.
 
         Data points are batched depending on available resources.
 
@@ -266,7 +273,7 @@ class EventsMixin:
         return self.on('eis_new_data', callback=callback)
 
     def on_eis_data_end(self, callback: Callable[..., None]) -> EventHandle:
-        """Called at the end of an EIS data set.
+        """Register a callback to invoke at the end of an EIS data set.
 
         Parameters
         ----------
@@ -281,7 +288,7 @@ class EventsMixin:
         return self.on('eis_data_end', callback=callback)
 
     def on_measurement_setup(self, callback: Callable[..., None]) -> EventHandle:
-        """Called before the measurement starts.
+        """Register a callback to invoke before the measurement starts.
 
         Use this to set up file resources, database connections, etc.
 
@@ -298,8 +305,9 @@ class EventsMixin:
         return self.on('measurement_setup', callback=callback)
 
     def on_measurement_teardown(self, callback: Callable[..., None]) -> EventHandle:
-        """Called after the measurement has ended, either successfully or after an error occurs.
+        """Register a callback to invoke after the measurement ends.
 
+        The measurement ends when it finnished successfully or after an error occurs.
         Use this to close files or clean up resources.
 
         Parameters
@@ -315,9 +323,9 @@ class EventsMixin:
         return self.on('measurement_teardown', callback=callback)
 
     def on_receive_message(self, callback: Callable[[str], None], /):
-        """Register callback when a message is received.
+        """Register a callback for when a new message is received.
 
-        The callback is triggered, for example, when a method is started,
+        The callback will be invoked, for example, when a method is started,
         or when `send_string` is called in MethodSCRIPT.
 
         Parameters
@@ -333,12 +341,13 @@ class EventsMixin:
         return self.on('receive_message', callback=callback)
 
     def on_receive_status(self, callback: Callable[[Status], None], /):
-        """Register callback for idle status events.
+        """Register a callback for idle status update events.
 
         Requires active event loop (i.e. async only).
 
-        The callback is triggered when the current/potential are updated
-        during idle state or pretreatment phases.
+        The callback will be invoked whenever the instrument sends
+        updated current/potential values during idle state or pretreatment phases.
+        The update frequency varies per device.
 
         Parameters
         ----------

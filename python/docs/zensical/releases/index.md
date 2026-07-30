@@ -363,9 +363,9 @@ You can pass register a callback to the instrument manager to get updates from t
 ...         handle.cancel()
 
 >>> asyncio.run(main())
-Idle: {'current': '0.000 * 1uA', 'potential': '0.527 V'}
-Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
-Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
+{'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.527 V'}
+{'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.526 V'}
+{'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.526 V'}
 ```
 
 ### Fixing Bipot settings

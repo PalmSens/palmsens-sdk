@@ -258,9 +258,9 @@ For example, using print as the callback prints the status to the terminal:
 ```python
 >>> handle = manager.on_receive_status(print)
 >>> await asyncio.sleep(3)  # (1)!
-Idle: {'current': '0.000 * 1uA', 'potential': '0.527 V'}
-Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
-Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
+{'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.527 V'}
+{'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.526 V'}
+{'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.526 V'}
 >>> handle.cancel()
 ```
 

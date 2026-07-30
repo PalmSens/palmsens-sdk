@@ -159,31 +159,29 @@ class MeasurementManagerAsync:
     def setup_handlers(self):
         self.begin_measurement_handler: AsyncEventHandler = AsyncEventHandler[
             CommManager.BeginMeasurementEventArgsAsync
-        ](self.begin_measurement_callback)
+        ](self.on_measurement_begin_event)
 
         self.end_measurement_handler: AsyncEventHandler = AsyncEventHandler[
             CommManager.EndMeasurementAsyncEventArgs
-        ](self.end_measurement_callback)
+        ](self.on_measurement_end_event)
 
         self.begin_receive_curve_handler: EventHandler = Plottables.CurveEventHandler(
-            self.begin_receive_curve_callback
+            self.on_curve_begin_event
         )
         self.curve_data_added_handler: EventHandler = Plottables.Curve.NewDataAddedEventHandler(
-            self.curve_data_added_callback
+            self.on_curve_new_data_event
         )
-        self.curve_finished_handler: EventHandler = EventHandler(self.curve_finished_callback)
+        self.curve_finished_handler: EventHandler = EventHandler(self.on_curve_end_event)
 
         self.begin_receive_eis_data_handler: EventHandler = Plottables.EISDataEventHandler(
-            self.begin_receive_eis_data_callback
+            self.on_eis_data_begin_event
         )
         self.eis_data_data_added_handler: EventHandler = Plottables.EISData.NewDataEventHandler(
-            self.eis_data_data_added_callback
+            self.on_eis_new_data_event
         )
-        self.eis_data_finished_handler: EventHandler = EventHandler(
-            self.eis_data_finished_callback
-        )
+        self.eis_data_finished_handler: EventHandler = EventHandler(self.on_eis_data_end_event)
 
-        self.comm_error_handler: EventHandler = EventHandler(self.comm_error_callback)
+        self.comm_error_handler: EventHandler = EventHandler(self.on_error_event)
 
     def setup(self):
         """Subscribe to events indicating the start and end of the measurement."""
@@ -310,7 +308,7 @@ class MeasurementManagerAsync:
 
         return self.last_measurement
 
-    def begin_measurement_callback(
+    def on_measurement_begin_event(
         self, sender: PalmSens.Comm.CommManager, args
     ) -> Task.CompletedTask:
         """Called when the measurement begins."""
@@ -325,7 +323,7 @@ class MeasurementManagerAsync:
 
         return Task.CompletedTask
 
-    def end_measurement_callback(
+    def on_measurement_end_event(
         self, comm: PalmSens.Comm.CommManager, args
     ) -> Task.CompletedTask:
         """Called when the measurement ends."""
@@ -337,7 +335,7 @@ class MeasurementManagerAsync:
 
         return Task.CompletedTask
 
-    def curve_data_added_callback(
+    def on_curve_new_data_event(
         self,
         pscurve: Plottables.Curve,
         args: PalmSens.Data.ArrayDataAddedEventArgs,
@@ -354,7 +352,7 @@ class MeasurementManagerAsync:
         for callback in self.callbacks.on_curve_new_data:
             _ = self.loop.call_soon_threadsafe(callback, data)  # type: ignore
 
-    def curve_finished_callback(
+    def on_curve_end_event(
         self,
         pscurve: Plottables.Curve,
         args: PalmSens.FinishedEventArgs,
@@ -368,7 +366,7 @@ class MeasurementManagerAsync:
         for callback in self.callbacks.on_curve_end:
             _ = self.loop.call_soon_threadsafe(callback, curve)  # type: ignore
 
-    def begin_receive_curve_callback(
+    def on_curve_begin_event(
         self,
         sender: PalmSens.Comm.CommManager,
         args: PalmSens.Plottables.CurveEventArgs,
@@ -383,7 +381,7 @@ class MeasurementManagerAsync:
         for callback in self.callbacks.on_curve_begin:
             _ = self.loop.call_soon_threadsafe(callback, curve)  # type: ignore
 
-    def eis_data_data_added_callback(self, eis_data: Plottables.EISData, args):
+    def on_eis_new_data_event(self, eis_data: Plottables.EISData, args):
         """Called when a new EIS data points is obtained. Requires a callback."""
         # This event is sometimes fired twice, once for raw data
         # and once again for derived data. This leads to duplicate data points
@@ -413,7 +411,7 @@ class MeasurementManagerAsync:
         for callback in self.callbacks.on_eis_new_data:
             _ = self.loop.call_soon_threadsafe(callback, data)  # type: ignore
 
-    def eis_data_finished_callback(
+    def on_eis_data_end_event(
         self,
         eis_data: Plottables.EISData,
         args: PalmSens.FinishedEventArgs,
@@ -425,7 +423,7 @@ class MeasurementManagerAsync:
         for callback in self.callbacks.on_eis_data_end:
             _ = self.loop.call_soon_threadsafe(callback)  # type: ignore
 
-    def begin_receive_eis_data_callback(
+    def on_eis_data_begin_event(
         self,
         sender: PalmSens.Comm.CommManager,
         eis_data: Plottables.EISData,
@@ -441,7 +439,7 @@ class MeasurementManagerAsync:
         for callback in self.callbacks.on_eis_data_begin:
             _ = self.loop.call_soon_threadsafe(callback, data)  # type: ignore
 
-    def comm_error_callback(self, sender: PalmSens.Comm.CommManager, args: System.EventArgs):
+    def on_error_event(self, sender: PalmSens.Comm.CommManager, args: System.EventArgs):
         """Called when a communication error occurs."""
 
         for callback in self.callbacks.on_error:

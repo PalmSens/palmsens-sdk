@@ -5,7 +5,7 @@ from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from io import BufferedWriter
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 import PalmSens
 import System
@@ -16,10 +16,9 @@ from pydantic.dataclasses import dataclass
 from System import EventHandler
 from System.Threading.Tasks import Task
 
-from pypalmsens._methods.energy import BaseMethodScriptTechnique
-from pypalmsens._types import MethodTypeCompatible
-
 from .._data import DataSet
+from .._methods.energy import BaseMethodScriptTechnique
+from .._types import AllowedEvents, MethodTypeCompatible
 from ..data import Curve, DataArray, EISData, Measurement
 from .callback import Callback, CallbackData, CallbackDataEIS, CallbackEIS, DataRow
 from .shared import create_future
@@ -152,61 +151,53 @@ class MeasurementManagerAsync:
         self.begin_measurement_event: asyncio.Event
         self.end_measurement_event: asyncio.Event
 
-        self.setup_handlers()
+        self.event_handlers: Final = self.setup_handlers()
 
         self.eis_last_data_index: int = 0
 
-    def setup_handlers(self):
-        self.on_measurement_begin_handler: AsyncEventHandler = AsyncEventHandler[
-            CommManager.BeginMeasurementEventArgsAsync
-        ](self.on_measurement_begin_event)
-
-        self.on_measurement_end_handler: AsyncEventHandler = AsyncEventHandler[
-            CommManager.EndMeasurementAsyncEventArgs
-        ](self.on_measurement_end_event)
-
-        self.on_curve_begin_handler: EventHandler = Plottables.CurveEventHandler(
-            self.on_curve_begin_event
-        )
-        self.on_curve_new_data_handler: EventHandler = (
-            Plottables.Curve.NewDataAddedEventHandler(self.on_curve_new_data_event)
-        )
-        self.on_curve_end_handler: EventHandler = EventHandler(self.on_curve_end_event)
-
-        self.on_eis_data_begin_handler: EventHandler = Plottables.EISDataEventHandler(
-            self.on_eis_data_begin_event
-        )
-        self.on_eis_new_data_handler: EventHandler = Plottables.EISData.NewDataEventHandler(
-            self.on_eis_new_data_event
-        )
-        self.on_eis_data_end_handler: EventHandler = EventHandler(self.on_eis_data_end_event)
-
-        self.on_error_handler: EventHandler = EventHandler(self.on_error_event)
+    def setup_handlers(self) -> dict[AllowedEvents, Any]:
+        return {
+            'measurement_begin': AsyncEventHandler[CommManager.BeginMeasurementEventArgsAsync](
+                self.on_measurement_begin_event
+            ),
+            'measurement_end': AsyncEventHandler[CommManager.EndMeasurementAsyncEventArgs](
+                self.on_measurement_end_event
+            ),
+            'curve_begin': Plottables.CurveEventHandler(self.on_curve_begin_event),
+            'curve_new_data': Plottables.Curve.NewDataAddedEventHandler(
+                self.on_curve_new_data_event
+            ),
+            'curve_end': EventHandler(self.on_curve_end_event),
+            'eis_data_begin': Plottables.EISDataEventHandler(self.on_eis_data_begin_event),
+            'eis_new_data': Plottables.EISData.NewDataEventHandler(self.on_eis_new_data_event),
+            'eis_data_end': EventHandler(self.on_eis_data_end_event),
+            'error': EventHandler(self.on_error_event),
+        }
 
     def setup(self):
         """Subscribe to events indicating the start and end of the measurement."""
         self.is_measuring = True
-        self.comm.BeginMeasurementAsync += self.on_measurement_begin_handler
-        self.comm.EndMeasurementAsync += self.on_measurement_end_handler
-        self.comm.Disconnected += self.on_error_handler
+        self.comm.BeginMeasurementAsync += self.event_handlers['measurement_begin']
+        self.comm.EndMeasurementAsync += self.event_handlers['measurement_end']
+        self.comm.Disconnected += self.event_handlers['error']
 
         if self.callbacks.on_eis_new_data:
-            self.comm.BeginReceiveEISData += self.on_eis_data_begin_handler
+            self.comm.BeginReceiveEISData += self.event_handlers['eis_data_begin']
 
         if self.callbacks.on_curve_new_data:
-            self.comm.BeginReceiveCurve += self.on_curve_begin_handler
+            self.comm.BeginReceiveCurve += self.event_handlers['curve_begin']
 
     def teardown(self):
         """Unsubscribe to events indicating the start and end of the measurement."""
-        self.comm.BeginMeasurementAsync -= self.on_measurement_begin_handler
-        self.comm.EndMeasurementAsync -= self.on_measurement_end_handler
-        self.comm.Disconnected -= self.on_error_handler
+        self.comm.BeginMeasurementAsync -= self.event_handlers['measurement_begin']
+        self.comm.EndMeasurementAsync -= self.event_handlers['measurement_end']
+        self.comm.Disconnected -= self.event_handlers['error']
 
         if self.callbacks.on_eis_new_data:
-            self.comm.BeginReceiveEISData -= self.on_eis_data_begin_handler
+            self.comm.BeginReceiveEISData -= self.event_handlers['eis_data_begin']
 
         if self.callbacks.on_curve_new_data:
-            self.comm.BeginReceiveCurve -= self.on_curve_begin_handler
+            self.comm.BeginReceiveCurve -= self.event_handlers['curve_begin']
 
         self.is_measuring = False
 
@@ -358,8 +349,8 @@ class MeasurementManagerAsync:
         args: PalmSens.FinishedEventArgs,
     ):
         """Unsubscribe to curve finished / new data added events."""
-        pscurve.NewDataAdded -= self.on_curve_new_data_handler
-        pscurve.Finished -= self.on_curve_end_handler
+        pscurve.NewDataAdded -= self.event_handlers['curve_new_data']
+        pscurve.Finished -= self.event_handlers['curve_end']
 
         curve = Curve(pscurve=pscurve)
 
@@ -373,8 +364,8 @@ class MeasurementManagerAsync:
     ):
         """Subscribe to curve finished / new data added events."""
         pscurve = args.GetCurve()
-        pscurve.NewDataAdded += self.on_curve_new_data_handler
-        pscurve.Finished += self.on_curve_end_handler
+        pscurve.NewDataAdded += self.event_handlers['curve_new_data']
+        pscurve.Finished += self.event_handlers['curve_end']
 
         curve = Curve(pscurve=pscurve)
 
@@ -417,8 +408,8 @@ class MeasurementManagerAsync:
         args: PalmSens.FinishedEventArgs,
     ):
         """Unsubscribes to EIS data events."""
-        eis_data.NewDataAdded -= self.on_eis_new_data_handler
-        eis_data.Finished -= self.on_eis_data_end_handler
+        eis_data.NewDataAdded -= self.event_handlers['eis_new_data']
+        eis_data.Finished -= self.event_handlers['eis_data_end']
 
         for callback in self.callbacks.on_eis_data_end:
             _ = self.loop.call_soon_threadsafe(callback)  # type: ignore
@@ -429,8 +420,8 @@ class MeasurementManagerAsync:
         eis_data: Plottables.EISData,
     ):
         """Subscribes to EIS data events."""
-        eis_data.NewDataAdded += self.on_eis_new_data_handler
-        eis_data.Finished += self.on_eis_data_end_handler
+        eis_data.NewDataAdded += self.event_handlers['eis_new_data']
+        eis_data.Finished += self.event_handlers['eis_data_end']
 
         self.eis_last_data_index = 0
 

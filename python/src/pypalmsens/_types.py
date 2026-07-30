@@ -139,7 +139,7 @@ AllowedFrequencyTypes = Literal['fixed', 'scan']
 
 
 class MethodTypeCompatible(Protocol):
-    """All methods, including MethodType and those that generate compatible MethodSCRIPT."""
+    """All methods, including [MethodType][] and those that generate compatible MethodSCRIPT."""
 
     @property
     def id(self) -> AllowedMethods | AllowedMSMethods: ...

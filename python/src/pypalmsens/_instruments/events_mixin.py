@@ -141,9 +141,9 @@ class EventsMixin:
         return EventHandle(emitter=self, event=event, callback=callback)
 
     def on_error(self, callback: Callable[..., None]) -> EventHandle:
-        """Register a callback to invoke when an error occurs.
+        """Register a callback to invoke when an error occurs during a measurement.
 
-        This happens on a connection or communication error.
+        These errors can be a connection or communication error.
 
         Parameters
         ----------

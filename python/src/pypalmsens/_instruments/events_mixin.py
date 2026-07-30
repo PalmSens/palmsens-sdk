@@ -24,6 +24,7 @@ class EventHandle:
     callback: Callable[..., None]
 
     def cancel(self) -> None:
+        """Remove this callback from the emitter's listeners."""
         self.emitter._listeners[self.event].remove(self.callback)
 
 
@@ -108,7 +109,29 @@ class EventsMixin:
         event: AllowedEvents,
         callback: Callable[..., None],
     ) -> EventHandle:
-        """Add callback to event."""
+        """
+        Register a callback for the specified *event*.
+
+        Parameters
+        ----------
+        event : AllowedEvents
+            Name of the event to subscribe to. For most events this simply
+            appends *callback* to the internal listeners dictionary.
+        callback : Callable[..., None]
+            Function that will be invoked when the event is triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+
+        Notes
+        -----
+        * ``'receive_message'`` and ``'receive_status'`` are handled specially:
+          they create instances of :class:`EventHandleReceiveMessage` or
+          :class:`EventHandleStatus`, respectively, which attach the callback
+          directly to the underlying communication layer.
+        """
         if event == 'receive_message':
             return EventHandleReceiveMessage(emitter=self, event=event, callback=callback)
 
@@ -119,56 +142,176 @@ class EventsMixin:
         return EventHandle(emitter=self, event=event, callback=callback)
 
     def on_error(self, callback: Callable[..., None]) -> EventHandle:
-        """Called when a connection or communication error occurs."""
+        """Called when a connection or communication error occurs.
+
+        Parameters
+        ----------
+        callback : Callable
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+        """
         return self.on('error', callback=callback)
 
     def on_measurement_begin(self, callback: Callable[[Measurement], None]) -> EventHandle:
-        """Called at the start of a measurement."""
+        """Called at the start of a measurement.
+
+        Parameters
+        ----------
+        callback : Callable
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+        """
         return self.on('measurement_begin', callback=callback)
 
     def on_measurement_end(self, callback: Callable[..., None]) -> EventHandle:
-        """Called at the end of a measurement."""
+        """Called at the end of a measurement.
+
+        Parameters
+        ----------
+        callback : Callable
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+        """
         return self.on('measurement_end', callback=callback)
 
     def on_curve_begin(self, callback: Callable[[Curve], None]) -> EventHandle:
-        """Called at the start of a new curve (for EIS use on_eis_data_start)."""
+        """Called at the start of a new curve (for EIS use on_eis_data_start).
+
+        Parameters
+        ----------
+        callback : Callable[[Curve]]
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+        """
         return self.on('curve_begin', callback=callback)
 
     def on_curve_new_data(self, callback: Callable[[CallbackData], None]) -> EventHandle:
         """Called when new data are received (for EIS use on_eis_new_data).
 
-        Note that the data are batched depending on available resources."""
+        Note that the data are batched depending on available resources.
+
+        Parameters
+        ----------
+        callback : Callable[[CallbackData]]
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+        """
         return self.on('curve_new_data', callback=callback)
 
     def on_curve_end(self, callback: Callable[[Curve], None]) -> EventHandle:
-        """Called at the end of a curve (for EIS use on_eis_data_end)."""
+        """Called at the end of a curve (for EIS use on_eis_data_end).
+
+        Parameters
+        ----------
+        callback : Callable[[Curve]]
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+        """
         return self.on('curve_end', callback=callback)
 
     def on_eis_data_begin(self, callback: Callable[[EISData], None]) -> EventHandle:
-        """Called at the start of a new EIS data set."""
+        """Called at the start of a new EIS data set.
+
+        Parameters
+        ----------
+        callback : Callable[[EISData]]
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+        """
         return self.on('eis_data_begin', callback=callback)
 
     def on_eis_new_data(self, callback: Callable[[CallbackDataEIS], None]) -> EventHandle:
         """Called when new eis data are received.
 
-        Data points are batched depending on available resources."""
+        Data points are batched depending on available resources.
+
+        Parameters
+        ----------
+        callback : Callable[[CallbackDataEIS]]
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+        """
         return self.on('eis_new_data', callback=callback)
 
     def on_eis_data_end(self, callback: Callable[..., None]) -> EventHandle:
-        """Called at the end of an EIS data set."""
+        """Called at the end of an EIS data set.
+
+        Parameters
+        ----------
+        callback : Callable
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+        """
         return self.on('eis_data_end', callback=callback)
 
     def on_measurement_setup(self, callback: Callable[..., None]) -> EventHandle:
-        """
-        Called before the measurement starts.
+        """Called before the measurement starts.
 
-        Use this to set up file resources, database connections, etc."""
+        Use this to set up file resources, database connections, etc.
+
+        Parameters
+        ----------
+        callback : Callable
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+        """
         return self.on('measurement_setup', callback=callback)
 
     def on_measurement_teardown(self, callback: Callable[..., None]) -> EventHandle:
-        """Called after the measurement has ended, either succesfully or after an error occurs.
+        """Called after the measurement has ended, either successfully or after an error occurs.
 
-        Use this to close files or clean up resources."""
+        Use this to close files or clean up resources.
+
+        Parameters
+        ----------
+        callback : Callable
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
+        """
         return self.on('measurement_teardown', callback=callback)
 
     def on_receive_message(self, callback: Callable[[str], None], /):
@@ -179,8 +322,13 @@ class EventsMixin:
 
         Parameters
         ----------
-        callback: Callable[[str], None]
-            The function to call when triggered
+        callback : callable[[str]]
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
         """
         return self.on('receive_message', callback=callback)
 
@@ -188,11 +336,16 @@ class EventsMixin:
         """Register callback for idle status events.
 
         The callback is triggered when the current/potential are updated
-        durinig idle state or pretreatment phases.
+        during idle state or pretreatment phases.
 
         Parameters
         ----------
-        callback: Callable[[Status], None]
-            The function to call when triggered
+        callback : callable[[Status]]
+            The function to call when triggered.
+
+        Returns
+        -------
+        EventHandle
+            Handle that can be used to cancel the subscription.
         """
         return self.on('receive_status', callback=callback)

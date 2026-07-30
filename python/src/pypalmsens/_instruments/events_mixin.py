@@ -69,8 +69,8 @@ class EventHandleStatus(EventHandle):
     def __post_init__(self):
         try:
             self._loop = asyncio.get_running_loop()
-        except RuntimeError:
-            self.emitter._comm.ClientConnection.ReceiveStatus += self._idle_status_handler
+        except RuntimeError as exc:
+            raise RuntimeError("'receive_message' requires active event loop.") from exc
         else:
             self.emitter._comm.ClientConnection.ReceiveStatusAsync += (
                 self._idle_status_handler_async
@@ -334,6 +334,8 @@ class EventsMixin:
 
     def on_receive_status(self, callback: Callable[[Status], None], /):
         """Register callback for idle status events.
+
+        Requires active event loop (i.e. async only).
 
         The callback is triggered when the current/potential are updated
         during idle state or pretreatment phases.

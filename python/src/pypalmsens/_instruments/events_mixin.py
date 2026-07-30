@@ -102,7 +102,7 @@ class EventHandleStatus(EventHandle):
 
 class EventsMixin:
     def __init__(self):
-        self._listeners: dict[str, list[Callable[..., None]]] = defaultdict(list)
+        self._listeners: dict[AllowedEvents, list[Callable[..., None]]] = defaultdict(list)
 
     def on(
         self,

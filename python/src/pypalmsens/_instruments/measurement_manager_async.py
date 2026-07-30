@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from collections import defaultdict
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from io import BufferedWriter
@@ -11,13 +12,14 @@ import PalmSens
 import System
 from PalmSens import AsyncEventHandler, Plottables
 from PalmSens.Comm import CommManager
-from pydantic import ConfigDict, Field, TypeAdapter
+from pydantic import ConfigDict, TypeAdapter
 from pydantic.dataclasses import dataclass
 from System import EventHandler
 from System.Threading.Tasks import Task
 
+from pypalmsens._methods.energy import BaseMethodScriptTechnique
+
 from .._data import DataSet
-from .._methods.energy import BaseMethodScriptTechnique
 from .._types import AllowedEvents, MethodTypeCompatible
 from ..data import Curve, DataArray, EISData, Measurement
 from .callback import Callback, CallbackData, CallbackDataEIS, CallbackEIS, DataRow
@@ -43,14 +45,14 @@ class JSONWriter:
     _stream: BufferedWriter | None = None
     _adapter: TypeAdapter[DataRow] = TypeAdapter(DataRow)
 
-    def add_to(self, other: CallbackManager):
-        other.on_measurement_begin.append(self.on_measurement_begin)
-        other.on_curve_begin.append(self.on_curve_begin)
-        other.on_curve_new_data.append(self.on_curve_new_data)
-        other.on_eis_data_begin.append(self.on_eis_data_begin)
-        other.on_eis_new_data.append(self.on_eis_new_data)
-        other.on_measurement_setup.append(self.setup)
-        other.on_measurement_teardown.append(self.teardown)
+    def append_to_callbacks(self, callbacks: dict[AllowedEvents, list[Callable[..., None]]]):
+        callbacks['measurement_begin'].append(self.on_measurement_begin)
+        callbacks['curve_begin'].append(self.on_curve_begin)
+        callbacks['curve_new_data'].append(self.on_curve_new_data)
+        callbacks['eis_data_begin'].append(self.on_eis_data_begin)
+        callbacks['eis_new_data'].append(self.on_eis_new_data)
+        callbacks['measurement_setup'].append(self.setup)
+        callbacks['measurement_teardown'].append(self.teardown)
 
     def on_measurement_begin(self, measurement: Measurement):
         assert self._stream
@@ -95,45 +97,8 @@ class JSONWriter:
         self._stream.close()
 
 
-@dataclass(
-    kw_only=True,
-    config=ConfigDict(
-        validate_assignment=True,
-    ),
-)
-class CallbackManager:
-    """Dataclass to manage callbacks."""
-
-    on_error: list[Callable[[], None]] = Field(default_factory=list)
-    on_measurement_begin: list[Callable[[Measurement], None]] = Field(default_factory=list)
-    on_measurement_end: list[Callable[[], None]] = Field(default_factory=list)
-    on_curve_begin: list[Callable[[Curve], None]] = Field(default_factory=list)
-    on_curve_new_data: list[Callable[[CallbackData], None]] = Field(default_factory=list)
-    on_curve_end: list[Callable[[Curve], None]] = Field(default_factory=list)
-    on_eis_data_begin: list[Callable[[EISData], None]] = Field(default_factory=list)
-    on_eis_new_data: list[Callable[[CallbackDataEIS], None]] = Field(default_factory=list)
-    on_eis_data_end: list[Callable[[], None]] = Field(default_factory=list)
-    on_measurement_setup: list[Callable[[], None]] = Field(default_factory=list)
-    on_measurement_teardown: list[Callable[[], None]] = Field(default_factory=list)
-
-    def add_listeners(self, listeners: dict[str, list[Callable[..., None]]]) -> None:
-        self.on_error.extend(listeners['error'])
-        self.on_measurement_begin.extend(listeners['measurement_begin'])
-        self.on_measurement_end.extend(listeners['measurement_end'])
-        self.on_curve_begin.extend(listeners['curve_begin'])
-        self.on_curve_new_data.extend(listeners['curve_new_data'])
-        self.on_curve_end.extend(listeners['curve_end'])
-        self.on_eis_data_begin.extend(listeners['eis_data_begin'])
-        self.on_eis_new_data.extend(listeners['eis_new_data'])
-        self.on_eis_data_end.extend(listeners['eis_data_end'])
-        self.on_measurement_setup.extend(listeners['measurement_setup'])
-        self.on_measurement_teardown.extend(listeners['measurement_teardown'])
-
-
 class MeasurementManagerAsync:
     """Measurement helper class that manages the instrument communication and handles events."""
-
-    callbacks: CallbackManager
 
     def __init__(
         self,
@@ -152,6 +117,7 @@ class MeasurementManagerAsync:
         self.end_measurement_event: asyncio.Event
 
         self.event_handlers: Final = self.setup_handlers()
+        self.callbacks: dict[AllowedEvents, list[Callable[..., None]]] = defaultdict(list)
 
         self.eis_last_data_index: int = 0
 
@@ -181,10 +147,10 @@ class MeasurementManagerAsync:
         self.comm.EndMeasurementAsync += self.event_handlers['measurement_end']
         self.comm.Disconnected += self.event_handlers['error']
 
-        if self.callbacks.on_eis_new_data:
+        if self.callbacks['eis_new_data']:
             self.comm.BeginReceiveEISData += self.event_handlers['eis_data_begin']
 
-        if self.callbacks.on_curve_new_data:
+        if self.callbacks['curve_new_data']:
             self.comm.BeginReceiveCurve += self.event_handlers['curve_begin']
 
     def teardown(self):
@@ -193,10 +159,10 @@ class MeasurementManagerAsync:
         self.comm.EndMeasurementAsync -= self.event_handlers['measurement_end']
         self.comm.Disconnected -= self.event_handlers['error']
 
-        if self.callbacks.on_eis_new_data:
+        if self.callbacks['eis_new_data']:
             self.comm.BeginReceiveEISData -= self.event_handlers['eis_data_begin']
 
-        if self.callbacks.on_curve_new_data:
+        if self.callbacks['curve_new_data']:
             self.comm.BeginReceiveCurve -= self.event_handlers['curve_begin']
 
         self.is_measuring = False
@@ -205,7 +171,7 @@ class MeasurementManagerAsync:
     def _measurement_context(self) -> Generator[None, Any, Any]:
         """Context manager to manage the connection to the communication object."""
         try:
-            for setup in self.callbacks.on_measurement_setup:
+            for setup in self.callbacks['measurement_setup']:
                 setup()
 
             self.setup()
@@ -221,7 +187,7 @@ class MeasurementManagerAsync:
         finally:
             self.teardown()
 
-            for teardown in self.callbacks.on_measurement_teardown:
+            for teardown in self.callbacks['measurement_teardown']:
                 teardown()
 
     async def await_measurement(
@@ -252,7 +218,7 @@ class MeasurementManagerAsync:
         callback: Callback | CallbackEIS | None = None,
         sync_event: asyncio.Event | None = None,
         stream: Path | str | None = None,
-        listeners: dict[str, list[Callable[..., None]]] | None = None,
+        listeners: dict[AllowedEvents, list[Callable[..., None]]] | None = None,
     ) -> Measurement:
         """Measure given method.
 
@@ -275,19 +241,18 @@ class MeasurementManagerAsync:
         self.begin_measurement_event = asyncio.Event()
         self.end_measurement_event = asyncio.Event()
 
-        self.callbacks = CallbackManager()
-
         if stream:
-            JSONWriter(filename=stream).add_to(self.callbacks)
+            JSONWriter(filename=stream).append_to_callbacks(self.callbacks)
 
         if listeners:
-            self.callbacks.add_listeners(listeners)
+            for name, cbs in listeners.items():
+                self.callbacks[name].extend(cbs)
 
         if callback:
             if method.id in ('eis', 'geis', 'fis', 'fgis'):
-                self.callbacks.on_eis_new_data.append(callback)  # type: ignore
+                self.callbacks['eis_new_data'].append(callback)
             else:
-                self.callbacks.on_curve_new_data.append(callback)  # type: ignore
+                self.callbacks['curve_new_data'].append(callback)
 
         with self._measurement_context():
             await self.await_measurement(method=psmethod, sync_event=sync_event)
@@ -309,7 +274,7 @@ class MeasurementManagerAsync:
 
         _ = self.loop.call_soon_threadsafe(self.begin_measurement_event.set)
 
-        for callback in self.callbacks.on_measurement_begin:
+        for callback in self.callbacks['measurement_begin']:
             callback(measurement)
 
         return Task.CompletedTask
@@ -321,7 +286,7 @@ class MeasurementManagerAsync:
 
         _ = self.loop.call_soon_threadsafe(self.end_measurement_event.set)
 
-        for callback in self.callbacks.on_measurement_end:
+        for callback in self.callbacks['measurement_end']:
             _ = self.loop.call_soon_threadsafe(callback)
 
         return Task.CompletedTask
@@ -340,7 +305,7 @@ class MeasurementManagerAsync:
             id=pscurve.GetHashCode(),
         )
 
-        for callback in self.callbacks.on_curve_new_data:
+        for callback in self.callbacks['curve_new_data']:
             _ = self.loop.call_soon_threadsafe(callback, data)  # type: ignore
 
     def on_curve_end_event(
@@ -354,7 +319,7 @@ class MeasurementManagerAsync:
 
         curve = Curve(pscurve=pscurve)
 
-        for callback in self.callbacks.on_curve_end:
+        for callback in self.callbacks['curve_end']:
             _ = self.loop.call_soon_threadsafe(callback, curve)  # type: ignore
 
     def on_curve_begin_event(
@@ -369,7 +334,7 @@ class MeasurementManagerAsync:
 
         curve = Curve(pscurve=pscurve)
 
-        for callback in self.callbacks.on_curve_begin:
+        for callback in self.callbacks['curve_begin']:
             _ = self.loop.call_soon_threadsafe(callback, curve)  # type: ignore
 
     def on_eis_new_data_event(self, eis_data: Plottables.EISData, args):
@@ -399,7 +364,7 @@ class MeasurementManagerAsync:
 
         self.eis_last_data_index = count
 
-        for callback in self.callbacks.on_eis_new_data:
+        for callback in self.callbacks['eis_new_data']:
             _ = self.loop.call_soon_threadsafe(callback, data)  # type: ignore
 
     def on_eis_data_end_event(
@@ -411,7 +376,7 @@ class MeasurementManagerAsync:
         eis_data.NewDataAdded -= self.event_handlers['eis_new_data']
         eis_data.Finished -= self.event_handlers['eis_data_end']
 
-        for callback in self.callbacks.on_eis_data_end:
+        for callback in self.callbacks['eis_data_end']:
             _ = self.loop.call_soon_threadsafe(callback)  # type: ignore
 
     def on_eis_data_begin_event(
@@ -427,13 +392,13 @@ class MeasurementManagerAsync:
 
         data = EISData(pseis=eis_data)
 
-        for callback in self.callbacks.on_eis_data_begin:
-            _ = self.loop.call_soon_threadsafe(callback, data)  # type: ignore
+        for callback in self.callbacks['eis_data_begin']:
+            _ = self.loop.call_soon_threadsafe(callback, data)
 
     def on_error_event(self, sender: PalmSens.Comm.CommManager, args: System.EventArgs):
         """Called when a communication error occurs."""
 
-        for callback in self.callbacks.on_error:
+        for callback in self.callbacks['error']:
             _ = self.loop.call_soon_threadsafe(callback)
 
         def teardown_and_raise():

@@ -164,6 +164,7 @@ class EventsMixin:
         ----------
         callback : Callable
             The function to call when triggered.
+            Passes [pypalmsens.data.Measurement][] as argument to the callback.
 
         Returns
         -------
@@ -172,13 +173,14 @@ class EventsMixin:
         """
         return self.on('measurement_begin', callback=callback)
 
-    def on_measurement_end(self, callback: Callable[..., None]) -> EventHandle:
+    def on_measurement_end(self, callback: Callable[[Measurement], None]) -> EventHandle:
         """Register a callback to invoke at the end of a measurement.
 
         Parameters
         ----------
         callback : Callable
             The function to call when triggered.
+            Passes [pypalmsens.data.Measurement][] as argument to the callback.
 
         Returns
         -------
@@ -196,6 +198,7 @@ class EventsMixin:
         ----------
         callback : Callable[[Curve]]
             The function to call when triggered.
+            Passes [pypalmsens.data.Curve][] as argument to the callback.
 
         Returns
         -------
@@ -215,6 +218,7 @@ class EventsMixin:
         ----------
         callback : Callable[[CallbackData]]
             The function to call when triggered.
+            Passes [pypalmsens.data.CallbackData][] as argument to the callback.
 
         Returns
         -------
@@ -232,6 +236,7 @@ class EventsMixin:
         ----------
         callback : Callable[[Curve]]
             The function to call when triggered.
+            Passes [pypalmsens.data.Curve][] as argument to the callback.
 
         Returns
         -------
@@ -247,6 +252,7 @@ class EventsMixin:
         ----------
         callback : Callable[[EISData]]
             The function to call when triggered.
+            Passes [pypalmsens.data.EISData][] as argument to the callback.
 
         Returns
         -------
@@ -264,6 +270,7 @@ class EventsMixin:
         ----------
         callback : Callable[[CallbackDataEIS]]
             The function to call when triggered.
+            Passes [pypalmsens.data.CallbackDataEIS][] as argument to the callback.
 
         Returns
         -------
@@ -272,7 +279,7 @@ class EventsMixin:
         """
         return self.on('eis_new_data', callback=callback)
 
-    def on_eis_data_end(self, callback: Callable[..., None]) -> EventHandle:
+    def on_eis_data_end(self, callback: Callable[[], None]) -> EventHandle:
         """Register a callback to invoke at the end of an EIS data set.
 
         Parameters
@@ -287,7 +294,7 @@ class EventsMixin:
         """
         return self.on('eis_data_end', callback=callback)
 
-    def on_measurement_setup(self, callback: Callable[..., None]) -> EventHandle:
+    def on_measurement_setup(self, callback: Callable[[], None]) -> EventHandle:
         """Register a callback to invoke before the measurement starts.
 
         Use this to set up file resources, database connections, etc.
@@ -304,7 +311,7 @@ class EventsMixin:
         """
         return self.on('measurement_setup', callback=callback)
 
-    def on_measurement_teardown(self, callback: Callable[..., None]) -> EventHandle:
+    def on_measurement_teardown(self, callback: Callable[[], None]) -> EventHandle:
         """Register a callback to invoke after the measurement ends.
 
         The measurement ends when it finnished successfully or after an error occurs.
@@ -332,6 +339,7 @@ class EventsMixin:
         ----------
         callback : callable[[str]]
             The function to call when triggered.
+            Passes [str][] as argument to the callback.
 
         Returns
         -------
@@ -353,6 +361,7 @@ class EventsMixin:
         ----------
         callback : callable[[Status]]
             The function to call when triggered.
+            Passes [pypalmsens.data.Status][] as argument to the callback.
 
         Returns
         -------

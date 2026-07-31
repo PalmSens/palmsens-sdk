@@ -1,120 +1,130 @@
-# Events API
+# Event handling
 
-This section documents the event system exposed by :class:`pypalmsens.InstrumentManager` and its mixin.  The events mirror the asynchronous callbacks that PalmSens instruments emit during a measurement. They are grouped into categories:
-- **Measurement lifecycle** – ``measurement_setup`` / ``measurement_begin`` / ``measurement_end`` / ``measurement_teardown``
-- **Curve & EIS data** – ``curve_*`` and ``eis_*`` events
-- **Generic events** – ``error``
-- **Communication events** – ``receive_message`` / ``receive_status``
+When performing measurements or interacting with an instrument, you may want to react to specific occurrences in real-time, such as when a new data point is received or when a measurement starts. PyPalmSens provides an event system via [pypalmsens.InstrumentManager][].
 
-All methods return a :class:`EventHandle` which can be used to cancel the subscription.  The API is intentionally very close to the underlying communication layer, but keeps the public interface simple for users.
+Events are registered using `on_<event_name>` methods on the manager (or its async counterpart) and return an [EventHandle][]. To stop listening to an event, call the `.cancel()` method on the returned handle.
 
----
-## Measurement lifecycle
+## Using events
+
+The most common use case is to react to data as it arrives during a measurement. This is particularly useful for real-time plotting or monitoring.
 
 ```python
 import pypalmsens as ps
 
 with ps.connect() as manager:
-    # Setup resources before any measurement starts
-    handle_setup = manager.on_measurement_setup(lambda: print("Setup resources"))
+    # Register a callback for new data points
+    handle = manager.on_curve_new_data(print)
 
-    # The first point of the measurement is reported when this event fires
-    handle_begin = manager.on_measurement_begin(lambda meas: print(f"Started {meas.method}"))
-
-    # Measurement finishes – either success or error
-    handle_end = manager.on_measurement_end(lambda: print("Measurement finished"))
-
-    # Final cleanup after measurement ends
-    handle_teardown = manager.on_measurement_teardown(lambda: print("Cleanup resources"))
-
+    # Start a measurement
     manager.measure(ps.CyclicVoltammetry())
 
-    # cancel if needed
-    handle_setup.cancel()
+    # Stop listening to the event
+    handle.cancel()
 ```
 
-### Event signatures
-| Event | Callback signature |
-|-------|--------------------|
-| ``measurement_setup`` | :func:`Callable[[], None]` |
-| ``measurement_begin`` | :func:`Callable[[Measurement], None]` |
-| ``measurement_end`` | :func:`Callable[[], None]` |
-| ``measurement_teardown`` | :func:`Callable[[], None]` |
+## Event types
 
----
-## Curve & EIS data events
+### Measurement events
 
-These events fire while a measurement is actively sending data.  For most users you will subscribe to:
-- ``curve_begin`` – notified when the first point of a curve arrives.
-- ``curve_new_data`` – called repeatedly with :class:`CallbackData` containing batched points.
-- ``curve_end`` – fired once all points for that curve are received.
+These events allow you to monitor the lifecycle of a measurement:
 
-EIS data follows a similar pattern but uses :class:`EISData` and :class:`CallbackDataEIS` objects:
+| Method | Triggered when... | Callback argument |
+| :--- | :--- | :--- |
+| [on_measurement_setup][pypalmsens.InstrumentManager.on_measurement_setup] | Before the measurement starts (useful for resource setup) | None |
+| [on_measurement_begin][pypalmsens.InstrumentManager.on_measurement_begin] | At the start of a measurement | [Measurement][pypalmsens.data.Measurement] |
+| [on_measurement_end][pypalmsens.InstrumentManager.on_measurement_end] | After a measurement ends (successfully or due to error) | [Measurement][pypalmsens.data.Measurement] |
+| [on_measurement_teardown][pypalmsens.InstrumentManager.on_measurement_teardown] | After the measurement ends (useful for cleanup) | None |
+
+For example:
 
 ```python
+import pypalmsens as ps
+import time
+
+def begin_callback(measurement):
+    print(f"{measurement.title} started @ {time.ctime()}")
+
+def end_callback(measurement):
+    print(f"{measurement.title} ended @ {time.ctime()}")
+
 with ps.connect() as manager:
-    handle_curve = manager.on_curve_new_data(lambda data: print(f"{len(data.x)} points received"))
-    handle_eis = manager.on_eis_new_data(lambda d: print("EIS point", d.frequency, d.impedance))
+    manager.on_measurement_begin(begin_callback)
+    manager.on_measurement_end(end_callback)
+    manager.measure(ps.ChronoPotentiometry(run_time=10))
+# Chronopotentiometry started @ Fri Jul 31 16:19:39 2026
+# Chronopotentiometry ended @ Fri Jul 31 16:19:51 2026
 ```
 
-### Event signatures
-| Event | Callback signature |
-|-------|--------------------|
-| ``curve_begin`` | :func:`Callable[[Curve], None]` |
-| ``curve_new_data`` | :func:`Callable[[CallbackData], None]` |
-| ``curve_end`` | :func:`Callable[[Curve], None]` |
-| ``eis_data_begin`` | :func:`Callable[[EISData], None]` |
-| ``eis_new_data`` | :func:`Callable[[CallbackDataEIS], None]` |
-| ``eis_data_end`` | :func:`Callable[[], None]` |
+### Standard measurements
 
----
-## Generic events
+For measurements that produce (multiple) curves like Cyclic Voltammetry or Chronopotentiometry, you can subscribe to events related to individual curves:
 
-The library also provides a simple error channel:
+| Method | Triggered when... | Callback argument |
+| :--- | :--- | :--- |
+| [on_curve_begin][pypalmsens.InstrumentManager.on_curve_begin] | A new curve starts being recorded | [Curve][pypalmsens.data.Curve] |
+| [on_curve_new_data][pypalmsens.InstrumentManager.on_curve_new_data] | New data points are received (batched) | [CallbackData][pypalmsens._instruments.callback.CallbackData] |
+| [on_curve_end][pypalmsens.InstrumentManager.on_curve_end] | A curve has finished recording | [Curve][pypalmsens.data.Curve] |
 
 ```python
-handle_err = manager.on_error(lambda e: print("Error occurred", e))
+import pypalmsens as ps
+import time
+
+def begin_callback(curve):
+    print(f"New curve: {curve.title}")
+
+def end_callback(curve):
+    print(f"Measured {len(curve)} points")
+
+with ps.connect() as manager:
+    manager.on_curve_begin(begin_callback)
+    manager.on_curve_end(end_callback)
+    manager.measure(ps.CyclicVoltammetry(n_scans=3))
+# New curve: CV i vs E Scan 1
+# Measured 20 points
+# New curve: CV i vs E Scan 2
+# Measured 20 points
+# New curve: CV i vs E Scan 3
+# Measured 21 points    
 ```
 
-### Event signatures
-| Event | Callback signature |
-|-------|--------------------|
-| ``error`` | :func:`Callable[[], None]` |
+### Impedimetric measurements
 
----
-## Communication events
+Impedance Spectroscopy measurements (EIS/GEIS) use a slightly different set of events:
 
-PalmSens instruments can emit arbitrary text messages or status updates while idle.  These are exposed as:
-- ``receive_message`` – receives a string message.
-- ``receive_status`` – receives a :class:`Status` object representing the current voltage/current.
+| Method | Triggered when... | Callback argument |
+| :--- | :--- | :--- |
+| [on_eis_data_begin][pypalmsens.InstrumentManager.on_eis_data_begin] | A new EIS data set starts being recorded | [EISData][pypalmsens.data.EISData] |
+| [on_eis_new_data][pypalmsens.InstrumentManager.on_eis_new_data] | New EIS data points are received (batched) | [CallbackDataEIS][pypalmsens._instruments.callback.CallbackDataEIS] |
+| [on_eis_data_end][pypalmsens.InstrumentManager.on_eis_data_end] | An EIS data set has finished recording | None |
+
+### Communication and Status events
+
+These events provide insight into the communication layer and instrument state:
+
+| Method | Triggered when... | Callback argument |
+| :--- | :--- | :--- |
+| [on_receive_message][pypalmsens.InstrumentManager.on_receive_message] | A new message is received from the device | `str` | 
+| [on_receive_status][pypalmsens.InstrumentManager.on_receive_status] | The instrument's idle status changes | [Status][pypalmsens._instruments.callback.Status] |
+| [on_error][pypalmsens.InstrumentManager.on_error] | An error occurs during a measurement | None | 
+
+If you use MethodSCRIPT, you can use `on_receive_message` to listen for messages from [`send_string`](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html#ch_cmd_send_string).
+
+For example:
 
 ```python
-handle_msg = manager.on_receive_message(lambda msg: print("MSG:", msg))
-handle_stat = manager.on_receive_status(lambda st: print(st.potential, st.current))
+import pypalmsens as ps
+
+method = ps.MethodScript(script='send_string "hello world!"')
+
+with ps.connect() as manager:
+     manager.on_receive_message(print)
+     manager.measure(m)
+# Running: MethodSCRIPT Sandbox
+# hello world!
 ```
 
-**Note:** ``receive_status`` requires an active :class:`asyncio.AbstractEventLoop`.  If you call it from synchronous code it will raise a :class:`RuntimeError`.
+## Async events
 
----
-## Getting the event handle
+For asynchronous workflows, use the corresponding async methods on [pypalmsens.InstrumentManagerAsync][]. The callback signatures remain the same, but you must ensure your callbacks are compatible with an async environment if you are using `asyncio`.
 
-All ``on_*`` methods return an :class:`EventHandle`.  The returned object implements:
-- :func:`cancel() <pypalmsens._instruments.events_mixin.EventHandle.cancel>` – removes the callback so it no longer fires.
-
----
-## Summary table
-
-| Category | Events |
-|----------|--------|
-| Measurement | ``measurement_setup``, ``measurement_begin``, ``measurement_end``, ``measurement_teardown`` |
-| Curve | ``curve_begin``, ``curve_new_data``, ``curve_end`` |
-| EIS | ``eis_data_begin``, ``eis_new_data``, ``eis_data_end`` |
-| Error | ``error`` |
-| Communication | ``receive_message``, ``receive_status`` |
-|
----
-## Reference
-- :class:`pypalmsens._instruments.events_mixin.EventsMixin`
-- :class:`pypalmsens._instruments.callback.Status`
-- :class:`pypalmsens._instruments.callback.CallbackData`
-- :class:`pypalmsens._instruments.callback.CallbackDataEIS`
+Note that `on_receive_status` specifically requires an active event loop to function correctly as it uses thread-safe scheduling to bridge the communication layer and your code.

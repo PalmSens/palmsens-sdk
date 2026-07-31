@@ -287,7 +287,7 @@ class MeasurementManagerAsync:
         _ = self.loop.call_soon_threadsafe(self.end_measurement_event.set)
 
         for callback in self.callbacks['measurement_end']:
-            _ = self.loop.call_soon_threadsafe(callback)
+            _ = self.loop.call_soon_threadsafe(callback, self.last_measurement)
 
         return Task.CompletedTask
 

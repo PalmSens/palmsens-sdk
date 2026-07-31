@@ -14,14 +14,13 @@
 
 <br/>
 
-PyPalmSens is a Python library for automating electrochemistry experiments with your PalmSens instruments.
-It provides an intuitive Python API, making it straightforward to integrate into your Python workflows.
+PyPalmSens is a Python toolkit for easily automating electrochemistry experiments using your PalmSens instruments. It offers an intuitive Python API, making it simple to integrate into your existing workflows.
 
 With PyPalmSens, you can:
 
 - Connect to [one](measuring.md#connecting-to-a-device) or [more](measuring.md#multichannel-measurements) instruments/channels
 - Automate [electrochemistry measurements](methods.md)
-- [Access, process, and analyze](data.md) measured data
+- [Access, process, and analyze](data.md) your measured data
 - Perform [peak detection][pypalmsens.data.Curve.find_peaks]
 - Do [Equivalent Circuit Fitting](circuit_fitting.md) on impedance data
 - Take [manual control](examples.md#manual-control) of the cell
@@ -33,10 +32,9 @@ To install:
 pip install pypalmsens
 ```
 
-PyPalmSens supports Windows, MacOS and Linux (including ARM-based single-board computers like Raspberry Pi).
+PyPalmSens works on Windows, MacOS, and Linux (including ARM-based single-board computers like Raspberry Pi).
 
-PyPalmSens is built on top of the [PalmSens .NET libraries](https://dev.palmsens.com/dotnet),
-and therefore requires the .NET runtime to be installed. See the [installation instructions](installation.md) for your platform for more information.
+Since PyPalmSens is built on top of the [PalmSens .NET libraries](https://dev.palmsens.com/dotnet), you will need the .NET runtime installed. Please check the [installation instructions](installation.md) for platform-specific details.
 
 
 ## Getting started

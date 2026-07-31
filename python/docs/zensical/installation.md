@@ -1,69 +1,66 @@
 # Installation
 
-To install:
+Getting started is easy! Follow the installation steps below based on your operating system.
+
+To install the package globally using pip, run this command in your terminal:
 
 ```bash
 pip install pypalmsens
 ```
 
-## Requirements (Windows)
+!!! NOTE "Python 3.15"
 
-* [Python version 3.10 or newer](https://python.org)
-* [.NET Framework 4.7.2](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472)
-* Drivers included with PSTrace 5, MultiTrace 4, PSTrace Xpress or the [driver installer](https://github.com/palmsens/palmsens-sdk/releases/download/drivers-5.12/PalmSens.Drivers.exe).
+    Python 3.15 is currently not supported, pending support of the libraries we use. Please refer to [this issue](https://github.com/palmsens/palmsens-sdk/issues/433) for the latest information.
 
-<!--!!! NOTE "Python 3.15"
+## Windows
 
-    Support for Python 3.15 or newer is anticipated, pending one of PyPalmSens's dependencies.
+*   Install [Python](https://python.org) version 3.10 or newer
+*   Install [.NET Framework 4.7.2](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472)
+*   Install device drivers (see the [Compatibility table](#compatibility)):
+    * If you installed PSTrace or Multitrace, drivers are already installed
+    * For standalone installations, use the [driver installer](https://github.com/palmsens/palmsens-sdk/releases/download/drivers-5.12/PalmSens.Drivers.exe).
 
-    See [this issue](https://github.com/palmsens/palmsens-sdk/issues/xxx) for more information.-->
+## Linux and macOS {#req-linux}
 
-## Requirements (Linux and MacOS)  {#req-linux}
+*   Install [Python](https://python.org) version 3.10 or newer
+*   Install .NET Runtime 9.0 or newer. You can typically find the required runtime (e.g., `dotnet-runtime-9.0`) in your [package manager](https://learn.microsoft.com/en-us/dotnet/core/install/linux).
+    *   [Installation guides for Ubuntu](https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-install)
+    *   [Installation guides for Debian](https://learn.microsoft.com/en-us/dotnet/core/install/linux-debian)
+    *   [Installation guides for Fedora](https://learn.microsoft.com/en-us/dotnet/core/install/linux-fedora)
+    *   [Installation guides for Red Hat](https://learn.microsoft.com/en-us/dotnet/core/install/linux-rhel)
+    *   [Installation guides for Raspberry Pi and other ARM computers](https://learn.microsoft.com/en-us/dotnet/iot/deployment)
+    *   [Installation guides for macOS](https://learn.microsoft.com/en-us/dotnet/core/install/macos)
 
-* [Python version 3.10 or newer.](https://python.org). Use your system’s package manager to install Python.
-* .NET Runtime 9.0 or newer. This is called something like `dotnet-runtime-9.0` in your [package manager](https://learn.microsoft.com/en-us/dotnet/core/install/linux).
-    * [Ubuntu](https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-install)
-    * [Debian](https://learn.microsoft.com/en-us/dotnet/core/install/linux-debian)
-    * [Fedora](https://learn.microsoft.com/en-us/dotnet/core/install/linux-fedora)
-    * [Redhat](https://learn.microsoft.com/en-us/dotnet/core/install/linux-rhel)
-    * [Raspberry Pi and other single-board ARM computers](https://learn.microsoft.com/en-us/dotnet/iot/deployment)
-    * [MacOS](https://learn.microsoft.com/en-us/dotnet/core/install/macos)
-* Optional: [FTDI d2xx drivers](https://ftdichip.com/drivers/d2xx-drivers/).
-    * For a list of devices with an FTDI chip, see the [Compatibility table](#compatibility).
-    * For Raspberry Pi 4 or 5 you need the ARMv8 driver.
-    * See [below](#ftdisetup) for how to set up your system for FTDI devices.
+*   Optional: Install FTDI d2xx drivers
+    *   For a list of compatible devices, see the [Compatibility table](#compatibility).
+    *   If you are using a Raspberry Pi 4 or 5, you will need the ARMv8 driver.
+    *   See the [FTDI setup guide](#ftdisetup) for detailed system setup instructions.
 
-In addition, make sure your user is added to the 'dialout' group:
+
+### System Permissions
+
+To avoid permission errors (like `"can’t open device "/dev/ttyACM0": Permission denied"`), ensure your user is part of the `dialout` group:
 
 ```bash
 groups
 # pi adm dialout ...
 ```
 
-If your username is not among the list, add it using:
-
+If your username is missing from the list, add it using this command:
 
 ```bash
 sudo usermod -a -G dialout $USER
 ```
+**You must log out and log back in** for these changes to take effect.
 
-And log out and in again to make sure the changes have take effect.
-This avoids errors like `can’t open device "/dev/ttyACM0": Permission denied` when trying to connect to a device.
+### FTDI Device Setup {#ftdisetup}
 
-!!! NOTE "Known issues"
+Some devices have an [FTDI chip](https://ftdichip.com) that needs additional drivers. To see if your device needs the FTDI drivers, see the [Compatibility table](#compatibility).
 
-    Linux / MacOS support is a work in progress.
-    Although many features work, there are some limitations compared to the Windows version.
+#### 1. Install the drivers
 
-    See [this issue](https://github.com/palmsens/palmsens-sdk/issues/60) for an actual list of known issues.
-
-### FTDI devices {#ftdisetup}
-
-To set up your system to work with devices using the [FTDI chip](https://ftdichip.com/), you need to follow a few additional steps.
-To see if your device needs the FTDI drivers, see the [Compatibility table](#compatibility).
-
-First, download and install the [D2XX drivers](https://ftdichip.com/drivers/d2xx-drivers/).
-See the link for full instructions. In short for a linux system:
+Download and install the [D2XX drivers](https://ftdichip.com/drivers/d2xx-drivers/).
+See the link for full instructions. You can use this command sequence for a typical Linux system:
 
 ```bash
 tar xfvz libftd2xx-$PLATFORM-$VERSION.tgz
@@ -79,8 +76,14 @@ And update the linker cache:
 sudo ldconfig -v
 ```
 
+#### 2. Configure udev rules
+
+
 Second, set up [udev rules](https://wiki.archlinux.org/title/Udev).
 `udev` manages permissions of the device to be accessible to non-root users and groups.
+
+Set up [`udev` rules](https://wiki.archlinux.org/title/Udev) to grant access permissions to your device to non-root users and groups.
+
 Add the following lines to `/etc/udev/rules.d/50-ftdi.rules`:
 
 ```ascii
@@ -90,7 +93,7 @@ ATTRS{idVendor}=="0403", ATTRS{idProduct}=="d180", RUN+="/bin/sh -c 'rmmod ftdi_
 ATTRS{idVendor}=="0403", ATTRS{idProduct}=="d181", RUN+="/bin/sh -c 'rmmod ftdi_sio && rmmod usbserial'", MODE="0666"
 ```
 
-And restart `udevadm`:
+Restart `udevadm` to load the new rules:
 
 ```bash
 sudo udevadm control --reload
@@ -99,66 +102,26 @@ sudo udevadm trigger
 
 ### RuntimeError: Failed to create a .NET runtime (coreclr)
 
-This error is raised if you did not install the dotnet runtime correctly. See [installation instructions above](#req-linux).
+This error usually means the .NET runtime was not installed correctly. If you encounter this error, please review the [installation instructions above](#req-linux).
 
-The error will say somethin along the likes of:
+The error message might look something like this:
 
-```bash
+```
 RuntimeError: Can not determine dotnet root
 ...
 RuntimeError: Failed to create a .NET runtime (coreclr) using the
                 parameters {'runtime_config': '/home/pi/palmsenssdk/python/src/pypalmsens/_pssdk/mono/runtimeconfig.json'}.
 ```
 
-??? NOTE "Click to see example error message"
+## Virtual Environments
 
-    ```bash
-    (.venv) pi@raspberrypi:~/palmsenssdk/python $ python
-    Python 3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0] on linux
-    Type "help", "copyright", "credits" or "license" for more information.
-    >>> import pypalmsens as ps
-    Traceback (most recent call last):
-      File "/home/pi/palmsenssdk/python/.venv/lib/python3.13/site-packages/pythonnet/__init__.py", line 77, in _create_runtime_from_spec
-        return clr_loader.get_coreclr(**params)
-              ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-      File "/home/pi/palmsenssdk/python/.venv/lib/python3.13/site-packages/clr_loader/__init__.py", line 121, in get_coreclr
-        dotnet_root = find_dotnet_root()
-      File "/home/pi/palmsenssdk/python/.venv/lib/python3.13/site-packages/clr_loader/util/find.py", line 57, in find_dotnet_root
-        raise RuntimeError("Can not determine dotnet root")
-    RuntimeError: Can not determine dotnet root
+We recommend using virtual environments to isolate your project dependencies. Use tools like [venv](https://docs.python.org/3/library/venv.html) or [Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) to manage different Python versions and packages.
 
-    The above exception was the direct cause of the following exception:
+### venv
 
-    Traceback (most recent call last):
-      File "<&lt;>python-input-0>", line 1, in <&lt;>module>
-        import pypalmsens as ps
-      File "/home/pi/palmsenssdk/python/src/pypalmsens/__init__.py", line 9, in <&lt;>module>
-        from ._lib.mono import sdk_version
-      File "/home/pi/palmsenssdk/python/src/pypalmsens/_lib/mono.py", line 13, in <&lt;>module>
-        load('coreclr', runtime_config=str(PSSDK_DIR / 'runtimeconfig.json'))
-        ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-      File "/home/pi/palmsenssdk/python/.venv/lib/python3.13/site-packages/pythonnet/__init__.py", line 135, in load
-        set_runtime(runtime, **params)
-        ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
-      File "/home/pi/palmsenssdk/python/.venv/lib/python3.13/site-packages/pythonnet/__init__.py", line 29, in set_runtime
-        runtime = _create_runtime_from_spec(runtime, params)
-      File "/home/pi/palmsenssdk/python/.venv/lib/python3.13/site-packages/pythonnet/__init__.py", line 90, in _create_runtime_from_spec
-        raise RuntimeError(
-        ...<&lt;>2 lines>...
-        ) from exc
-    RuntimeError: Failed to create a .NET runtime (coreclr) using the
-                    parameters {'runtime_config': '/home/pi/palmsenssdk/python/src/pypalmsens/_pssdk/mono/runtimeconfig.json'}.
-    ```
+The venv module is part of the standard library and therefore a common way to set up an environment.
 
-## Virtual environments
-
-Virtual enviroments are used to create isolated Python installations.
-Tools like [venv](https://docs.python.org/3/library/venv.html) or [conda](https://docs.conda.io/projects/conda/) help you create and update environment that have different versions of Python and/or packages installed in them. This makes them useful for software development.
-
-This section shows how to set up and activate an environment.
-
-Setting up a virtual environment using [Python, pip and venv](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/):
-
+For Windows:
 
 ```powershell
 python -m venv .venv
@@ -166,7 +129,17 @@ python -m venv .venv
 python -m pip install -e .[develop]
 ```
 
-Alternatively, setting up a [virtual environment using Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html):
+For Bash:
+
+```powershell
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install -e .[develop]
+```
+
+### Conda
+
+If you prefer Conda, use these commands:
 
 ```powershell
 conda create -n pypalmsens python=3.14
@@ -176,7 +149,7 @@ pip install pypalmsens
 
 ### Visual Studio Code
 
-[VS Code](https://code.visualstudio.com/) supports virtual environments. In combination with the Python, Python Debugger and Pylance extensions, VS code makes it easy to create virtual environments and load the python dependencies.
+[VS Code](https://code.visualstudio.com/) also supports virtual environments. In combination with the Python, Python Debugger and Pylance extensions, VS code makes it easy to create virtual environments and load your python dependencies.
 
 See the [VSCode documentation](https://code.visualstudio.com/docs/python/environments#_creating-environments) for how to set this up.
 

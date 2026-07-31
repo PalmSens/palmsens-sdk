@@ -1,11 +1,11 @@
 # Working with files
 
-PyPalmSens and PSTrace store measurements and their corresponding methods in `.pssession` files. Methods can also be stored seperately in `.psmethod` files. `pypalmsens` contains all the functions needed to work with session and method files.
+PyPalmSens and PSTrace store measurements and their corresponding methods in `.pssession` files. Methods can also be stored separately in `.psmethod` files. `pypalmsens` contains all the functions needed to work with session and method files.
 
 ## Loading and saving a method file (`.psmethod`)
 
 [pypalmsens.load_method_file][] can be used to load method files.
-This returns a 'Method' dataclass with all the method parameters.
+This returns a [Technique](./reference/methods/) object with all the technique parameters.
 
 ```python
 >>> import pypalmsens as ps

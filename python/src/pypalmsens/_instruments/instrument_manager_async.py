@@ -173,6 +173,10 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
         self._comm = await self.instrument._connect_async()
 
+        self._comm.ClientConnection.SetCommMode(
+            PalmSens.Comm.ClientConnection.CommMode.MODE_FAST
+        )
+
         firmware_warning(self._comm.Capabilities)
 
     def status(self) -> Status:
@@ -454,14 +458,16 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
         async with self._lock():
             # this temporarily turns off idle messages
-            status_when_idle = self._comm.get_StatusWhenIdle()
-            self._comm.set_StatusWhenIdle(False)
+            comm_mode = self._comm.ClientConnection._mode
+            self._comm.ClientConnection.SetCommMode(
+                PalmSens.Comm.ClientConnection.CommMode.MODE_FAST
+            )
             comm = CommProtocolAsync(self.instrument)
 
             try:
                 response = await comm.query(command, delay=delay)
             finally:
-                self._comm.set_StatusWhenIdle(status_when_idle)
+                self._comm.ClientConnection.SetCommMode(comm_mode)
 
         return response
 

@@ -90,6 +90,7 @@ def test_firmware_warning_fail(cap):
 def test_connect():
     with ps.connect() as manager:
         assert isinstance(manager, ps.InstrumentManager)
+        assert str(manager._comm.ClientConnection._mode) == 'MODE_FAST'
 
 
 @pytest.mark.instrument
@@ -121,6 +122,7 @@ def test_connect_serial_port_fail():
 async def test_connect_async():
     async with await ps.connect_async() as manager:
         assert isinstance(manager, ps.InstrumentManagerAsync)
+        assert str(manager._comm.ClientConnection._mode) == 'MODE_FAST'
 
 
 @pytest.mark.instrument

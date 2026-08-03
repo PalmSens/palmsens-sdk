@@ -177,6 +177,10 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         # receive status, and device state change events.
         self._comm = asyncio.run(self.instrument._connect_async())
 
+        self._comm.ClientConnection.SetCommMode(
+            PalmSens.Comm.ClientConnection.CommMode.MODE_FAST
+        )
+
         firmware_warning(self._comm.Capabilities)
 
     def status(self) -> Status:

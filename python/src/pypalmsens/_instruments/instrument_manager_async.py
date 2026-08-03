@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import sys
+import time
 import warnings
 from collections.abc import AsyncGenerator, Coroutine
 from contextlib import asynccontextmanager
@@ -173,13 +174,30 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
         self._comm = await self.instrument._connect_async()
 
+        # Disable idle messages to improve response time and reduce noise
+        await create_future(self._comm.SetStatusWhenIdleAsync(False))
+
         firmware_warning(self._comm.Capabilities)
 
     def status(self) -> Status:
-        """Get status."""
+        """Get status.
+
+        Sets device 'StatusWhenIdle' flag on device, which tells it
+        to periodically send an updated status message.
+        """
         self.ensure_connection()
+
+        if not self._comm.StatusWhenIdle:
+            self._comm.StatusWhenIdle = True
+
+            while not (status := self._comm.get_Status()):
+                time.sleep(0.1)
+
+        else:
+            status = self._comm.get_Status()
+
         return Status(
-            self._comm.get_Status(),
+            status,
             device_state=str(self._comm.get_State()),  # type:ignore
         )
 
@@ -452,16 +470,20 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
                 'The Communication Protocol is only supported on MethodSCRIPT devices.'
             )
 
+        emit_idle_messages: bool
+
         async with self._lock():
-            # this temporarily turns off idle messages
-            status_when_idle = self._comm.get_StatusWhenIdle()
-            self._comm.set_StatusWhenIdle(False)
+            # this temporarily turns off idle messages to reduce cross-talk
+            if emit_idle_messages := await create_future(self._comm.GetStatusWhenIdleAsync()):
+                await create_future(self._comm.SetStatusWhenIdleAsync(False))
+
             comm = CommProtocolAsync(self.instrument)
 
             try:
                 response = await comm.query(command, delay=delay)
             finally:
-                self._comm.set_StatusWhenIdle(status_when_idle)
+                if emit_idle_messages:
+                    await create_future(self._comm.SetStatusWhenIdleAsync(emit_idle_messages))
 
         return response
 

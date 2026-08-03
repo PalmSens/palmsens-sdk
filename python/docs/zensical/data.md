@@ -144,7 +144,7 @@ array([0.352146, 0.351192, ..., 0.19908 , 0.199557])
 
 For more details on array manipulation, see [pypalmsens.data.Curve][].
 
-## Peak Properties
+## Peak
 
 [Peak][pypalmsens.data.Peak] is a small dataclass containing peak properties.
 Stored peaks can be retrieved from a [Curve](#curve) (for example, if PSTrace stored peaks in the `.pssession` file):
@@ -174,7 +174,7 @@ Many peak properties are accessible from this object:
 
 For more information on peak properties, see [pypalmsens.data.Peak][].
 
-## Dataset
+## DataSet
 
 Raw data are stored in a [DataSet](#dataset). The dataset contains all raw measurement data, including the data for the curves.
 
@@ -394,9 +394,9 @@ Similar to currents, `PotentialArray` also derives from `DataArray` and provides
 
 For more information, see [pypalmsens.data.PotentialArray][].
 
-## EISData (Impedance Spectroscopy)
+## EISData
 
-You can retrieve impedance data from an EIS or GEIS measurement.
+You can retrieve impedance data from an impedance (EIS/GEIS) measurement.
 
 Since an EIS measurement might be multichannel, `.eis_data` returns a list of results.
 If you are not using a multiplexer, you can select the first (and only) item from this list:

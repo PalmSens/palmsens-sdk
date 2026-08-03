@@ -76,6 +76,8 @@ class EventHandleStatus(EventHandle):
                 self._idle_status_handler_async
             )
 
+        _ = self._loop.call_soon_threadsafe(self.emitter._comm.SetStatusWhenIdleAsync, True)
+
     def _idle_status_handler(self, sender, args) -> None:
         """Message handler helper function to schedule the callback."""
         status = Status._from_event_args(args)
@@ -92,12 +94,12 @@ class EventHandleStatus(EventHandle):
 
     @override
     def cancel(self):
-        if self._loop:
-            self.emitter._comm.ClientConnection.ReceiveStatusAsync -= (
-                self._idle_status_handler_async
-            )
-        else:
-            self.emitter._comm.ClientConnection.ReceiveStatus -= self._idle_status_handler
+        self.emitter._comm.ClientConnection.ReceiveStatusAsync -= (
+            self._idle_status_handler_async
+        )
+
+        assert self._loop
+        _ = self._loop.call_soon_threadsafe(self.emitter._comm.SetStatusWhenIdleAsync, False)
 
 
 class EventsMixin:

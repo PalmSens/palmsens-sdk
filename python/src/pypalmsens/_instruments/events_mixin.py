@@ -99,7 +99,6 @@ class EventHandleStatus(EventHandle):
         )
 
         assert self._loop
-
         _ = self._loop.call_soon_threadsafe(self.emitter._comm.SetStatusWhenIdleAsync, False)
 
 

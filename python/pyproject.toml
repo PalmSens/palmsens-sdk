@@ -57,6 +57,7 @@ develop = [
     "pre-commit",
     "pytest",
     "pytest-asyncio",
+    "pytest-examples",
 ]
 
 publishing = [

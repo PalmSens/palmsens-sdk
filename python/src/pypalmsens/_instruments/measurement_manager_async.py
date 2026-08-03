@@ -147,10 +147,18 @@ class MeasurementManagerAsync:
         self.comm.EndMeasurementAsync += self.event_handlers['measurement_end']
         self.comm.Disconnected += self.event_handlers['error']
 
-        if self.callbacks['eis_new_data']:
+        if (
+            self.callbacks['eis_data_begin']
+            or self.callbacks['eis_new_data']
+            or self.callbacks['eis_data_end']
+        ):
             self.comm.BeginReceiveEISData += self.event_handlers['eis_data_begin']
 
-        if self.callbacks['curve_new_data']:
+        if (
+            self.callbacks['curve_begin']
+            or self.callbacks['curve_new_data']
+            or self.callbacks['curve_end']
+        ):
             self.comm.BeginReceiveCurve += self.event_handlers['curve_begin']
 
     def teardown(self):
@@ -159,10 +167,18 @@ class MeasurementManagerAsync:
         self.comm.EndMeasurementAsync -= self.event_handlers['measurement_end']
         self.comm.Disconnected -= self.event_handlers['error']
 
-        if self.callbacks['eis_new_data']:
+        if (
+            self.callbacks['eis_data_begin']
+            or self.callbacks['eis_new_data']
+            or self.callbacks['eis_data_end']
+        ):
             self.comm.BeginReceiveEISData -= self.event_handlers['eis_data_begin']
 
-        if self.callbacks['curve_new_data']:
+        if (
+            self.callbacks['curve_begin']
+            or self.callbacks['curve_new_data']
+            or self.callbacks['curve_end']
+        ):
             self.comm.BeginReceiveCurve -= self.event_handlers['curve_begin']
 
         self.is_measuring = False

@@ -156,7 +156,7 @@ def test_callback_eis(manager):
             ),
         ),
         (
-            ps.ChronoAmperometry(run_time=0.5),
+            ps.ChronoAmperometry(run_time=0.1, interval_time=0.01),
             (
                 'measurement_begin',
                 'measurement_end',
@@ -165,6 +165,20 @@ def test_callback_eis(manager):
                 'curve_end',
                 'measurement_setup',
                 'measurement_teardown',
+            ),
+        ),
+        (
+            ps.ChronoAmperometry(run_time=0.1, interval_time=0.01),
+            (
+                'curve_begin',
+                'curve_end',
+            ),
+        ),
+        (
+            ps.ElectrochemicalImpedanceSpectroscopy(scan_type='fixed', frequency_type='fixed'),
+            (
+                'eis_data_begin',
+                'eis_data_end',
             ),
         ),
     ],

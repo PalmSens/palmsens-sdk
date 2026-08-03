@@ -14,6 +14,7 @@ nav = [
   "data.md",
   "measuring.md",
   "methods.md",
+  "events.md",
   "filesystem.md",
   "comm_protocol.md",
   "circuit_fitting.md",

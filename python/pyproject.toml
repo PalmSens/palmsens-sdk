@@ -130,8 +130,10 @@ exclude = [
 ]
 allow_redefinition = true
 ignore_missing_imports = true
+check_untyped_defs = false
 disable_error_code = [
     "prop-decorator",
+    "annotation-unchecked",
 ]
 
 

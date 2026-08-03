@@ -3,7 +3,7 @@ import asyncio
 import pypalmsens as ps
 from pypalmsens.data import Status
 
-pretreatment_data = []
+pretreatment_data = []  # type: ignore
 
 
 def idle_status_callback(point: Status):
@@ -28,7 +28,7 @@ async def main():
     print(instruments)
 
     async with await ps.connect_async(instruments[0]) as manager:
-        manager.register_status_callback(idle_status_callback)
+        handle = manager.on_receive_status(idle_status_callback)
 
         # While sleeping, the callback reports the
         # idle current/potential every second
@@ -50,7 +50,7 @@ async def main():
 
         await asyncio.sleep(5)
 
-        manager.unregister_status_callback()
+        handle.cancel()
 
     print(measurement)
 

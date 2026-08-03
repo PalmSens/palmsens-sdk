@@ -158,7 +158,11 @@ class Status:
     @override
     def __str__(self):
         return str(
-            {'current': str(self.current_reading), 'potential': str(self.potential_reading)}
+            {
+                'state': self.device_state,
+                'current': str(self.current_reading),
+                'potential': str(self.potential_reading),
+            }
         )
 
     @override

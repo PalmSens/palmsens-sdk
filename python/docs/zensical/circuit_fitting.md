@@ -7,16 +7,16 @@ specifying the frequency range to fit, limitting the number of iterations, delta
 Example usage for fitting an equivalent circuit:
 
 ```python
->>> import pypalmsens as ps
+import pypalmsens as ps
 
->>> measurements = ps.load_session_file('eis_data.pssession')
->>> eis_data = measurements[0].eis_data[0]
+measurements = ps.load_session_file('eis_data.pssession')
+eis_data = measurements[0].eis_data[0]
 
->>> cdc = 'R(RC)'
->>> model = ps.fitting.CircuitModel(cdc=cdc)
->>> result = model.fit(eis_data)
->>> result
-FitResult(cdc='R(RC)', parameters=[564.65, 10077.11, 3.327e-08], chisq=0.00040, exit_code='MinimumDeltaErrorTerm', n_iter=9, error=[1.47, 1.54, 1.92])
+cdc = 'R(RC)'
+model = ps.fitting.CircuitModel(cdc=cdc)
+result = model.fit(eis_data)
+result
+#> FitResult(cdc='R(RC)', parameters=[564.65, 10077.11, 3.327e-08], chisq=0.00040, exit_code='MinimumDeltaErrorTerm', n_iter=9, error=[1.47, 1.54, 1.92])
 ```
 
 `CircuitModel` takes a single parameter, the circuit description code
@@ -28,7 +28,7 @@ errors, and other fitting data.
 You can pass `result.parameters` back to [pypalmsens.fitting.CircuitModel.fit][]) to redo the fit:
 
 ```python
->>> result = model.fit(eis_data, parameters=result.parameters)
+result = model.fit(eis_data, parameters=result.parameters)
 ```
 
 ## Parameters
@@ -39,14 +39,16 @@ bounds, you can use set them using the [pypalmsens.fitting.Parameters][] class.
 These can be modified, for example:
 
 ```python
->>> parameters = model.default_parameters()
+parameters = model.default_parameters()
 
->>> parameters[0].value = 123  # set starting value to 123
->>> parameters[0].fixed = True # fix this value
->>> parameters[1].min = 12  # set lower bound
->>> parameters[1].max = 34  # set upper bound
+parameters[0].value = 123  # set starting value to 123
+parameters[0].fixed = True # fix this value
+parameters[1].min = 12  # set lower bound
+parameters[1].max = 34  # set upper bound
 
->>> result = model.fit(eis_data, parameters=parameters)
+result = model.fit(eis_data, parameters=parameters)
+result
+#> ...
 ```
 
 ## Re-fit EIS data
@@ -54,8 +56,10 @@ These can be modified, for example:
 If you already fitted your data in PSTrace, you can redo the fit or use the values as a starting parameters:
 
 ```python
->>> model = ps.fitting.CircuitModel(cdc=eisdata.cdc)
->>> result = model.fit(eisdata, parameters=eisdata.cdc_values)
+model = ps.fitting.CircuitModel(cdc=eisdata.cdc)
+result = model.fit(eisdata, parameters=eisdata.cdc_values)
+result
+#>
 ```
 
 ## Plotting
@@ -64,6 +68,6 @@ If you have [matplotlib](https://matplotlib.org) installed, you can
 generate the plots from the result:
 
 ```python
->>> result.plot_nyquist(eis_data)
->>> result.plot_bode(eis_data)
+result.plot_nyquist(eis_data)
+result.plot_bode(eis_data)
 ```

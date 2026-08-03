@@ -358,14 +358,14 @@ You can pass register a callback to the instrument manager to get updates from t
 
 >>> async def main():
 ...     async with await ps.connect_async() as manager:
-...         manager.register_status_callback(print)
+...         handle = manager.on_receive_status(print)
 ...         await asyncio.sleep(5)
-...         manager.unregister_status_callback()
+...         handle.cancel()
 
 >>> asyncio.run(main())
-Idle: {'current': '0.000 * 1uA', 'potential': '0.527 V'}
-Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
-Idle: {'current': '0.000 * 1uA', 'potential': '0.526 V'}
+{'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.527 V'}
+{'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.526 V'}
+{'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.526 V'}
 ```
 
 ### Fixing Bipot settings

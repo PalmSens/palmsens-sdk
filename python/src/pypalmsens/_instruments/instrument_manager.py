@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import warnings
-from collections.abc import Callable, Generator
+from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from time import sleep
@@ -25,10 +25,11 @@ from .._types import (
 )
 from ..data import Measurement
 from .callback import Callback, CallbackEIS, Status
+from .capabilities_mixin import CapabilitiesMixin
 from .comm_protocol import CommProtocol
+from .events_mixin import EventsMixin
 from .instrument import Instrument, discover
-from .instrument_manager_async import CapabilitiesMixin
-from .measurement_manager_async import MeasurementEvents, MeasurementManagerAsync
+from .measurement_manager_async import MeasurementManagerAsync
 from .shared import firmware_warning
 
 warnings.simplefilter('default')
@@ -110,7 +111,7 @@ def measure(
     return measurement
 
 
-class InstrumentManager(CapabilitiesMixin):
+class InstrumentManager(CapabilitiesMixin, EventsMixin):
     """Instrument manager for PalmSens instruments.
 
     Parameters
@@ -120,13 +121,11 @@ class InstrumentManager(CapabilitiesMixin):
     """
 
     def __init__(self, instrument: Instrument):
+        super().__init__()
+
         self.instrument: Instrument = instrument
         """Instrument being managed by this class."""
 
-        self.events: MeasurementEvents = MeasurementEvents()
-        """Register functions to event hooks."""
-
-        self._receive_message_callback: Callable[[str], None]
         self._comm: CommManager
 
     @override
@@ -135,11 +134,11 @@ class InstrumentManager(CapabilitiesMixin):
 
     def __enter__(self):
         if not self.is_connected():
-            _ = self.connect()
+            self.connect()
         return self
 
     def __exit__(self, *_):
-        _ = self.disconnect()
+        self.disconnect()
 
     def is_measuring(self) -> bool:
         """Return True if device is measuring."""
@@ -305,29 +304,6 @@ class InstrumentManager(CapabilitiesMixin):
 
         return serial
 
-    def register_receive_message_callback(self, callback: Callable[[str], None], /):
-        """Register callback when a message is received.
-
-        The callback is triggered, for example, when a method is started,
-        or when `send_string` is called in MethodSCRIPT.
-
-        Parameters
-        ----------
-        callback: Callable[[str], None]
-            The function to call when triggered
-        """
-        self._receive_message_callback = callback
-        self._comm.ClientConnection.ReceiveMessage += self._receive_message_handler
-
-    def unregister_receive_message_callback(self):
-        """Unregister callback from message events."""
-        self._comm.ClientConnection.ReceiveMessage -= self._receive_message_handler
-        del self._receive_message_callback
-
-    def _receive_message_handler(self, sender, message: str) -> None:
-        """Message handler helper function to schedule the callback."""
-        self._receive_message_callback(message)
-
     def measure(
         self,
         method: MethodTypeCompatible,
@@ -347,9 +323,6 @@ class InstrumentManager(CapabilitiesMixin):
             time it was called. Each point is an instance of `ps.data.CallbackData`
             for non-impedimetric or  `ps.data.CallbackDataEIS`
             for impedimetric measurments.
-
-            For more advanced use cases, use `InstrumentManager.events`
-            to register callbacks to various events.
         stream: Path | str | None
             If defined, stream data directly to this file in JSON Lines text format
             (https://jsonlines.org). This option is useful for long-term measurements.
@@ -373,7 +346,7 @@ class InstrumentManager(CapabilitiesMixin):
                 method,
                 callback=callback,
                 stream=stream,
-                events=self.events,
+                listeners=self._listeners,
             )
         )
 

@@ -52,7 +52,6 @@ For more information, see the [measurement documentation](https://dev.palmsens.c
 - [`pypalmsens.Instrument`][pypalmsens.Instrument]
 - [`pypalmsens.InstrumentManager`][pypalmsens.InstrumentManager]
 - [`pypalmsens.InstrumentPool`][pypalmsens.InstrumentPool]
-- [`pypalmsens.MeasurementEvents`][pypalmsens.MeasurementEvents]
 
 ::: pypalmsens.connect
 ::: pypalmsens.discover
@@ -60,4 +59,3 @@ For more information, see the [measurement documentation](https://dev.palmsens.c
 ::: pypalmsens.Instrument
 ::: pypalmsens.InstrumentManager
 ::: pypalmsens.InstrumentPool
-::: pypalmsens.MeasurementEvents

@@ -6,6 +6,7 @@ from collections.abc import Iterator
 import PalmSens
 import System
 from PalmSens.Data import DeviceFile
+from typing_extensions import override
 
 from ..data import Measurement
 from .instrument import Instrument
@@ -49,16 +50,17 @@ else:
 
         parser = posixpath  # type:ignore
 
-        def __str__(self):
+        @override
+        def __str__(self) -> str:
             try:
                 return self._str
             except AttributeError:
                 self._str: str = (
-                    self._format_parsed_parts(self.drive, self.root, self._tail) or ''
+                    self._format_parsed_parts(self.drive, self.root, self._tail) or ''  # type: ignore
                 )
                 return self._str
 
-        def _from_parsed_string(self, path_str):
+        def _from_parsed_string(self, path_str: str):
             path = self.with_segments(path_str)
             path._str = path_str or ''
             return path

@@ -143,6 +143,65 @@ def test_callback_eis(manager):
     assert len(list(points[0].new_datapoints())) == 1
 
 
+@pytest.mark.instrument
+@pytest.mark.parametrize(
+    'method,event_names',
+    [
+        (
+            ps.ElectrochemicalImpedanceSpectroscopy(scan_type='fixed', frequency_type='fixed'),
+            (
+                'eis_data_begin',
+                'eis_new_data',
+                'eis_data_end',
+            ),
+        ),
+        (
+            ps.ChronoAmperometry(run_time=0.1, interval_time=0.01),
+            (
+                'measurement_begin',
+                'measurement_end',
+                'curve_begin',
+                'curve_new_data',
+                'curve_end',
+                'measurement_setup',
+                'measurement_teardown',
+            ),
+        ),
+        (
+            ps.ChronoAmperometry(run_time=0.1, interval_time=0.01),
+            (
+                'curve_begin',
+                'curve_end',
+            ),
+        ),
+        (
+            ps.ElectrochemicalImpedanceSpectroscopy(scan_type='fixed', frequency_type='fixed'),
+            (
+                'eis_data_begin',
+                'eis_data_end',
+            ),
+        ),
+    ],
+)
+def test_on_event(manager, method, event_names):
+    triggered = set()
+
+    def make_callback(event_name: str):
+        def _callback(*args):
+            triggered.add(event_name)
+
+        return _callback
+
+    for event_name in event_names:
+        on = getattr(manager, f'on_{event_name}')
+        _ = on(make_callback(event_name))
+        assert event_name in manager._listeners
+
+    _ = manager.measure(method)
+
+    assert set(event_names) == triggered
+
+
 class CV:
     id = 'cv'
     kwargs = {

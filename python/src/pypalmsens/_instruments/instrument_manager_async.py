@@ -470,10 +470,12 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
                 'The Communication Protocol is only supported on MethodSCRIPT devices.'
             )
 
+        emit_idle_messages: bool
+
         async with self._lock():
             # this temporarily turns off idle messages to reduce cross-talk
-            if emit_idle_messages := self._comm.get_StatusWhenIdle():
-                self._comm.set_StatusWhenIdle(False)
+            if emit_idle_messages := await create_future(self._comm.GetStatusWhenIdleAsync()):
+                await create_future(self._comm.SetStatusWhenIdleAsync(False))
 
             comm = CommProtocolAsync(self.instrument)
 
@@ -481,7 +483,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
                 response = await comm.query(command, delay=delay)
             finally:
                 if emit_idle_messages:
-                    self._comm.set_StatusWhenIdle(True)
+                    await create_future(self._comm.SetStatusWhenIdleAsync(emit_idle_messages))
 
         return response
 

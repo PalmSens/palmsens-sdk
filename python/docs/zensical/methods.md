@@ -1,8 +1,8 @@
 # Methods
 
-## Supported methods
+## Supported Methods
 
-The following methods are supported in PyPalmSens:
+The following methods are available in PyPalmSens:
 
 **Voltammetric Techniques**
 
@@ -33,11 +33,11 @@ The following methods are supported in PyPalmSens:
 - [Multistep Potentiometry][pypalmsens.MultiStepPotentiometry]
 - [Stripping Chronopotentiometry][pypalmsens.StrippingChronoPotentiometry]
 
-**Coulometric techniques**
+**Coulometric Techniques**
 
 - [Chronocoulometry][pypalmsens.ChronoCoulometry]
 
-**Other**
+**Other Techniques**
 
 - [Impedance Spectroscopy][pypalmsens.ElectrochemicalImpedanceSpectroscopy]
 - [Fast Impedance Spectroscopy][pypalmsens.FastImpedanceSpectroscopy]
@@ -46,9 +46,9 @@ The following methods are supported in PyPalmSens:
 - [Mixed Mode][pypalmsens.MixedMode]
 - [Method Script][pypalmsens.MethodScript] | [Stages][pypalmsens.stages]
 
-## Setting up a method
+## Setting up a Method
 
-This example creates a method for a [square-wave voltammetry][pypalmsens.SquareWaveVoltammetry] measurement versus the open circuit potential:
+Here is an example of creating a method for a [square-wave voltammetry][pypalmsens.SquareWaveVoltammetry] measurement versus the open circuit potential:
 
 ```python
 >>> import pypalmsens as ps
@@ -66,7 +66,7 @@ This example creates a method for a [square-wave voltammetry][pypalmsens.SquareW
 ...)
 ```
 
-Because methods are [pydantic models](https://docs.pydantic.dev/latest/), all attributes can be modified afterwards:
+Since methods are built on [Pydantic models](https://docs.pydantic.dev/latest/), you can easily modify their attributes after creation:
 
 ```python
 >>> method.begin_potential = -1.0
@@ -74,7 +74,7 @@ Because methods are [pydantic models](https://docs.pydantic.dev/latest/), all at
 >>> method.step_potential = 0.02
 ```
 
-Methods can be serialized to and from a dictionary:
+Methods can also be converted to and from a dictionary:
 
 ```python
 >>> dumped = method.model_dump()
@@ -91,7 +91,7 @@ Methods can be serialized to and from a dictionary:
 True
 ```
 
-Methods can be copied and updated:
+To copy a method and make updates, use `model_copy`:
 
 ```python
 >>> method3 = method.model_copy(update={'equilibration_time' : 10.0})
@@ -99,20 +99,20 @@ Methods can be copied and updated:
 False
 ```
 
-!!! TIP
+!!! Tip: Code Completion
 
-    The VSCode Debug Console or another Python REPL environment like [IPython](https://ipython.readthedocs.io) will auto complete on the properties and functions.
+    The VSCode Debug Console or other Python REPL environments like [IPython](https://ipython.readthedocs.io) will offer auto-completion for properties and functions.
 
     ![Debug console in VSCode](assets/ipython_autocomplete.png){ width="80%" }
 
 
 ### Common settings
 
-Many settings are shared between methods.
-For a full listing, see [`pypalmsens.settings`](reference/methods/settings.md).
+Many settings are shared across methods.
+For a complete list, please refer to [`pypalmsens.settings`](reference/methods/settings.md).
 
-If you don’t specify any arguments, the default values are loaded.
-These are accessible via attributes on the methods.
+If you don't provide any arguments, the default values will be loaded automatically.
+These defaults can be accessed directly via attributes on the method instance.
 
 For example:
 
@@ -122,7 +122,7 @@ For example:
 CurrentRange(max = '10mA', min = '1uA', start = '100uA')
 ```
 
-There are two ways to modify the current ranges, for example, if you want so set the start current at 10 μA.
+You have two ways to set the current range, for instance, if you want to set the start current to 10 μA.
 
 1. By passing current ranges as an argument during initialization
 
@@ -134,7 +134,7 @@ There are two ways to modify the current ranges, for example, if you want so set
 
     1. Only the start value was set, so the min/max are populated with the defaults.
 
-2. By updating the attributes (after initialization)
+2. By updating the attributes after initialization
 
     ```python
     >>> cv = ps.CyclicVoltammetry()
@@ -143,9 +143,7 @@ There are two ways to modify the current ranges, for example, if you want so set
 
 !!! TIP "Fixed ranges"
 
-    If you want to use a fixed current (or potential) range,
-    you can save yourself some typing by passing the current range string directly.
-    This automatically expands into the `CurrentRange` object with `min`, `max`, and `start` equal.
+    If you need to use a fixed current (or potential) range, you can simplify the code by passing the current range string directly. This automatically sets `min`, `max`, and `start` to the same value.
 
     ```python
     >>> cv = ps.CyclicVoltammetry(current_range='10uA')

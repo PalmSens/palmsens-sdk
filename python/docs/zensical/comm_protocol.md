@@ -1,6 +1,6 @@
 # Communication protocol
 
-The [pypalmsens.CommProtocol][] class provides an interface to exchange messages with your device using the communication protocol. You can use the Communication Protocol to directly query/manipulate the state of your device, e.g. setting registers, file operations, and sending scripts. The interface is of the physical connection type (e.g. serial port, USB, Bluetooth).
+The [pypalmsens.CommProtocol][] class provides an interface to exchange messages with your device using the communication protocol. You can use the Communication Protocol to directly query/manipulate the state of your device, e.g. setting registers, file operations, and sending scripts. It supports various connection types, such as serial ports, USB, and Bluetooth.
 
 The Communication Protocol is supported by all MethodSCRIPT-capable instruments:
 
@@ -17,7 +17,7 @@ To communicate with a PalmSens instrument you need an active connection. [CommPr
 >>> import pypalmsens as ps
 >>> instrument = ps.discover()[0]
 >>> with ps.CommProtocol(instrument) as comm:
-...     print(comm.query('t')
+...     print(comm.query('t'))
 'es4_lr1500#Mar 12 2026 14:28:01\nR*'
 ```
 

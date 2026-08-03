@@ -3,15 +3,14 @@ from __future__ import annotations
 import asyncio
 import sys
 import warnings
-from collections.abc import AsyncGenerator, Callable, Coroutine
+from collections.abc import AsyncGenerator, Coroutine
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any
 
 import clr
 import PalmSens
 from PalmSens.Comm import CommManager, MuxType
-from System.Threading.Tasks import Task
 from typing_extensions import override
 
 from .._converters import (
@@ -22,17 +21,17 @@ from .._converters import (
 )
 from .._types import (
     AllowedCurrentRanges,
-    AllowedMethods,
     AllowedPotentialRanges,
     MethodTypeCompatible,
 )
 from ..data import Measurement
 from .callback import Callback, CallbackEIS, CallbackStatus, Status
-from .capabilities import Capabilities, CapabilitiesInterface
+from .capabilities_mixin import CapabilitiesMixin
 from .comm_protocol_async import CommProtocolAsync
+from .events_mixin import EventsMixin
 from .instrument import Instrument, discover_async
-from .measurement_manager_async import MeasurementEvents, MeasurementManagerAsync
-from .shared import MethodIncompatibleError, create_future, firmware_warning
+from .measurement_manager_async import MeasurementManagerAsync
+from .shared import create_future, firmware_warning
 
 WINDOWS = sys.platform == 'win32'
 LINUX = not WINDOWS
@@ -111,135 +110,7 @@ async def measure_async(
     return measurement
 
 
-class HasCommProtocol(Protocol):
-    _comm: CommManager
-
-    def ensure_connection(self) -> None: ...
-
-
-class HasCapabilities(Protocol):
-    capabilities: Capabilities
-
-
-class CapabilitiesMixin:
-    @property
-    def capabilities(self: HasCommProtocol) -> Capabilities:
-        """Retrieve device capabilities and device info as a dataclass.
-
-        Returns
-        -------
-        capabilities: Capabilities
-            Device capabilities and device info.
-        """
-        self.ensure_connection()
-        return Capabilities._from_comm(self._comm)
-
-    def supported_methods(self: HasCommProtocol) -> list[AllowedMethods]:
-        """List methods supported by this device.
-
-        Returns
-        -------
-        methods: list[AllowedMethods]
-            List of supported methods.
-        """
-        self.ensure_connection()
-        return CapabilitiesInterface(comm=self._comm).supported_methods
-
-    def supported_current_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
-        """List current ranges supported by this device.
-
-        Returns
-        -------
-        current_ranges: list[AllowedCurrentRanges]
-            List of supported current ranges.
-        """
-        self.ensure_connection()
-        return CapabilitiesInterface(comm=self._comm).supported_current_ranges
-
-    def supported_applied_current_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
-        """List applied current ranges supported by this device.
-
-        Returns
-        -------
-        current_ranges: list[AllowedCurrentRanges]
-            List of supported current ranges.
-        """
-        self.ensure_connection()
-        return CapabilitiesInterface(comm=self._comm).supported_applied_current_ranges
-
-    def supported_bipot_current_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
-        """List bipot current ranges supported by this device.
-
-        Returns
-        -------
-        current_ranges: list[AllowedCurrentRanges]
-            List of supported current ranges.
-        """
-        self.ensure_connection()
-        return CapabilitiesInterface(comm=self._comm).supported_bipot_current_ranges
-
-    def supported_potential_ranges(self: HasCommProtocol) -> list[AllowedPotentialRanges]:
-        """List applied potential ranges supported by this device.
-
-        Returns
-        -------
-        potential_ranges: list[AllowedPotentialRanges]
-            List of supported potential ranges.
-        """
-        self.ensure_connection()
-        return CapabilitiesInterface(comm=self._comm).supported_potential_ranges
-
-    def get_estimated_duration(
-        self: HasCommProtocol,
-        method: PalmSens.Method | MethodTypeCompatible,
-    ) -> float:
-        """Get the estimated duration for this method.
-
-        Parameters
-        -----------
-        method : MethodType
-            The method to get the estimated duration for.
-
-        Returns
-        -------
-        float
-            Estimated duration in seconds.
-        """
-        self.ensure_connection()
-
-        if not isinstance(method, PalmSens.Method):
-            method = method._to_psmethod()
-
-        capabilities = self._comm.Capabilities
-
-        return method.GetMinimumEstimatedMeasurementDuration(capabilities)
-
-    def validate_method(
-        self: HasCommProtocol,
-        method: MethodTypeCompatible,
-    ):
-        """Validate method.
-
-        Raise ValueError if the method cannot be validated.
-
-        Parameters
-        -----------
-        method: MethodType
-            The method to validate.
-        """
-        self.ensure_connection()
-
-        capabilities = self._comm.Capabilities
-
-        psmethod = method._to_psmethod()
-        errors = psmethod.Validate(capabilities)
-
-        if any(error.IsFatal for error in errors):
-            message = '\n'.join([error.Message for error in errors])
-            raise MethodIncompatibleError(f'Method not compatible:\n{message}')
-
-
-class InstrumentManagerAsync(CapabilitiesMixin):
+class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
     """Asynchronous instrument manager for PalmSens instruments.
 
     Parameters
@@ -249,15 +120,13 @@ class InstrumentManagerAsync(CapabilitiesMixin):
     """
 
     def __init__(self, instrument: Instrument):
+        super().__init__()
+
         self.instrument: Instrument = instrument
         """Instrument being managed by this class."""
 
-        self.events: MeasurementEvents = MeasurementEvents()
-        """Register functions to event hooks."""
-
         self._comm: CommManager
         self._status_callback: CallbackStatus
-        self._receive_message_callback: Callable[[str], None]
         self._loop: asyncio.AbstractEventLoop
 
     @override
@@ -266,11 +135,11 @@ class InstrumentManagerAsync(CapabilitiesMixin):
 
     async def __aenter__(self):
         if not self.is_connected():
-            _ = await self.connect()
+            await self.connect()
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
-        _ = await self.disconnect()
+        await self.disconnect()
 
     def is_measuring(self) -> bool:
         """Return True if device is measuring."""
@@ -444,58 +313,6 @@ class InstrumentManagerAsync(CapabilitiesMixin):
 
         return serial.ToString()
 
-    def register_status_callback(self, callback: CallbackStatus, /):
-        """Register callback for idle status events.
-
-        The callback is triggered when the current/potential are updated
-        durinig idle state or pretreatment phases.
-
-        Parameters
-        ----------
-        callback: CallbackStatus
-            The function to call when triggered
-        """
-        self._status_callback = callback
-        self._loop = asyncio.get_running_loop()
-        self._comm.ReceiveStatusAsync += self._idle_status_handler
-
-    def unregister_status_callback(self):
-        """Unregister callback from idle status events."""
-        self._comm.ReceiveStatusAsync -= self._idle_status_handler
-        del self._status_callback
-
-    def _idle_status_handler(self, sender, args) -> Task.CompletedTask:
-        """Event handler helper function to schedule the callback."""
-        status = Status._from_event_args(args)
-
-        _ = self._loop.call_soon_threadsafe(self._status_callback, status)
-        return Task.CompletedTask
-
-    def register_receive_message_callback(self, callback: Callable[[str], None], /):
-        """Register callback when a message is received.
-
-        The callback is triggered, for example, when a method is started,
-        or when `send_string` is called in MethodSCRIPT.
-
-        Parameters
-        ----------
-        callback: Callable[[str], None]
-            The function to call when triggered
-        """
-        self._receive_message_callback = callback
-        self._loop = asyncio.get_running_loop()
-        self._comm.ClientConnection.ReceiveMessage += self._receive_message_handler
-
-    def unregister_receive_message_callback(self):
-        """Unregister callback from message events."""
-        self._comm.ClientConnection.ReceiveMessage -= self._receive_message_handler
-        del self._receive_message_callback
-
-    def _receive_message_handler(self, sender, message: str) -> Task.CompletedTask:
-        """Message handler helper function to schedule the callback."""
-        _ = self._loop.call_soon_threadsafe(self._receive_message_callback, message)
-        return Task.CompletedTask
-
     async def measure(
         self,
         method: MethodTypeCompatible,
@@ -516,9 +333,6 @@ class InstrumentManagerAsync(CapabilitiesMixin):
             time it was called. Each point is an instance of `ps.data.CallbackData`
             for non-impedimetric or `ps.data.CallbackDataEIS`.
             for impedimetric measurments.
-
-            For more advanced use cases, use `InstrumentManagerAsync.events`
-            to register callbacks to various events.
         stream: Path | str | None
             If defined, stream data directly to this file in JSON Lines text format
             (https://jsonlines.org). This option is useful for long-term measurements.
@@ -538,7 +352,7 @@ class InstrumentManagerAsync(CapabilitiesMixin):
             callback=callback,
             stream=stream,
             sync_event=sync_event,
-            events=self.events,
+            listeners=self._listeners,
         )
 
     def _initiate_hardware_sync_follower_channel(

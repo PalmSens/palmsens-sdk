@@ -170,7 +170,7 @@ async def test_idle_status_callback_async():
         points.append(status)
 
     async with await ps.connect_async() as manager:
-        manager.register_status_callback(callback)
+        handle = manager.on_receive_status(callback)
 
         await asyncio.sleep(1)
 
@@ -186,7 +186,7 @@ async def test_idle_status_callback_async():
         _ = await manager.measure(method)
         await asyncio.sleep(1)
 
-        manager.unregister_status_callback()
+        handle.cancel()
 
     assert len(points) == 6
 
@@ -219,12 +219,13 @@ def test_message_callback():
         if 'ms' not in manager.supported_methods():
             pytest.skip('Device does not support MethodSCRIPT.')
 
-        manager.register_receive_message_callback(callback)
+        handle = manager.on_receive_message(callback)
+
         method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
 
         _ = manager.measure(method)
 
-        manager.unregister_receive_message_callback()
+        handle.cancel()
 
     assert len(points) == 2
 
@@ -243,13 +244,13 @@ async def test_message_callback_async():
         if 'ms' not in manager.supported_methods():
             pytest.skip('Device does not support MethodSCRIPT.')
 
-        manager.register_receive_message_callback(callback)
+        handle = manager.on_receive_message(callback)
 
         method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
 
         _ = await manager.measure(method)
 
-        manager.unregister_receive_message_callback()
+        handle.cancel()
 
     assert len(points) == 2
 

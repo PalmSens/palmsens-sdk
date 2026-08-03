@@ -44,7 +44,7 @@ def test_render(cls):
 
 
 class BCY:
-    """Note: requires dummy circuit."""
+    """Note: requires dummy circuit or method will hang."""
 
     kwargs = {
         'id': 'bcy',

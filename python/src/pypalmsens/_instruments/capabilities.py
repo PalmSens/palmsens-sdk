@@ -492,7 +492,7 @@ class Capabilities(BaseModel):
     """list of current ranges supported by this particular device."""
 
     supported_potential_ranges: list[AllowedPotentialRanges]
-    """list of potential ranges supported by this particular device."""
+    """List of potential ranges supported by this particular device."""
 
     supported_methods: list[AllowedMethods]
     """List supported methods."""

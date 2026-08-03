@@ -6,6 +6,7 @@ from ._data.types import AllowedArrayTypes
 from ._types import (
     AllowedCurrentRanges,
     AllowedDeviceState,
+    AllowedEvents,
     AllowedFrequencyTypes,
     AllowedMethods,
     AllowedMSMethods,
@@ -21,6 +22,7 @@ __all__ = [
     'AllowedArrayTypes',
     'AllowedCurrentRanges',
     'AllowedDeviceState',
+    'AllowedEvents',
     'AllowedFrequencyTypes',
     'AllowedMSMethods',
     'AllowedMethods',

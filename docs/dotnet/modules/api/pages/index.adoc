@@ -36,7 +36,7 @@ For example:
 
 - Generic: `PalmSens.Core.Simplified` / `psCommSimple`
 - MAUI: `PalmSens.Core.Simplified.MAUI` / `psCommSimpleMAUI`
-- WinForms: `PalmSens.Core.Simplified.MAUI` / `psCommSimpleWinForms`
+- WinForms: `PalmSens.Core.Simplified.WinForms` / `psCommSimpleWinForms`
 - WPF: `PalmSens.Core.Simplified.WPF` / `psCommSimpleWPF`
 
 In the documentation we typically refer to the generic implementation.

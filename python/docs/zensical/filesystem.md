@@ -17,10 +17,10 @@ For a start, these are three ways to save measurement data to the device:
 1. **PSTrace**: Click the 'Save on internal storage' checkbox before running a measurement
 2. **PyPalmSens**: Set the [save_on_internal_storage][pypalmsens.settings.General.save_on_internal_storage] flag on a method:
 
-```python
+```py
 import pypalmsens as ps
 
-method = ps.LinearSweepVoltammetry(general={'save_on_internal_storage':True}
+method = ps.LinearSweepVoltammetry(general={'save_on_internal_storage': True})
 ps.measure(method)
 ```
 
@@ -30,24 +30,44 @@ ps.measure(method)
 
 To access the device filesystem you need an active connection to the instrument. If you already have an active connection, you can pass an instance of [pypalmsens.InstrumentManager][] (or its async counterpart) directly:
 
-```python
->>> import pypalmsens as ps
+```py
+import pypalmsens as ps
 
->>> with ps.connect() as manager:
-...     fs = ps.DeviceFileSystem(manager)
-...     print(fs.listdir())
-[DevicePath('Measurements/17-07-2026/LSV-10-00-25-0.dmeas'),
- DevicePath('Measurements/17-07-2026/LSV-10-00-28-1.dmeas'),
- # ...
- DevicePath('Measurements/16-07-2026/CV-14-46-50-2.dmeas')]
+with ps.connect() as manager:
+    fs = ps.DeviceFileSystem(manager)
+    print(fs.listdir())
+    """
+    [
+        DevicePath('Measurements/17-07-2026/LSV-10-00-28-1.dmeas'),
+        DevicePath('measurement0000.txt'),
+        DevicePath('measurement0001.txt'),
+        DevicePath('measurement0002.txt'),
+        DevicePath('measurement0003.txt'),
+        DevicePath('Measurements/04-08-2026/LSV-16-02-20-0.dmeas'),
+        DevicePath('Measurements/04-08-2026/LSV-16-06-26-0.dmeas'),
+        DevicePath('Measurements/04-08-2026/LSV-16-06-47-0.dmeas'),
+        DevicePath('Measurements/04-08-2026/LSV-16-08-26-0.dmeas'),
+        DevicePath('Measurements/04-08-2026/LSV-16-09-35-0.dmeas'),
+        DevicePath('Measurements/04-08-2026/LSV-16-10-48-0.dmeas'),
+        DevicePath('Measurements/04-08-2026/LSV-16-12-26-0.dmeas'),
+        DevicePath('Measurements/04-08-2026/LSV-16-12-43-0.dmeas'),
+        DevicePath('Measurements/04-08-2026/LSV-15-45-50-0.dmeas'),
+        DevicePath('Measurements/04-08-2026/LSV-15-46-31-0.dmeas'),
+        DevicePath('Measurements/04-08-2026/LSV-15-49-05-0.dmeas'),
+        DevicePath('Measurements/16-07-2026/CV-13-06-33-0.dmeas'),
+        DevicePath('Measurements/16-07-2026/CV-14-46-43-0.dmeas'),
+        DevicePath('Measurements/16-07-2026/CV-14-46-46-1.dmeas'),
+        DevicePath('Measurements/16-07-2026/CV-14-46-50-2.dmeas'),
+    ]
+    """
 ```
 
 [DeviceFileSystem][pypalmsens.DeviceFileSystem] supports the context manager protocol, so you can pass a [pypalmsens.Instrument][] instance. In this case, [DeviceFileSystem][pypalmsens.DeviceFileSystem] internally creates a new manager, and manages the connection:
 
-```python
->>> instrument = ps.discover()[0]
->>> with ps.DeviceFileSystem(instrument) as fs:
-...     # filesystem operations
+```py
+instrument = ps.discover()[0]
+with ps.DeviceFileSystem(instrument) as fs:
+    pass  # filesystem operations
 ```
 
 ## Browsing files
@@ -55,48 +75,123 @@ To access the device filesystem you need an active connection to the instrument.
 Use [pypalmsens.DeviceFileSystem.listdir][] to list or [pypalmsens.DeviceFileSystem.iterdir][] to generate entries in a directory on the device.
 By default, they list the contents of the root directory:
 
-```python
->>> fs = ps.DeviceFileSystem(manager)
->>> for path in fs.iterdir():
-...     print(path)
-DevicePath('Measurements/17-07-2026/LSV-10-00-25-0.dmeas')
-DevicePath('Measurements/17-07-2026/LSV-10-00-28-1.dmeas')
-DevicePath('Measurements/16-07-2026/CV-13-06-33-0.dmeas')
-# ...
+```py
+fs = ps.DeviceFileSystem(instrument)
+fs.open()
+
+for path in fs.iterdir():
+    print(path)
+    #> Measurements/17-07-2026/LSV-10-00-28-1.dmeas
+    #> measurement0000.txt
+    #> measurement0001.txt
+    #> measurement0002.txt
+    #> measurement0003.txt
+    #> Measurements/04-08-2026/LSV-16-02-20-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-06-26-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-06-47-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-08-26-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-09-35-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-10-48-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-12-26-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-12-43-0.dmeas
+    #> Measurements/04-08-2026/LSV-15-45-50-0.dmeas
+    #> Measurements/04-08-2026/LSV-15-46-31-0.dmeas
+    #> Measurements/04-08-2026/LSV-15-49-05-0.dmeas
+    #> Measurements/16-07-2026/CV-13-06-33-0.dmeas
+    #> Measurements/16-07-2026/CV-14-46-43-0.dmeas
+    #> Measurements/16-07-2026/CV-14-46-46-1.dmeas
+    #> Measurements/16-07-2026/CV-14-46-50-2.dmeas
 ```
 
 Note that there are two different implemantations. Some devices, like EmStat 4 in the example above recursively list all files.
 Other devices, like PalmSens 4, only list the entries in the current directory, requiring a few more steps to drill down to the measurement files:
 
-```python
->>> fs = ps.DeviceFileSystem(manager)
->>> fs.listdir()
-[DevicePath('Measurements')]
+```py
+print(fs.listdir())
+"""
+[
+    DevicePath('Measurements/17-07-2026/LSV-10-00-28-1.dmeas'),
+    DevicePath('measurement0000.txt'),
+    DevicePath('measurement0001.txt'),
+    DevicePath('measurement0002.txt'),
+    DevicePath('measurement0003.txt'),
+    DevicePath('Measurements/04-08-2026/LSV-16-02-20-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-06-26-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-06-47-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-08-26-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-09-35-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-10-48-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-12-26-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-12-43-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-15-45-50-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-15-46-31-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-15-49-05-0.dmeas'),
+    DevicePath('Measurements/16-07-2026/CV-13-06-33-0.dmeas'),
+    DevicePath('Measurements/16-07-2026/CV-14-46-43-0.dmeas'),
+    DevicePath('Measurements/16-07-2026/CV-14-46-46-1.dmeas'),
+    DevicePath('Measurements/16-07-2026/CV-14-46-50-2.dmeas'),
+]
+"""
 
->>> fs.listdir('Measurements')
-[DevicePath('Measurements/06-01-2025'),
- DevicePath('Measurements/23-06-2025'),
- # ...
- DevicePath('Measurements/20-07-2026')]
+print(fs.listdir('Measurements'))
+"""
+[
+    DevicePath('Measurements/17-07-2026/LSV-10-00-28-1.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-02-20-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-06-26-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-06-47-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-08-26-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-09-35-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-10-48-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-12-26-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-16-12-43-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-15-45-50-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-15-46-31-0.dmeas'),
+    DevicePath('Measurements/04-08-2026/LSV-15-49-05-0.dmeas'),
+    DevicePath('Measurements/16-07-2026/CV-13-06-33-0.dmeas'),
+    DevicePath('Measurements/16-07-2026/CV-14-46-43-0.dmeas'),
+    DevicePath('Measurements/16-07-2026/CV-14-46-46-1.dmeas'),
+    DevicePath('Measurements/16-07-2026/CV-14-46-50-2.dmeas'),
+]
+"""
 
->>> fs.listdir('Measurements/20-07-2026')
-[DevicePath('Measurements/20-07-2026/CV-11-46-28-0.dmeas'),
- DevicePath('Measurements/20-07-2026/CV-11-46-35-1.dmeas'),
- DevicePath('Measurements/20-07-2026/CV-11-46-41-2.dmeas')]
+print(fs.listdir('Measurements/16-07-2026'))
+"""
+[
+    DevicePath('Measurements/16-07-2026/CV-13-06-33-0.dmeas'),
+    DevicePath('Measurements/16-07-2026/CV-14-46-43-0.dmeas'),
+    DevicePath('Measurements/16-07-2026/CV-14-46-46-1.dmeas'),
+    DevicePath('Measurements/16-07-2026/CV-14-46-50-2.dmeas'),
+]
+"""
 ```
 
 [pypalmsens.DeviceFileSystem.walk][] walks the directory structure and generates filenames sarting from a device directory. The interface is consistent for all devices:
 
 
-```python
->>> with ps.connect() as manager:
-...     fs = ps.DeviceFileSystem(manager)
-...     for path in fs.walk():
-...         print(path)
-'Measurements/23-06-2025/CP-15-54-39-0.dmeas'
-'Measurements/20-07-2026/CV-11-46-28-0.dmeas'
-'Measurements/20-07-2026/CV-11-46-35-1.dmeas'
-'Measurements/20-07-2026/CV-11-46-41-2.dmeas'
+```py
+for path in fs.walk():
+    print(path)
+    #> Measurements/17-07-2026/LSV-10-00-28-1.dmeas
+    #> measurement0000.txt
+    #> measurement0001.txt
+    #> measurement0002.txt
+    #> measurement0003.txt
+    #> Measurements/04-08-2026/LSV-16-02-20-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-06-26-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-06-47-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-08-26-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-09-35-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-10-48-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-12-26-0.dmeas
+    #> Measurements/04-08-2026/LSV-16-12-43-0.dmeas
+    #> Measurements/04-08-2026/LSV-15-45-50-0.dmeas
+    #> Measurements/04-08-2026/LSV-15-46-31-0.dmeas
+    #> Measurements/04-08-2026/LSV-15-49-05-0.dmeas
+    #> Measurements/16-07-2026/CV-13-06-33-0.dmeas
+    #> Measurements/16-07-2026/CV-14-46-43-0.dmeas
+    #> Measurements/16-07-2026/CV-14-46-46-1.dmeas
+    #> Measurements/16-07-2026/CV-14-46-50-2.dmeas
 ```
 
 
@@ -106,23 +201,27 @@ PyPalmSens uses [pypalmsens.DevicePath][] objects for all path operations.
 Each of the methods above return instances of `DevicePath`.
 `DevicePath` is a subclass of Python's [pathlib.PurePath][] with POSIX-style semantics, so you can use familiar path operations:
 
-```python
->>> fs / 'Measurements' / '17-07-2026' / 'LSV-10-00-25-0.dmeas'  # (1)!
-DevicePath('Measurements/17-07-2026/LSV-10-00-25-0.dmeas')
+```py
+path = fs / 'Measurements' / '16-07-2026' / 'CV-14-46-50-2.dmeas'  # (1)!
+print(path)
+#> Measurements/16-07-2026/CV-14-46-50-2.dmeas
 ```
 
 1. The `/` operator is overloaded on the filesystem instance to join paths.
 
 You can use standard [pathlib.PurePath][] methods:
 
-```python
->>> path = fs.root / 'Measurements' / '17-07-2026' / 'LSV-10-00-25-0.dmeas'
->>> path.name
-'LSV-10-00-25-0.dmeas'
->>> path.parent
-DevicePath('Measurements/17-07-2026')
->>> path.suffix
-'.dmeas'
+```py
+path = fs.root / 'Measurements' / '16-07-2026' / 'CV-14-46-50-2.dmeas'
+
+print(path.name)
+#> CV-14-46-50-2.dmeas
+
+print(path.parent)
+#> Measurements/16-07-2026
+
+print(path.suffix)
+#> .dmeas
 ```
 
 For more information, see the [pathlib.PurePath][] documentation.
@@ -131,25 +230,25 @@ For more information, see the [pathlib.PurePath][] documentation.
 
 The most common use case for the device filesystem is loading saved measurements. Use [pypalmsens.DeviceFileSystem.load_measurement][] to load a `.dmeas` file from the device into a [pypalmsans.data.Measurement][] object:
 
-```python
->>> import pypalmsens as ps
+```py
+path = 'Measurements/16-07-2026/CV-14-46-50-2.dmeas'
+measurement = fs.load_measurement(path)
 
->>> instrument = ps.discover()[0]
-
->>> with ps.DeviceFileSystem(instrument) as fs:
-...     path = 'Measurements/17-07-2026/LSV-10-00-25-0.dmeas'
-...     measurement = fs.load_measurement(path)
->>> measurement.curves
-[Curve(title=LSV i vs E, n_points=11)]
+print(measurement.curves)
+#> [Curve(title=CV i vs E Scan 1, n_points=21)]
 ```
 
 ## Reading text files
 
 For plain-text files on the device (such as [custom MethodSCRIPT output](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html#ch_cmd_script_output)), use [pypalmsens.DeviceFileSystem.read_text][]:
 
-```python
->>> content = fs.read_text('measurement0000.txt')
->>> content
+```py
+content = fs.read_text('measurement0000.txt')
+print(content)
+"""
+v01.09.00
+Pba7FB98EBf,14,20C,44
+"""
 'v01.09.00\nPba7FBF3B9f,14,20C,44\n\n'
 ```
 
@@ -157,16 +256,16 @@ For plain-text files on the device (such as [custom MethodSCRIPT output](https:/
 
 Use [pypalmsens.DeviceFileSystem.remove][] to delete a file from the device:
 
-```python
->>> fs.remove('Measurements/17-07-2026/LSV-10-00-25-0.dmeas')
+```py test="skip"
+fs.remove('Measurements/16-07-2026/CV-14-46-50-2.dmeas')
 ```
 
 ## Deleting all files
 
 To clear all files on the device, use [pypalmsens.DeviceFileSystem.delete_all_files][]:
 
-```python
->>> fs.delete_all_files(confirm=True)  # (1)!
+```py test="skip"
+fs.delete_all_files(confirm=True)  # (1)!
 ```
 
 1. The `confirm` flag defaults to `False` as a safety measure in interactive environments like Jupyter notebooks or REPL sessions. Set it to `True` to delete all files.
@@ -175,23 +274,26 @@ To clear all files on the device, use [pypalmsens.DeviceFileSystem.delete_all_fi
 
 Use [pypalmsens.DeviceFileSystem.exists][] to check whether a path exists on the device:
 
-```python
->>> fs.exists('Measurements/17-07-2026/LSV-10-00-25-0.dmeas')
-True
->>> fs.exists('Measurements/missing_file.dmeas')
-False
+```py
+print(fs.exists('Measurements/16-07-2026/CV-14-46-50-2.dmeas'))
+#> True
+
+print(fs.exists('Measurements/missing_file.dmeas'))
+#> False
 ```
 
 ## File metadata
 
 You can query file metadata:
 
-```python
->>> path = 'Measurements/17-07-2026/LSV-10-00-25-0.dmeas'
->>> fs.size_of(path)
-3764  # bytes
->>> fs.timestamp_of(path)
-'2025-11-15T14:32:00'  # ISO format string
+```py
+path = 'Measurements/16-07-2026/CV-14-46-50-2.dmeas'
+
+print(fs.size_of(path))  # bytes
+#> 0
+
+print(fs.timestamp_of(path))  # ISO format string
+#> 0001-01-01T00:00:00
 ```
 
 Note that this loads and caches the entire file content.
@@ -200,47 +302,75 @@ Note that this loads and caches the entire file content.
 
 Check the device storage capacity:
 
-```python
->>> fs.free()     # free space in kB
+```py
+print(fs.free())  # free space in kB
+#> 513536
 519680
->>> fs.size()     # total filesystem size in kB
+
+print(fs.size())  # total filesystem size in kB
+#> 522752
 522752
 ```
+
+<!--
+```py
+fs.close()
+```
+-->
+
 
 ## Async filesystem
 
 For async workflows, use [pypalmsens.DeviceFileSystemAsync][] with an [pypalmsens.InstrumentManagerAsync][]:
 
-```python
->>> import asyncio
->>> import pypalmsens as ps
+```py
+import asyncio
+import pypalmsens as ps
 
->>> async def main():
-...     instruments = await ps.discover_async()
-...     manager = ps.InstrumentManagerAsync(instruments[0])
-...     await manager.connect()
-...  
-...     fs = ps.DeviceFileSystemAsync(manager)
-...     paths = await fs.listdir()
-...     for path in paths:
-...         print(path)
-...  
-...     measurement = await fs.load_measurement(path)
 
->>> asyncio.run(main())
-'Measurements/17-07-2026/LSV-10-00-25-0.dmeas'
-'Measurements/17-07-2026/LSV-10-00-28-1.dmeas'
-'Measurements/16-07-2026/CV-13-06-33-0.dmeas'
-# ...
+async def main():
+    instruments = await ps.discover_async()
+    manager = ps.InstrumentManagerAsync(instruments[0])
+    await manager.connect()
+
+    fs = ps.DeviceFileSystemAsync(manager)
+    paths = await fs.listdir()
+    for path in paths:
+        print(path)
+        #> Measurements/17-07-2026/LSV-10-00-28-1.dmeas
+        #> measurement0000.txt
+        #> measurement0001.txt
+        #> measurement0002.txt
+        #> measurement0003.txt
+        #> Measurements/04-08-2026/LSV-16-02-20-0.dmeas
+        #> Measurements/04-08-2026/LSV-16-06-26-0.dmeas
+        #> Measurements/04-08-2026/LSV-16-06-47-0.dmeas
+        #> Measurements/04-08-2026/LSV-16-08-26-0.dmeas
+        #> Measurements/04-08-2026/LSV-16-09-35-0.dmeas
+        #> Measurements/04-08-2026/LSV-16-10-48-0.dmeas
+        #> Measurements/04-08-2026/LSV-16-12-26-0.dmeas
+        #> Measurements/04-08-2026/LSV-16-12-43-0.dmeas
+        #> Measurements/04-08-2026/LSV-15-45-50-0.dmeas
+        #> Measurements/04-08-2026/LSV-15-46-31-0.dmeas
+        #> Measurements/04-08-2026/LSV-15-49-05-0.dmeas
+        #> Measurements/16-07-2026/CV-13-06-33-0.dmeas
+        #> Measurements/16-07-2026/CV-14-46-43-0.dmeas
+        #> Measurements/16-07-2026/CV-14-46-46-1.dmeas
+        #> Measurements/16-07-2026/CV-14-46-50-2.dmeas
+
+    measurement = await fs.load_measurement(path)
+
+
+asyncio.run(main())
 ```
 
 ## Error handling
 
 Filesystem operations raise [pypalmsens._instruments.FileSystemException][] (a subclass of `OSError`) when a device operation fails:
 
-```python
->>> fs.read_text('nonexistent_file.txt')
-FileSystemException: Error (!009F) while retrieving contents of '/nonexistent_file.txt'
+```py test="skip"
+fs.read_text('nonexistent_file.txt')
+#> FileSystemException: Error (!009F) while retrieving contents of '/nonexistent_file.txt'
 ```
 
 Some common error codes:

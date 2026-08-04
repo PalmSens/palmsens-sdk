@@ -58,13 +58,15 @@ method = ps.SquareWaveVoltammetry(
         'conditioning_potential': 2.0,  # V
         'conditioning_time': 2,  # seconds
     },
-    versus_ocp = {'mode': 3,  # versus begin and end potential
-        'max_ocp_time': 1,},  # seconds
-    begin_potential = -0.5,  # V
-    end_potential = 0.5,  # V
-    step_potential = 0.01,  # V
-    amplitude = 0.08,  # V
-    frequency = 10,  # Hz
+    versus_ocp={
+        'mode': 3,  # versus begin and end potential
+        'max_ocp_time': 1,  # seconds
+    },
+    begin_potential=-0.5,  # V
+    end_potential=0.5,  # V
+    step_potential=0.01,  # V
+    amplitude=0.08,  # V
+    frequency=10,  # Hz
 )
 ```
 
@@ -136,7 +138,7 @@ assert method == method2
 Methods can be copied and updated:
 
 ```py
-method3 = method.model_copy(update={'equilibration_time' : 10.0})
+method3 = method.model_copy(update={'equilibration_time': 10.0})
 assert method != method3
 ```
 
@@ -168,7 +170,7 @@ There are two ways to modify the current ranges, for example, if you want so set
 1. By passing current ranges as an argument during initialization
 
     ```py
-    cv = ps.CyclicVoltammetry(current_range={'start':'10uA'})
+    cv = ps.CyclicVoltammetry(current_range={'start': '10uA'})
     cv.current_range
     #> CurrentRange(max='10mA', min='1uA', start='10uA') # (1)!
     ```
@@ -207,9 +209,7 @@ This means is automatically converts dictionaries to the correct type (if the fi
 ```py
 import pypalmsens as ps
 
-cv = ps.CyclicVoltammetry(
-    current_range = {'min':'10mA', 'max':'1uA', 'start':'100uA'}
-)
+cv = ps.CyclicVoltammetry(current_range={'min': '10mA', 'max': '1uA', 'start': '100uA'})
 print(cv.current_range)
 #> max='1uA' min='10mA' start='100uA'
 ```
@@ -217,7 +217,7 @@ print(cv.current_range)
 And gives an errorr when trying to overwrite types by invalid dictionaries or instances:
 
 ```py test="skip"
-cv.current_range='foo'
+cv.current_range = 'foo'
 #> ValidationError: 1 validation error for CyclicVoltammetry
 #> current_range
 #>   Input should be a valid dictionary or instance of CurrentRange [type=model_type, input_value='foo', input_type=str]
@@ -250,7 +250,7 @@ cv = ps.CyclicVoltammetry(scanrate='1.0')
 It also prevents setting non-existant attributes:
 
 ```py test="skip"
-cv.scanreat=1.0
+cv.scanreat = 1.0
 #> ValueError: "CyclicVoltammetry" object has no field "scanreat"
 ```
 

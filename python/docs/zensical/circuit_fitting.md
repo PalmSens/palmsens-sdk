@@ -9,8 +9,8 @@ Example usage for fitting an equivalent circuit:
 ```python
 import pypalmsens as ps
 
-measurements = ps.load_session_file('eis_data.pssession')
-eis_data = measurements[0].eis_data[0]
+measurements = ps.load_session_file('examples/Demo CV DPV EIS IS-C electrode.pssession')
+eis_data = measurements[2].eis_data[0]
 
 cdc = 'R(RC)'
 model = ps.fitting.CircuitModel(cdc=cdc)
@@ -29,6 +29,17 @@ You can pass `result.parameters` back to [pypalmsens.fitting.CircuitModel.fit][]
 
 ```python
 result = model.fit(eis_data, parameters=result.parameters)
+print(result)
+"""
+FitResult(
+    cdc='R(RC)',
+    parameters=[134.2601650977178, 11839.398754903794, 4.7630699773802777e-07],
+    error=[2.3519772479721124, 2.4664309823158033, 2.7610160451589962],
+    chisq=0.01449396640068309,
+    n_iter=2,
+    exit_code='MinimumDeltaErrorTerm',
+)
+"""
 ```
 
 ## Parameters
@@ -42,13 +53,22 @@ These can be modified, for example:
 parameters = model.default_parameters()
 
 parameters[0].value = 123  # set starting value to 123
-parameters[0].fixed = True # fix this value
+parameters[0].fixed = True  # fix this value
 parameters[1].min = 12  # set lower bound
 parameters[1].max = 34  # set upper bound
 
 result = model.fit(eis_data, parameters=parameters)
-result
-#> ...
+print(result)
+"""
+FitResult(
+    cdc='R(RC)',
+    parameters=[123.0, 34.0, 4.7534793266759166e-07],
+    error=[nan, 160.54174486975174, 243.91299971145614],
+    chisq=0.639761596501756,
+    n_iter=282,
+    exit_code='MinimumDeltaErrorTerm',
+)
+"""
 ```
 
 ## Re-fit EIS data
@@ -56,10 +76,35 @@ result
 If you already fitted your data in PSTrace, you can redo the fit or use the values as a starting parameters:
 
 ```python
-model = ps.fitting.CircuitModel(cdc=eisdata.cdc)
-result = model.fit(eisdata, parameters=eisdata.cdc_values)
-result
-#>
+model = ps.fitting.CircuitModel(cdc=eis_data.cdc)
+result = model.fit(eis_data, parameters=eis_data.cdc_values)
+print(result)
+"""
+FitResult(
+    cdc='R([RT]Q)',
+    parameters=[
+        132.14597573482914,
+        11009.960398871117,
+        3710.5012402266098,
+        3.780788780211564,
+        0.9714238919891629,
+        6.237895257571337e-07,
+        0.9616123965729131,
+    ],
+    error=[
+        1.5100310284471883,
+        4.600055852184849,
+        37.556727628788636,
+        165.04785164182704,
+        25.814541664143285,
+        7.221623047995394,
+        0.9499742351252066,
+    ],
+    chisq=0.005418877355555921,
+    n_iter=5,
+    exit_code='MinimumDeltaErrorTerm',
+)
+"""
 ```
 
 ## Plotting
@@ -68,6 +113,9 @@ If you have [matplotlib](https://matplotlib.org) installed, you can
 generate the plots from the result:
 
 ```python
-result.plot_nyquist(eis_data)
-result.plot_bode(eis_data)
+fig = result.plot_nyquist(eis_data)
+fig.show()
+
+fig = result.plot_bode(eis_data)
+fig.show()
 ```

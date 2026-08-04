@@ -39,7 +39,7 @@ Add these namespaces at the top of the document.
 
 ----
 using PalmSens;
-using PalmSens.Core.Simplified.WinForms;
+using PalmSens.Core.Simplified.MAUI;
 ----
 
 This method loads a `.psmethod` file from the specified file path (i.e. `C:\path\to\my_method.psmethod`).
@@ -88,7 +88,7 @@ Add these namespaces at the top of the document.
 
 ----
 using PalmSens;
-using PalmSens.Core.Simplified.WinForms;
+using PalmSens.Core.Simplified.MAUI;
 ----
 
 This saves the previously defined Linear Sweep Voltammetry *method*

@@ -39,11 +39,6 @@ class DeviceFileSystemAsync:
         else:
             self.manager = instrument_or_manager
 
-        if not self.manager.capabilities.supports_storage:
-            raise ValueError(
-                f'{self.manager.instrument.name!r} does not have or support internal storage.'
-            )
-
     @property
     def _client_connection(self) -> PalmSens.Comm.ClientConnection:
         """The active client connection used for device communication."""
@@ -53,10 +48,18 @@ class DeviceFileSystemAsync:
         return f"{type(self).__name__}('{self.manager.instrument.id}')"
 
     async def __aenter__(self):
-        await self.manager.connect()
+        await self.open()
         return self
 
     async def __aexit__(self, *_) -> None:
+        await self.close()
+
+    async def open(self):
+        """Open connection with device filesystem."""
+        await self.manager.connect()
+
+    async def close(self):
+        """Close connection with device filesystem."""
         await self.manager.disconnect()
 
     def __truediv__(self, path_str: str) -> DevicePath:

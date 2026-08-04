@@ -17,7 +17,8 @@ GROUP_MODULES: dict[str, dict[str, Any]] = defaultdict(dict)
 # @pytest.mark.parametrize('example', list(find_examples(docs_dir / 'measuring.md')), ids=str)
 # @pytest.mark.parametrize('example', list(find_examples(docs_dir / 'methods.md')), ids=str)
 # @pytest.mark.parametrize('example', list(find_examples(docs_dir / 'index.md')), ids=str)
-@pytest.mark.parametrize('example', list(find_examples(docs_dir / 'filesystem.md')), ids=str)
+# @pytest.mark.parametrize('example', list(find_examples(docs_dir / 'filesystem.md')), ids=str)
+@pytest.mark.parametrize('example', list(find_examples(docs_dir / 'files.md')), ids=str)
 def test_docstrings(example: CodeExample, eval_example: EvalExample):
     eval_example.set_config(
         ruff_ignore=['D', 'T', 'B', 'C4', 'F821', 'E721', 'Q001', 'PERF', 'PIE790'],

@@ -19,7 +19,7 @@ These methods are only available in PyPalmSens.
 
 For example to set up a battery cycling experiment:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> method = ps.experimental_BatteryCycling(

@@ -100,7 +100,7 @@ This release adds support for corrosion methods to PyPalmSens. This is mostly a 
 You can now retrieve instrument capabilities using [`InstrumentManager.capabilities`](https://dev.palmsens.com/python/latest/_attachments/reference/instrument/#pypalmsens.InstrumentManager.capabilities).
 This provides information on device features, firmware versions, supported current and potential ranges, and other information.
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> with ps.connect() as manager:
@@ -114,7 +114,7 @@ Capabilities(device_type='EmStat4LR', firmware_version=1.5, ...)
 
 Get the estimated measurement duration using [`InstrumentManager.get_estimated_duration()`](https://dev.palmsens.com/python/latest/_attachments/reference/instrument/#pypalmsens.InstrumentManager.get_estimated_duration):
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> method = ps.CyclicVoltammetry()
@@ -181,7 +181,7 @@ This is a relatively small release that adds support for the PalmSens Nexus on W
 
 If you are using a Nexus, you can now connect to it via TCP/IP:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> instrument = ps.Instrument.from_ip('192.168.1.123')
@@ -269,7 +269,7 @@ See [the documentation](https://dev.palmsens.com/python/latest/_attachments/data
 
 New methods on `InstrumentManager(Async)` to get the supported methods and current ranges (https://github.com/palmsens/palmsens-sdk/pull/279). See [the docs](https://dev.palmsens.com/python/latest/_attachments/reference/instrument/#pypalmsens.InstrumentManager.supported_applied_current_ranges) for more information.
 
-```python
+```pycon
 >>> import pypalmsens as ps
 >>> manager = ps.connect()
 >>> manager.supported_methods()
@@ -340,7 +340,7 @@ method = ps.mixed_mode.MixedMode(
 
 This release changes how callbacks work. The callback now receives a dataclass, making it easier to integrate into your workflows. If you use callbacks, this may require small changes to your code. See [the documentation](https://dev.palmsens.com/python/latest/_attachments/measuring/#callback), [the API reference](https://dev.palmsens.com/python/latest/_attachments/reference/data/#pypalmsens.data.CallbackData) or one of [the examples](https://dev.palmsens.com/python/latest/_attachments/examples/) for more information.
 
-```python
+```pycon
 >>> def callback(data):
 ...    print({'start': data.start, 'x': data.x[data.start:], 'y': data.y[data.start:]})
 
@@ -352,7 +352,7 @@ This release changes how callbacks work. The callback now receives a dataclass, 
 
 You can pass register a callback to the instrument manager to get updates from the idle status/current/bipot/aux updates. These are also passed as data classes. You can also use the callback to retrieve data during the pretreatment (conditioning and depositing) phases. See [this example](https://dev.palmsens.com/python/latest/_attachments/examples/#status_callback) or checkout the [documentation](https://dev.palmsens.com/python/latest/_attachments/measuring/#idle_status_updates).
 
-```python
+```pycon
 >>> import pypalmsens as ps
 >>> import asyncio
 
@@ -408,7 +408,7 @@ All values set on the methods are automatically validated, and converted to the 
 
 For example:
 
-```python
+```pycon
 >>> cv = ps.CyclicVoltammetry(scanraet=2.0)
 scanraet
   Extra inputs are not permitted [type=extra_forbidden, input_value=1.0, input_type=float]
@@ -445,7 +445,7 @@ A list of allowed values is available via:
 
 Thanks to how the methods are validated, a warning will be raised if an incorrect value is passed:
 
-```python
+```pycon
 >>> ps.CyclicVoltammetry(current_range={'start':'fail'})
 ValidationError: 1 validation error for CyclicVoltammetry
 current_range.start
@@ -474,7 +474,7 @@ The goal for this release is to remove friction when you are getting started wit
 
 We added a new top-level function `measure()` (and `measure_async()`) which will connect to the USB device and start a measurement:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> method = ps.ChronoAmperometry(
@@ -491,14 +491,14 @@ Measurement(title=Chronoamperometry, timestamp=17-Nov-25 13:42:16, device=EmStat
 
 The measure function takes a callback as an argument, so you can use this cool one-liner to impress your friends:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 >>> ps.measure(ps.CyclicVoltammetry(), callback=print)
 ```
 
 This change also affects all other `measure()` methods, like `InstrumentManager.measure()` and `InstrumentPool.measure()`.
 
-```python
+```pycon
 >>> ...
 >>> with ps.connect() as manager:
 ...     measurement = manager.measure(method, callback=new_data_callback)

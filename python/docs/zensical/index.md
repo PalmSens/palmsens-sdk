@@ -28,8 +28,8 @@ With PyPalmSens, you can:
 
 To install:
 
-```bash
-pip install pypalmsens
+```console
+$ pip install pypalmsens
 ```
 
 PyPalmSens works on Windows, MacOS, and Linux (including ARM-based single-board computers like Raspberry Pi).
@@ -41,7 +41,7 @@ Since PyPalmSens is built on top of the [PalmSens .NET libraries](https://dev.pa
 
 The following example shows how to set up and measure a simple chronoamperometry experiment:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> method = ps.ChronoAmperometry(

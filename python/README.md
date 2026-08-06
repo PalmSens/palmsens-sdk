@@ -34,7 +34,7 @@ With PyPalmSens, you can:
 
 To install:
 
-```python
+```bash
 pip install pypalmsens
 ```
 

@@ -9,7 +9,7 @@ This means you have to use the await/async expressions to manage the event loop.
 
 For example, to start a measurement:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> method = ps.CyclicVoltammetry()
@@ -18,7 +18,7 @@ For example, to start a measurement:
 
 Or to manage the connection yourself:
 
-```python
+```pycon
 >>> async with await ps.connect_async() as manager:
 ...     method = ps.ChronoAmperometry()
 ...     measurement = await manager.measure(method)
@@ -26,7 +26,7 @@ Or to manage the connection yourself:
 
 Or using `InstrumentManagerAsync()` directly as a context manager:
 
-```python
+```pycon
 >>> instruments = await discover_async()
 
 >>> async with ps.InstrumentManagerAsync(instruments[0]) as manager:
@@ -35,7 +35,7 @@ Or using `InstrumentManagerAsync()` directly as a context manager:
 
 Or managing the instrument connection yourself:
 
-```python
+```pycon
 >>> instruments = await discover_async()
 
 >>> manager = ps.InstrumentManagerAsync(instruments[0])

@@ -4,7 +4,7 @@ This section contains a listing of all available techniques in PyPalmSens.
 
 For example to set up a [CV][pypalmsens.CyclicVoltammetry] experiment:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> method = ps.CyclicVoltammetry(

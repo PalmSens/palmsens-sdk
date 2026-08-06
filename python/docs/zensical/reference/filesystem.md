@@ -4,7 +4,7 @@ Some PalmSens devices, like the EmStat 4, EmStat Pico, Sensit Wearable, and Nexu
 
 Example:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> with ps.connect() as manager:

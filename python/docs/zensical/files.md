@@ -6,7 +6,7 @@ pypalmsens and PSTrace store measurements and their corresponding methods in `.p
 
 [pypalmsens.load_method_file][] is used to load method files (with the `.psmethod` extension). This returns a [Technique](./reference/methods/index.md) object containing all technique parameters.
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> method = ps.load_method_file('PSDummyCell_LSV.psmethod')
@@ -24,7 +24,7 @@ LinearSweepVoltammetry(
 
 Save the method using [pypalmsens.save_method_file][]. The `.psmethod` file can be opened with PSTRace.
 
-```python
+```pycon
 >>> ps.save_method_file(method, 'lsv.psmethod')
 ```
 
@@ -36,7 +36,7 @@ Measurement data can be loaded from `.pssession` files. This contains one or mor
 
 For example, loading a collection of measurements from a session file and showing the first one:
 
-```python
+```pycon
 >>> from pypalmsens import load_session_file
 
 >>> measurement = load_session_file('my_measurement.pssession')[0]
@@ -56,7 +56,7 @@ See the [Measurement documentation](../data.md#measurement) for how to work with
 
 Likewise, save your data using [pypalmsens.save_session_file][]. Note that session files can contain multiple measurements, therefore
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> measurement = ps.measure(ps.CyclicVoltammetry())

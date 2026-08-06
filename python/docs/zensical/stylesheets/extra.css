@@ -85,3 +85,8 @@ html .md-footer-meta.md-typeset a:not(:focus, :hover) {
 .md-copyright {
     color: #FFFFFF70;
 }
+
+/* Don't copy >>> in python code blocks*/
+.highlight .gp, .highlight .go { /* Generic.Prompt, Generic.Output */
+  user-select: none;
+}

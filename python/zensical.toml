@@ -79,7 +79,6 @@ nav = [
   { "Issues ↗" = "https://github.com/palmsens/palmsens-sdk/issues" },
 ]
 
-
 extra_css = [
     # Include a copy of mkdocstrings.css
     # This is a work-around for Antora not publishing
@@ -91,6 +90,7 @@ extra_css = [
 
 extra_javascript = [
   "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js",
+  "js/extra.js",
 ]
 
 [project.extra]

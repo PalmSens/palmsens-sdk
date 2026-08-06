@@ -6,7 +6,7 @@ There are two ways to adjust these settings, either via the method constructor.
 
 For example, adjusting the post measurement settings:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> cv = ps.LinearSweepVoltammetry(
@@ -23,7 +23,7 @@ For example, adjusting the post measurement settings:
 
 Or by setting the values on the attribute:
 
-```python
+```pycon
 >>> lsv = ps.LinearSweepVoltammetry()
 
 >>> lsv.post_measurement.cell_on_after_measurement = True

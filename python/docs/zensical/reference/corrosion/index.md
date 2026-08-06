@@ -13,7 +13,7 @@ The techniques below are identical to the other [electrochemistry techniques](..
 
 For example to set up a CP experiment:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> method = ps.CyclicPolarization(

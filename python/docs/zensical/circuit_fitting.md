@@ -6,7 +6,7 @@ specifying the frequency range to fit, limiting the number of iterations, delta 
 
 Example usage for fitting an equivalent circuit:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> measurements = ps.load_session_file('eis_data.pssession')
@@ -27,7 +27,7 @@ FitResult(cdc='R(RC)', parameters=[564.65, 10077.11, 3.327e-08], chisq=0.00040, 
 errors, and other fitting data.
 You can pass `result.parameters` back to [pypalmsens.fitting.CircuitModel.fit][]) to redo the fit:
 
-```python
+```pycon
 >>> result = model.fit(eis_data, parameters=result.parameters)
 ```
 
@@ -38,7 +38,7 @@ bounds, you can set them using the [pypalmsens.fitting.Parameters][] class.
 `model.default_parameters` grabs the default parameters for the CDC.
 These can be modified, for example:
 
-```python
+```pycon
 >>> parameters = model.default_parameters()
 
 >>> parameters[0].value = 123  # set starting value to 123
@@ -53,7 +53,7 @@ These can be modified, for example:
 
 If you have already fitted your data in PSTrace, you can redo the fit or use the values as starting parameters:
 
-```python
+```pycon
 >>> model = ps.fitting.CircuitModel(cdc=eisdata.cdc)
 >>> result = model.fit(eisdata, parameters=eisdata.cdc_values)
 ```
@@ -63,7 +63,7 @@ If you have already fitted your data in PSTrace, you can redo the fit or use the
 If you have [matplotlib](https://matplotlib.org) installed, you can
 generate the plots from the result:
 
-```python
+```pycon
 >>> result.plot_nyquist(eis_data)
 >>> result.plot_bode(eis_data)
 ```

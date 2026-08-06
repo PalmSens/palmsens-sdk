@@ -4,7 +4,7 @@ Use the `InstrumentManager()` to start experiments and control your PalmSens ins
 
 The most high-level way to start a measurement is to use the `measure()` function:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> method = ps.CyclicVoltammetry()
@@ -13,7 +13,7 @@ The most high-level way to start a measurement is to use the `measure()` functio
 
 You can also manage the connection yourself, using `connect()`, for example:
 
-```python
+```pycon
 >>> with ps.connect() as manager:
 ...    method = ps.ChronoAmperometry()
 ...    measurement = manager.measure(method)
@@ -21,7 +21,7 @@ You can also manage the connection yourself, using `connect()`, for example:
 
 Or using `InstrumentManager()` directly as a context manager:
 
-```python
+```pycon
 >>> instruments = discover()
 
 >>> with ps.InstrumentManager(instruments[0]) as manager:
@@ -30,7 +30,7 @@ Or using `InstrumentManager()` directly as a context manager:
 
 Or managing the instrument connection yourself:
 
-```python
+```pycon
 >>> instruments = discover()
 
 >>> manager = ps.InstrumentManager(instruments[0])

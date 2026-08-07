@@ -33,17 +33,15 @@ class CommProtocolError(ConnectionError):
         self.error_code: str = error_code
 
 
-def parse_capabilities(data: str, mapping: dict[int, str]) -> set[str]:
+def parse_capabilities(data: str, mapping: dict[int, str]) -> tuple[str, ...]:
     try:
         value = int(data, 16)
     except ValueError:
         raise ValueError(f'Invalid input: {data}')
 
-    features = set()
+    features = sorted(feature for i, feature in mapping.items() if (value >> i) & 1)
 
-    features = {feature for i, feature in mapping.items() if (value >> i) & 1}
-
-    return features
+    return tuple(features)
 
 
 class CommProtocol:
@@ -335,7 +333,7 @@ class CommProtocol:
 
         return self.query(f'e\n{script}\n\n')
 
-    def get_methodscript_capabilities(self) -> set[str]:
+    def get_methodscript_capabilities(self) -> tuple[str, ...]:
         """Retrieve which MethodSCRIPT features are available on this instrument.
 
         Returns a set of command names that are licensed
@@ -343,14 +341,14 @@ class CommProtocol:
 
         Returns
         -------
-        set[str]
-            Set of available MethodSCRIPT command names.
+        tuple[str, ...]
+            Tuple of available MethodSCRIPT command names.
         """
 
         response = self.query('CM')
         return parse_capabilities(response, mapping=METHODSCRIPT_CAPABILITIES)
 
-    def get_communication_capabilities(self) -> set[str]:
+    def get_communication_capabilities(self) -> tuple[str, ...]:
         """Retrieve which communication commands are available on this instrument.
 
         Returns a set of commands part of the communication protocol that
@@ -358,8 +356,8 @@ class CommProtocol:
 
         Returns
         -------
-        set[str]
-            Set of supported commands for the instrument.
+        tuple[str, ...]
+            Tuple of supported commands for the instrument.
         """
         response = self.query('CC')
         return parse_capabilities(response, mapping=COMMUNICATION_CAPABILITIES)

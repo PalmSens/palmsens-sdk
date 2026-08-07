@@ -6,10 +6,10 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 import pytest
-from sybil import Sybil
+from sybil import Example, Sybil
 from sybil.evaluators.doctest import NUMBER
 from sybil.parsers.doctest import DocTestParser
-from sybil.parsers.markdown import PythonCodeBlockParser, SkipParser
+from sybil.parsers.markdown import CodeBlockParser, PythonCodeBlockParser, SkipParser
 
 
 @pytest.fixture(scope='module')
@@ -25,7 +25,21 @@ def tempdir():
         rmtree(path)
 
 
-pytest_collect_file = Sybil(
+def lint_python_source(example: Example) -> str | None:
+    # here you'd feed example.parsed, which contains the python source of the
+    # .. code-block:: python, to your linting tool of choice
+    pass
+
+
+linting = Sybil(
+    name='linting',
+    parsers=[
+        CodeBlockParser(language='python', evaluator=lint_python_source),
+    ],
+    patterns=['*.md'],
+)
+
+testing = Sybil(
     parsers=[
         DocTestParser(
             optionflags=doctest.ELLIPSIS
@@ -33,21 +47,25 @@ pytest_collect_file = Sybil(
             | doctest.IGNORE_EXCEPTION_DETAIL
         ),
         PythonCodeBlockParser(
-            future_imports=['print_function'],
             doctest_optionflags=NUMBER,
         ),
         SkipParser(),
     ],
     patterns=[
-        # 'comm_protocol.md',
-        # 'circuit_fitting.md',
-        # 'data.md',
-        # 'events.md',
-        # 'examples.md',
-        # 'files.md',
+        'comm_protocol.md',
+        'circuit_fitting.md',
+        'data.md',
+        'events.md',
+        'examples.md',
+        'files.md',
         'filesystem.md',
-        # 'installation.md',
-        # 'index.md',
+        'installation.md',
+        'index.md',
+        'measuring.md',
+        'methods.md',
     ],
-    # fixtures=['tempdir'],
-).pytest()
+    excludes=['zensical/releases/index.md'],
+)
+
+
+pytest_collect_file = testing.pytest()

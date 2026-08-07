@@ -4,22 +4,22 @@ This section contains a listing of all available techniques in PyPalmSens.
 
 For example to set up a [CV][pypalmsens.CyclicVoltammetry] experiment:
 
-```pycon
->>> import pypalmsens as ps
+```python
+import pypalmsens as ps
 
->>> method = ps.CyclicVoltammetry(
-...     begin_potential = -1,
-...     vertex1_potential = -1,
-...     vertex2_potential = 1,
-...     step_potential = 0.25,
-...     scanrate = 5,
-...     n_scans = 2,
-...     current_range = {
-...         'max': '1mA',
-...         'min': '100nA',
-...         'start': '100uA',
-...     },
-... )
+method = ps.CyclicVoltammetry(
+    begin_potential = -1,
+    vertex1_potential = -1,
+    vertex2_potential = 1,
+    step_potential = 0.25,
+    scanrate = 5,
+    n_scans = 2,
+    current_range = {
+        'max': '1mA',
+        'min': '100nA',
+        'start': '100uA',
+    },
+)
 ```
 
 !!! note "Shared settings"

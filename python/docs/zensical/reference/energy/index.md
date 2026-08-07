@@ -19,14 +19,13 @@ These methods are only available in PyPalmSens.
 
 For example to set up a battery cycling experiment:
 
-```pycon
->>> import pypalmsens as ps
+```python
+import pypalmsens as ps
 
->>> method = ps.experimental_BatteryCycling(
-...     cycles = 10,
-... )
+method = ps.energy.experimental_BatteryCycling(
+    cycles = 10,
+)
 ```
-
 
 ## Classes
 

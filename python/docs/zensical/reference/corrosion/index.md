@@ -13,27 +13,27 @@ The techniques below are identical to the other [electrochemistry techniques](..
 
 For example to set up a CP experiment:
 
-```pycon
->>> import pypalmsens as ps
+```python
+import pypalmsens as ps
 
->>> method = ps.CyclicPolarization(
-...     begin_potential = -1,
-...     vertex1_potential = -1,
-...     vertex2_potential = 1,
-...     step_potential = 0.25,
-...     scanrate = 5,
-...     n_scans = 2,
-...     current_range = {
-...         'max': '1mA',
-...         'min': '100nA',
-...         'start': '100uA',
-...     },
-...     material = {
-...         'surface_area' = 0.5,
-...         'density' = 30.0,
-...         'weight' = 20.0,
-...     }
-... )
+method = ps.corrosion.CyclicPolarization(
+    begin_potential = -1,
+    vertex1_potential = -1,
+    vertex2_potential = 1,
+    step_potential = 0.25,
+    scanrate = 5,
+    n_scans = 2,
+    current_range = {
+        'max': '1mA',
+        'min': '100nA',
+        'start': '100uA',
+    },
+    material = {
+        'surface_area': 0.5,
+        'density': 30.0,
+        'weight': 20.0,
+    }
+)
 ```
 
 !!! note "Shared settings"

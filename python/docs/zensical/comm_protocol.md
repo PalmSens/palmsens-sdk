@@ -168,19 +168,18 @@ For async workflows, use [pypalmsens.DeviceFileSystemAsync][]:
 ...     comm = ps.CommProtocolAsync(instruments[0])
 ...     await comm.open()
 ...
-...     print(await comm.query('i'))
-...     print(await comm.query('v'))
-...     print(await comm.query('t'))
+...     print(repr(await comm.query('i')))
+...     print(repr(await comm.query('v')))
+...     print(repr(await comm.query('t')))
 ...
 ...     script = 'send_string "Hello world!"'
-...     print(await comm.run_methodscript(script))
+...     output = await comm.run_methodscript(script)
+...     print(repr(output))
 
 >>> asyncio.run(main())
-ES4LR20B0008
-01.09.00
-es4_lr1500#Mar 12 2026 14:28:01
-R*
-THello world!
-<BLANKLINE>
+'ES4LR20B0008'
+'01.09.00'
+'es4_lr1500#Mar 12 2026 14:28:01\nR*'
+'THello world!\n'
 
 ```

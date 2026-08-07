@@ -9,7 +9,7 @@ import pytest
 from sybil import Sybil
 from sybil.evaluators.doctest import NUMBER
 from sybil.parsers.doctest import DocTestParser
-from sybil.parsers.markdown import PythonCodeBlockParser
+from sybil.parsers.markdown import PythonCodeBlockParser, SkipParser
 
 
 @pytest.fixture(scope='module')
@@ -36,6 +36,7 @@ pytest_collect_file = Sybil(
             future_imports=['print_function'],
             doctest_optionflags=NUMBER,
         ),
+        SkipParser(),
     ],
     patterns=[
         # 'comm_protocol.md',
@@ -43,8 +44,8 @@ pytest_collect_file = Sybil(
         # 'data.md',
         # 'events.md',
         # 'examples.md',
-        'files.md',
-        # 'filesystem.md',
+        # 'files.md',
+        'filesystem.md',
         # 'installation.md',
         # 'index.md',
     ],

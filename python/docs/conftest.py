@@ -40,8 +40,8 @@ pytest_collect_file = Sybil(
     patterns=[
         # 'comm_protocol.md',
         # 'circuit_fitting.md',
-        'data.md',
-        # 'events.md',
+        # 'data.md',
+        'events.md',
         # 'examples.md',
         # 'files.md',
         # 'filesystem.md',

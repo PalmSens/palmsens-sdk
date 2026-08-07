@@ -29,10 +29,10 @@ Alternatively, you can manage the connection yourself. The repr shows the state 
 >>> comm = ps.CommProtocol(instrument)
 >>> comm.open()
 >>> comm
-CommProtocol('/dev/ttyACM2', connected=True)
+CommProtocol('EmStat4 LR [1]', connected=True)
 >>> comm.close()
 >>> comm
-CommProtocol('/dev/ttyACM2', connected=False)
+CommProtocol('EmStat4 LR [1]', connected=False)
 
 ```
 
@@ -78,9 +78,9 @@ You can query which features are available on the connected instrument through c
 
 ```pycon
 >>> comm.get_methodscript_capabilities()
-{'abort', 'add_var', ..., 'var', 'wait'}
+('abort', 'add_var', ..., 'var', 'wait')
 >>> comm.get_communication_capabilities()
-{'CC', 'CM', ..., 't', 'v'}
+('CC', 'CM', ..., 't', 'v')
 
 ```
 
@@ -116,9 +116,9 @@ Communication errors raise [MethodScriptRuntimeError][pypalmsens.MethodScriptRun
 
 ```pycon
 >>> comm.run_methodscript('invalid_command\n')
-Exception raised:
+Traceback (most recent call last):
 ...
-MethodScriptRuntimeError: [4001] The script command is unknown (Line 1, Col 16)
+pypalmsens._instruments.comm_protocol.CommProtocolError: [4001] The script command is unknown (Line 1, Col 16)
 
 ```
 
@@ -181,5 +181,6 @@ ES4LR20B0008
 es4_lr1500#Mar 12 2026 14:28:01
 R*
 THello world!
+<BLANKLINE>
 
 ```

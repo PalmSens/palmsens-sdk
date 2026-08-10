@@ -26,6 +26,11 @@ Therefore, [pypalmsens.load_session_file][] always returns a list of measurement
 
 ```
 
+!!! Note "Loading a single measurement"
+
+    If you know your session file only contains a single measurement, you can use the convenience functions:
+    [pypalmsens.load_measurement][] and omit the index: `measurement = ps.load_measurement('my_measurement.pssession')`
+
 From there, you can query device information and other metadata:
 
 ```pycon

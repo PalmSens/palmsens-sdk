@@ -30,14 +30,27 @@ Measurement data can be loaded from `.pssession` files. This contains one or mor
 
 [pypalmsens.load_session_file][] is used to load session files. It returns a list of measurements containing the dataset (raw data in array form) and curves (plot data). The equivalent in PSTrace or PSTrace Express would be the 'Data' and the 'Plot' tabs, respectively.
 
-For example, loading a collection of measurements from a session file and showing the first one:
+For example, loading a collection of measurements from a session file:
 
 ```pycon
->>> measurement = ps.load_measurement('examples/Demo CV DPV EIS IS-C electrode.pssession')
->>> measurement
-Measurement(title=Differential Pulse Voltammetry, timestamp=2017-07-12T14:28:58, device=PalmSens4)
+>>> measurements = ps.load_session_file('examples/Demo CV DPV EIS IS-C electrode.pssession')
+>>> measurements
+[Measurement(title=Differential Pulse Voltammetry, timestamp=2017-07-12T14:28:58, device=PalmSens4),
+ Measurement(title=Cyclic Voltammetry [1], timestamp=2017-07-12T14:33:10, device=PalmSens4),
+ Measurement(title=Impedance Spectroscopy [2], timestamp=2017-07-12T14:48:42, device=PalmSens4)]
 
 ```
+
+If you know that your session file only contains a single measurement, you can use the [pypalmsens.load_measurement][] function:
+
+```pycon
+>>> measurement = ps.load_measurement('examples/CV example.pssession')  #(1)!
+>>> measurement
+Measurement(title=Cyclic Voltammetry, timestamp=2017-07-12T14:33:10, device=PalmSens4)
+
+```
+
+1. This is equivalent to `ps.load_session_file(...)[0]`
 
 The measurement data and curve classes are defined in the `.curves` attribute:
 
@@ -49,16 +62,23 @@ See the [Measurement documentation](../data.md#measurement) for how to work with
 
 ## Saving Data
 
-Likewise, save your data using [pypalmsens.save_session_file][]. Note that session files can contain multiple measurements, therefore
+For single measurements, use [pypalmsens.save_measurement][]:
 
 ```pycon
->>> import pypalmsens as ps
+>>> ps.save_measurement('cv_measurement.pssession', measurement)  #(1)!
 
->>> measurement = ps.measure(ps.CyclicVoltammetry())
+```
 
+1. This is equivalent to `ps.save_session_file(..., [measurement])`.
+
+Note that session files can contain multiple measurements, so to store multiple measurements, use [pypalmsens.save_session_file][]:
+
+```pycon
 >>> ps.save_session_file(
-...     'my_measurement_copy.pssession',
-...     [measurement]
+...     'CV DPV EIS measurements.pssession',
+...     measurements  #(1)!
 ... )
 
 ```
+
+1. A list of measurements

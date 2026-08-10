@@ -33,7 +33,7 @@ Measurement data can be loaded from `.pssession` files. This contains one or mor
 For example, loading a collection of measurements from a session file and showing the first one:
 
 ```pycon
->>> measurement = ps.load_session_file('examples/Demo CV DPV EIS IS-C electrode.pssession')[0]
+>>> measurement = ps.load_measurement('examples/Demo CV DPV EIS IS-C electrode.pssession')
 >>> measurement
 Measurement(title=Differential Pulse Voltammetry, timestamp=2017-07-12T14:28:58, device=PalmSens4)
 

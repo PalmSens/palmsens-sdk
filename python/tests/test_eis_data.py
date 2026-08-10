@@ -4,13 +4,13 @@ import pytest
 
 
 @pytest.fixture
-def eis_simple(data_eis_5freq):
-    return data_eis_5freq[0].eis_data
+def eis_simple(measurement_eis_5freq):
+    return measurement_eis_5freq.eis_data
 
 
 @pytest.fixture
-def eis_mux_subscans(data_eis_3ch_4scan_5freq):
-    return data_eis_3ch_4scan_5freq[0].eis_data
+def eis_mux_subscans(measurement_eis_3ch_4scan_5freq):
+    return measurement_eis_3ch_4scan_5freq.eis_data
 
 
 def test_eis_data(eis_simple):

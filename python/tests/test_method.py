@@ -8,8 +8,8 @@ from pypalmsens._methods.adapters import technique_adapter
 
 
 @pytest.fixture
-def method(data_cv_1scan):
-    return Method(psmethod=data_cv_1scan[0]._psmeasurement.Method)
+def method(measurement_cv_1scan):
+    return Method(psmethod=measurement_cv_1scan._psmeasurement.Method)
 
 
 def test_properties(method):

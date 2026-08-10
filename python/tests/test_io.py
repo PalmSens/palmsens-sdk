@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from pytest import approx
 
 import pypalmsens as ps
@@ -29,6 +30,37 @@ def test_save_load_session(tmpdir, data_dpv):
     assert meas.timestamp == meas2.timestamp
     assert meas.title == meas2.title
     assert meas.device == meas2.device
+
+
+def test_save_load_measurement(tmpdir, data_dpv):
+    path = tmpdir / 'test.psmethod'
+    meas = data_dpv[0]
+
+    ps.save_measurement(path, meas)
+
+    meas2 = ps.load_measurement(path)
+
+    assert len(meas.dataset) == len(meas2.dataset) == 0
+    assert meas.n_curves == meas2.n_curves == 1
+    assert meas.curves[0].n_points == meas2.curves[0].n_points
+    assert meas.timestamp == meas2.timestamp
+    assert meas.title == meas2.title
+    assert meas.device == meas2.device
+
+
+def test_save_load_measurement_fail(tmpdir, data_dpv, data_cv):
+    path = tmpdir / 'test_multiple.psmethod'
+
+    meas1 = data_dpv[0]
+    meas2 = data_cv[0]
+
+    ps.save_session_file(path, [meas1, meas2])
+
+    with pytest.raises(ValueError):
+        _ = ps.load_measurement(path)
+
+    with pytest.raises(ValueError):
+        ps.save_measurement(path, [meas1, meas2])
 
 
 def test_save_load_method(tmpdir):

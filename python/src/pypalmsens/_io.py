@@ -77,7 +77,7 @@ def save_session_file(path: str | Path, measurements: Sequence[Measurement]):
     ----------
     path : Path | str
         Path to save the session file
-    measurements : list[Measurement]
+    measurements : Sequence[Measurement]
         List of measurements to save
     """
     path = Path(path)

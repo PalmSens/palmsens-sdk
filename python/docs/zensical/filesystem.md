@@ -230,6 +230,24 @@ Check the device storage capacity:
 
 ```
 
+## Error handling
+
+Filesystem operations raise [pypalmsens._instruments.FileSystemException][] (a subclass of `OSError`) when a device operation fails:
+
+```pycon
+>>> fs.read_text('nonexistent_file.txt')
+FileSystemException: Error (!009F) while retrieving contents of '/nonexistent_file.txt'
+
+```
+
+Some common error codes:
+
+- `!009D`: Filesystem path was too long to handle
+- `!009E`: Filesystem the path was not valid
+- `!009F`: Filesystem could not find the file specified
+
+Other error codes can be looked up in [the MethodSCRIPT manual](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html#app_err_error_codes).
+
 <!-- invisible-code-block: python
 fs.close()
 -->
@@ -258,21 +276,3 @@ Measurements/17-07-2026/LSV-10-00-28-1.dmeas
 Measurements/04-08-2026/LSV-16-02-20-0.dmea
 Measurements/16-07-2026/CV-14-46-50-2.dmeas
 ```
-
-## Error handling
-
-Filesystem operations raise [pypalmsens._instruments.FileSystemException][] (a subclass of `OSError`) when a device operation fails:
-
-```pycon
->>> fs.read_text('nonexistent_file.txt')
-FileSystemException: Error (!009F) while retrieving contents of '/nonexistent_file.txt'
-
-```
-
-Some common error codes:
-
-- `!009D`: Filesystem path was too long to handle
-- `!009E`: Filesystem the path was not valid
-- `!009F`: Filesystem could not find the file specified
-
-Other error codes can be looked up in [the MethodSCRIPT manual](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html#app_err_error_codes).

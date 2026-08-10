@@ -17,7 +17,7 @@ import pypalmsens as ps
 
 method = ps.MixedMode(
     stages=[
-        ps.stages.ConstantI(run_time=5, current=1.0)
+        ps.stages.ConstantI(run_time=5, current=1.0),
         ps.stages.ConstantE(run_time=5, potential=0.5),
         ps.stages.OpenCircuit(run_time=30),
     ]

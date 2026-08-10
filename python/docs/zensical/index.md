@@ -51,7 +51,8 @@ The following example shows how to set up and measure a simple chronoamperometry
 ... )
 
 >>> ps.measure(method) # (1)!
-Measurement(title=Chronoamperometry, timestamp=17-Nov-25 13:42:16, device=EmStat4HR)
+Measurement(title=Chronoamperometry, timestamp=2026-08-07T16:01:46, device=EmStat4LR)
+
 ```
 
 1. `measure` discovers any plugged-in device to start the measurement. An error is raised when more than 1 instruments are connected.
@@ -62,7 +63,7 @@ Measurement(title=Chronoamperometry, timestamp=17-Nov-25 13:42:16, device=EmStat
 
 The following example shows how to discover devices and manually read out the current.
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> instruments = ps.discover()
@@ -78,30 +79,31 @@ The following example shows how to discover devices and manually read out the cu
 ...
 ...     manager.set_cell(False)
 current=92.8065 µA
+
 ```
 
 1. The context manager opens and closes the connection
 
 Analyze a previous measurement with [pandas](https://pandas.pydata.org/):
 
-```python
->>> import pandas as pd
+```pycon
 >>> import pypalmsens as ps
 
->>> measurements = ps.load_session_file('Demo CV DPV EIS IS-C electrode.pssession')
+>>> measurements = ps.load_session_file('examples/Demo CV DPV EIS IS-C electrode.pssession')
 >>> dpv = measurements[0]
 >>> print(f'{dpv.title} ({dpv.timestamp})')
-Impedance Spectroscopy [2] (7/12/2017 2:48:42 PM)
+Differential Pulse Voltammetry (2017-07-12T14:28:58)
 
->>> dpv.dataset.to_dataframe() #(1)!
-     Time Potential   Current    CR ReadingStatus
+>>> dpv.dataset.to_dataframe()  #(1)!
+Time Potential   Current    CR ReadingStatus
 0     0.0 -0.399962  0.352146  10uA            OK
 1     0.2 -0.394962  0.351192  10uA            OK
-2     0.4 -0.389884    0.3469  10uA            OK
-..    ...       ...       ...   ...           ...
-216  43.2  0.687698  0.198544  10uA            OK
+...
 217  43.4  0.692698   0.19908  10uA            OK
 218  43.6  0.697776  0.199557  10uA            OK
+<BLANKLINE>
+[219 rows x 5 columns]
+
 ```
 
 1. Extract all arrays from the dataset into a [pandas dataframe](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html).

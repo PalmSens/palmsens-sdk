@@ -307,7 +307,7 @@ class CommProtocolAsync:
 
         return await self.query(f'e\n{script}\n\n')
 
-    async def get_methodscript_capabilities(self) -> set[str]:
+    async def get_methodscript_capabilities(self) -> tuple[str, ...]:
         """Retrieve which MethodSCRIPT features are available on this instrument.
 
         Returns a set of command names that are licensed
@@ -315,14 +315,14 @@ class CommProtocolAsync:
 
         Returns
         -------
-        set[str]
+        tuple[str, ...]
             Set of available MethodSCRIPT command names.
         """
 
         response = await self.query('CM')
         return parse_capabilities(response, mapping=METHODSCRIPT_CAPABILITIES)
 
-    async def get_communication_capabilities(self) -> set[str]:
+    async def get_communication_capabilities(self) -> tuple[str, ...]:
         """Retrieve which communication commands are available on this instrument.
 
         Returns a set of commands part of the communication protocol that
@@ -330,7 +330,7 @@ class CommProtocolAsync:
 
         Returns
         -------
-        set[str]
+        tuple[str, ...]
             Set of supported commands for the instrument.
         """
         response = await self.query('CC')

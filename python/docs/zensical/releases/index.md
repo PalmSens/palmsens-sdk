@@ -446,7 +446,7 @@ A list of allowed values is available via:
 Thanks to how the methods are validated, a warning will be raised if an incorrect value is passed:
 
 ```pycon
->>> ps.CyclicVoltammetry(current_range={'start':'fail'})
+>>> ps.CyclicVoltammetry(current_range={'start': 'fail'})
 ValidationError: 1 validation error for CyclicVoltammetry
 current_range.start
   Input should be '100pA', '1nA', '10nA', '100nA', '1uA', '10uA', '100uA', '1mA', '10mA', '100mA', '2uA', '4uA', '8uA', '16uA', '32uA', '63uA', '125uA', '250uA', '500uA', '5mA', '6uA', '13uA', '25uA', '50uA', '200uA' or '1A' [type=literal_error, input_value='fail', input_type=str]

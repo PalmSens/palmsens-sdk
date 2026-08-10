@@ -53,10 +53,10 @@ changelog = "https://github.com/palmsens/palmsens-sdk/releases"
 develop = [
     "bump-my-version",
     "coverage",
-    "griffe2md",
     "pre-commit",
     "pytest",
     "pytest-asyncio",
+    "sybil",
 ]
 
 publishing = [

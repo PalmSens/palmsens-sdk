@@ -11,37 +11,53 @@ For example, to start a measurement:
 
 ```pycon
 >>> import pypalmsens as ps
+>>> import asyncio
 
 >>> method = ps.CyclicVoltammetry()
->>> await ps.measure(method)
+
+>>> async def main():
+...     await ps.measure_async(method)
+
+>>> asyncio.run(main())
+
 ```
 
 Or to manage the connection yourself:
 
 ```pycon
->>> async with await ps.connect_async() as manager:
-...     method = ps.ChronoAmperometry()
-...     measurement = await manager.measure(method)
+>>> async def main():
+...     async with await ps.connect_async() as manager:
+...         method = ps.ChronoAmperometry()
+...         measurement = await manager.measure(method)
+
+>>> asyncio.run(main())
+
 ```
 
 Or using `InstrumentManagerAsync()` directly as a context manager:
 
 ```pycon
->>> instruments = await discover_async()
+>>> async def main():
+...     instruments = await ps.discover_async()
+...     async with ps.InstrumentManagerAsync(instruments[0]) as manager:
+...         measurement = await manager.measure(method)
 
->>> async with ps.InstrumentManagerAsync(instruments[0]) as manager:
-...     measurement = await manager.measure(method)
+>>> asyncio.run(main())
+
 ```
 
 Or managing the instrument connection yourself:
 
 ```pycon
->>> instruments = await discover_async()
+>>> async def main():
+...     instruments = await ps.discover_async()
+...     manager = ps.InstrumentManagerAsync(instruments[0])
+...     await manager.connect()
+...     # ...
+...     await manager.disconnect()
 
->>> manager = ps.InstrumentManagerAsync(instruments[0])
->>> await manager.connect()
-... # ...
->>> await manager.disconnect()
+>>> asyncio.run(main())
+
 ```
 
 For more information, see the [measurement documentation](https://dev.palmsens.com/python/latest/_attachments/measuring/).

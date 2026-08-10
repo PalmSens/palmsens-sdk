@@ -14,29 +14,31 @@ The [pypalmsens.InstrumentManager][] and [pypalmsens.InstrumentManagerAsync][]) 
 The simplest way to run an expirement is to use [pypalmsens.measure][].
 This function connects to any plugged-in USB device it can find and starts the given measurement.
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> method = ps.ChronoAmperometry(
 ...     interval_time=0.01,
 ...     potential=1.0,
-...     run_time=10.0,
+...     run_time=5.0,
 ... )
 
 >>> ps.measure(method) # (1)!
-Measurement(title=Chronoamperometry, timestamp=17-Nov-25 13:42:16, device=EmStat4HR)
+Measurement(title=Chronoamperometry, timestamp=..., device=EmStat4LR)
+
 ```
 
 1. `measure` discovers any plugged-in device to start the measurement. An error is raised when more than 1 instruments are connected.
 
 You can optionally pass the instrument to measure on if you have multiple connected.
 
-```python
+```pycon
 >>> instruments = ps.discover()
 >>> first_instrument = instruments[0]
 
 >>> ps.measure(method, instrument=first_instrument)
-Measurement(title=Chronoamperometry, timestamp=17-Nov-25 14:12:02, device=EmStat4HR)
+Measurement(title=Chronoamperometry, timestamp=..., device=EmStat4LR)
+
 ```
 
 ## Connecting to a device
@@ -45,11 +47,12 @@ The recommended way to connect to a device for most workflows is to use the `ps.
 The contextmanager manages the connection, and closes the connection to the device if it is no longer needed.
 [pypalmsens.connect][] returns an instance of [pypalmsens.InstrumentManager][], which can be used to control the instrument and start a measurement:
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> with ps.connect() as manager:
 ...     measurement = manager.measure(method)
+
 ```
 
 By default, [pypalmsens.connect][] connects to any plugged-in USB instrument it discovers.
@@ -57,37 +60,43 @@ It gives an error when multiple instruments are discovered.
 With more instruments connected, you can use [pypalmsens.discover][] to find all devices and manage them yourself.
 For example, this is how to get a list of all available devices, and how to connect to the first one.
 
-```python
+```pycon
 >>> available_instruments = ps.discover()
 >>> available_instruments
-[Instrument(name='EmStat4 HR [1]', interface='usbcdc')]
+[Instrument(name='EmStat4 LR [1]', interface='usbcdc')]
 
 >>> first_instrument = available_instruments[0]
 
 >>> with ps.connect(first_instrument) as manager:
 ...    measurement = manager.measure(method)
+
 ```
 
 Finally, you can set up the [pypalmsens.InstrumentManager][] yourself.
 
-```python
->>> available_instruments = ps.discover()
->>> manager = ps.InstrumentManager()
->>> manager.connect(available_instruments[0])
+```pycon
+>>> instruments = ps.discover()
+>>> manager = ps.InstrumentManager(instruments[0])
+>>> manager.connect()
+
 ```
 
  [pypalmsens.InstrumentManager.disconnect][] disconnects from the device freeing it up for other things to connect to it.
 
-```python
+```pycon
 >>> manager.disconnect()
+
 ```
 
 Currently PyPalmSens supports discovering instruments connected via FTDI, serial (usbcdc/com), and Bluetooth (classic/low energy). By default scanning with Bluetooth is disabled.
 
 You can enable scanning with Bluetooth by setting:
 
-```python
+<!-- skip: next -->
+
+```pycon
 >>> ps.discover(bluetooth=True)
+
 ```
 
 ### Connecting to a serial port
@@ -99,16 +108,20 @@ If this does not fit your workflow, you can use the [pypalmsens.Instrument][] cl
 
 The example below shows how to connect to the 'COM4' port on Windows:
 
-```python
+<!-- skip: start -->
+```pycon
 >>> import pypalmsens as ps
 
 >>> instrument = ps.Instrument.from_port('COM4')
 >>> instrument
 Instrument(name='COM4', interface='serialport')
+
 >>> with ps.connect(instrument) as manager:
 ...     print(manager.get_instrument_serial())
 ES4HR20B0008
+
 ```
+<!-- skip: end -->
 
 On Windows, you can see the connected devices using:
 
@@ -117,6 +130,7 @@ $ reg query HKLM\HARDWARE\DEVICEMAP\SERIALCOMM
 
 HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\SERIALCOMM
     \Device\USBSER000    REG_SZ    COM4
+
 ```
 
 On linux you can query `/dev/serial` for serial devices, e.g.:
@@ -124,14 +138,16 @@ On linux you can query `/dev/serial` for serial devices, e.g.:
 ```bash
 $ ls /dev/serial/by-id/
 usb-PalmSens_EmStat4_ES4HR20B0008-if00
+
 ```
 
 And pass the full device path to PyPalmSens:
 
-```python
+```pycon
 >>> instrument = ps.Instrument.from_port('/dev/serial/by-id/usb-PalmSens_EmStat4_ES4HR20B0008-if00')
 >>> instrument
 Instrument(name='/dev/serial/by-id/usb-PalmSens_EmStat4_ES4HR20B0008-if00', interface='serialport')
+
 ```
 
 !!! Note "Port stability"
@@ -150,16 +166,20 @@ The Nexus displays its IP in the display.
 
 The example below shows how to connect to a Nexus with IP address '192.168.0.123':
 
-```python
+<!-- skip: start "Requires Nexus" -->
+```pycon
 >>> import pypalmsens as ps
 
 >>> instrument = ps.Instrument.from_ip('192.168.0.123')
 >>> instrument
 Instrument(name='192.168.0.123', interface='tcp')
+
 >>> with ps.connect(instrument) as manager:
 ...     print(manager.get_instrument_serial())
 NEXUS24C0029
+
 ```
+<!-- skip: end -->
 
 ### Connection issues
 
@@ -189,13 +209,15 @@ For more information please refer to [PalmSens.Net.Core](https://dev.palmsens.co
 
 The following example runs a chronoamperometry measurement on an instrument.
 
-```python
+```pycon
 >>> method = ps.ChronoAmperometry(
 ...     interval_time=0.01,
-...     e=1.0,
-...     run_time=10.0
+...     potential=1.0,
+...     run_time=5.0
 ... )
->>> measurement = manager.measure(method)
+>>> with ps.connect() as manager:
+...     measurement = manager.measure(method)
+
 ```
 
 ### Callback
@@ -203,23 +225,29 @@ The following example runs a chronoamperometry measurement on an instrument.
 You process measurement results in real-time by specifying a callback function as argument.
 In the example below we use `print` to simply log the data to the console:
 
-```python
->>> manager.measure(method, callback=print)
+```pycon
+>>> with ps.connect() as manager:
+...     manager.measure(method, callback=print)
 {'index': 0, 'x': 0.0,  'y': -305.055}
 {'index': 1, 'x': 0.01, 'y': -731.741}
 {'index': 2, 'x': 0.02, 'y': -751.552}
 ...
+
 ```
 
 The callback is passed a collection of points that have been added since the last time it was called.
 Thus, `new_data` below is a batched list of points, so we can expand the `print` example to print each point on a new line:
 
-```python
+```pycon
 >>> def callback(data):
-...    print({'start': data.start, 'x': data.x[data.start:], 'y': data.y[data.start:]})
+...    print({'start': data.start, 'x': data.x_array[data.start:], 'y': data.y_array[data.start:]})
 ...
->>> manager.measure(method, callback=callback)
+
+>>> with ps.connect() as manager:
+...     measurement = manager.measure(method, callback=callback)
 {'start': 0, 'x': [0.00, 0.01, 0.02], 'y': [-305.055, -740.935, -750.604]}
+...
+
 ```
 
 Alternatively, you can use `data.last_datapoint()` or `data.new_datapoints()` to get a dictionary with new data since the last callback.
@@ -234,13 +262,15 @@ Query the data array directly (`DataArray.unit`, `DataArray.quantity`) for these
 
 For impedemetric techniques, the callback returns the EIS [Dataset](data.md#dataset). See [pypalmsens.data.CallbackDataEIS][] for more information.
 
-```python
+```pycon
 >>> def callback(data):
 ...    print(data.last_datapoint())
 
 >>> eismethod = ps.ElectrochemicalImpedanceSpectroscopy()
->>> manager.measure(method, callback=callback)
+>>> with ps.connect() as manager:
+...     measurement = manager.measure(method, callback=callback)
 {'index': 0, 'Idc': -5.683012, 'potential': 0.0, 'time': 0.0024332, 'Frequency': 10000.0, 'ZRe': 4846.639, 'ZIm': -31990.538, 'Z': 32355.593, 'Phase': -81.385, 'Iac': 0.015, 'miDC': -5.683, 'mEdc': 0.598, 'Eac': 0.000, 'Y': 3.090e-05, 'YRe': 4.629e-06, 'YIm': -3.055e-05, 'Capacitance': -4.975e-10, "Capacitance'": -4.863e-10, "Capacitance''": 7.368e-11}
+
 ```
 
 ## Idle status updates
@@ -255,13 +285,21 @@ The event is fired every second and every 0.25 seconds during pretreatment.
 
 For example, using print as the callback prints the status to the terminal:
 
-```python
->>> handle = manager.on_receive_status(print)
->>> await asyncio.sleep(3)  # (1)!
+```pycon
+>>> import pypalmsens as ps
+>>> import asyncio
+
+>>> async def main():
+...     async with await ps.connect_async() as manager:
+...         handle = manager.on_receive_status(print)
+...         await asyncio.sleep(3)  # (1)!
+...         handle.cancel()
+
+>>> asyncio.run(main())
 {'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.527 V'}
 {'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.526 V'}
 {'state': 'Idle', 'current': '0.000 * 1uA', 'potential': '0.526 V'}
->>> handle.cancel()
+
 ```
 
 1. Sleep is used here to simulate another task
@@ -270,20 +308,25 @@ The callback returns a [pypalmsens.data.Status][] object, which can be used to c
 
 For example, to print data during the pretreatment phases:
 
-```python
+```pycon
 >>> def callback(status):
 ...     if status.device_state == 'Pretreatment':
 ...         print(f'{status.pretreatment_phase}: potential={status.potential:.3f} V, current={status.current:.3f} μA')
 
->>> handle = manager.on_receive_status(callback)
->>> await manager.measure(ps.ChronoAmperometry(
-...     pretreatment={'conditioning_time':2, 'conditioning_potential': 0.5},
-... ))
+>>> async def main():
+...     async with await ps.connect_async() as manager:
+...         handle = manager.on_receive_status(callback)
+...         await manager.measure(ps.ChronoAmperometry(
+...             pretreatment={'conditioning_time': 2, 'conditioning_potential': 0.5},
+...         ))
+...         handle.cancel()
+
+>>> asyncio.run(main())
 Conditioning: potential=0.500 V, current=0.100 μA
 Conditioning: potential=0.500 V, current=0.101 μA
 ...
 Conditioning: potential=0.500 V, current=0.098 μA
->>> handle.cancel()
+
 ```
 
 See [pypalmsens.data.Status][] or the provided [Status callback](examples.md#status-callback) example for more information.
@@ -302,13 +345,22 @@ These are also emitted for a `send_string` call in MethodSCRIPT.
 
 For example, using [print][] as the callback prints the messages to the terminal:
 
-```python
->>> method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"')
->>> handle = manager.on_receive_message(print)
->>> await ps.measure(method)
+```pycon
+>>> import pypalmsens as ps
+>>> import asyncio
+
+>>> method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
+
+>>> async def main():
+...    async with await ps.connect_async() as manager:
+...        handle = manager.on_receive_message(print)
+...        await manager.measure(method)
+...        handle.cancel()
+
+>>> asyncio.run(main())
 Running: MethodSCRIPT Sandbox
 Hello world
->>> handle.cancel()
+
 ```
 
 See [InstrumentManager][pypalmsens.InstrumentManager.on_receive_message] and [InstrumentManagerAsync][pypalmsens.InstrumentManagerAsync.on_receive_message] for more information.
@@ -318,43 +370,58 @@ See [InstrumentManager][pypalmsens.InstrumentManager.on_receive_message] and [In
 Depending on your device’s capabilities it can be used to set a potential/current and to switch current ranges.
 The potential can be set manually in potentiostatic mode and the current can be set in galvanostatic mode.
 
+<!-- invisible-code-block: python
+manager = ps.connect()
+-->
+
 To turn the cell on or off:
 
-```python
+```pycon
 manager.set_cell(True)
+
 ```
 
 or off:
 
-```python
+```pycon
 manager.set_cell(False)
+
 ```
 
 You can switch current ranges, and read the current:
 
-```python
+```pycon
 >>> manager.supported_current_ranges()
-['100nA', '1uA', '10uA', '100uA', '1mA', '10mA', '100mA']
+['1nA', '10nA', '100nA', '1uA', '10uA', '100uA', '1mA', '10mA']
+
 >>> manager.set_current_range('1uA')
 >>> manager.get_current_range()
 '1uA'
+
 >>> manager.read_current()
 -0.0187
 ```
 
 Likewise you can switch potential ranges, and set/read the potential:
 
-```python
+```pycon
 >>> manager.supported_potential_ranges()
 ['50mV', '100mV', '200mV', '500mV', '1V']
-'1V'
+
 >>> manager.set_potential_range('1V')
 >>> manager.get_potential_range()
 '1V'
+
 >>> manager.read_potential()
 0.0
+
 >>> manager.set_potential(1)
+
 ```
+
+<!-- invisible-code-block: python
+manager.disconnect()
+-->
 
 See [`manual_control.py`](examples.md#manual-control) and [`manual_control_async.py`](examples.md#manual-control-async) for examples.
 
@@ -391,21 +458,29 @@ Query the device directly using the [Communication Protocol](https://dev.palmsen
 
 For convenience, InstrumentManager exposes the primary [query][pypalmsens.InstrumentManager.query] method that sends a command and reads its response in one call:
 
-```python
->>> import pypalmsens as ps
+<!-- invisible-code-block: python
+manager = ps.connect()
+-->
 
->>> manager = ps.connect()
->>> comm.query('i'))
+```pycon
+>>> manager.query('i')
 'ES4LR20B0008'
->>> comm.query('v'))
+
+>>> manager.query('v')
 '01.09.00'
->>> comm.query('t'))
+
+>>> manager.query('t')
 'es4_lr1500#Mar 12 2026 14:28:01\nR*'
 
 >>> script = 'e\nsend_string "Hello world!"\n\n'
->>> comm.run_methodscript(script))
+>>> manager.query(script)
 'THello world!\n'
+
 ```
+<!-- invisible-code-block: python
+manager.disconnect()
+-->
+
 
 Asynchronous workflows are supported via [pypalmsens.InstrumentManagerAsync.query][].
 For more information on the Communication Protocol and examples, see [the documentation here][./comm_protocol.md].
@@ -422,10 +497,12 @@ You can also use it to manage a collection of single devices
 
 A basic multichannel measurement can be set up by passing a list of instruments, either from a multichannel device, or otherwise connected:
 
-```python
+
+<!-- skip: start "Needs multiple devices" -->
+```pycon
 >>> instruments = ps.discover()
 >>> instruments
-[Instrument(name='EmStat4 HR [1]', interface='usbcdc'), Instrument(name='EmStat4 HR [1]', interface='usbcdc')]
+[Instrument(name='EmStat4 LR [1]', interface='usbcdc'), Instrument(name='EmStat4 LR [1]', interface='usbcdc')]
 
 >>> method = ps.CyclicVoltammetry()
 
@@ -434,7 +511,9 @@ A basic multichannel measurement can be set up by passing a list of instruments,
 
 >>> measurements
 [Measurment(...), Measurement(...)]
+
 ```
+<!-- skip: end -->
 
 1. `InstrumentPool` is a context manager, so all instruments are disconnected after use.
 
@@ -444,63 +523,94 @@ The rest of the documentation here focuses on the async version of the instrumen
 This is more powerful and more flexible for more demanding use cases.
 Note that most of the functionality and method names are shared between [pypalmsens.InstrumentPool][] and [pypalmsens.InstrumentPoolAsync][].
 
-```python
->>> instruments = await ps.discover_async()
+<!-- skip: start "Needs multiple devices" -->
+```pycon
+>>> import asyncio
 
 >>> method = ps.CyclicVoltammetry()
 
->>> async with ps.InstrumentPoolAsync(instruments) as pool:
-...    results = await pool.measure(method)
+>>> async def main():
+...     instruments = await ps.discover_async()
+...     async with ps.InstrumentPoolAsync(instruments) as pool:
+...        measurements = await pool.measure(method)
+...     print(measurements)
 
->>> measurements
+>>> asyncio.run(main())
 [Measurment(...), Measurement(...)]
+
 ```
+<!-- skip: end -->
 
 The pool takes a [Callback](#callback) in its `measure()` method, just like a regular [pypalmsens.InstrumentManager][].
 
-```python
->>> async with ps.InstrumentPoolAsync(instruments) as pool:
-...    results = await pool.measure(method, callback=callback)
+```pycon
+>>> import asyncio
+
+>>> async def main():
+...     async with ps.InstrumentPoolAsync(instruments) as pool:
+...        results = await pool.measure(method, callback=callback)
+
+>>> asyncio.run(main())
+
 ```
 
 You can add ([pypalmsens.InstrumentPool.add][]) and remove ([pypalmsens.InstrumentPool.remove][]) managers from the pool:
 
-```python
+```pycon
+>>> import asyncio
+
 >>> serial_numbers = ['ES4HR20B0008', ...]
 
->>> async with ps.InstrumentPoolAsync(instruments) as pool:
-...     for manager in pool:
-...        if await manager.get_instrument_serial() not in [serial_numbers]:
-...             await pool.remove(manager)
+>>> async def main():
+...     async with ps.InstrumentPoolAsync(instruments) as pool:
+...         for manager in pool:
+...             if await manager.get_instrument_serial() not in [serial_numbers]:
+...                 await pool.remove(manager)
+
+>>> asyncio.run(main())
+
 ```
 
 You can also manage the pool yourself by passing the _instrument managers_ directly:
 
-```python
->>> instruments = await ps.discover_async()
+```pycon
+>>> import asyncio
 
->>> managers = [
-...     ps.InstrumentManagerAsync(instrument) for instrument in instruments
-... ]
+>>> async def main():
+...     instruments = await ps.discover_async()
+...     managers = [
+...         ps.InstrumentManagerAsync(instrument) for instrument in instruments
+...     ]
+...     async with ps.InstrumentPoolAsync(managers) as pool:
+...         pass  # pool operations
 
->>> async with ps.InstrumentPoolAsync(managers) as pool:
-...     pass  # pool operations
+>>> asyncio.run(main())
+
 ```
 
-To define your own measurement functions, you can use the [pypalmsens.InstrumentPoolAsync][] method.
+To define your own measurement functions, you can use the [pypalmsens.InstrumentPoolAsync.submit][] method.
 Pass a function that must take [pypalmsens.InstrumentManagerAsync][] as the first argument.
 Any other keyword arguments will be passed on.
 
-For example to run two methods in sequence:
+For example to run two methods in sequence on both channels:
 
-```python
->>> async def my_custom_function(manager, *, method1, method2):
+```pycon
+>>> import asyncio
+
+>>> async def my_task(manager, *, method1, method2):
 ...     measurement1 = await manager.measure(method1)
 ...     measurement2 = await manager.measure(method2)
 ...     return measurement1, measurement2
 
->>> async with ps.InstrumentPoolAsync(instruments) as pool:
-...     results = await pool.submit(my_task, method=method)
+>>> async def main():
+...     method1 = ps.ChronoPotentiometry(run_time=5.0)
+...     method2 = ps.CyclicVoltammetry()
+...  
+...     async with ps.InstrumentPoolAsync(instruments) as pool:
+...         results = await pool.submit(my_task, method1=method1, method2=method2)
+
+>>> asyncio.run(main())
+
 ```
 
 See [CSV writer](examples.md#multichannel_csv_writer) and [Custom loop](examples.md#multichannel_custom_loop) examples for a practical example of setting a custom function.
@@ -523,11 +633,18 @@ In addition, the pool must contain:
 All instruments are prepared and put in a waiting state.
 The measurements are started via a hardware sync trigger on channel 1.
 
-```python
->>> method.general.use_hardware_sync = True
+```pycon
+>>> import asyncio
 
->>> async with ps.InstrumentPoolAsync(instruments) as pool:
-...      results = await pool.measure_hw_sync(method)
+>>> method = ps.CyclicVoltammetry(
+...    general={'use_hardware_sync': True}
+... )
+
+>>> async def main():
+...     async with ps.InstrumentPoolAsync(instruments) as pool:
+...         results = await pool.measure(method)
+
+>>> asyncio.run(main())
 ```
 
 See [Hardware sync](examples.md#multichannel_hw_sync) for a practical example.
@@ -549,10 +666,11 @@ In addition, this enables streaming the data to another process for realtime ana
 
 To enable streaming to a file, pass the name of the data file to the [measure][pypalmsens.measure] function
 
-```python
+```pycon
 import pypalmsens as ps
 
 ps.measure(ps.CyclicVoltammetry(), stream='data.jsonl')
+
 ```
 
 This will stream data directly to the file `data.json`.
@@ -575,25 +693,22 @@ This means the data can be read in any programming language with a JSON parser.
 
 PyPalmSens contains a parser to load such files, [pypalmsens.load_stream_file][]. Although the data structure resembles that [pypalmsans.data.Measurement][], it it is much smaller in scope, and lacks some of the more advanced features.
 
-```python
+```pycon
 >>> import pypalmsens as ps
 
 >>> _ = ps.measure(ps.CyclicVoltammetry(n_scans=3), stream='data.jsonl')
 >>> stream = ps.load_stream_file('data.jsonl')
 >>> stream
->>> Measurement(Cyclic Voltammetry, timestamp=2026-07-10 15:47:12, device=EmStat4LR)
+Measurement(Cyclic Voltammetry, timestamp=..., device=EmStat4LR)
 
 >>> stream.metadata.method
-CyclicVoltammetry(begin_potential=-0.5, vertex1_potential=0.5, vertex2_potential=-0.5, step_potential=0.1, scanrate=1.0, ...)
+CyclicVoltammetry(...)
 
 >>> stream.curves
-Out[8]:
-[Curve(CV i vs E Scan 1, n_points=20),
- Curve(CV i vs E Scan 2, n_points=20),
- Curve(CV i vs E Scan 3, n_points=21)]
+[Curve(CV i vs E Scan 1, n_points=20), Curve(CV i vs E Scan 2, n_points=20), Curve(CV i vs E Scan 3, n_points=21)]
 
 >>> stream.curves[0].metadata
->>> CurveMetadata(title='CV i vs E Scan 1', columns=['x', 'y'], units=['V', 'µA'], labels=['Potential', 'Current'], id=45011471, type='curve')
+CurveMetadata(title='CV i vs E Scan 1', columns=['x', 'y'], units=['V', 'µA'], labels=['Potential', 'Current'], id=..., type='curve')
 
 >>> stream.curves[0].data
 [[-0.499999, -50.01226],
@@ -601,6 +716,7 @@ Out[8]:
  ...
  [-0.300033, -29.950316],
  [-0.400011, -40.018056]]
+
  ```
 
 ### Data format

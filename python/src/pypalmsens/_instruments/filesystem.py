@@ -92,11 +92,6 @@ class DeviceFileSystem:
         else:
             self.manager = instrument_or_manager
 
-        if not self.manager.capabilities.supports_storage:
-            raise ValueError(
-                f'{self.manager.instrument.name!r} does not have or support internal storage.'
-            )
-
     @property
     def _client_connection(self) -> PalmSens.Comm.ClientConnection:
         """The active client connection used for device communication."""
@@ -106,10 +101,18 @@ class DeviceFileSystem:
         return f"{type(self).__name__}('{self.manager.instrument.id}')"
 
     def __enter__(self):
-        self.manager.connect()
+        self.open()
         return self
 
     def __exit__(self, *_) -> None:
+        self.close()
+
+    def open(self):
+        """Open connection with device filesystem."""
+        self.manager.connect()
+
+    def close(self):
+        """Close connection with device filesystem."""
         self.manager.disconnect()
 
     def __truediv__(self, path_str: str) -> DevicePath:

@@ -9,6 +9,8 @@ The most high-level way to start a measurement is to use the `measure()` functio
 
 >>> method = ps.CyclicVoltammetry()
 >>> ps.measure(method)
+Measurement(title=Cyclic Voltammetry, timestamp=..., device=EmStat4LR)
+
 ```
 
 You can also manage the connection yourself, using `connect()`, for example:
@@ -17,26 +19,30 @@ You can also manage the connection yourself, using `connect()`, for example:
 >>> with ps.connect() as manager:
 ...    method = ps.ChronoAmperometry()
 ...    measurement = manager.measure(method)
+
 ```
 
 Or using `InstrumentManager()` directly as a context manager:
 
 ```pycon
->>> instruments = discover()
+>>> instruments = ps.discover()
+>>> instrument = instruments[0]
+>>> instrument
+Instrument(name='EmStat4 LR [1]', interface='usbcdc')
 
->>> with ps.InstrumentManager(instruments[0]) as manager:
+>>> with ps.InstrumentManager(instrument) as manager:
 ...    measurement = manager.measure(method)
+
 ```
 
 Or managing the instrument connection yourself:
 
 ```pycon
->>> instruments = discover()
-
->>> manager = ps.InstrumentManager(instruments[0])
+>>> manager = ps.InstrumentManager(instrument)
 >>> manager.connect()
 >>> # ...
 >>> manager.disconnect()
+
 ```
 
 For more information, see the [measurement documentation](https://dev.palmsens.com/python/latest/_attachments/measuring/).

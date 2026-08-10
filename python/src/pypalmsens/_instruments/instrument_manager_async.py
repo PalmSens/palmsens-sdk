@@ -19,6 +19,7 @@ from .._converters import (
     cr_string_to_enum,
     pr_enum_to_string,
     pr_string_to_enum,
+    single_to_double,
 )
 from .._types import (
     AllowedCurrentRanges,
@@ -236,7 +237,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         async with self._lock():
             current: float = await create_future(self._comm.GetCurrentAsync())
 
-        return current
+        return single_to_double(current)
 
     async def get_current_range(self) -> AllowedCurrentRanges:
         """Get the current range for the cell.
@@ -278,7 +279,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         async with self._lock():
             potential: float = await create_future(self._comm.GetPotentialAsync())
 
-        return potential
+        return single_to_double(potential)
 
     async def set_potential(self, potential: float) -> None:
         """Set the potential of the cell.

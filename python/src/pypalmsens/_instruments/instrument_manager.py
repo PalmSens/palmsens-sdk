@@ -17,6 +17,7 @@ from .._converters import (
     cr_string_to_enum,
     pr_enum_to_string,
     pr_string_to_enum,
+    single_to_double,
 )
 from .._types import (
     AllowedCurrentRanges,
@@ -237,7 +238,7 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         with self._lock():
             current = self._comm.Current
 
-        return current
+        return single_to_double(current)
 
     def get_current_range(self) -> AllowedCurrentRanges:
         """Get the current range for the cell.
@@ -273,7 +274,7 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         with self._lock():
             potential = self._comm.Potential
 
-        return potential
+        return single_to_double(potential)
 
     def set_potential(self, potential: float):
         """Set the potential of the cell.

@@ -10,9 +10,8 @@ Example:
 >>> with ps.connect() as manager:
 ...     fs = ps.DeviceFileSystem(manager)
 ...     print(fs.listdir())
-[DevicePath('Measurements/17-07-2026/LSV-10-00-25-0.dmeas'),
- DevicePath('Measurements/17-07-2026/LSV-10-00-28-1.dmeas'),
- DevicePath('Measurements/16-07-2026/CV-14-46-50-2.dmeas')]
+[DevicePath('Measurements/17-07-2026/LSV-10-00-28-1.dmeas'), DevicePath('Measurements/04-08-2026/LSV-16-02-20-0.dmeas'), ...]
+
 ```
 
 For more information how to use these classes, see [the documentation here](../filesystem.md).

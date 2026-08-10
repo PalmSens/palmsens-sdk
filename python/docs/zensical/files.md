@@ -9,15 +9,10 @@ pypalmsens and PSTrace store measurements and their corresponding methods in `.p
 ```pycon
 >>> import pypalmsens as ps
 
->>> method = ps.load_method_file('PSDummyCell_LSV.psmethod')
+>>> method = ps.load_method_file('examples/PSDummyCell_LSV.psmethod')
 >>> method
-LinearSweepVoltammetry(
-    'conditioning_time': 0.0,
-    'begin_potential': -5.0,
-    'end_potential': 5.0,
-    'step_potential': 0.01,
-    'scanrate': 1.0,
-)
+LinearSweepVoltammetry(..., current_range=CurrentRange(max='1mA', min='100nA', start='100uA'), equilibration_time=2.0, begin_potential=-5.0, end_potential=5.0, step_potential=0.01, scanrate=1.0, ...)
+
 ```
 
 ## Saving a Method
@@ -25,7 +20,8 @@ LinearSweepVoltammetry(
 Save the method using [pypalmsens.save_method_file][]. The `.psmethod` file can be opened with PSTRace.
 
 ```pycon
->>> ps.save_method_file(method, 'lsv.psmethod')
+>>> ps.save_method_file('lsv.psmethod', method)
+
 ```
 
 ## Loading Data
@@ -37,11 +33,10 @@ Measurement data can be loaded from `.pssession` files. This contains one or mor
 For example, loading a collection of measurements from a session file and showing the first one:
 
 ```pycon
->>> from pypalmsens import load_session_file
-
->>> measurement = load_session_file('my_measurement.pssession')[0]
+>>> measurement = ps.load_session_file('examples/Demo CV DPV EIS IS-C electrode.pssession')[0]
 >>> measurement
-Measurement(title=Cyclic Voltammetry, timestamp=2026-07-31T10:25:15, device=EmStat4LR)
+Measurement(title=Differential Pulse Voltammetry, timestamp=2017-07-12T14:28:58, device=PalmSens4)
+
 ```
 
 The measurement data and curve classes are defined in the `.curves` attribute:
@@ -65,4 +60,5 @@ Likewise, save your data using [pypalmsens.save_session_file][]. Note that sessi
 ...     'my_measurement_copy.pssession',
 ...     [measurement]
 ... )
+
 ```

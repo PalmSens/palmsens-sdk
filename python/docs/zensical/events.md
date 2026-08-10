@@ -37,22 +37,22 @@ These events allow you to monitor the lifecycle of a measurement:
 
 For example:
 
-```python
-import pypalmsens as ps
-import time
+```pycon
+>>> import pypalmsens as ps
 
-def begin_callback(measurement):
-    print(f"{measurement.title} started @ {time.ctime()}")
+>>> def begin_callback(measurement):
+...     print(f"{measurement.title} started")
 
-def end_callback(measurement):
-    print(f"{measurement.title} ended @ {time.ctime()}")
+>>> def end_callback(measurement):
+...     print(f"{measurement.title} ended")
 
-with ps.connect() as manager:
-    manager.on_measurement_begin(begin_callback)
-    manager.on_measurement_end(end_callback)
-    manager.measure(ps.ChronoPotentiometry(run_time=10))
-# Chronopotentiometry started @ Fri Jul 31 16:19:39 2026
-# Chronopotentiometry ended @ Fri Jul 31 16:19:51 2026
+>>> with ps.connect() as manager:
+...     _ = manager.on_measurement_begin(begin_callback)
+...     _ = manager.on_measurement_end(end_callback)
+...     measurement = manager.measure(ps.ChronoPotentiometry(run_time=5))
+Chronopotentiometry started
+Chronopotentiometry ended
+
 ```
 
 ### Standard measurements
@@ -65,26 +65,27 @@ For measurements that produce (multiple) curves like Cyclic Voltammetry or Chron
 | [on_curve_new_data][pypalmsens.InstrumentManager.on_curve_new_data] | New data points are received (batched) | [CallbackData][pypalmsens._instruments.callback.CallbackData] |
 | [on_curve_end][pypalmsens.InstrumentManager.on_curve_end] | A curve has finished recording | [Curve][pypalmsens.data.Curve] |
 
-```python
-import pypalmsens as ps
-import time
+```pycon
+>>> import pypalmsens as ps
+>>> import time
 
-def begin_callback(curve):
-    print(f"New curve: {curve.title}")
+>>> def begin_callback(curve):
+...     print(f"New curve: {curve.title}")
 
-def end_callback(curve):
-    print(f"Measured {len(curve)} points")
+>>> def end_callback(curve):
+...     print(f"Measured {len(curve)} points")
 
-with ps.connect() as manager:
-    manager.on_curve_begin(begin_callback)
-    manager.on_curve_end(end_callback)
-    manager.measure(ps.CyclicVoltammetry(n_scans=3))
-# New curve: CV i vs E Scan 1
-# Measured 20 points
-# New curve: CV i vs E Scan 2
-# Measured 20 points
-# New curve: CV i vs E Scan 3
-# Measured 21 points    
+>>> with ps.connect() as manager:
+...     _ = manager.on_curve_begin(begin_callback)
+...     _ = manager.on_curve_end(end_callback)
+...     measurement = manager.measure(ps.CyclicVoltammetry(n_scans=3))
+New curve: CV i vs E Scan 1
+Measured 20 points
+New curve: CV i vs E Scan 2
+Measured 20 points
+New curve: CV i vs E Scan 3
+Measured 21 points
+
 ```
 
 ### Impedimetric measurements
@@ -103,24 +104,25 @@ These events provide insight into the communication layer and instrument state:
 
 | Method | Triggered when... | Callback argument |
 | :--- | :--- | :--- |
-| [on_receive_message][pypalmsens.InstrumentManager.on_receive_message] | A new message is received from the device | `str` | 
+| [on_receive_message][pypalmsens.InstrumentManager.on_receive_message] | A new message is received from the device | `str` |
 | [on_receive_status][pypalmsens.InstrumentManager.on_receive_status] | The instrument's idle status changes | [Status][pypalmsens._instruments.callback.Status] |
-| [on_error][pypalmsens.InstrumentManager.on_error] | An error occurs during a measurement | None | 
+| [on_error][pypalmsens.InstrumentManager.on_error] | An error occurs during a measurement | None |
 
 If you use MethodSCRIPT, you can use `on_receive_message` to listen for messages from [`send_string`](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html#ch_cmd_send_string).
 
 For example:
 
-```python
-import pypalmsens as ps
+```pycon
+>>> import pypalmsens as ps
 
-method = ps.MethodScript(script='send_string "hello world!"')
+>>> method = ps.MethodScript(script='send_string "hello world!"')
 
-with ps.connect() as manager:
-     manager.on_receive_message(print)
-     manager.measure(m)
-# Running: MethodSCRIPT Sandbox
-# hello world!
+>>> with ps.connect() as manager:
+...     _ = manager.on_receive_message(print)
+...     measurement = manager.measure(method)
+Running: MethodSCRIPT Sandbox
+hello world!
+
 ```
 
 ## Async events

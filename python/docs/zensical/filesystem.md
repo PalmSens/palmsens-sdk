@@ -22,7 +22,7 @@ For a start, these are three ways to save measurement data to the device:
 ```python
 import pypalmsens as ps
 
-method = ps.LinearSweepVoltammetry(general={'save_on_internal_storage':True})
+method = ps.LinearSweepVoltammetry(general={'save_on_internal_storage': True})
 ps.measure(method)
 
 ```

@@ -95,7 +95,7 @@ True
 To copy a method and make updates, use `model_copy`:
 
 ```pycon
->>> method3 = method.model_copy(update={'equilibration_time' : 10.0})
+>>> method3 = method.model_copy(update={'equilibration_time': 10.0})
 >>> method == method3
 False
 
@@ -130,7 +130,7 @@ You have two ways to set the current range, for instance, if you want to set the
 1. By passing current ranges as an argument during initialization
 
     ```pycon
-    >>> cv = ps.CyclicVoltammetry(current_range={'start':'10uA'})
+    >>> cv = ps.CyclicVoltammetry(current_range={'start': '10uA'})
     >>> cv.current_range   # (1)!
     CurrentRange(max='10mA', min='1uA', start='10uA')
 

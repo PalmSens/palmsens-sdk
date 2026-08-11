@@ -4,13 +4,9 @@ import atexit
 from importlib.resources import files
 from pathlib import Path
 
-import clr
 import pythonnet
 
 PSSDK_DIR = files('pypalmsens._libpalmsens.win')
-
-core_dll = PSSDK_DIR / 'PalmSens.Core.dll'
-ble_dll = PSSDK_DIR / 'PalmSens.Core.Windows.BLE.dll'
 
 
 def unblock(path: Path):
@@ -26,19 +22,33 @@ def load() -> str:
     -------
     str
         Version of the PalmSens .NET SDK."""
-    for dll in (core_dll, ble_dll):
-        assert isinstance(dll, Path)
+
+    # runtime must be imported before clr is loaded
+    pythonnet.load('coreclr', runtime_config=str(PSSDK_DIR / 'runtimeconfig.json'))
+
+    import clr
+
+    core_dll = PSSDK_DIR / 'PalmSens.Core.dll'
+    core_windows_dll = PSSDK_DIR / 'PalmSens.Core.Windows.dll'
+
+    assert isinstance(core_dll, Path)
+    assert isinstance(core_windows_dll, Path)
+
+    assert core_dll.exists()
+    assert core_windows_dll.exists()
+
+    for dll in (core_dll, core_windows_dll):
         unblock(dll)
 
     # This dll contains the classes in which the data is stored
-    clr.AddReference(str(core_dll))
+    clr.AddReference(str(core_dll.with_suffix('')))
 
     # This dll is used to load your session file
-    clr.AddReference(str(ble_dll))
+    clr.AddReference(str(core_windows_dll.with_suffix('')))
 
     clr.AddReference('System')
 
-    from PalmSens.Windows import CoreDependencies
+    from PalmSens.Core.Windows import CoreDependencies
 
     CoreDependencies.Init()
 
@@ -47,8 +57,8 @@ def load() -> str:
     return Diagnostics.FileVersionInfo.GetVersionInfo(str(core_dll)).ProductVersion
 
 
-atexit.register(pythonnet.unload)
-
 unload = pythonnet.unload
+
+atexit.register(pythonnet.unload)
 
 __all__ = ['load', 'unload']

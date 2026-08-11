@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Generator
+from collections.abc import Generator, Sequence
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -43,7 +43,7 @@ def stream_writer(*args, **kwargs) -> Generator[StreamWriter]:
 def load_session_file(
     path: str | Path,
 ) -> list[Measurement]:
-    """Load a session file (.pssession).
+    """Load a session file (`.pssession`).
 
     Parameters
     ----------
@@ -70,14 +70,14 @@ def load_session_file(
     return [Measurement(psmeasurement=m) for m in session]
 
 
-def save_session_file(path: str | Path, measurements: list[Measurement]):
-    """Load a session file (.pssession).
+def save_session_file(path: str | Path, measurements: Sequence[Measurement]):
+    """Save multiple measurements a session file (`.pssession`).
 
     Parameters
     ----------
     path : Path | str
         Path to save the session file
-    measurements : list[Measurement]
+    measurements : Sequence[Measurement]
         List of measurements to save
     """
     path = Path(path)
@@ -94,6 +94,51 @@ def save_session_file(path: str | Path, measurements: list[Measurement]):
 
     with stream_writer(str(path), False, Encoding.Unicode) as stream:
         session.Save(stream.BaseStream, str(path))
+
+
+def load_measurement(
+    path: str | Path,
+) -> Measurement:
+    """Load a measurement from a session file (`.pssession`).
+
+    To load multiple measurements, use [pypalmsens.load_session_file][].
+
+    Parameters
+    ----------
+    path : Path | str
+        Path to session file
+
+    Returns
+    -------
+    measurement : Measurement
+        Return measurement
+    """
+    measurements = load_session_file(path)
+
+    if n := len(measurements) > 1:
+        raise ValueError(
+            f'File contains {n} measurements. Use `load_session_file()` to access all of them.'
+        )
+
+    return measurements[0]
+
+
+def save_measurement(path: str | Path, measurement: Measurement):
+    """Save measurement a session file (`.pssession`).
+
+    To save multiple measurements, use [pypalmsens.save_session_file][].
+
+    Parameters
+    ----------
+    path : Path | str
+        Path to save the session file
+    measurement : Measurement
+        Measurements to save
+    """
+    if isinstance(measurement, Sequence):
+        raise TypeError('To save multiple measurements, use pypalmsens.save_session_file().')
+
+    save_session_file(path, [measurement])
 
 
 def _load_method_file(path: str | Path) -> Method:

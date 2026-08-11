@@ -19,40 +19,40 @@ DATA_EIS_5FREQ = DATA_DIR / 'eis_5freq.pssession'
 
 
 @pytest.fixture(scope='module')
-def data_dpv():
-    return ps.load_session_file(DATA_DPV)
+def measurement_dpv():
+    return ps.load_measurement(DATA_DPV)
 
 
 @pytest.fixture(scope='module')
-def data_cv():
-    return ps.load_session_file(DATA_CV)
+def measurement_cv():
+    return ps.load_measurement(DATA_CV)
 
 
 @pytest.fixture(scope='module')
-def data_diff_pulse():
-    return ps.load_session_file(DATA_DIFF_PULSE)
+def measurement_diff_pulse():
+    return ps.load_measurement(DATA_DIFF_PULSE)
 
 
 @pytest.fixture(scope='module')
-def data_noise_test():
-    return ps.load_session_file(DATA_NOISE_TEST)
+def measurement_noise_test():
+    return ps.load_measurement(DATA_NOISE_TEST)
 
 
 @pytest.fixture(scope='module')
-def data_cv_1scan():
-    return ps.load_session_file(DATA_CV_1SCAN)
+def measurement_cv_1scan():
+    return ps.load_measurement(DATA_CV_1SCAN)
 
 
 @pytest.fixture(scope='module')
-def data_cv_3scan():
-    return ps.load_session_file(DATA_CV_3SCAN)
+def measurement_cv_3scan():
+    return ps.load_measurement(DATA_CV_3SCAN)
 
 
 @pytest.fixture(scope='module')
-def data_eis_5freq():
-    return ps.load_session_file(DATA_EIS_5FREQ)
+def measurement_eis_5freq():
+    return ps.load_measurement(DATA_EIS_5FREQ)
 
 
 @pytest.fixture(scope='module')
-def data_eis_3ch_4scan_5freq():
-    return ps.load_session_file(DATA_EIS_3CH_4SCAN_5FREQ)
+def measurement_eis_3ch_4scan_5freq():
+    return ps.load_measurement(DATA_EIS_3CH_4SCAN_5FREQ)

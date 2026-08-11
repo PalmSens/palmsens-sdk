@@ -54,8 +54,8 @@ def test_default_parameters():
     assert len(params) == 3
 
 
-def test_circuit_fit(data_eis_5freq):
-    eis_data = data_eis_5freq[0].eis_data[0]
+def test_circuit_fit(measurement_eis_5freq):
+    eis_data = measurement_eis_5freq.eis_data[0]
     cdc = 'R(RC)'
     model = CircuitModel(cdc=cdc)
     result = model.fit(eis_data)

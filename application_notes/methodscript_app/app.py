@@ -60,8 +60,8 @@ if 'measurement' not in SESSION:
 if 'curves' not in SESSION:
     SESSION.curves = {}
     SESSION.curves_metadata = {}
-    SESSION.i_curve_ids = set()
-    SESSION.e_curve_ids = set()
+    SESSION.i_curve_ids = []
+    SESSION.e_curve_ids = []
     SESSION.i_values = []
     SESSION.e_values = []
 
@@ -85,9 +85,9 @@ class MethodThread(Thread):
 
         def on_curve_begin(curve: Curve):
             if curve.title.startswith('CP: t vs E'):
-                SESSION.e_curve_ids.add(curve.id)
+                SESSION.e_curve_ids.append(curve.id)
             elif curve.title.startswith('CP: t vs i'):
-                SESSION.i_curve_ids.add(curve.id)
+                SESSION.i_curve_ids.append(curve.id)
             elif curve.title.startswith('Unknown'):
                 pass
 
@@ -95,17 +95,28 @@ class MethodThread(Thread):
             SESSION.curves[curve.id] = []
 
         def on_data(data: CallbackData):
-            for x, y in zip(data.x_array[data.start :], data.y_array[data.start :]):
-                if data.id in SESSION.i_curve_ids:
-                    SESSION.i_values.append({'x': x, 'y': y, 'id': data.id})
-                elif data.id in SESSION.e_curve_ids:
-                    SESSION.e_values.append({'x': x, 'y': y, 'id': data.id})
+            if data.id in SESSION.i_curve_ids:
+                cycle = SESSION.i_curve_ids.index(data.id)
+                values = SESSION.i_values
+            elif data.id in SESSION.e_curve_ids:
+                cycle = SESSION.e_curve_ids.index(data.id)
+                values = SESSION.e_values
+            else:
+                return  # Qpass curve
 
-        SESSION.manager.on_curve_begin(on_curve_begin)
-        SESSION.manager.on_curve_new_data(on_data)
-        SESSION.manager.on_receive_message(self.set_status_message)
+            for x, y in zip(data.x_array[data.start :], data.y_array[data.start :]):
+                values.append({'x': x, 'y': y, 'cycle': cycle, 'id': data.id})
+
+        handles = [
+            SESSION.manager.on_curve_begin(on_curve_begin),
+            SESSION.manager.on_curve_new_data(on_data),
+            SESSION.manager.on_receive_message(self.set_status_message),
+        ]
 
         measurement = SESSION.manager.measure(method)
+
+        for handle in handles:
+            handle.cancel()
 
         self.measurement = measurement
 
@@ -349,7 +360,7 @@ def live_measurement_widget(method: experimental_BatteryCycling):
     if SESSION.thread:
         progress_bar = st.progress(0)
 
-        update_every = 1
+        update_every = 0.1
 
         while SESSION.thread.is_alive():
             time.sleep(update_every)
@@ -412,10 +423,7 @@ def show_measurement_widget():
         c2.altair_chart(make_chart2(values=SESSION.e_values).interactive())
 
     if SESSION.measurement:
-        c1, _, _ = st.columns(3)
-
-        if c1.button('Save to disk'):
-            ps.save_measurement('battery_cycler.pssession', SESSION.measurement)
+        c1, c2, _ = st.columns(3)
 
         _ = c1.download_button(
             'Save measurement data (`.pssession`)',
@@ -424,7 +432,15 @@ def show_measurement_widget():
             mime='text/plain',
             icon=':material/download:',
             width='stretch',
+            disabled=True,  # TODO: fix download
         )
+
+        if c2.button(
+            'Save to disk (`.pssession`)',
+            icon=':material/download:',
+            width='stretch',
+        ):
+            ps.save_measurement('battery_cycling.pssession', SESSION.measurement)
 
 
 def make_chart2(values: list[dict[str, float]]) -> alt.Chart:
@@ -443,7 +459,7 @@ def make_chart2(values: list[dict[str, float]]) -> alt.Chart:
         .encode(
             alt.X('x:Q').title(f'{x_label} / {x_unit}'),
             alt.Y('y:Q').title(f'{y_label} / {y_unit}'),
-            color='id:N',
+            color='cycle:N',
         )
     )
 

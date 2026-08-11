@@ -261,8 +261,8 @@ For async workflows, use [pypalmsens.DeviceFileSystemAsync][] with an [pypalmsen
 >>> import pypalmsens as ps
 
 >>> async def main():
-...     instruments = await ps.discover_async()
-...     manager = ps.InstrumentManagerAsync(instruments[0])
+...     instrument, *_ = await ps.discover_async()
+...     manager = ps.InstrumentManagerAsync(instrument)
 ...  
 ...     async with ps.DeviceFileSystemAsync(manager) as fs:
 ...         paths = await fs.listdir()

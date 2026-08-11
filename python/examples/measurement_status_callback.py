@@ -24,10 +24,10 @@ def new_data_callback(data):
 
 
 async def main():
-    instruments = await ps.discover_async()
-    print(instruments)
+    instrument, *_ = await ps.discover_async()
+    print(instrument)
 
-    async with await ps.connect_async(instruments[0]) as manager:
+    async with await ps.connect_async(instrument) as manager:
         handle = manager.on_receive_status(idle_status_callback)
 
         # While sleeping, the callback reports the

@@ -38,8 +38,8 @@ Or using `InstrumentManagerAsync()` directly as a context manager:
 
 ```pycon
 >>> async def main():
-...     instruments = await ps.discover_async()
-...     async with ps.InstrumentManagerAsync(instruments[0]) as manager:
+...     instrument, *_ = await ps.discover_async()
+...     async with ps.InstrumentManagerAsync(instrument) as manager:
 ...         measurement = await manager.measure(method)
 
 >>> asyncio.run(main())
@@ -50,8 +50,8 @@ Or managing the instrument connection yourself:
 
 ```pycon
 >>> async def main():
-...     instruments = await ps.discover_async()
-...     manager = ps.InstrumentManagerAsync(instruments[0])
+...     instrument, *_ = await ps.discover_async()
+...     manager = ps.InstrumentManagerAsync(instrument)
 ...     await manager.connect()
 ...     # ...
 ...     await manager.disconnect()

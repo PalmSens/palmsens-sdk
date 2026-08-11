@@ -5,10 +5,10 @@ def new_data_callback(data):
     print(data.last_datapoint())
 
 
-instruments = ps.discover()
-print(instruments)
+instrument, *_ = ps.discover()
+print(instrument)
 
-with ps.connect(instruments[0]) as manager:
+with ps.connect(instrument) as manager:
     serial = manager.get_instrument_serial()
     print(serial)
 

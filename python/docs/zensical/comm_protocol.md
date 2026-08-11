@@ -164,8 +164,8 @@ For async workflows, use [pypalmsens.DeviceFileSystemAsync][]:
 >>> import pypalmsens as ps
 
 >>> async def main():
-...     instruments = await ps.discover_async()
-...     comm = ps.CommProtocolAsync(instruments[0])
+...     instrument, *_ = await ps.discover_async()
+...     comm = ps.CommProtocolAsync(instrument)
 ...     await comm.open()
 ...
 ...     print(repr(await comm.query('i')))

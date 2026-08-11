@@ -263,7 +263,7 @@ class CommProtocolAsync:
 
         if not end:
             try:
-                func = command.split(maxsplit=1)[0]
+                func, *_ = command.split(maxsplit=1)
             except IndexError:
                 func = ''
 

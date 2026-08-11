@@ -95,10 +95,8 @@ def test_connect():
 
 @pytest.mark.instrument
 def test_connect_serial_port():
-    instruments = ps.discover()
-    assert instruments
-
-    instrument = instruments[0]
+    instrument, *_ = ps.discover()
+    assert instrument
 
     if instrument.interface == 'ftdi':
         pytest.skip('Unsupported for FTDI')
@@ -261,8 +259,8 @@ async def test_message_callback_async():
 
 @pytest.mark.instrument
 def test_supported():
-    instruments = ps.discover()
-    with ps.connect(instruments[0]) as manager:
+    instrument, *_ = ps.discover()
+    with ps.connect(instrument) as manager:
         assert isinstance(manager.supported_methods(), list)
         assert isinstance(manager.supported_current_ranges(), list)
         assert isinstance(manager.supported_applied_current_ranges(), list)
@@ -273,8 +271,8 @@ def test_supported():
 @pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_supported_async():
-    instruments = await ps.discover_async()
-    async with await ps.connect_async(instruments[0]) as manager:
+    instrument, *_ = await ps.discover_async()
+    async with await ps.connect_async(instrument) as manager:
         assert isinstance(manager.supported_methods(), list)
         assert isinstance(manager.supported_current_ranges(), list)
         assert isinstance(manager.supported_applied_current_ranges(), list)
@@ -284,8 +282,8 @@ async def test_supported_async():
 
 @pytest.mark.instrument
 def test_capabilities():
-    instruments = ps.discover()
-    with ps.connect(instruments[0]) as manager:
+    instrument, *_ = ps.discover()
+    with ps.connect(instrument) as manager:
         cap = manager.capabilities
 
     # Must be accessible without connection
@@ -295,11 +293,11 @@ def test_capabilities():
 @pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_get_estimated_duration():
-    instruments = await ps.discover_async()
+    instrument, *_ = await ps.discover_async()
 
     method = ps.OpenCircuitPotentiometry(run_time=10)
 
-    async with await ps.connect_async(instruments[0]) as manager:
+    async with await ps.connect_async(instrument) as manager:
         t = manager.get_estimated_duration(method)
 
     assert t == pytest.approx(10.1)
@@ -307,8 +305,8 @@ async def test_get_estimated_duration():
 
 @pytest.mark.instrument
 def test_query():
-    instruments = ps.discover()
-    with ps.connect(instruments[0]) as manager:
+    instrument, *_ = ps.discover()
+    with ps.connect(instrument) as manager:
         try:
             assert manager.query('t')
         except ValueError as e:
@@ -318,8 +316,8 @@ def test_query():
 @pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_query_async():
-    instruments = await ps.discover_async()
-    async with await ps.connect_async(instruments[0]) as manager:
+    instrument, *_ = await ps.discover_async()
+    async with await ps.connect_async(instrument) as manager:
         try:
             assert await manager.query('t')
         except ValueError as e:

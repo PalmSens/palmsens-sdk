@@ -34,8 +34,8 @@ def test_device_path(parts, expected):
 
 @pytest.fixture(scope='module')
 def fs():
-    instruments = ps.discover()
-    with ps.connect(instruments[0]) as mgr:
+    instrument, *_ = ps.discover()
+    with ps.connect(instrument) as mgr:
         logger.warning('Connected to %s', mgr.instrument.id)
         yield ps.DeviceFileSystem(mgr)
 

@@ -33,13 +33,19 @@ Measurement(title=Chronoamperometry, timestamp=..., device=EmStat4LR)
 You can optionally pass the instrument to measure on if you have multiple connected.
 
 ```pycon
->>> instruments = ps.discover()
->>> first_instrument = instruments[0]
+>>> instrument, *_ = ps.discover()
 
->>> ps.measure(method, instrument=first_instrument)
+>>> ps.measure(method, instrument=instrument)
 Measurement(title=Chronoamperometry, timestamp=..., device=EmStat4LR)
 
 ```
+
+!!! TIP "Sequence unpacking for device discovery"
+
+    When a function returns multiple values, use [sequence unpacking](https://realpython.com/ref/glossary/unpacking/) to easily access the first result. For example, `instrument, *_ = ps.discover()` assigns the first item to `instrument` while discarding the rest (`*_`).
+
+    If you only expect a single device, you can simplify this with direct assignment: [instrument] = ps.discover().
+
 
 ## Connecting to a device
 
@@ -65,9 +71,9 @@ For example, this is how to get a list of all available devices, and how to conn
 >>> available_instruments
 [Instrument(name='EmStat4 LR [1]', interface='usbcdc')]
 
->>> first_instrument = available_instruments[0]
+>>> instrument, *_ = available_instruments
 
->>> with ps.connect(first_instrument) as manager:
+>>> with ps.connect(instrument) as manager:
 ...    measurement = manager.measure(method)
 
 ```
@@ -75,8 +81,8 @@ For example, this is how to get a list of all available devices, and how to conn
 Finally, you can set up the [pypalmsens.InstrumentManager][] yourself.
 
 ```pycon
->>> instruments = ps.discover()
->>> manager = ps.InstrumentManager(instruments[0])
+>>> instrument, *_ = ps.discover()
+>>> manager = ps.InstrumentManager(instrument)
 >>> manager.connect()
 
 ```

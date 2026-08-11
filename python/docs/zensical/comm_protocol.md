@@ -15,7 +15,7 @@ To communicate with a PalmSens instrument you need an active connection. [CommPr
 
 ```pycon
 >>> import pypalmsens as ps
->>> instrument = ps.discover()[0]
+>>> instrument, *_ = ps.discover()
 >>> with ps.CommProtocol(instrument) as comm:
 ...     print(comm.query('t'))
 es4_lr1500#Mar 12 2026 14:28:01
@@ -164,8 +164,8 @@ For async workflows, use [pypalmsens.DeviceFileSystemAsync][]:
 >>> import pypalmsens as ps
 
 >>> async def main():
-...     instruments = await ps.discover_async()
-...     comm = ps.CommProtocolAsync(instruments[0])
+...     instrument, *_ = await ps.discover_async()
+...     comm = ps.CommProtocolAsync(instrument)
 ...     await comm.open()
 ...
 ...     print(repr(await comm.query('i')))

@@ -1,9 +1,9 @@
 import pypalmsens as ps
 
-instruments = ps.discover()
-print(instruments)
+instrument, *_ = ps.discover()
+print(instrument)
 
-with ps.connect(instruments[0]) as manager:
+with ps.connect(instrument) as manager:
     manager.set_cell(True)
     print('cell enabled')
 

@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope='module')
 def comm():
-    instruments = ps.discover()
-    with ps.CommProtocol(instruments[0]) as comm_protocol:
+    instrument, *_ = ps.discover()
+    with ps.CommProtocol(instrument) as comm_protocol:
         logger.warning('Connected to %s', comm_protocol.instrument.id)
         yield comm_protocol
 

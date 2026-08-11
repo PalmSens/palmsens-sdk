@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 @pytest_asyncio.fixture(scope='module')
 async def fs():
-    instruments = await ps.discover_async()
-    async with await ps.connect_async(instruments[0]) as mgr:
+    instrument, *_ = await ps.discover_async()
+    async with await ps.connect_async(instrument) as mgr:
         logger.warning('Connected to %s', mgr.instrument.id)
         yield ps.DeviceFileSystemAsync(mgr)
 

@@ -5,10 +5,10 @@ def new_data_callback(data):
     print(data.last_datapoint())
 
 
-instruments = ps.discover()
-print(instruments)
+instrument, *_ = ps.discover()
+print(instrument)
 
-with ps.connect(instruments[0]) as manager:
+with ps.connect(instrument) as manager:
     method = ps.SquareWaveVoltammetry(
         pretreatment={
             'conditioning_potential': 2.0,  # V

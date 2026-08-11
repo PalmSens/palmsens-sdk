@@ -317,7 +317,7 @@ A [Dataset](#dataset) contains multiple data arrays.
 Let's examine the first current array:
 
 ```pycon
->>> array = dataset.arrays(type='Current')[0]
+>>> array, *_ = dataset.arrays(type='Current')
 >>> array
 CurrentArray(name=current, unit=µA, n_points=219)
 

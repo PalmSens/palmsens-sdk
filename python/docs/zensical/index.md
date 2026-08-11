@@ -67,7 +67,7 @@ The following example shows how to discover devices and manually read out the cu
 >>> import pypalmsens as ps
 
 >>> instruments = ps.discover()
->>> emstat4 = [inst for inst in instruments if inst.name.startswith('EmStat4')][0]
+>>> emstat4, *_ = [inst for inst in instruments if inst.name.startswith('EmStat4')]
 
 >>> with ps.connect(instrument=emstat4) as manager: # (1)!
 ...     manager.set_cell(True)

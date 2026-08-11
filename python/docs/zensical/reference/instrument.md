@@ -25,8 +25,7 @@ You can also manage the connection yourself, using `connect()`, for example:
 Or using `InstrumentManager()` directly as a context manager:
 
 ```pycon
->>> instruments = ps.discover()
->>> instrument = instruments[0]
+>>> instrument, *_ = ps.discover()
 >>> instrument
 Instrument(name='EmStat4 LR [1]', interface='usbcdc')
 

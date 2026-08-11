@@ -64,7 +64,7 @@ def connect(
         if len(available_instruments) > 1:
             raise ConnectionError('More than one device discovered.')
 
-        instrument = available_instruments[0]
+        [instrument] = available_instruments
 
     manager = InstrumentManager(instrument)
     manager.connect()

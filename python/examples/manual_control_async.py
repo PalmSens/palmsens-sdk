@@ -4,10 +4,10 @@ import pypalmsens as ps
 
 
 async def main():
-    instruments = await ps.discover_async()
-    print(instruments)
+    instrument, *_ = await ps.discover_async()
+    print(instrument)
 
-    async with await ps.connect_async(instruments[0]) as manager:
+    async with await ps.connect_async(instrument) as manager:
         await manager.set_cell(True)
         print('cell enabled')
 

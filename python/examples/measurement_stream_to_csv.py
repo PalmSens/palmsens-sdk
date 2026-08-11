@@ -14,10 +14,10 @@ def stream_to_csv_callback(data):
 csv_file = open('test.csv', 'w', newline='')  # noqa: SIM115
 csv_writer = csv.writer(csv_file)
 
-instruments = ps.discover()
-print(instruments)
+instrument, *_ = ps.discover()
+print(instrument)
 
-with ps.connect(instruments[0]) as manager:
+with ps.connect(instrument) as manager:
     serial = manager.get_instrument_serial()
     print(serial)
 

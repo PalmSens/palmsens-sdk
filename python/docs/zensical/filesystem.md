@@ -46,7 +46,7 @@ To access the device filesystem you need an active connection to the instrument.
 [DeviceFileSystem][pypalmsens.DeviceFileSystem] supports the context manager protocol, so you can pass a [pypalmsens.Instrument][] instance. In this case, [DeviceFileSystem][pypalmsens.DeviceFileSystem] internally creates a new manager, and manages the connection:
 
 ```pycon
->>> instrument = ps.discover()[0]
+>>> instrument, *_ = ps.discover()
 >>> with ps.DeviceFileSystem(instrument) as fs:
 ...    # filesystem operations
 ...    pass
@@ -261,8 +261,8 @@ For async workflows, use [pypalmsens.DeviceFileSystemAsync][] with an [pypalmsen
 >>> import pypalmsens as ps
 
 >>> async def main():
-...     instruments = await ps.discover_async()
-...     manager = ps.InstrumentManagerAsync(instruments[0])
+...     instrument, *_ = await ps.discover_async()
+...     manager = ps.InstrumentManagerAsync(instrument)
 ...  
 ...     async with ps.DeviceFileSystemAsync(manager) as fs:
 ...         paths = await fs.listdir()

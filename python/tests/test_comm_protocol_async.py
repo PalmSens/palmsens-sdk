@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 @pytest_asyncio.fixture(scope='module')
 async def comm():
-    instruments = await ps.discover_async()
-    async with ps.CommProtocolAsync(instruments[0]) as comm_protocol:
+    instrument, *_ = await ps.discover_async()
+    async with ps.CommProtocolAsync(instrument) as comm_protocol:
         logger.warning('Connected to %s', comm_protocol.instrument.id)
         yield comm_protocol
 

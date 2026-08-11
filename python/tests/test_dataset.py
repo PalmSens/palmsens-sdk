@@ -6,8 +6,8 @@ from pypalmsens.data import DataArray
 
 
 @pytest.fixture
-def dataset(data_cv_1scan):
-    return data_cv_1scan[0].dataset
+def dataset(measurement_cv_1scan):
+    return measurement_cv_1scan.dataset
 
 
 def test_mapping(dataset):

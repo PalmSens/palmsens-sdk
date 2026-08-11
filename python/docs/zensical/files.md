@@ -26,20 +26,43 @@ Save the method using [pypalmsens.save_method_file][]. The `.psmethod` file can 
 
 ## Loading Data
 
-Measurement data can be loaded from `.pssession` files. This contains one or more measurements that include both methods, metadata, and data.
+Measurement data can be loaded from `.pssession` files. A session file contains one or more measurements, including experimental methods, metadata, and raw data.
 
 [pypalmsens.load_session_file][] is used to load session files. It returns a list of measurements containing the dataset (raw data in array form) and curves (plot data). The equivalent in PSTrace or PSTrace Express would be the 'Data' and the 'Plot' tabs, respectively.
 
-For example, loading a collection of measurements from a session file and showing the first one:
+For example, loading a collection of measurements from a session file:
 
 ```pycon
->>> measurement = ps.load_session_file('examples/Demo CV DPV EIS IS-C electrode.pssession')[0]
->>> measurement
-Measurement(title=Differential Pulse Voltammetry, timestamp=2017-07-12T14:28:58, device=PalmSens4)
+>>> measurements = ps.load_session_file(
+...     'examples/Demo CV DPV EIS IS-C electrode.pssession'
+... )
+>>> measurements
+[Measurement(title=Differential Pulse Voltammetry, timestamp=2017-07-12T14:28:58, device=PalmSens4),
+ Measurement(title=Cyclic Voltammetry [1], timestamp=2017-07-12T14:33:10, device=PalmSens4),
+ Measurement(title=Impedance Spectroscopy [2], timestamp=2017-07-12T14:48:42, device=PalmSens4)]
 
 ```
 
-The measurement data and curve classes are defined in the `.curves` attribute:
+If you only need to extract a single measurement from the session file, use [pypalmsens.load_measurement][].
+
+For example, loading a single measurement:
+
+```pycon
+>>> measurement = ps.load_measurement(
+...     'examples/CV example.pssession'
+... )  #(1)!
+>>> measurement
+Measurement(title=Cyclic Voltammetry, timestamp=2017-07-12T14:33:10, device=PalmSens4)
+
+```
+
+1. Loading a single measurement is equivalent to unpacking a single measurement from a session file load: `[measurement] = ps.load_session_file(...)`.
+
+[load_measurement][pypalmsens.load_measurement] This function raise an error if your session file contains multiple measurements.
+
+### Data components
+
+The specific data components (curves, raw data, and EIS data) are stored within the following attributes of a [Measurement][pypalmsens.data.Measurement] object:
 
 - Curves: `.curves`
 - Raw data: `.dataset`
@@ -49,16 +72,23 @@ See the [Measurement documentation](../data.md#measurement) for how to work with
 
 ## Saving Data
 
-Likewise, save your data using [pypalmsens.save_session_file][]. Note that session files can contain multiple measurements, therefore
+To save a single measurement, use [pypalmsens.save_measurement][], for example.
+
+```python
+ps.save_measurement('cv_measurement.pssession', measurement)  #(1)!
+
+```
+
+1. This is equivalent to `ps.save_session_file(..., [measurement])`.
+
+Session files can contain multiple measurements. To store multiple measurements to a single file, use [pypalmsens.save_session_file][]:
 
 ```pycon
->>> import pypalmsens as ps
-
->>> measurement = ps.measure(ps.CyclicVoltammetry())
-
 >>> ps.save_session_file(
-...     'my_measurement_copy.pssession',
-...     [measurement]
+...     'CV DPV EIS measurements.pssession',
+...     measurements  #(1)!
 ... )
 
 ```
+
+1. A list of measurements

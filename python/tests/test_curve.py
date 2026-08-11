@@ -6,18 +6,18 @@ import pytest
 
 
 @pytest.fixture
-def curve_noise(data_noise_test):
-    return data_noise_test[0].curves[0]
+def curve_noise(measurement_noise_test):
+    return measurement_noise_test.curves[0]
 
 
 @pytest.fixture
-def curve_dpv(data_dpv):
-    return data_dpv[0].curves[0]
+def curve_dpv(measurement_dpv):
+    return measurement_dpv.curves[0]
 
 
 @pytest.fixture
-def curve_cv(data_cv):
-    return data_cv[0].curves[0]
+def curve_cv(measurement_cv):
+    return measurement_cv.curves[0]
 
 
 def test_curve_smooth(curve_noise):

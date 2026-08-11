@@ -41,14 +41,14 @@ def load() -> str:
         unblock(dll)
 
     # This dll contains the classes in which the data is stored
-    clr.AddReference(str(core_dll.with_suffix('')))
+    clr.AddReference(str(core_dll))
 
     # This dll is used to load your session file
-    clr.AddReference(str(core_windows_dll.with_suffix('')))
+    clr.AddReference(str(core_windows_dll))
 
     clr.AddReference('System')
 
-    from PalmSens.Core.Windows import CoreDependencies
+    from PalmSens.Windows import CoreDependencies
 
     CoreDependencies.Init()
 

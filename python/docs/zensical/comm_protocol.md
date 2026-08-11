@@ -15,7 +15,7 @@ To communicate with a PalmSens instrument you need an active connection. [CommPr
 
 ```pycon
 >>> import pypalmsens as ps
->>> instrument = ps.discover()[0]
+>>> instrument, *_ = ps.discover()
 >>> with ps.CommProtocol(instrument) as comm:
 ...     print(comm.query('t'))
 es4_lr1500#Mar 12 2026 14:28:01

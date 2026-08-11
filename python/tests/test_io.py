@@ -2,33 +2,62 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from pytest import approx
 
 import pypalmsens as ps
 
 
-def test_save_load_session(tmpdir, data_dpv):
+def test_save_load_session(tmpdir, measurement_dpv):
     path = tmpdir / 'test.pssession'
 
-    ps.save_session_file(path=path, measurements=data_dpv)
+    session = [measurement_dpv]
 
-    data_dpv2 = ps.load_session_file(path=path)
+    ps.save_session_file(path=path, measurements=session)
 
-    assert len(data_dpv2) == len(data_dpv)
+    session2 = ps.load_session_file(path=path)
 
-    meas = data_dpv[0]
-    meas2 = data_dpv2[0]
+    assert len(session) == len(session2)
 
-    method_filename = Path(meas2._psmeasurement.Method.MethodFilename)
+    measurement_dpv2 = session2[0]
+
+    method_filename = Path(measurement_dpv2._psmeasurement.Method.MethodFilename)
     assert method_filename == path
     assert method_filename.is_absolute()
 
-    assert len(meas.dataset) == len(meas2.dataset) == 0
-    assert meas.n_curves == meas2.n_curves == 1
-    assert meas.curves[0].n_points == meas2.curves[0].n_points
-    assert meas.timestamp == meas2.timestamp
-    assert meas.title == meas2.title
-    assert meas.device == meas2.device
+    assert len(measurement_dpv.dataset) == len(measurement_dpv2.dataset) == 0
+    assert measurement_dpv.n_curves == measurement_dpv2.n_curves == 1
+    assert measurement_dpv.curves[0].n_points == measurement_dpv2.curves[0].n_points
+    assert measurement_dpv.timestamp == measurement_dpv2.timestamp
+    assert measurement_dpv.title == measurement_dpv2.title
+    assert measurement_dpv.device == measurement_dpv2.device
+
+
+def test_save_load_measurement(tmpdir, measurement_dpv):
+    path = tmpdir / 'test.psmethod'
+
+    ps.save_measurement(path, measurement_dpv)
+
+    meas2 = ps.load_measurement(path)
+
+    assert len(measurement_dpv.dataset) == len(meas2.dataset) == 0
+    assert measurement_dpv.n_curves == meas2.n_curves == 1
+    assert measurement_dpv.curves[0].n_points == meas2.curves[0].n_points
+    assert measurement_dpv.timestamp == meas2.timestamp
+    assert measurement_dpv.title == meas2.title
+    assert measurement_dpv.device == meas2.device
+
+
+def test_save_load_measurement_fail(tmpdir, measurement_dpv, measurement_cv):
+    path = tmpdir / 'test_multiple.psmethod'
+
+    ps.save_session_file(path, [measurement_dpv, measurement_cv])
+
+    with pytest.raises(ValueError):
+        _ = ps.load_measurement(path)
+
+    with pytest.raises(TypeError):
+        ps.save_measurement(path, [measurement_dpv, measurement_cv])
 
 
 def test_save_load_method(tmpdir):

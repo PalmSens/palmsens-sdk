@@ -9,8 +9,8 @@ from pypalmsens.data import CurrentArray, PotentialArray
 
 
 @pytest.fixture
-def array(data_cv_1scan):
-    return data_cv_1scan[0].dataset.arrays()[-1]
+def array(measurement_cv_1scan):
+    return measurement_cv_1scan.dataset.arrays()[-1]
 
 
 def test_sequence(array):
@@ -62,15 +62,15 @@ def test_array_copy(array):
     assert array._psarray is not new_array._psarray
 
 
-def test_array_status(data_cv_1scan):
-    array = data_cv_1scan[0].dataset.arrays(type='Current')[0]
+def test_array_status(measurement_cv_1scan):
+    array = measurement_cv_1scan.dataset.arrays(type='Current')[0]
     _ = array.current_range()
     _ = array.timing_status()
     _ = array.reading_status()
 
 
-def test_current_array(data_cv_1scan):
-    arr = data_cv_1scan[0].dataset['Current']
+def test_current_array(measurement_cv_1scan):
+    arr = measurement_cv_1scan.dataset['Current']
     assert isinstance(arr, CurrentArray)
 
     n_points = len(arr)
@@ -85,14 +85,14 @@ def test_current_array(data_cv_1scan):
     assert len(d) == 5
 
 
-def test_current_array_midc(data_eis_5freq):
+def test_current_array_midc(measurement_eis_5freq):
     """Regression test for midc bug.
 
     For miDC the array value is 'in range' instead of µA for backwards compatibility reasons.
     `current()` and `current_in_range()` should always return the correct values.
     """
-    midc = data_eis_5freq[0].dataset['miDC']
-    iac = data_eis_5freq[0].dataset['Iac']
+    midc = measurement_eis_5freq.dataset['miDC']
+    iac = measurement_eis_5freq.dataset['Iac']
 
     assert midc.to_list() != midc.current()
     assert midc.to_list() == midc.current_in_range()
@@ -101,8 +101,8 @@ def test_current_array_midc(data_eis_5freq):
     assert iac.to_list() != iac.current_in_range()
 
 
-def test_potential_array(data_cv_1scan):
-    arr = data_cv_1scan[0].dataset['Potential']
+def test_potential_array(measurement_cv_1scan):
+    arr = measurement_cv_1scan.dataset['Potential']
     assert isinstance(arr, PotentialArray)
 
     n_points = len(arr)

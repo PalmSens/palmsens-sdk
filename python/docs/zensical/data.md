@@ -26,6 +26,11 @@ Therefore, [pypalmsens.load_session_file][] always returns a list of measurement
 
 ```
 
+!!! Note "Loading a single measurement"
+
+    If you know your session file only contains a single measurement, you can use the convenience functions:
+    [pypalmsens.load_measurement][] and omit the index: `measurement = ps.load_measurement('my_measurement.pssession')`
+
 From there, you can query device information and other metadata:
 
 ```pycon
@@ -562,7 +567,7 @@ For more information on EIS datasets, see [pypalmsens.data.EISData][].
 If an EIS dataset contains subscans, this will be shown in the object's representation:
 
 ```pycon
->>> measurement = ps.load_session_file('tests/test_data/eis_3ch_4scan_5freq.pssession')[0]
+>>> measurement = ps.load_measurement('tests/test_data/eis_3ch_4scan_5freq.pssession')
 >>> measurement
 Measurement(title=Impedance Spectroscopy, timestamp=2025-07-31T15:54:28, device=EmStat4HR)
 

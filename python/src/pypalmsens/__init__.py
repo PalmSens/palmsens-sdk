@@ -44,7 +44,14 @@ from ._instruments.instrument_manager_async import (
 )
 from ._instruments.instrument_pool import InstrumentPool
 from ._instruments.instrument_pool_async import InstrumentPoolAsync
-from ._io import load_method_file, load_session_file, save_method_file, save_session_file
+from ._io import (
+    load_measurement,
+    load_method_file,
+    load_session_file,
+    save_measurement,
+    save_method_file,
+    save_session_file,
+)
 from ._methods.mixed_mode import MixedMode
 from ._methods.techniques import (
     ACVoltammetry,
@@ -116,12 +123,14 @@ __all__ = [
     'discover_async',
     'energy',
     'fitting',
+    'load_measurement',
     'load_method_file',
     'load_session_file',
     'load_stream_file',
     'measure',
     'measure_async',
     'mixed_mode',
+    'save_measurement',
     'save_method_file',
     'save_session_file',
     'settings',

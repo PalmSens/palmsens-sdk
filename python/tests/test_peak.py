@@ -4,8 +4,8 @@ import pytest
 
 
 @pytest.fixture
-def peak(data_dpv):
-    curve = data_dpv[0].curves[0]
+def peak(measurement_dpv):
+    curve = measurement_dpv.curves[0]
     peaks = curve.find_peaks(
         min_peak_width=0,
         min_peak_height=0,

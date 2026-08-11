@@ -8,8 +8,8 @@ from pypalmsens.data import Curve
 
 
 @pytest.fixture
-def measurement(data_dpv):
-    return data_dpv[0]
+def measurement(measurement_dpv):
+    return measurement_dpv
 
 
 def test_measurement_properties(measurement):

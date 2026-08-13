@@ -61,7 +61,7 @@ def load_session_file(
     session = PalmSens.Data.SessionManager()
 
     try:
-        with stream_reader(str(path)) as stream:
+        with stream_reader(str(path), encoding=Encoding.Unicode) as stream:
             session.Load(stream.BaseStream, str(path))
     except System.IO.FileNotFoundException as exc:
         raise FileNotFoundError(exc.Message) from exc
@@ -96,7 +96,7 @@ def save_session_file(path: str | Path, measurements: Sequence[Measurement]):
     for measurement in measurements:
         session.AddMeasurement(measurement._psmeasurement)
 
-    with stream_writer(str(path), False, Encoding.Unicode) as stream:
+    with stream_writer(str(path), append=False, encoding=Encoding.Unicode) as stream:
         session.Save(stream.BaseStream, str(path))
 
 
@@ -149,7 +149,7 @@ def _load_method_file(path: str | Path) -> Method:
     path = Path(path)
 
     try:
-        with stream_reader(str(path)) as stream:
+        with stream_reader(str(path), encoding=Encoding.UTF8) as stream:
             if path.suffix == PalmSens.DataFiles.MethodFile2.FileExtension:
                 psmethod = PalmSens.DataFiles.MethodFile2.FromStream(stream)
             else:

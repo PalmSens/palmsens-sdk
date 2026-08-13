@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import PalmSens
+import System
 from System.IO import MemoryStream, StreamReader, StreamWriter
 from System.Text import Encoding
 
@@ -59,8 +60,11 @@ def load_session_file(
 
     session = PalmSens.Data.SessionManager()
 
-    with stream_reader(str(path)) as stream:
-        session.Load(stream.BaseStream, str(path))
+    try:
+        with stream_reader(str(path)) as stream:
+            session.Load(stream.BaseStream, str(path))
+    except System.IO.FileNotFoundException as exc:
+        raise FileNotFoundError(exc.Message) from exc
 
     session.MethodForEditor.MethodFilename = str(path.absolute())
 
@@ -144,11 +148,14 @@ def save_measurement(path: str | Path, measurement: Measurement):
 def _load_method_file(path: str | Path) -> Method:
     path = Path(path)
 
-    with stream_reader(str(path)) as stream:
-        if path.suffix == PalmSens.DataFiles.MethodFile2.FileExtension:
-            psmethod = PalmSens.DataFiles.MethodFile2.FromStream(stream)
-        else:
-            psmethod = PalmSens.DataFiles.MethodFile.FromStream(stream, str(path))
+    try:
+        with stream_reader(str(path)) as stream:
+            if path.suffix == PalmSens.DataFiles.MethodFile2.FileExtension:
+                psmethod = PalmSens.DataFiles.MethodFile2.FromStream(stream)
+            else:
+                psmethod = PalmSens.DataFiles.MethodFile.FromStream(stream, str(path))
+    except System.IO.FileNotFoundException as exc:
+        raise FileNotFoundError(exc.Message) from exc
 
     psmethod.MethodFilename = str(path.absolute())
 

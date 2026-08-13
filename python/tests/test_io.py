@@ -33,6 +33,11 @@ def test_save_load_session(tmpdir, measurement_dpv):
     assert measurement_dpv.device == measurement_dpv2.device
 
 
+def test_load_session_file_not_found():
+    with pytest.raises(FileNotFoundError):
+        _ = ps.load_method_file('foo.bar')
+
+
 def test_save_load_measurement(tmpdir, measurement_dpv):
     path = tmpdir / 'test.psmethod'
 
@@ -82,6 +87,11 @@ def test_save_load_method(tmpdir):
             assert v2 == approx(v)
         else:
             assert v == v2
+
+
+def test_load_method_file_not_found():
+    with pytest.raises(FileNotFoundError):
+        _ = ps.load_method_file('foo.bar')
 
 
 def test_serialize():

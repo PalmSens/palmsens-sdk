@@ -3,12 +3,12 @@
 - [Link](https://www.nuget.org/packages/Bluetooth)
 - [MIT Licence](https://licenses.nuget.org/MIT)
 
-# BouncyCastle.Crypto
+# BouncyCastle.Cryptography
 
 - [Link](https://www.nuget.org/packages/BouncyCastle.Cryptography)
 - [MIT Licence](https://licenses.nuget.org/MIT)
 
-# InTheHand.Net.Personal
+# InTheHand.Net.Bluetooth
 
 - [Link](https://www.nuget.org/packages/InTheHand.Net.Bluetooth)
 - [MIT Licence](https://licenses.nuget.org/MIT)

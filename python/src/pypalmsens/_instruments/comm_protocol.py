@@ -290,7 +290,7 @@ class CommProtocol:
         if not end:
             try:
                 func, *_ = command.split(maxsplit=1)
-            except IndexError:
+            except ValueError:
                 func = ''
 
             end = NEWLINE_TERMINATORS.get(func, '\n')

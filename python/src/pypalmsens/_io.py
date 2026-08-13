@@ -149,7 +149,7 @@ def _load_method_file(path: str | Path) -> Method:
     path = Path(path)
 
     try:
-        with stream_reader(str(path), encoding=Encoding.Unicode) as stream:
+        with stream_reader(str(path), encoding=Encoding.UTF8) as stream:
             if path.suffix == PalmSens.DataFiles.MethodFile2.FileExtension:
                 psmethod = PalmSens.DataFiles.MethodFile2.FromStream(stream)
             else:

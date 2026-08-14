@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pythonnet
 
-# Select the correct version of the SerialPort library
+# On Linux (mono), the difference is in the version of the SerialPort library
 # To use serial devices the correct version of the libSystem.IO.Ports.Native.so
 # library must be loaded to into pythonnet.
 PLATFORMS = {
@@ -18,6 +18,7 @@ PLATFORMS = {
     ('Linux', 'aarch64'): 'linux-arm64',  # raspberrypi / raspbian
     ('Darwin', 'arm64'): 'osx-arm64',
     ('Darwin', 'x86_64'): 'osx-x64',
+    ('Windows', 'AMD64'): 'win',
 }
 
 PLATFORM = PLATFORMS[
@@ -28,37 +29,52 @@ PLATFORM = PLATFORMS[
 PSSDK_DIR = files(f'pypalmsens._libpalmsens.{PLATFORM}')
 
 
+def unblock(path: Path):
+    """Unblock DLL: https://stackoverflow.com/q/20886450
+
+    Windows only."""
+    zone_id = path.with_name(path.name + ':Zone.Identifier')
+    zone_id.unlink(missing_ok=True)
+
+
 def load() -> str:
     """Load .NET platform dependencies and init SDK.
 
     Returns
     -------
     str
-        Version of the PalmSens .NET SDK."""
+        Version of the PalmSens .NET SDK.
+    """
 
-    # runtime must be imported before clr is loaded
+    # runtime must be loaded before `clr` is imported
     pythonnet.load('coreclr', runtime_config=str(PSSDK_DIR / 'runtimeconfig.json'))
 
     import clr
 
+    tag = 'Windows' if PLATFORM == 'win' else 'Linux'
+
     core_dll = PSSDK_DIR / 'PalmSens.Core.dll'
-    core_linux_dll = PSSDK_DIR / 'PalmSens.Core.Linux.dll'
+    core_platform_dll = PSSDK_DIR / f'PalmSens.Core.{tag}.dll'
 
     assert isinstance(core_dll, Path)
-    assert isinstance(core_linux_dll, Path)
+    assert isinstance(core_platform_dll, Path)
 
     assert core_dll.exists()
-    assert core_linux_dll.exists()
+    assert core_platform_dll.exists()
 
-    # This dll contains the classes in which the data is stored
+    if PLATFORM == 'win':
+        unblock(core_dll)
+        unblock(core_platform_dll)
+
     clr.AddReference(str(core_dll.with_suffix('')))
-
-    # This dll is used to load your session file
-    clr.AddReference(str(core_linux_dll.with_suffix('')))
+    clr.AddReference(str(core_platform_dll.with_suffix('')))
 
     clr.AddReference('System')
 
-    from PalmSens.Core.Linux import CoreDependencies
+    if PLATFORM == 'win':
+        from PalmSens.Windows import CoreDependencies
+    else:
+        from PalmSens.Core.Linux import CoreDependencies
 
     CoreDependencies.Init()
 
@@ -69,6 +85,6 @@ def load() -> str:
 
 unload = pythonnet.unload
 
-atexit.register(pythonnet.unload)
+_ = atexit.register(pythonnet.unload)
 
 __all__ = ['load', 'unload']

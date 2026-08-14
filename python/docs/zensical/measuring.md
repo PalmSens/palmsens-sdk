@@ -697,7 +697,7 @@ This means the data can be read in any programming language with a JSON parser.
 
 ### Load stream data
 
-PyPalmSens contains a parser to load such files, [pypalmsens.load_stream_file][]. Although the data structure resembles that [pypalmsans.data.Measurement][], it it is much smaller in scope, and lacks some of the more advanced features.
+PyPalmSens contains a parser to load such files, [pypalmsens.load_stream_file][]. Although the data structure resembles that [pypalmsens.data.Measurement][], it it is much smaller in scope, and lacks some of the more advanced features.
 
 ```pycon
 >>> import pypalmsens as ps
@@ -723,7 +723,7 @@ CurveMetadata(title='CV i vs E Scan 1', columns=['x', 'y'], units=['V', 'µA'], 
  [-0.300033, -29.950316],
  [-0.400011, -40.018056]]
 
- ```
+```
 
 ### Data format
 

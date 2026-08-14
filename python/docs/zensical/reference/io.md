@@ -7,6 +7,7 @@ This page contains a listing of all functions to load and save `.pssession` and 
 - [`pypalmsens.load_measurement`][pypalmsens.load_measurement]
 - [`pypalmsens.load_method_file`][pypalmsens.load_method_file]
 - [`pypalmsens.load_session_file`][pypalmsens.load_session_file]
+- [`pypalmsens.load_stream_file`][pypalmsens.load_stream_file]
 - [`pypalmsens.save_measurement`][pypalmsens.save_measurement]
 - [`pypalmsens.save_method_file`][pypalmsens.save_method_file]
 - [`pypalmsens.save_session_file`][pypalmsens.save_session_file]
@@ -14,6 +15,7 @@ This page contains a listing of all functions to load and save `.pssession` and 
 ::: pypalmsens.load_measurement
 ::: pypalmsens.load_method_file
 ::: pypalmsens.load_session_file
+::: pypalmsens.load_stream_file
 ::: pypalmsens.save_measurement
 ::: pypalmsens.save_method_file
 ::: pypalmsens.save_session_file

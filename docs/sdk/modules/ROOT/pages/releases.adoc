@@ -2,6 +2,7 @@ Releases
 ========
 
 // latest
+- https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.11.0[python-1.11.0]
 - https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.10.1[python-1.10.1]
 - https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.10.0[python-1.10.0]
 - https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.9.0[python-1.9.0]

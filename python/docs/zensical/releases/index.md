@@ -1,6 +1,173 @@
 # Changelog
 
 <!-- Latest-->
+## PyPalmSens 1.11.0
+
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.11.0">python-1.11.0</a>
+| :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/1.11.0">pypalmsens-1.11.0</a>
+| :fontawesome-solid-calendar: 2026-08-14
+
+This is a fairly large release that adds better support for interacting with low level device features. 1.11 adds support for communicating querying the device via the communications protocol and manipulating the internal storage of the device.
+
+Event handling was also significantly expanded. You can now set callbacks to the many hooks available on the measurement loop.
+
+Finally, this release brings new functions for saving/loading data, as well as many small bug fixes and improvements.
+
+### Event handling
+
+This release greatly improves support for event handling. These can be used, for example, to update plots, stream data to a file, or manage progress updates. You can attach callbacks to many measurement hooks:
+
+ - `'curve_begin'`
+ - `'curve_end'`
+ - `'curve_new_data'`
+ - `'eis_data_begin'`
+ - `'eis_data_end'`
+ - `'eis_new_data'`
+ - `'measurement_begin'`
+ - `'measurement_end'`
+ - `'measurement_setup'`
+ - `'measurement_teardown'`
+ - `'receive_message'`
+ - `'receive_status'`
+ - `'error'`
+
+ All of these can be accessed via [`InstrumentManager.on()`][pypalmsens.InstrumentManager.on] or convenience functions such as [`InstrumentManager.on_new_data`][pypalmsens.InstrumentManager.on_curve_new_data]. For example:
+
+```python
+import pypalmsens as ps
+
+with ps.connect() as manager:
+    handle = ps.on_curve_new_data(print)
+    manager.measure(ps.CyclicVoltammetry())
+    handle.cancel()
+```
+
+See the [event event handling documentation](https://dev.palmsens.com/python/latest/_attachments/events/) for more information.
+
+### Loading and saving data
+
+[`load_measurement()`][pypalmsens.load_measurement] and [`save_measurement()`][pypalmsens.save_measurement] are wrappers around load/save_session_file, that
+make it more convenient to work with single measurements.
+
+```pycon
+>>> measurement = ps.load_measurement('cv.pssession')
+>>> ps.save_measurement('cv_copy.pssession', measurement)
+```
+
+You can now also load data from the data stream added in [version 1.10](https://dev.palmsens.com/python/latest/_attachments/releases/#pypalmsens-110).
+Use [`pypalmsens.load_stream_file()`][pypalmsens.load_stream_file] to load such files. The resulting data structure resembles that [`pypalmsens.data.Measurement`][pypalmsens.data.Measurement], but it is much smaller in scope, and lacks some of the more advanced features.
+
+See the [documentation](https://dev.palmsens.com/python/latest/_attachments/measuring/#load-stream-data) for more information.
+
+### Internal storage
+
+This release adds an interface to read, manage, load, remove files from the internal storage on supported PalmSens devices.
+
+Three new classes were added to the api:
+
+- [`pypalmsens.DeviceFileSystem`][pypalmsens.DeviceFileSystem]
+- [`pypalmsens.DeviceFileSystemAsync`][pypalmsens.DeviceFileSystemAsync]
+- [`pypalmsens.DevicePath`][pypalmsens.DevicePath]
+
+For example, to download a measurement off the device:
+
+```pycon
+>>> import pypalmsens as ps
+>>> instrument, _* = ps.discover()
+
+>>> with ps.DeviceFileSystem(instrument) as fs:
+...     files = list(fs.listdir())
+...     path = files[0]
+...     measurement = fs.load_measurement(path)
+
+>>> files
+[DevicePath('Measurements/04-08-2026/LSV-16-02-20-0.dmeas'),
+ DevicePath('Measurements/04-08-2026/LSV-16-06-26-0.dmeas'),
+ DevicePath('Measurements/04-08-2026/LSV-16-06-47-0.dmeas'),
+ ...]
+
+>>> measurement
+Measurement(title=Linear Sweep Voltammetry, timestamp=0001-01-01T00:00:00, device=EmStat4LR)
+
+```
+
+See the [Internal storage documentation](https://dev.palmsens.com/python/latest/_attachments/events/) for more information.
+
+
+### Comm protocol
+
+This release adds a communication interface class to write / read directly to the device using the [Communication protocol](https://dev.palmsens.com/comm_es4/latest/comm/comm_main.html#ch_crc_examples). You can use the Communication protocol to directly query/manipulate the state of your device, e.g. setting registers, file operations, and sending scripts.
+
+Two new classes were added to the api:
+
+- [`pypalmsens.CommProtocol`][pypalmsens.CommProtocol]
+- [`pypalmsens.CommProtocolAsync`][pypalmsens.CommProtocolAsync]
+
+For example, to query the firmware version string:
+
+```pycon
+>>> import pypalmsens as ps
+>>> instrument, *_ = ps.discover()
+>>> with ps.CommProtocol(instrument) as comm:
+>>>     result = comm.query('t')
+>>> result
+'es4_lr1500#Mar 12 2026 14:28:01\nR*'  # Firmware version
+```
+
+Or send methodscript:
+
+```pycon
+>>> script = 'send_string "Hello world!"'
+>>> with ps.CommProtocol(instrument) as comm:
+>>>     result = comm.run_methodscript(script)
+>>> result
+'THello world!\n'
+```
+
+A high level [`query()`][pypalmsens.InstrumentManager.query] method is available on the [`InstrumentManager`][pypalmsens.InstrumentManager], for example:
+
+```pycon
+>>> with ps.connect() as manager:
+>>>     result = manager.query('i')
+>>> result
+'ES4LR20B0008'  # serial number
+```
+
+See the [Communication protocol documentation](https://dev.palmsens.com/python/latest/_attachments/events/) for more information.
+
+
+### MethodSCRIPT
+
+Support for MethodSCRIPT improved as well. Scripts are now validated, so using keywords that do not exist will raise a SyntaxError:
+
+```pycon
+>>> import pypalmsens as ps
+>>> ps.MethodScript(script='foo')
+SyntaxError: line 1:0: mismatched input 'foo' expecting {<EOF>, 'var', 'array', ...}
+```
+
+### What's changed
+
+- Fix sampling time and eq time not updating when loading EIS/GEIS methods ([#406](https://github.com/palmsens/palmsens-sdk/pull/406))
+- Add validation for `pypalmsens.MethodScript` scripts ([#400](https://github.com/palmsens/palmsens-sdk/pull/400))
+- Fix type hint typo ([#414](https://github.com/palmsens/palmsens-sdk/pull/414))
+- Support custom units in MethodScript ([#415](https://github.com/palmsens/palmsens-sdk/pull/415))
+- Add metadata export from data models for Battery Cycling dashboard ([#382](https://github.com/palmsens/palmsens-sdk/pull/382))
+- Allow floats to be set in fields for energy methods ([#416](https://github.com/palmsens/palmsens-sdk/pull/416))
+- Small improvements to energy methods compatibility ([#417](https://github.com/palmsens/palmsens-sdk/pull/417))
+- Add reader for data stream ([#418](https://github.com/palmsens/palmsens-sdk/pull/418))
+- Add support for internal storage ([#420](https://github.com/palmsens/palmsens-sdk/pull/420))
+- Add support for PalmSens 4 in `DeviceFileSystem(Async)` ([#424](https://github.com/palmsens/palmsens-sdk/pull/424))
+- Add interface for communication protocol commands ([#425](https://github.com/palmsens/palmsens-sdk/pull/425))
+- Rename internal methods ([#428](https://github.com/palmsens/palmsens-sdk/pull/428))
+- Add event emitter style registration for callbacks ([#409](https://github.com/palmsens/palmsens-sdk/pull/409), [#410](https://github.com/palmsens/palmsens-sdk/pull/410), [#431](https://github.com/palmsens/palmsens-sdk/pull/431))
+- Disable status when idle by default ([#436](https://github.com/palmsens/palmsens-sdk/pull/436))
+- Add save/load_measurement to public api ([#442](https://github.com/palmsens/palmsens-sdk/pull/442))
+- Use sequence unpacking when discovering instruments ([#443](https://github.com/palmsens/palmsens-sdk/pull/443))
+- Re-raise .NET exception as FileNotFound ([#448](https://github.com/palmsens/palmsens-sdk/pull/448))
+- Set encoding for stream reader to Encoding.Unicode (UTF-16LE) ([#449](https://github.com/palmsens/palmsens-sdk/pull/449))
+
+
 ## PyPalmSens 1.10.1
 
 > :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.10.1">python-1.10.1</a>
@@ -12,6 +179,7 @@ This release fixes a crash in 1.10.0 when importing PyPalmSens.
 ### What's changed
 
 - Add templates to MANIFEST.in ([#403](https://github.com/palmsens/palmsens-sdk/pull/403))
+
 
 ## PyPalmSens 1.10
 

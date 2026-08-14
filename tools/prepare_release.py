@@ -37,7 +37,7 @@ class SDK:
         cmd = ['bump-my-version', 'show', 'current_version']
 
         with self.chdir():
-            p = sp.run(cmd, capture_output=True)
+            p = sp.run(cmd, capture_output=True, check=True)
 
         return p.stdout.decode().strip()
 
@@ -45,7 +45,7 @@ class SDK:
         cmd = ['bump-my-version', 'show', '--increment', component, 'new_version']
 
         with self.chdir():
-            p = sp.run(cmd, capture_output=True)
+            p = sp.run(cmd, capture_output=True, check=True)
 
         new_version = p.stdout.decode().strip()
         return SDK(self.name, new_version)
@@ -69,8 +69,8 @@ class SDK:
 
 
 def commit_file(path: str | Path, message: str):
-    sp.check_call(['git', 'add', f'{path}'])
-    sp.check_call(['git', 'commit', '-m', message])
+    _ = sp.check_call(['git', 'add', f'{path}'])
+    _ = sp.check_call(['git', 'commit', '-m', message])
 
 
 def update_releases(sdk: SDK, commit: bool = False):
@@ -197,7 +197,7 @@ Push additional changes to branch:
 
 Merge PR:
 
-    gh merge $PR --squash
+    gh pr merge $PR --squash
 
 Make new release:
 

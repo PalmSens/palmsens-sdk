@@ -142,7 +142,7 @@ For more information, see the [pathlib.PurePath][] documentation.
 
 ## Loading Measurements
 
-The most common use case for the device filesystem is loading saved measurements. Use [pypalmsens.DeviceFileSystem.load_measurement][] to load a `.dmeas` file from the device into a [pypalmsans.data.Measurement][] object:
+The most common use case for the device filesystem is loading saved measurements. Use [pypalmsens.DeviceFileSystem.load_measurement][] to load a `.dmeas` file from the device into a [pypalmsens.data.Measurement][] object:
 
 ```pycon
 >>> path = 'Measurements/17-07-2026/LSV-10-00-28-1.dmeas'

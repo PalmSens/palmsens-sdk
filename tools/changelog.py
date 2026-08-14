@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import datetime
 import subprocess as sp
 import sys
-from datetime import datetime
 from pathlib import Path
 from textwrap import dedent
 
@@ -10,8 +10,8 @@ ROOT = Path(__file__).parents[1]
 
 
 def get_latest_tag(component: str = 'python'):
-    cmd = 'git tag --list --sort -creatordate'.split()
-    p = sp.run(cmd, capture_output=True)
+    cmd = ['git', 'tag', '--list', '--sort', '-creatordate']
+    p = sp.run(cmd, capture_output=True, check=True)
     tags = p.stdout.decode().splitlines()
     for line in tags:
         if line.startswith(component):
@@ -24,7 +24,7 @@ def get_latest_tag(component: str = 'python'):
 
 def get_changes_since_tag(tag: str):
     cmd = f'git log {tag}..HEAD --reverse --oneline'.split()
-    p = sp.run(cmd, capture_output=True)
+    p = sp.run(cmd, capture_output=True, check=True)
     lines = p.stdout.decode().splitlines()
     lines = (line.split(maxsplit=1)[1] for line in lines)
 
@@ -52,7 +52,7 @@ def update_python(new_tag: str, new_version: str) -> str:
     previous_tag = get_latest_tag()
     changelog = get_changes_since_tag(previous_tag)
 
-    time = datetime.today()
+    time = datetime.datetime.now(tz=datetime.UTC)
 
     TEMPLATE_CHANGELOG = dedent("""\
     ## PyPalmSens {new_version}
@@ -61,9 +61,10 @@ def update_python(new_tag: str, new_version: str) -> str:
     | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/{new_version}">pypalmsens-{new_version}</a>
     | :fontawesome-solid-calendar: {time}
 
-    ## What's changed
+    ### What's changed
 
     {changelog}
+
     """)
 
     TEMPLATE_GH_RELEASES = dedent("""\

@@ -527,9 +527,7 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         if not self.is_connected():
             return
 
-        # https://github.com/PalmSens/palmsens-sdk/pull/447#issuecomment-5291235608
-        time.sleep(0.5)
-
         self._comm.Disconnect()
+        self._comm.Dispose()
 
         del self._comm

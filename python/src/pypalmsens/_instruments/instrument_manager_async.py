@@ -585,9 +585,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         if not self.is_connected():
             return
 
-        # https://github.com/PalmSens/palmsens-sdk/pull/447#issuecomment-5291235608
-        await asyncio.sleep(0.5)
-
         await create_future(self._comm.DisconnectAsync())
         self._comm.Dispose()
+
         del self._comm

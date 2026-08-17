@@ -300,10 +300,10 @@ class MeasurementManagerAsync:
     ) -> Task.CompletedTask:
         """Called when the measurement ends."""
 
-        _ = self.loop.call_soon_threadsafe(self.end_measurement_event.set)
-
         for callback in self.callbacks['measurement_end']:
             _ = self.loop.call_soon_threadsafe(callback, self.last_measurement)
+
+        _ = self.loop.call_soon_threadsafe(self.end_measurement_event.set)
 
         return Task.CompletedTask
 

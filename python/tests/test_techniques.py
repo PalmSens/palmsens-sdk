@@ -192,12 +192,18 @@ def test_on_event(manager, method, event_names):
 
         return _callback
 
+    handles = []
+
     for event_name in event_names:
         on = getattr(manager, f'on_{event_name}')
-        _ = on(make_callback(event_name))
+        handle = on(make_callback(event_name))
         assert event_name in manager._listeners
+        handles.append(handle)
 
     _ = manager.measure(method)
+
+    for handle in handles:
+        handle.cancel()
 
     assert set(event_names) == triggered
 

@@ -22,7 +22,6 @@ from . import (
     data,
     energy,
     fitting,
-    mixed_mode,  # deprecated, use stages
     settings,
     stages,
     types,

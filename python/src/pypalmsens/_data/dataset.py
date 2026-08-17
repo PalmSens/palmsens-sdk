@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, final
 
@@ -238,24 +237,3 @@ class DataSet(Mapping[str, DataArray]):
 
         dct = self.to_dict()
         return pd.DataFrame.from_dict(dct, orient='index').T
-
-    def arrays_by_name(self, name: str) -> Sequence[DataArray]:
-        warnings.warn(
-            (f'This function has been deprecated, use `.arrays(name={name})` instead.'),
-            DeprecationWarning,
-        )
-        return self.arrays(name=name)
-
-    def arrays_by_quantity(self, quantity: str) -> Sequence[DataArray]:
-        warnings.warn(
-            (f'This function has been deprecated, use `.arrays(quantity={quantity})` instead.'),
-            DeprecationWarning,
-        )
-        return self.arrays(quantity=quantity)
-
-    def arrays_by_type(self, array_type: AllowedArrayTypes) -> Sequence[DataArray]:
-        warnings.warn(
-            (f'This function has been deprecated, use `.arrays(type={array_type})` instead.'),
-            DeprecationWarning,
-        )
-        return self.arrays(type=array_type)

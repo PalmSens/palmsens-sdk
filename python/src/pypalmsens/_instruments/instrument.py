@@ -64,7 +64,7 @@ class Instrument:
             raise ConnectionError(
                 f'Cannot open instrument connection (reason: {err.Message}). Check if the device is already in use.'
             ) from err
-        except System.IO.IOException as err:
+        except (System.IO.IOException, System.ArgumentException) as err:
             # Raised if port does not exist
             raise OSError(err.Message) from err
 

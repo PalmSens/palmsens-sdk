@@ -587,4 +587,5 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
         await create_future(self._comm.DisconnectAsync())
         self._comm.Dispose()
+
         del self._comm

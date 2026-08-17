@@ -15,7 +15,7 @@ pip install pypalmsens
 ## Windows
 
 *   Install [Python](https://python.org) version 3.10 or newer
-*   Install [.NET Framework 4.7.2](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472)
+*   Install [.NET Runtime 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or newer
 *   Install device drivers (see the [Compatibility table](#compatibility)):
     * If you installed PSTrace or Multitrace, drivers are already installed
     * For standalone installations, use the [driver installer](https://github.com/palmsens/palmsens-sdk/releases/download/drivers-5.12/PalmSens.Drivers.exe).
@@ -23,7 +23,7 @@ pip install pypalmsens
 ## Linux and macOS {#req-linux}
 
 *   Install [Python](https://python.org) version 3.10 or newer
-*   Install .NET Runtime 9.0 or newer. You can typically find the required runtime (e.g., `dotnet-runtime-9.0`) in your [package manager](https://learn.microsoft.com/en-us/dotnet/core/install/linux).
+*   Install [.NET Runtime 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or newer. You can typically find the required runtime (e.g., `dotnet-runtime-9.0`) in your [package manager](https://learn.microsoft.com/en-us/dotnet/core/install/linux).
     *   [Installation guides for Ubuntu](https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-install)
     *   [Installation guides for Debian](https://learn.microsoft.com/en-us/dotnet/core/install/linux-debian)
     *   [Installation guides for Fedora](https://learn.microsoft.com/en-us/dotnet/core/install/linux-fedora)

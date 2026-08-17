@@ -528,5 +528,6 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
             return
 
         self._comm.Disconnect()
+        self._comm.Dispose()
 
         del self._comm

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from functools import reduce
+from operator import ior
 from typing import Literal
 
 import PalmSens
@@ -117,29 +119,54 @@ class Pretreatment(BaseSettings):
         self.conditioning_time = single_to_double(psmethod.ConditioningTime)
 
 
+OCPFlag = Literal['none', 'vertex1', 'vertex2', 'begin', 'end', 'potential']
+LSVvsOCPMap = {'begin': 1, 'end': 2}
+CVvsOCPMap = {'vertex1': 1, 'vertex2': 2, 'begin': 4}
+ADvsOCPMap = {'potential': 1}
+EISvsOCPMap = {'potential': 1}
+EISvsOCPMap_pgscan = {'begin': 1, 'end': 2}
+
+
 class VersusOCP(BaseSettings):
-    """Set the versus OCP settings."""
+    """Define which potentials to measure versus Open Circuit Potential (OCP).
 
-    mode: int = 0
-    """Set versus OCP mode.
+    Usually, measured potentials refer to the Working Electrode (WE) relative
+    to the Reference Electrode (RE).
+    Use this class to define which potentials (`potentials`) te measure relative
+    to the OCP.
+    To do so, the technique determines the stable OCP value first.
+    This requires measuring the OCP drift until it settles (`stability_criterion`)
+    or times out (`timeout`) before starting with the measurement.
 
-    Possible values:
+    Note that different methods use different values:
 
-    - 0 = disable versus OCP
-    - 1 = vertex 1 potential
-    - 2 = vertex 2 potential
-    - 3 = vertex 1 & 2 potential
-    - 4 = begin potential
-    - 5 = begin & vertex 1 potential
-    - 6 = begin & vertex 2 potential
-    - 7 = begin & vertex 1 & 2 potential
+    - EIS:
+    - AD:
+    - LSV:
+    - CV:
     """
 
-    max_ocp_time: float = 20.0
-    """Maximum OCP time in s."""
+    potentials: list[OCPFlag] = Field(default_factory=list)
+    """Measure these potentials vs OCP.
+
+    - 'begin':
+    - 'end':
+    - 'vertex1':
+    - 'vertex2':
+
+    Leave blank to disable versus OCP measurements.
+    """
+
+    timeout: float = 20.0
+    """Maximum time in s to determine OCP value.
+
+    Set the OCP value when the `timeout` has elapsed.
+    """
 
     stability_criterion: float = 0.0
     """Stability criterion (potential/time) in mV/s.
+
+    Set the OCP value when the drift is lower than the specified value.
 
     If equal to 0 means no stability criterion.
     If larger than 0, then the value is taken as the stability threshold.
@@ -147,14 +174,58 @@ class VersusOCP(BaseSettings):
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        psmethod.OCPmode = self.mode
-        psmethod.OCPMaxOCPTime = self.max_ocp_time
+        method_id = psmethod.MethodID
+
+        if method_id in ('cv',):
+            m = CVvsOCPMap
+        elif method_id in ('eis',):
+            if str(psmethod.ScanType) == 'PGScan':
+                m = EISvsOCPMap_pgscan
+            else:
+                m = EISvsOCPMap
+        elif method_id in ('ad',):
+            m = ADvsOCPMap
+        elif method_id in ('lsv',):
+            m = LSVvsOCPMap
+        else:
+            raise TypeError(f'{method_id} does not support OCP.')
+
+        if self.potentials:
+            mode = reduce(ior, [m[key] for key in self.potentials])
+        else:
+            mode = 0
+
+        psmethod.OCPmode = mode
+        psmethod.OCPMaxOCPTime = self.timeout
         psmethod.OCPStabilityCriterion = self.stability_criterion
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):
-        self.mode = psmethod.OCPmode
-        self.max_ocp_time = single_to_double(psmethod.OCPMaxOCPTime)
+        mode = psmethod.OCPmode
+
+        method_id = psmethod.MethodID
+
+        if method_id in ('cv',):
+            m = CVvsOCPMap
+        elif method_id in ('eis',):
+            if str(psmethod.ScanType) == 'PGScan':
+                m = EISvsOCPMap_pgscan
+            else:
+                m = EISvsOCPMap
+        elif method_id in ('ad',):
+            m = ADvsOCPMap
+        elif method_id in ('lsv',):
+            m = LSVvsOCPMap
+        else:
+            raise TypeError(f'{method_id} does not support OCP.')
+
+        if mode:
+            potentials = [key for key, val in m.items() if (mode & val) == val]
+        else:
+            potentials = []
+
+        self.potentials = potentials  # type: ignore
+        self.timeout = single_to_double(psmethod.OCPMaxOCPTime)
         self.stability_criterion = single_to_double(psmethod.OCPStabilityCriterion)
 
 

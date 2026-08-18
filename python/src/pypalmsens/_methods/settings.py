@@ -119,20 +119,27 @@ class Pretreatment(BaseSettings):
         self.conditioning_time = single_to_double(psmethod.ConditioningTime)
 
 
-OCPFlag = Literal['none', 'vertex1', 'vertex2', 'begin', 'end', 'potential']
+OCPFlag = Literal['vertex1', 'vertex2', 'begin', 'end', 'potential']
 
 
 class VersusOCP(BaseSettings):
     """Define which potentials to measure versus Open Circuit Potential (OCP).
 
-    Usually, measured potentials refer to the Working Electrode (WE) relative
+    Usually, potentials refer to the Working Electrode (WE) relative
     to the Reference Electrode (RE).
-    Use this class to define which potentials (`potentials`) te measure relative
+    Use this class to define which potentials (`potentials`) are relative
     to the OCP.
 
     To do so, the technique determines the stable OCP value first.
     This requires measuring the OCP drift until it settles (`stability_criterion`)
     or times out (`timeout`) before starting with the measurement.
+
+    The following potentials can be defined relative to OCP:
+
+    - `'vertex1'`, `'vertex2'`: Potential at which the scan direction is reversed
+    - `'begin'`: Potential applied at the beginning of a measurement
+    - `'end'`: Potential applied at the end of a measurement
+    - `'potential'`: Potential applied during measurement
     """
 
     potentials: list[OCPFlag] = Field(default_factory=list)

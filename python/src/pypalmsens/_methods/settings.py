@@ -8,6 +8,8 @@ import PalmSens
 from pydantic import Field
 from typing_extensions import override
 
+from pypalmsens.types import AllowedMethods
+
 from .._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
@@ -134,25 +136,22 @@ class VersusOCP(BaseSettings):
     to the Reference Electrode (RE).
     Use this class to define which potentials (`potentials`) te measure relative
     to the OCP.
+
     To do so, the technique determines the stable OCP value first.
     This requires measuring the OCP drift until it settles (`stability_criterion`)
     or times out (`timeout`) before starting with the measurement.
-
-    Note that different methods use different values:
-
-    - EIS:
-    - AD:
-    - LSV:
-    - CV:
     """
 
     potentials: list[OCPFlag] = Field(default_factory=list)
     """Measure these potentials vs OCP.
 
-    - 'begin':
-    - 'end':
-    - 'vertex1':
-    - 'vertex2':
+    Different methods use different values:
+
+    - CV, FCV, CP: `'vertex1'`, `'vertex2'`, `'begin'`
+    - EIS, FIS: `'begin'`, `'end'`
+    - EIS (potential scan): `'potential'`
+    - AD, PS, FAM: `'potential`'
+    - LSV, ACV, LP, SWV, DPV, NPV: `'begin'`, `'end'`
 
     Leave blank to disable versus OCP measurements.
     """
@@ -174,18 +173,18 @@ class VersusOCP(BaseSettings):
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        method_id = psmethod.MethodID
+        method_id: AllowedMethods = psmethod.MethodID
 
-        if method_id in ('cv',):
+        if method_id in ('cv', 'fcv', 'cp'):
             m = CVvsOCPMap
-        elif method_id in ('eis',):
+        elif method_id in ('eis', 'fis'):
             if str(psmethod.ScanType) == 'PGScan':
                 m = EISvsOCPMap_pgscan
             else:
                 m = EISvsOCPMap
-        elif method_id in ('ad',):
+        elif method_id in ('ad', 'ps', 'fam'):
             m = ADvsOCPMap
-        elif method_id in ('lsv',):
+        elif method_id in ('lsv', 'acv', 'lp', 'swv', 'dpv', 'npv'):
             m = LSVvsOCPMap
         else:
             raise TypeError(f'{method_id} does not support OCP.')
@@ -205,16 +204,16 @@ class VersusOCP(BaseSettings):
 
         method_id = psmethod.MethodID
 
-        if method_id in ('cv',):
+        if method_id in ('cv', 'fcv', 'cp'):
             m = CVvsOCPMap
-        elif method_id in ('eis',):
+        elif method_id in ('eis', 'fis'):
             if str(psmethod.ScanType) == 'PGScan':
                 m = EISvsOCPMap_pgscan
             else:
                 m = EISvsOCPMap
-        elif method_id in ('ad',):
+        elif method_id in ('ad', 'ps', 'fam'):
             m = ADvsOCPMap
-        elif method_id in ('lsv',):
+        elif method_id in ('lsv', 'acv', 'lp', 'swv', 'dpv', 'npv'):
             m = LSVvsOCPMap
         else:
             raise TypeError(f'{method_id} does not support OCP.')

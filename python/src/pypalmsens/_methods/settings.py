@@ -143,7 +143,7 @@ class VersusOCP(BaseSettings):
     """
 
     potentials: list[OCPFlag] = Field(default_factory=list)
-    """Measure these potentials vs OCP.
+    """Define these potentials vs OCP.
 
     Different methods use different values:
 

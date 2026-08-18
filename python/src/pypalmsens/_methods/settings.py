@@ -8,8 +8,6 @@ import PalmSens
 from pydantic import Field
 from typing_extensions import override
 
-from pypalmsens.types import AllowedMethods
-
 from .._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
@@ -122,11 +120,6 @@ class Pretreatment(BaseSettings):
 
 
 OCPFlag = Literal['none', 'vertex1', 'vertex2', 'begin', 'end', 'potential']
-LSVvsOCPMap = {'begin': 1, 'end': 2}
-CVvsOCPMap = {'vertex1': 1, 'vertex2': 2, 'begin': 4}
-ADvsOCPMap = {'potential': 1}
-EISvsOCPMap = {'potential': 1}
-EISvsOCPMap_pgscan = {'begin': 1, 'end': 2}
 
 
 class VersusOCP(BaseSettings):
@@ -173,24 +166,10 @@ class VersusOCP(BaseSettings):
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        method_id: AllowedMethods = psmethod.MethodID
-
-        if method_id in ('cv', 'fcv', 'cp'):
-            m = CVvsOCPMap
-        elif method_id in ('eis', 'fis'):
-            if str(psmethod.ScanType) == 'PGScan':
-                m = EISvsOCPMap_pgscan
-            else:
-                m = EISvsOCPMap
-        elif method_id in ('ad', 'ps', 'fam'):
-            m = ADvsOCPMap
-        elif method_id in ('lsv', 'acv', 'lp', 'swv', 'dpv', 'npv'):
-            m = LSVvsOCPMap
-        else:
-            raise TypeError(f'{method_id} does not support OCP.')
+        ocp_flag_map = self._ocp_flag_map(psmethod)
 
         if self.potentials:
-            mode = reduce(ior, [m[key] for key in self.potentials])
+            mode = reduce(ior, [ocp_flag_map[key] for key in self.potentials])
         else:
             mode = 0
 
@@ -200,32 +179,33 @@ class VersusOCP(BaseSettings):
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):
-        mode = psmethod.OCPmode
+        ocp_flag_map = self._ocp_flag_map(psmethod)
 
-        method_id = psmethod.MethodID
-
-        if method_id in ('cv', 'fcv', 'cp'):
-            m = CVvsOCPMap
-        elif method_id in ('eis', 'fis'):
-            if str(psmethod.ScanType) == 'PGScan':
-                m = EISvsOCPMap_pgscan
-            else:
-                m = EISvsOCPMap
-        elif method_id in ('ad', 'ps', 'fam'):
-            m = ADvsOCPMap
-        elif method_id in ('lsv', 'acv', 'lp', 'swv', 'dpv', 'npv'):
-            m = LSVvsOCPMap
-        else:
-            raise TypeError(f'{method_id} does not support OCP.')
-
-        if mode:
-            potentials = [key for key, val in m.items() if (mode & val) == val]
+        if mode := psmethod.OCPmode:
+            potentials = [key for key, val in ocp_flag_map.items() if (mode & val) == val]
         else:
             potentials = []
 
         self.potentials = potentials  # type: ignore
         self.timeout = single_to_double(psmethod.OCPMaxOCPTime)
         self.stability_criterion = single_to_double(psmethod.OCPStabilityCriterion)
+
+    def _ocp_flag_map(self, psmethod: PalmSens.Method) -> dict[str, int]:
+        method_id = psmethod.MethodID
+
+        if method_id in ('cv', 'fcv', 'cp'):
+            return {'vertex1': 1, 'vertex2': 2, 'begin': 4}
+        elif method_id in ('eis', 'fis'):
+            if str(psmethod.ScanType) == 'PGScan':
+                return {'begin': 1, 'end': 2}
+            else:
+                return {'potential': 1}
+        elif method_id in ('ad', 'ps', 'fam'):
+            return {'potential': 1}
+        elif method_id in ('lsv', 'acv', 'lp', 'swv', 'dpv', 'npv'):
+            return {'begin': 1, 'end': 2}
+
+        raise TypeError(f'{method_id} does not support OCP.')
 
 
 class BiPotCurrentRange(BaseModel):

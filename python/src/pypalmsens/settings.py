@@ -8,7 +8,6 @@ from ._methods.levels import (
 )
 from ._methods.settings import (
     BiPot,
-    BiPotCurrentRange,
     ChargeLimits,
     CurrentLimits,
     CurrentRange,
@@ -29,7 +28,6 @@ from ._methods.settings import (
 
 __all__ = [
     'BiPot',
-    'BiPotCurrentRange',
     'ChargeLimits',
     'CurrentLimits',
     'CurrentRange',

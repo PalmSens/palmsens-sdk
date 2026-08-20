@@ -2,7 +2,7 @@
 
 When performing measurements or interacting with an instrument, you may want to react to specific occurrences in real-time, such as when a new data point is received or when a measurement starts. PyPalmSens provides an event system via [pypalmsens.InstrumentManager][].
 
-Events are registered using `on_<event_name>` methods on the manager (or its async counterpart) and return an [EventHandle][]. To stop listening to an event, call the `.cancel()` method on the returned handle.
+Events are registered using `on_<event_name>` methods on the manager (or its async counterpart) and return an `EventHandle` object. To stop listening to an event, call the `.cancel()` method on the returned handle.
 
 ## Using events
 

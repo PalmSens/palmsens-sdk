@@ -140,7 +140,7 @@ class VersusOCP(BaseSettings):
     - `'potential'`: Potential applied during measurement
     """
 
-    potentials: list[OCPFlag] = Field(default_factory=list)
+    potentials: list[OCPFlag] = Field(default_factory=list, strict=False)
     """Define these potentials vs OCP.
 
     Different methods use different values:

@@ -16,6 +16,7 @@ from ._types import (
     AllowedTimingStatus,
     MethodType,
     MethodTypeCompatible,
+    OCPFlag,
 )
 
 __all__ = [
@@ -32,4 +33,5 @@ __all__ = [
     'AllowedTimingStatus',
     'MethodType',
     'MethodTypeCompatible',
+    'OCPFlag',
 ]

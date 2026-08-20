@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from functools import reduce
+from operator import ior
 from typing import Literal
 
 import PalmSens
@@ -16,6 +18,7 @@ from .._converters import (
 from .._types import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
+    OCPFlag,
 )
 from .base import BaseSettings
 from .base_model import BaseModel
@@ -118,28 +121,49 @@ class Pretreatment(BaseSettings):
 
 
 class VersusOCP(BaseSettings):
-    """Set the versus OCP settings."""
+    """Define which potentials to measure versus Open Circuit Potential (OCP).
 
-    mode: int = 0
-    """Set versus OCP mode.
+    Usually, potentials refer to the Working Electrode (WE) relative
+    to the Reference Electrode (RE).
+    Use this class to define which potentials (`potentials`) are relative
+    to the OCP.
 
-    Possible values:
+    To do so, the technique determines the stable OCP value first.
+    This requires measuring the OCP drift until it settles (`stability_criterion`)
+    or times out (`timeout`) before starting with the measurement.
 
-    - 0 = disable versus OCP
-    - 1 = vertex 1 potential
-    - 2 = vertex 2 potential
-    - 3 = vertex 1 & 2 potential
-    - 4 = begin potential
-    - 5 = begin & vertex 1 potential
-    - 6 = begin & vertex 2 potential
-    - 7 = begin & vertex 1 & 2 potential
+    The following potentials can be defined relative to OCP:
+
+    - `'vertex1'`, `'vertex2'`: Potential at which the scan direction is reversed
+    - `'begin'`: Potential applied at the beginning of a measurement
+    - `'end'`: Potential applied at the end of a measurement
+    - `'potential'`: Potential applied during measurement
     """
 
-    max_ocp_time: float = 20.0
-    """Maximum OCP time in s."""
+    potentials: list[OCPFlag] = Field(default_factory=list, strict=False)
+    """Define these potentials vs OCP.
+
+    Different methods use different values:
+
+    - CV, FCV, CP: `'vertex1'`, `'vertex2'`, `'begin'`
+    - EIS, FIS: `'begin'`, `'end'`
+    - EIS (potential scan): `'potential'`
+    - AD, PS, FAM: `'potential`'
+    - LSV, ACV, LP, SWV, DPV, NPV: `'begin'`, `'end'`
+
+    Leave blank to disable versus OCP measurements.
+    """
+
+    timeout: float = 20.0
+    """Maximum time in s to determine OCP value.
+
+    Set the OCP value when the `timeout` has elapsed.
+    """
 
     stability_criterion: float = 0.0
     """Stability criterion (potential/time) in mV/s.
+
+    Set the OCP value when the drift is lower than the specified value.
 
     If equal to 0 means no stability criterion.
     If larger than 0, then the value is taken as the stability threshold.
@@ -147,15 +171,46 @@ class VersusOCP(BaseSettings):
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        psmethod.OCPmode = self.mode
-        psmethod.OCPMaxOCPTime = self.max_ocp_time
+        ocp_flag_map = self._ocp_flag_map(psmethod)
+
+        if self.potentials:
+            mode = reduce(ior, [ocp_flag_map[key] for key in self.potentials])
+        else:
+            mode = 0
+
+        psmethod.OCPmode = mode
+        psmethod.OCPMaxOCPTime = self.timeout
         psmethod.OCPStabilityCriterion = self.stability_criterion
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):
-        self.mode = psmethod.OCPmode
-        self.max_ocp_time = single_to_double(psmethod.OCPMaxOCPTime)
+        ocp_flag_map = self._ocp_flag_map(psmethod)
+
+        if mode := psmethod.OCPmode:
+            potentials = [key for key, val in ocp_flag_map.items() if (mode & val) == val]
+        else:
+            potentials = []
+
+        self.potentials = potentials  # type: ignore
+        self.timeout = single_to_double(psmethod.OCPMaxOCPTime)
         self.stability_criterion = single_to_double(psmethod.OCPStabilityCriterion)
+
+    def _ocp_flag_map(self, psmethod: PalmSens.Method) -> dict[str, int]:
+        method_id = psmethod.MethodID
+
+        if method_id in ('cv', 'fcv', 'cp'):
+            return {'vertex1': 1, 'vertex2': 2, 'begin': 4}
+        elif method_id in ('eis', 'fis'):
+            if str(psmethod.ScanType) == 'PGScan':
+                return {'begin': 1, 'end': 2}
+            else:
+                return {'potential': 1}
+        elif method_id in ('ad', 'ps', 'fam'):
+            return {'potential': 1}
+        elif method_id in ('lsv', 'acv', 'lp', 'swv', 'dpv', 'npv'):
+            return {'begin': 1, 'end': 2}
+
+        raise TypeError(f'{method_id} does not support OCP.')
 
 
 class BiPotCurrentRange(BaseModel):

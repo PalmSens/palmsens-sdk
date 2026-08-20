@@ -18,6 +18,7 @@ from .._converters import (
 from .._types import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
+    OCPFlag,
 )
 from .base import BaseSettings
 from .base_model import BaseModel
@@ -117,9 +118,6 @@ class Pretreatment(BaseSettings):
         self.deposition_time = single_to_double(psmethod.DepositionTime)
         self.conditioning_potential = single_to_double(psmethod.ConditioningPotential)
         self.conditioning_time = single_to_double(psmethod.ConditioningTime)
-
-
-OCPFlag = Literal['vertex1', 'vertex2', 'begin', 'end', 'potential']
 
 
 class VersusOCP(BaseSettings):

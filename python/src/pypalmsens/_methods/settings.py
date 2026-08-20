@@ -5,7 +5,7 @@ from operator import ior
 from typing import Literal
 
 import PalmSens
-from pydantic import Field
+from pydantic import Field, field_validator
 from typing_extensions import override
 
 from .._converters import (
@@ -47,16 +47,20 @@ class CurrentRange(BaseSettings):
     See `pypalmsens.settings.AllowedCurrentRanges` for options."""
 
     @override
-    def _export(self, psmethod: PalmSens.Method, /):
-        psmethod.Ranging.MaximumCurrentRange = cr_string_to_enum(self.max)
-        psmethod.Ranging.MinimumCurrentRange = cr_string_to_enum(self.min)
-        psmethod.Ranging.StartCurrentRange = cr_string_to_enum(self.start)
+    def _export(self, psmethod: PalmSens.Method, /, bipot: bool = False):
+        obj = psmethod.BipotRanging if bipot else psmethod.Ranging
+
+        obj.MaximumCurrentRange = cr_string_to_enum(self.max)
+        obj.MinimumCurrentRange = cr_string_to_enum(self.min)
+        obj.StartCurrentRange = cr_string_to_enum(self.start)
 
     @override
-    def _import(self, psmethod: PalmSens.Method, /):
-        self.max = cr_enum_to_string(psmethod.Ranging.MaximumCurrentRange)
-        self.min = cr_enum_to_string(psmethod.Ranging.MinimumCurrentRange)
-        self.start = cr_enum_to_string(psmethod.Ranging.StartCurrentRange)
+    def _import(self, psmethod: PalmSens.Method, /, bipot: bool = False):
+        obj = psmethod.BipotRanging if bipot else psmethod.Ranging
+
+        self.max = cr_enum_to_string(obj.MaximumCurrentRange)
+        self.min = cr_enum_to_string(obj.MinimumCurrentRange)
+        self.start = cr_enum_to_string(obj.StartCurrentRange)
 
 
 class PotentialRange(BaseSettings):
@@ -213,25 +217,6 @@ class VersusOCP(BaseSettings):
         raise TypeError(f'{method_id} does not support OCP.')
 
 
-class BiPotCurrentRange(BaseModel):
-    """Set the BiPot auto ranging current."""
-
-    max: AllowedCurrentRanges = '10mA'
-    """Maximum current range.
-
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
-
-    min: AllowedCurrentRanges = '1uA'
-    """Minimum current range.
-
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
-
-    start: AllowedCurrentRanges = '100uA'
-    """Start current range.
-
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
-
-
 class BiPot(BaseSettings):
     """Set the bipot settings."""
 
@@ -245,13 +230,13 @@ class BiPot(BaseSettings):
     potential: float = 0.0
     """Set the bipotential in V."""
 
-    current_range: AllowedCurrentRanges | BiPotCurrentRange = '1uA'
+    current_range: CurrentRange = Field(default_factory=CurrentRange)
     """Set the bipotential current range.
 
     Can be a fixed current range or a ranging current. See the specifications for your instrument.
     Internally, a fixed current range is represented by an autoranging current with equal min/max ranges.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.settings.AllowedCurrentRanges][] for options."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -259,34 +244,21 @@ class BiPot(BaseSettings):
         psmethod.BipotModePS = PalmSens.Method.EnumPalmSensBipotMode(bipot_num)
         psmethod.BiPotPotential = self.potential
 
-        if isinstance(self.current_range, str):
-            crmin = crmax = crstart = self.current_range
-        else:
-            crmax = self.current_range.max
-            crmin = self.current_range.min
-            crstart = self.current_range.start
-
-        psmethod.BipotRanging.MaximumCurrentRange = cr_string_to_enum(crmax)
-        psmethod.BipotRanging.MinimumCurrentRange = cr_string_to_enum(crmin)
-        psmethod.BipotRanging.StartCurrentRange = cr_string_to_enum(crstart)
+        self.current_range._export(psmethod, bipot=True)
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):
         self.mode = self._MODES[int(psmethod.BipotModePS)]
         self.potential = single_to_double(psmethod.BiPotPotential)
 
-        crmax = cr_enum_to_string(psmethod.BipotRanging.MaximumCurrentRange)
-        crmin = cr_enum_to_string(psmethod.BipotRanging.MinimumCurrentRange)
-        crstart = cr_enum_to_string(psmethod.BipotRanging.StartCurrentRange)
+        self.current_range._import(psmethod, bipot=True)
 
-        if crmax == crmin == crstart:
-            self.current_range = crmin
-        else:
-            self.current_range = BiPotCurrentRange(
-                max=crmax,
-                min=crmin,
-                start=crstart,
-            )
+    @field_validator('current_range', mode='before')
+    @classmethod
+    def current_converter(cls, value: AllowedCurrentRanges | CurrentRange) -> CurrentRange:
+        if isinstance(value, str):
+            return CurrentRange(min=value, max=value, start=value)
+        return value
 
 
 class PostMeasurement(BaseSettings):

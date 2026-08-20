@@ -110,17 +110,42 @@ def test_PretreatmentSettings():
     assert new_params == params
 
 
-def test_VersusOcpSettings():
-    obj = Techniques.CyclicVoltammetry()
+@pytest.mark.parametrize(
+    'data',
+    (
+        pytest.param(
+            {
+                'class': Techniques.CyclicVoltammetry,
+                'potentials': ['vertex1', 'vertex2', 'begin'],
+                'mode': 7,
+            },
+            id='cv',
+        ),
+        pytest.param(
+            {'class': Techniques.ImpedimetricMethod, 'potentials': ['potential'], 'mode': 1},
+            id='eis',
+        ),
+        pytest.param(
+            {'class': Techniques.AmperometricDetection, 'potentials': ['potential'], 'mode': 1},
+            id='ad',
+        ),
+        pytest.param(
+            {'class': Techniques.LinearSweep, 'potentials': ['begin', 'end'], 'mode': 3},
+            id='lsv',
+        ),
+    ),
+)
+def test_VersusOcpSettings(data):
+    obj = data['class']()
 
     params = ps.settings.VersusOCP(
-        mode=7,
-        max_ocp_time=200.0,
+        potentials=data['potentials'],
+        timeout=200.0,
         stability_criterion=123,
     )
     params._export(obj)
 
-    assert obj.OCPmode == 7
+    assert obj.OCPmode == data['mode']
     assert obj.OCPMaxOCPTime == 200
     assert obj.OCPStabilityCriterion == 123
 

@@ -138,6 +138,12 @@ AllowedFrequencyTypes = Literal['fixed', 'scan']
 """Possible frequency types."""
 
 
+OCPFlag = Literal['vertex1', 'vertex2', 'begin', 'end', 'potential']
+"""Possible names for potentials defined versus OCP.
+
+See [VersusOCP][pypalmsens.settings.VersusOCP] for details."""
+
+
 class MethodTypeCompatible(Protocol):
     """All methods, including [MethodType][] and those that generate compatible MethodSCRIPT."""
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Literal
 
 import PalmSens
 import System
@@ -56,7 +56,7 @@ class Parameter:
             psparameter.Fixed = self.fixed
 
 
-class Parameters(Sequence[Any]):
+class Parameters(Sequence[Parameter]):
     """Tuple-like container class for parameters.
 
     This class is instantiated from the CDC code and contains
@@ -76,9 +76,9 @@ class Parameters(Sequence[Any]):
 
         model = PalmSens.Fitting.Models.CircuitModel()
         model.SetCircuit(cdc)
-        self._parameters = tuple(
+        self._parameters: list[Parameter] = [
             Parameter._import(psparam) for psparam in model.InitialParameters
-        )
+        ]
 
     @override
     def __len__(self):
@@ -116,7 +116,7 @@ class FitResult:
     """Circuit model CDC values."""
     parameters: list[float]
     """Optimized parameters for CDC."""
-    error: list[float]
+    error: list[float] | None
     """Error (%) on parameters."""
     chisq: float
     """Chi-squared goodness of fit statistic."""

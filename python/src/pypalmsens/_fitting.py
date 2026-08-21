@@ -43,13 +43,16 @@ class Parameter:
 
     def _export(self, psparameter: PalmSens.Fitting.Parameter):
         """Update PalmSens SDK object with values from dataclass."""
-        if self.value:
+        if self.value is not None:
             psparameter.Value = self.value
-        if self.min:
+
+        if self.min is not None:
             psparameter.MinValue = self.min
-        if self.max:
+
+        if self.max is not None:
             psparameter.MaxValue = self.max
-        if self.fixed:
+
+        if self.fixed is not None:
             psparameter.Fixed = self.fixed
 
 

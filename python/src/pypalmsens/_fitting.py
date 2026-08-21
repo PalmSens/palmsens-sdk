@@ -126,15 +126,43 @@ class FitResult:
     """Exit code for the minimization."""
 
     @classmethod
+    def from_psfitresult_nelder_mead(cls, result: PalmSens.Fitting.FitResult, cdc: str):
+        """Construct fitresult from SDK FitResult."""
+        exit_codes = {
+            0: 'None',
+            1: 'RelativeGradient',
+            2: 'LackOfProgress',
+            3: 'AbsoluteGradient',
+            4: 'WeakWolfeCriteria',
+            5: 'BoundTolerance',
+            6: 'StrongWolfeCriteria',
+            7: 'Converged',
+        }
+
+        return cls(
+            cdc=cdc,
+            chisq=result.ChiSq,
+            exit_code=exit_codes.get(int(result.ExitCode), 'Unknown'),
+            n_iter=result.NIterations - 1,
+            parameters=list(result.FinalParameters),
+            error=None,
+        )
+
+    @classmethod
     def from_psfitresult(cls, result: PalmSens.Fitting.FitResult, cdc: str):
         """Construct fitresult from SDK FitResult."""
+        if result.ParameterSDs:
+            error = list(result.ParameterSDs)
+        else:
+            error = None
+
         return cls(
             cdc=cdc,
             chisq=result.ChiSq,
             exit_code=result.ExitCode.ToString(),
             n_iter=result.NIterations - 1,
             parameters=list(result.FinalParameters),
-            error=list(result.ParameterSDs),
+            error=error,
         )
 
     @classmethod
@@ -461,5 +489,11 @@ class CircuitModel:
         fitter = PalmSens.Fitting.FitAlgorithm.FromAlgorithm(opts)
         fitter.ApplyFitCircuit()
         self._last_psfitter = fitter
-        self._last_result = FitResult.from_psfitresult(fitter.FitResult, cdc=self.cdc)
+        if self.algorithm == 'nelder-mead':
+            self._last_result = FitResult.from_psfitresult_nelder_mead(
+                fitter.FitResult, cdc=self.cdc
+            )
+        else:
+            self._last_result = FitResult.from_psfitresult(fitter.FitResult, cdc=self.cdc)
+
         return self._last_result

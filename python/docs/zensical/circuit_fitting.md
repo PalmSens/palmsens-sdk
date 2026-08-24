@@ -103,6 +103,8 @@ generate the plots from the result:
 
 This table shows the default values, the element types used in the system. Note that some element types have multiple values.
 
+For more information on the formulas, please see the chapter "Equivalent Circuit Fitting" in the [PSTrace user manual]().
+
 | Element | Value | Min | Max | Units |
 | :--- | :---: | :---: | :---: | :---: |
 | **Resistance (R)**  | 1 × 10³ | 1 × 10⁻⁶ | 1 × 10¹² | Ω |

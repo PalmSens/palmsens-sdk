@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Literal
 
 import PalmSens
 import System
@@ -43,17 +43,20 @@ class Parameter:
 
     def _export(self, psparameter: PalmSens.Fitting.Parameter):
         """Update PalmSens SDK object with values from dataclass."""
-        if self.value:
+        if self.value is not None:
             psparameter.Value = self.value
-        if self.min:
+
+        if self.min is not None:
             psparameter.MinValue = self.min
-        if self.max:
+
+        if self.max is not None:
             psparameter.MaxValue = self.max
-        if self.fixed:
+
+        if self.fixed is not None:
             psparameter.Fixed = self.fixed
 
 
-class Parameters(Sequence[Any]):
+class Parameters(Sequence[Parameter]):
     """Tuple-like container class for parameters.
 
     This class is instantiated from the CDC code and contains
@@ -73,9 +76,9 @@ class Parameters(Sequence[Any]):
 
         model = PalmSens.Fitting.Models.CircuitModel()
         model.SetCircuit(cdc)
-        self._parameters = tuple(
+        self._parameters: list[Parameter] = [
             Parameter._import(psparam) for psparam in model.InitialParameters
-        )
+        ]
 
     @override
     def __len__(self):
@@ -113,7 +116,7 @@ class FitResult:
     """Circuit model CDC values."""
     parameters: list[float]
     """Optimized parameters for CDC."""
-    error: list[float]
+    error: list[float] | None
     """Error (%) on parameters."""
     chisq: float
     """Chi-squared goodness of fit statistic."""
@@ -123,15 +126,43 @@ class FitResult:
     """Exit code for the minimization."""
 
     @classmethod
+    def from_psfitresult_nelder_mead(cls, result: PalmSens.Fitting.FitResult, cdc: str):
+        """Construct fitresult from SDK FitResult."""
+        exit_codes = {
+            0: 'None',
+            1: 'RelativeGradient',
+            2: 'LackOfProgress',
+            3: 'AbsoluteGradient',
+            4: 'WeakWolfeCriteria',
+            5: 'BoundTolerance',
+            6: 'StrongWolfeCriteria',
+            7: 'Converged',
+        }
+
+        return cls(
+            cdc=cdc,
+            chisq=result.ChiSq,
+            exit_code=exit_codes.get(int(result.ExitCode), 'Unknown'),
+            n_iter=result.NIterations - 1,
+            parameters=list(result.FinalParameters),
+            error=None,
+        )
+
+    @classmethod
     def from_psfitresult(cls, result: PalmSens.Fitting.FitResult, cdc: str):
         """Construct fitresult from SDK FitResult."""
+        if result.ParameterSDs:
+            error = list(result.ParameterSDs)
+        else:
+            error = None
+
         return cls(
             cdc=cdc,
             chisq=result.ChiSq,
             exit_code=result.ExitCode.ToString(),
             n_iter=result.NIterations - 1,
             parameters=list(result.FinalParameters),
-            error=list(result.ParameterSDs),
+            error=error,
         )
 
     @classmethod
@@ -263,7 +294,11 @@ class FitResult:
         _ = calc_ph.plot(ax=ax2, legend=False, color='C1')
         _ = meas_ph.plot(ax=ax2, marker='^', linestyle='None', color='C1', legend=False)
 
-        fig.legend()
+        h1, l1 = ax1.get_legend_handles_labels()
+        h2, l2 = ax2.get_legend_handles_labels()
+
+        _ = ax2.legend(h1 + h2, l1 + l2, loc='upper right')
+
         return fig
 
 
@@ -410,7 +445,7 @@ class CircuitModel:
             self.max_freq = self.max_freq or 0
 
             array = data.dataset.arrays(type='Frequency')[-1]
-            sel = (self.min_freq < val < self.max_freq for val in array)
+            sel = (self.min_freq <= val <= self.max_freq for val in array)
 
             opts.SelectedDataPoints = System.Array[bool](bool(item) for item in sel)
 
@@ -458,5 +493,11 @@ class CircuitModel:
         fitter = PalmSens.Fitting.FitAlgorithm.FromAlgorithm(opts)
         fitter.ApplyFitCircuit()
         self._last_psfitter = fitter
-        self._last_result = FitResult.from_psfitresult(fitter.FitResult, cdc=self.cdc)
+        if self.algorithm == 'nelder-mead':
+            self._last_result = FitResult.from_psfitresult_nelder_mead(
+                fitter.FitResult, cdc=self.cdc
+            )
+        else:
+            self._last_result = FitResult.from_psfitresult(fitter.FitResult, cdc=self.cdc)
+
         return self._last_result

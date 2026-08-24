@@ -107,26 +107,26 @@ For more information on the formulas, please see the chapter "Equivalent Circuit
 
 | Element | Value | Min | Max | Units |
 | :--- | :---: | :---: | :---: | :---: |
-| **Resistance (R)**  | 1 × 10³ | 1 × 10⁻⁶ | 1 × 10¹² | Ω |
-| **Capacitance (C)**  | 10 × 10⁻⁹ | 1 × 10⁻¹² | 1 × 10⁻³ | F |
-| **Inductance (L)**  | 100 × 10⁻⁶ | 1 × 10⁻¹² | 1 × 10⁻³ | H |
-| **Constant Phase Element (Q)** | | | | |
-|  _Y0_                           | 1 × 10⁻³ | 1 × 10⁻¹² | 1 × 10⁻³ | T |
-|  _Constant phase exponent n_    | 1 | 0 | 1 | σ |
-| **Warburg (W)**  | 1 × 10³ | 1 × 10⁻⁶ | 1 × 10¹² | σ |
-| **Warburg Open (T) / Short (O)** | | | | |
+| **Resistance (R)**                | 1 × 10³ | 1 × 10⁻⁶ | 1 × 10¹² | Ω |
+| **Capacitance (C)**               | 10 × 10⁻⁹ | 1 × 10⁻¹² | 1 × 10⁻³ | F |
+| **Inductance (L)**                | 100 × 10⁻⁶ | 1 × 10⁻¹² | 1 × 10⁻³ | H |
+| **Constant Phase Element (Q)**    | | | | |
+|  _Y0_                             | 1 × 10⁻³ | 1 × 10⁻¹² | 1 × 10⁻³ | T |
+|  _Constant phase exponent n_      | 1 | 0 | 1 | σ |
+| **Warburg (W)**                   | 1 × 10³ | 1 × 10⁻⁶ | 1 × 10¹² | σ |
+| **Warburg Open (T) / Short (O)**  | | | | |
 |  _Warburg coefficient_            | 1 × 10³ | 1 × 10⁻⁶ | 1 × 10¹² | σ |
 |  _B_                              | 1 | 1 × 10⁻¹² | 1 × 10⁶ | √s |
 |  _Experimental parameter_         | 0.5 | 0 | 1 | φ |
-| **Gerischer (G)**                | | | | |
+| **Gerischer (G)**                 | | | | |
 |  _Z0_                             | 1 × 10³ | 1 × 10⁻⁶ | 1 × 10¹² | Z₀ |
 |  _k (reaction rate)_              | 1 | 1 × 10⁻¹² | 1 × 10⁶ | s⁻¹ |
 | **Bisquert Open (M) / Short (N)** | | | | |
-|  _Z pore_                                    | 100 | 1 × 10⁻⁶ | 1 × 10¹² | Ω |
-|  _Reaction resistance_                      | 10 × 10³ | 1 × 10⁻⁶ | 1 × 10¹² | Ω |
-|  _Pore diffusion CPE T_                     | 1 × 10⁻³ | 1 × 10⁻¹² | 1 × 10⁻³ | T |
-|  _Pore diffusion CPE n_                     | 1 | 0 | 1 | Φ |
-|  _Pore depth_                               | 1 | 0 | 1 × 10¹² | L |
+|  _Z pore_                         | 100 | 1 × 10⁻⁶ | 1 × 10¹² | Ω |
+|  _Reaction resistance_            | 10 × 10³ | 1 × 10⁻⁶ | 1 × 10¹² | Ω |
+|  _Pore diffusion CPE T_           | 1 × 10⁻³ | 1 × 10⁻¹² | 1 × 10⁻³ | T |
+|  _Pore diffusion CPE n_           | 1 | 0 | 1 | Φ |
+|  _Pore depth_                     | 1 | 0 | 1 × 10¹² | L |
 
 ## Impedance.py
 

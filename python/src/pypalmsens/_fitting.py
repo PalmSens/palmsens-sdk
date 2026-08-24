@@ -294,7 +294,11 @@ class FitResult:
         _ = calc_ph.plot(ax=ax2, legend=False, color='C1')
         _ = meas_ph.plot(ax=ax2, marker='^', linestyle='None', color='C1', legend=False)
 
-        fig.legend()
+        h1, l1 = ax1.get_legend_handles_labels()
+        h2, l2 = ax2.get_legend_handles_labels()
+
+        _ = ax2.legend(h1 + h2, l1 + l2, loc='upper right')
+
         return fig
 
 

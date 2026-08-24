@@ -99,6 +99,10 @@ generate the plots from the result:
 
 ```
 
+![Nyquist plot in PyPalmSens](assets/circuit_fit_nyquist.png){ width="49%" }
+![Bode plot in PyPalmSens](assets/circuit_fit_bode.png){ width="49%" }
+
+
 ## Default values
 
 This table shows the default values, the element types used in the system. Note that some element types have multiple values.

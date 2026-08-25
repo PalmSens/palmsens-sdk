@@ -151,7 +151,7 @@ measurement = ps.load_session_file('examples/Demo CV DPV EIS IS-C electrode.psse
 
 eis = measurement.eis_data[0]
 
-frequencies = np.array(eis.dataset['Frequency'])
+F = np.array(eis.dataset['Frequency'])
 Zre = np.array(eis.dataset['ZRe'])
 Zim = np.array(eis.dataset['ZIm'])
 
@@ -162,7 +162,7 @@ For example, to fit this circuit model:
 
 ![Diagram of circuit model](assets/impedancepy_circuit.png){ width="80%" }
 
-We can use the circuit description: `'R0-p(R1-W1,CPE1)'`. This is different from the CDC codes used by PalmSens. You can read about [the available elements here](https://impedancepy.readthedocs.io/en/latest/circuit-elements.html).
+We can use the circuit description: `'R0-p(R1-Wo1,CPE1)'`. This is different from the CDC codes used by PalmSens. You can read about [the available elements here](https://impedancepy.readthedocs.io/en/latest/circuit-elements.html).
 
 The example below shows how to fit the circuit model to the data:
 
@@ -171,9 +171,9 @@ import matplotlib.pyplot as plt
 from impedance.models.circuits import CustomCircuit
 from impedance.visualization import plot_nyquist
 
-circuit = 'R0-p(R1-W1,CPE1)'
+circuit = 'R0-p(R1-Wo1,CPE1)'
 
-initial_guess = [1000, 1000, 1000, 0, 1]
+initial_guess = [1000, 1000, 1000, 0.5, 1e-6, 1]
 
 circuit = CustomCircuit(circuit, initial_guess=initial_guess)
 
@@ -191,6 +191,6 @@ plt.legend(['Data', 'Fit'])
 plt.show()
 ```
 
-This results in the plot below:
+This results in the nyquist plot below:
 
 ![Nyquist plot in `impedance.py`](assets/impedancepy_example.png){ width="80%" }

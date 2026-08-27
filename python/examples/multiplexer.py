@@ -9,7 +9,7 @@ instrument, *_ = ps.discover()
 print(instrument)
 
 with ps.connect(instrument) as manager:
-    n_multiplexer_channels = manager.initialize_multiplexer(2)
+    n_multiplexer_channels = manager.initialize_multiplexer('mux8r2')
     manager.set_mux8r2_settings()
 
     for channel in range(n_multiplexer_channels):

@@ -23,6 +23,7 @@ from .._converters import (
 )
 from .._types import (
     AllowedCurrentRanges,
+    AllowedMuxModels,
     AllowedPotentialRanges,
     MethodTypeCompatible,
 )
@@ -488,26 +489,31 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
         return response
 
-    async def initialize_multiplexer(self, mux_model: int) -> int:
+    async def initialize_multiplexer(self, model: AllowedMuxModels) -> int:
         """Initialize the multiplexer.
 
         Parameters
         ----------
-        mux_model: int
+        model : Literal['mux8', 'mux16', 'mux8r2']
             The model of the multiplexer.
-            - 0 = 8 channel
-            - 1 = 16 channel
-            - 2 = 32 channel
+
+            - 'mux8': 8 channels
+            - 'mux16': 16 channels
+            - 'mux8r2': 8 to 128 channels
 
         Returns
         -------
         channels : int
             Number of available multiplexes channels
         """
-        async with self._lock():
-            model = PalmSens.MuxModel(mux_model)
+        mux_model = {
+            'mux8': PalmSens.MuxModel.MUX8,
+            'mux16': PalmSens.MuxModel.MUX16,
+            'mux8r2': PalmSens.MuxModel.MUX8R2,
+        }[model]
 
-            if model == PalmSens.MuxModel.MUX8R2 and (
+        async with self._lock():
+            if mux_model == PalmSens.MuxModel.MUX8R2 and (
                 self._comm.ClientConnection.GetType().Equals(
                     clr.GetClrType(PalmSens.Comm.ClientConnectionPS4)
                 )
@@ -517,7 +523,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             ):
                 await create_future(self._comm.ClientConnection.ReadMuxInfoAsync())
 
-            self._comm.Capabilities.MuxModel = model
+            self._comm.Capabilities.MuxModel = mux_model
 
             if self._comm.Capabilities.MuxModel == PalmSens.MuxModel.MUX8:
                 self._comm.Capabilities.NumMuxChannels = 8

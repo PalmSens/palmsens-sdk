@@ -128,7 +128,6 @@ __all__ = [
     'load_stream_file',
     'measure',
     'measure_async',
-    'mixed_mode',
     'save_measurement',
     'save_method_file',
     'save_session_file',

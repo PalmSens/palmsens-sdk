@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import time
-import warnings
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
@@ -34,8 +33,6 @@ from .events_mixin import EventsMixin
 from .instrument import Instrument, discover
 from .measurement_manager_async import MeasurementManagerAsync
 from .shared import firmware_warning
-
-warnings.simplefilter('default')
 
 
 def connect(

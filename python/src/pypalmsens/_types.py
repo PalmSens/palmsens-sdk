@@ -131,6 +131,15 @@ See the device documentation or query the instrument manager
 for supported potential ranges."""
 
 
+AllowedMuxModels = Literal['mux8', 'mux16', 'mux8r2']
+"""Possible multiplexer models.
+
+- 'mux8': 8 channels
+- 'mux16': 16 channels
+- 'mux8r2': 8 to 128 channels
+"""
+
+
 AllowedScanTypes = Literal['potential', 'current', 'time', 'fixed']
 """Possible scan types."""
 

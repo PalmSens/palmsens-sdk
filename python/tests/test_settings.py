@@ -375,10 +375,10 @@ def test_MultiplexerSettings():
     params = ps.settings.Multiplexer(
         mode='consecutive',
         channels=[1, 3, 5],
-        connect_sense_to_working_electrode=True,
-        combine_reference_and_counter_electrodes=True,
-        use_channel_1_reference_and_counter_electrodes=True,
-        set_unselected_channel_working_electrode=1,
+        connect_se_we=True,
+        combine_re_ce=True,
+        common_re_ce=True,
+        unused_we='ground',
     )
     params._export(obj)
 

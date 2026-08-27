@@ -10,7 +10,7 @@ print(instrument)
 
 with ps.connect(instrument) as manager:
     n_multiplexer_channels = manager.initialize_multiplexer('mux8r2')
-    manager.set_mux8r2_settings()
+    manager.configure_mux8r2()
 
     for channel in range(n_multiplexer_channels):
         manager.set_multiplexer_channel(channel)
@@ -23,10 +23,10 @@ with ps.connect(instrument) as manager:
         multiplexer={
             'mode': 'alternate',  # 'none', 'consecutive', 'alternate'
             'channels': [1, 2],  # 8 channels, 1 and 2 are enabled
-            'connect_sense_to_working_electrode': False,
-            'combine_reference_and_counter_electrodes': False,
-            'use_channel_1_reference_and_counter_electrodes': False,
-            'set_unselected_channel_working_electrode': 0,
+            'connect_se_we': False,
+            'combine_re_ce': False,
+            'common_re_ce': False,
+            'unused_we': 'float',
         },
     )
     measurement = manager.measure(altnernating_multiplexer_method, callback=new_data_callback)
@@ -41,10 +41,10 @@ with ps.connect(instrument) as manager:
         multiplexer={
             'mode': 'consecutive',  # 'none', 'consecutive', 'alternate'
             'channels': [1, 2, 7, 8],  # channels 1, 2, 7 and 8 are enabled
-            'connect_sense_to_working_electrode': False,
-            'combine_reference_and_counter_electrodes': False,
-            'use_channel_1_reference_and_counter_electrodes': False,
-            'set_unselected_channel_working_electrode': 0,
+            'connect_se_we': False,
+            'combine_re_ce': False,
+            'common_re_ce': False,
+            'unused_we': 'float',
         },
     )
 

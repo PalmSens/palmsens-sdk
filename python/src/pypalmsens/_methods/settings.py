@@ -608,6 +608,12 @@ class Multiplexer(BaseSettings):
         'alternate',
     )
 
+    _UNUSED_WE_STATES: tuple[Literal['float', 'ground', 'standby'], ...] = (
+        'float',
+        'ground',
+        'standby',
+    )
+
     mode: Literal['none', 'consecutive', 'alternate'] = 'none'
     """Set multiplexer mode.
 
@@ -627,17 +633,23 @@ class Multiplexer(BaseSettings):
     In alternating mode the first channel must be selected and all other
     channels should be consecutive i.e. (channel 1, channel 2, channel 3 and so on).
     """
-    connect_sense_to_working_electrode: bool = False
+    connect_se_we: bool = False
     """Connect the sense electrode to the working electrode. Default is False."""
 
-    combine_reference_and_counter_electrodes: bool = False
+    combine_re_ce: bool = False
     """Combine the reference and counter electrodes. Default is False."""
 
-    use_channel_1_reference_and_counter_electrodes: bool = False
+    common_re_ce: bool = False
     """Use channel 1 reference and counter electrodes for all working electrodes. Default is False."""
 
-    set_unselected_channel_working_electrode: int = 0
-    """Set the unselected channel working electrode to 0 = Disconnected / floating, 1 = Ground, 2 = Standby potential. Default is 0."""
+    unused_we: Literal['float', 'ground', 'standby'] = 'float'
+    """State of the unused channel working electrodes:
+
+    - `float`: Disconnected / floating
+    - `ground`: Ground
+    - `standby`: Standby potential
+
+    Default is `'float'`."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -653,12 +665,15 @@ class Multiplexer(BaseSettings):
         for i in self.channels:
             psmethod.UseMuxChannel[i - 1] = True
 
-        psmethod.MuxSett.ConnSEWE = self.connect_sense_to_working_electrode
-        psmethod.MuxSett.ConnectCERE = self.combine_reference_and_counter_electrodes
-        psmethod.MuxSett.CommonCERE = self.use_channel_1_reference_and_counter_electrodes
-        psmethod.MuxSett.UnselWE = PalmSens.Method.MuxSettings.UnselWESetting(
-            self.set_unselected_channel_working_electrode
-        )
+        psmethod.MuxSett.ConnSEWE = self.connect_se_we
+        psmethod.MuxSett.ConnectCERE = self.combine_re_ce
+        psmethod.MuxSett.CommonCERE = self.common_re_ce
+        unused_we_setting = {
+            'float': PalmSens.Method.MuxSettings.UnselWESetting.FLOAT,
+            'ground': PalmSens.Method.MuxSettings.UnselWESetting.GND,
+            'standby': PalmSens.Method.MuxSettings.UnselWESetting.VSTDBY,
+        }[self.unused_we]
+        psmethod.MuxSett.UnselWE = unused_we_setting
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):
@@ -668,10 +683,10 @@ class Multiplexer(BaseSettings):
             i + 1 for i in range(len(psmethod.UseMuxChannel)) if psmethod.UseMuxChannel[i]
         ]
 
-        self.connect_sense_to_working_electrode = psmethod.MuxSett.ConnSEWE
-        self.combine_reference_and_counter_electrodes = psmethod.MuxSett.ConnectCERE
-        self.use_channel_1_reference_and_counter_electrodes = psmethod.MuxSett.CommonCERE
-        self.set_unselected_channel_working_electrode = int(psmethod.MuxSett.UnselWE)
+        self.connect_se_we = psmethod.MuxSett.ConnSEWE
+        self.combine_re_ce = psmethod.MuxSett.ConnectCERE
+        self.common_re_ce = psmethod.MuxSett.CommonCERE
+        self.unused_we = self._UNUSED_WE_STATES[int(psmethod.MuxSett.UnselWE)]
 
 
 class DataProcessing(BaseSettings):

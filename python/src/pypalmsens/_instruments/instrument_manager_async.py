@@ -7,7 +7,7 @@ import warnings
 from collections.abc import AsyncGenerator, Coroutine
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import clr
 import PalmSens
@@ -23,6 +23,7 @@ from .._converters import (
 )
 from .._types import (
     AllowedCurrentRanges,
+    AllowedMuxModels,
     AllowedPotentialRanges,
     MethodTypeCompatible,
 )
@@ -488,26 +489,31 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
         return response
 
-    async def initialize_multiplexer(self, mux_model: int) -> int:
+    async def initialize_multiplexer(self, model: AllowedMuxModels) -> int:
         """Initialize the multiplexer.
 
         Parameters
         ----------
-        mux_model: int
+        model : Literal['mux8', 'mux16', 'mux8r2']
             The model of the multiplexer.
-            - 0 = 8 channel
-            - 1 = 16 channel
-            - 2 = 32 channel
+
+            - 'mux8': 8 channels
+            - 'mux16': 16 channels
+            - 'mux8r2': 8 to 128 channels
 
         Returns
         -------
         channels : int
             Number of available multiplexes channels
         """
-        async with self._lock():
-            model = PalmSens.MuxModel(mux_model)
+        mux_model = {
+            'mux8': PalmSens.MuxModel.MUX8,
+            'mux16': PalmSens.MuxModel.MUX16,
+            'mux8r2': PalmSens.MuxModel.MUX8R2,
+        }[model]
 
-            if model == PalmSens.MuxModel.MUX8R2 and (
+        async with self._lock():
+            if mux_model == PalmSens.MuxModel.MUX8R2 and (
                 self._comm.ClientConnection.GetType().Equals(
                     clr.GetClrType(PalmSens.Comm.ClientConnectionPS4)
                 )
@@ -517,7 +523,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             ):
                 await create_future(self._comm.ClientConnection.ReadMuxInfoAsync())
 
-            self._comm.Capabilities.MuxModel = model
+            self._comm.Capabilities.MuxModel = mux_model
 
             if self._comm.Capabilities.MuxModel == PalmSens.MuxModel.MUX8:
                 self._comm.Capabilities.NumMuxChannels = 8
@@ -529,25 +535,31 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         channels = self._comm.Capabilities.NumMuxChannels
         return channels
 
-    async def set_mux8r2_settings(
+    async def configure_mux8r2(
         self,
-        connect_sense_to_working_electrode: bool = False,
-        combine_reference_and_counter_electrodes: bool = False,
-        use_channel_1_reference_and_counter_electrodes: bool = False,
-        set_unselected_channel_working_electrode: int = 0,
+        *,
+        connect_se_we: bool = False,
+        combine_re_ce: bool = False,
+        common_re_ce: bool = False,
+        unused_we: Literal['float', 'ground', 'standby'] = 'float',
     ):
-        """Set the settings for the Mux8R2 multiplexer.
+        """Configure the Mux8R2 multiplexer.
+
+        This method sets the Mux8R2 parameters globally, including for techniques.
+        If you specify [pypalmsens.settings.Multiplexer][] in your technique,
+        those settings will override the values set here.
 
         Parameters
         ---------
-        connect_sense_to_working_electrode: float
+        connect_se_we : bool, optional
             Connect the sense electrode to the working electrode. Default is False.
-        combine_reference_and_counter_electrodes: float
+        combine_re_ce : bool, optional
             Combine the reference and counter electrodes. Default is False.
-        use_channel_1_reference_and_counter_electrodes: float
+        common_re_ce : bool, optional
             Use channel 1 reference and counter electrodes for all working electrodes. Default is False.
-        set_unselected_channel_working_electrode: float
-            Set the unselected channel working electrode to disconnected/floating (0), ground (1), or standby potential (2). Default is 0.
+        unused_we : Literal['float', 'ground', 'standby'], optional
+            State of the unused channel working electrodes: floating,
+            ground, or standby potential. Default is 'float'.
         """
         self.ensure_connection()
 
@@ -557,12 +569,15 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             )
 
         mux_settings = PalmSens.Method.MuxSettings(False)
-        mux_settings.ConnSEWE = connect_sense_to_working_electrode
-        mux_settings.ConnectCERE = combine_reference_and_counter_electrodes
-        mux_settings.CommonCERE = use_channel_1_reference_and_counter_electrodes
-        mux_settings.UnselWE = PalmSens.Method.MuxSettings.UnselWESetting(
-            set_unselected_channel_working_electrode
-        )
+        mux_settings.ConnSEWE = connect_se_we
+        mux_settings.ConnectCERE = combine_re_ce
+        mux_settings.CommonCERE = common_re_ce
+        unused_we_setting = {
+            'float': PalmSens.Method.MuxSettings.UnselWESetting.FLOAT,
+            'ground': PalmSens.Method.MuxSettings.UnselWESetting.GND,
+            'standby': PalmSens.Method.MuxSettings.UnselWESetting.VSTDBY,
+        }[unused_we]
+        mux_settings.UnselWE = unused_we_setting
 
         async with self._lock():
             await create_future(

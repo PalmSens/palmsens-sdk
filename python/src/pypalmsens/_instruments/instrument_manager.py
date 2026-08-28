@@ -538,6 +538,55 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         with self._lock():
             self._comm.ClientConnection.SetMuxChannel(channel)
 
+    def gpio_read_pin(self, pin: int) -> float:
+        # NonMS : Commands.ReadDigitalLine
+        # MS : CommandsMS.ReadDigitalLine
+
+        if pin < 0:
+            raise ValueError('Pin cannot be negative.')
+
+        mask = 1 << pin
+
+        is_methodscript = isinstance(
+            self._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS
+        )
+
+        if is_methodscript:
+            supported_mask = (
+                self._comm.ClientConnection.Capabilities.SupportedDigitalInputLineMask
+            )
+
+            if not (mask & supported_mask):
+                raise ValueError('Requested pin is not supported by device.')
+        else:
+            if mask > 2:
+                raise ValueError('Requested pin is not supported by device.')
+
+        return self._comm.DigitalLine(mask)
+
+    def gpio_write_pin(self, pin: int, level=Literal['low', 'high']):
+        if pin < 0:
+            raise ValueError('Pin cannot be negative.')
+
+        mask = 1 << pin
+
+        is_methodscript = isinstance(
+            self._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS
+        )
+
+        if is_methodscript:
+            supported_mask = (
+                self._comm.ClientConnection.Capabilities.SupportedDigitalOutputLineMask
+            )
+
+            if not (mask & supported_mask):
+                raise ValueError('Requested pin is not supported by device.')
+        else:
+            if mask > 8:
+                raise ValueError('Requested pin is not supported by device.')
+
+        self._comm.ClientConnection.SetDigitalOutput(mask)
+
     def disconnect(self):
         """Disconnect from the instrument."""
         if not self.is_connected():

@@ -538,10 +538,21 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         with self._lock():
             self._comm.ClientConnection.SetMuxChannel(channel)
 
-    def gpio_read_pin(self, pin: int) -> float:
-        # NonMS : Commands.ReadDigitalLine
-        # MS : CommandsMS.ReadDigitalLine
+    def gpio_read_pin(self, pin: int) -> Literal['low', 'high']:
+        """Reads the state of a GPIO pin.
 
+        Check your device documentation for the available input pins.
+
+        Parameters
+        ----------
+        pin: integer
+            The integer index of the GPIO pin to read.
+
+        Raises
+        ------
+        ValueError:
+            If the requested output pin is not supported by the device.
+        """
         if pin < 0:
             raise ValueError('Pin cannot be negative.')
 
@@ -557,35 +568,70 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
             )
 
             if not (mask & supported_mask):
-                raise ValueError('Requested pin is not supported by device.')
+                raise ValueError('Requested input pin is not supported by device.')
         else:
-            if mask > 2:
-                raise ValueError('Requested pin is not supported by device.')
+            if pin > 1:
+                raise ValueError('Requested input pin is not supported by device.')
 
-        return self._comm.DigitalLine(mask)
+        with self._lock():
+            level = self._comm.ClientConnection.ReadDigitalLine(mask)
 
-    def gpio_write_pin(self, pin: int, level=Literal['low', 'high']):
+        return ('low', 'high')[level]
+
+    def gpio_write_pin(self, pin: int, level: Literal['low', 'high', 'toggle'] = 'high'):
+        """Writes a specified state to a GPIO pin.
+
+        Check your device documentation for available output pins.
+
+        Parameters
+        ----------
+        pin: integer
+            The integer index of the GPIO pin to control.
+        level: Literal['low', 'high', 'toggle']
+            The desired output level. Must be one of 'low', 'high', or 'toggle'.
+            Defaults to 'high'.
+
+        Raises
+        ------
+        ValueError:
+            If the requested output pin is not supported by the device,
+            or if an invalid value is provided for `level`.
+        """
         if pin < 0:
             raise ValueError('Pin cannot be negative.')
 
-        mask = 1 << pin
+        bit = 1 << pin
 
         is_methodscript = isinstance(
             self._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS
         )
 
-        if is_methodscript:
-            supported_mask = (
-                self._comm.ClientConnection.Capabilities.SupportedDigitalOutputLineMask
-            )
+        with self._lock():
+            if is_methodscript:
+                supported_mask = (
+                    self._comm.ClientConnection.Capabilities.SupportedDigitalOutputLineMask
+                )
 
-            if not (mask & supported_mask):
-                raise ValueError('Requested pin is not supported by device.')
-        else:
-            if mask > 8:
-                raise ValueError('Requested pin is not supported by device.')
+                if not (bit & supported_mask):
+                    raise ValueError('Requested output pin is not supported by device.')
 
-        self._comm.ClientConnection.SetDigitalOutput(mask)
+                current = self._comm.ClientConnection.ReadDigitalLine(supported_mask)
+            else:
+                if pin > 4:
+                    raise ValueError('Requested output pin is not supported by device.')
+
+                current = self._comm.DigitalOutput
+
+            if level == 'high':
+                mask = current | bit  # high
+            elif level == 'low':
+                mask = current & ~bit  # low
+            elif level == 'toggle':
+                mask = current ^ bit  # toggle
+            else:
+                raise ValueError("`level` must be one of 'low', 'high', 'toggle'")
+
+            self._comm.ClientConnection.SetDigitalOutput(mask)
 
     def disconnect(self):
         """Disconnect from the instrument."""

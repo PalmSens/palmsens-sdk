@@ -65,6 +65,11 @@ def test_save_load_measurement_fail(tmpdir, measurement_dpv, measurement_cv):
         ps.save_measurement(path, [measurement_dpv, measurement_cv])
 
 
+def test_save_session_file_empty():
+    with pytest.raises(ValueError):
+        ps.save_session_file('test.pssession', [])
+
+
 def test_save_load_method(tmpdir):
     path = tmpdir / 'test.psmethod'
     cv = ps.CyclicVoltammetry()

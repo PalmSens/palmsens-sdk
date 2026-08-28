@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import FrozenInstanceError
+from datetime import datetime
 
 import pytest
 
@@ -14,7 +15,8 @@ def measurement(measurement_dpv):
 
 def test_measurement_properties(measurement):
     assert measurement.title == 'Square Wave Voltammetry'
-    assert isinstance(measurement.timestamp, str)
+    assert isinstance(measurement.timestamp, datetime)
+    assert measurement.metadata().timestamp == measurement.timestamp
 
     peaks = measurement.peaks
     assert len(peaks) == 0

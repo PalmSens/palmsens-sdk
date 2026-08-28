@@ -22,9 +22,6 @@ else:
     from PalmSens.Core.Linux.Comm import Devices as PSDevices
 
 
-warnings.simplefilter('default')
-
-
 @dataclass
 class Instrument:
     """Dataclass holding instrument info."""

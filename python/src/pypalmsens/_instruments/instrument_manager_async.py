@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import sys
 import time
-import warnings
 from collections.abc import AsyncGenerator, Coroutine
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -38,9 +37,6 @@ from .shared import create_future, firmware_warning
 
 WINDOWS = sys.platform == 'win32'
 LINUX = not WINDOWS
-
-
-warnings.simplefilter('default')
 
 
 async def connect_async(

@@ -86,8 +86,8 @@ def save_session_file(path: str | Path, measurements: Sequence[Measurement]):
     """
     path = Path(path)
 
-    if any((measurement is None) for measurement in measurements):
-        raise ValueError('cannot save null measurement')
+    if not measurements or any((measurement is None) for measurement in measurements):
+        raise ValueError('`measurements` must be a non-empty sequence of Measurement objects')
 
     session = PalmSens.Data.SessionManager()
     session.MethodForEditor = measurements[0]._psmeasurement.Method
@@ -119,7 +119,8 @@ def load_measurement(
     """
     measurements = load_session_file(path)
 
-    if n := len(measurements) > 1:
+    n = len(measurements)
+    if n > 1:
         raise ValueError(
             f'File contains {n} measurements. Use `load_session_file()` to access all of them.'
         )
@@ -180,7 +181,7 @@ def load_method_file(path: str | Path) -> MethodType:
 
 
 def save_method_file(path: str | Path, method: MethodType):
-    """Load a method file (.psmethod).
+    """Save a method file (.psmethod).
 
     Parameters
     ----------

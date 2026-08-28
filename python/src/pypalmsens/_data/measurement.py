@@ -89,10 +89,16 @@ class Measurement:
         return self._psmeasurement.Title
 
     @property
-    def timestamp(self) -> str:
-        """Date and time of the start of this measurement in ISO 8601 format."""
+    def timestamp(self) -> datetime:
+        """Date and time of the start of this measurement.
+
+        Returns a timezone-naive `datetime` in local time, matching the format
+        used by the SDK (e.g. ``2017-07-12 14:28:58``).
+        """
         timestamp = self._psmeasurement.TimeStamp
-        return timestamp.ToString('s', System.Globalization.CultureInfo.InvariantCulture)
+        return datetime.fromisoformat(
+            timestamp.ToString('s', System.Globalization.CultureInfo.InvariantCulture)
+        )
 
     @property
     def device(self) -> DeviceInfo:
@@ -103,7 +109,7 @@ class Measurement:
         """Return measurement metadata as dataclass"""
         return MeasurementMetadata(
             device=self.device,
-            timestamp=datetime.fromisoformat(self.timestamp),
+            timestamp=self.timestamp,
             title=self.title,
             method=self.method,  # type:ignore
         )

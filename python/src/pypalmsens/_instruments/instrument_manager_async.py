@@ -32,6 +32,7 @@ from .callback import Callback, CallbackEIS, CallbackStatus, Status
 from .capabilities_mixin import CapabilitiesMixin
 from .comm_protocol_async import CommProtocolAsync
 from .events_mixin import EventsMixin
+from .gpio_async import GPIOAsync
 from .instrument import Instrument, discover_async
 from .measurement_manager_async import MeasurementManagerAsync
 from .shared import create_future, firmware_warning
@@ -131,6 +132,8 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         self._comm: CommManager
         self._status_callback: CallbackStatus
         self._loop: asyncio.AbstractEventLoop
+
+        self.gpio: GPIOAsync = GPIOAsync(self)
 
     @override
     def __repr__(self):

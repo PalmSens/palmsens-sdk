@@ -162,5 +162,10 @@ class GPIO:
         """Convert a bitmask (integer) into a list pin indices."""
         return [i for i in range(8) if (mask & (1 << i))]
 
-    def supported_pins(self):
-        pass
+    def supported_write_pins(self) -> list[int]:
+        mask = self.manager._comm.ClientConnection.Capabilities.SupportedDigitalOutputLineMask
+        return self._bitmask_to_pins(mask)
+
+    def supported_read_pins(self) -> list[int]:
+        mask = self.manager._comm.ClientConnection.Capabilities.SupportedDigitalInputLineMask
+        return self._bitmask_to_pins(mask)

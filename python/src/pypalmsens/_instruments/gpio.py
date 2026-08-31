@@ -41,10 +41,15 @@ class GPIO:
         ValueError:
             If the requested output pin is not supported by the device.
         """
-        if pin < 0:
+        [out] = self.read_pins([pin])
+        return out
+
+    def read_pins(self, pins: Sequence[int]) -> list[Literal['low', 'high']]:
+        """Read pins configured as input."""
+        if min(pins) < 0:
             raise ValueError('Pin cannot be negative.')
 
-        mask = 1 << pin
+        mask = self._pins_to_bitmask(pins)
 
         is_methodscript = isinstance(
             self.manager._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS
@@ -58,19 +63,21 @@ class GPIO:
             if not (mask & supported_mask):
                 raise ValueError('Requested input pin is not supported by device.')
         else:
-            if pin > 1:
+            if max(pins):
                 raise ValueError('Requested input pin is not supported by device.')
 
         with self.manager._lock():
-            level = self.manager._comm.ClientConnection.ReadDigitalLine(mask)
+            # TODO: fix bug, this returns either returns all True or all False
+            level_mask = self.manager._comm.ClientConnection.ReadDigitalLine(mask)
 
-        return ('low', 'high')[level]
+        levels = []
+        for pin in pins:
+            pin_mask = 1 << pin
+            levels.append(pin_mask & level_mask == pin_mask)
 
-    def read_pins(self, pins: Sequence[int]) -> list[Literal['low', 'high']]:
-        """Read pins configured as input."""
-        mask = self._pins_to_bitmask(pins)
+        print(f'{level_mask=}, {mask=}, {levels=}')
 
-        return []
+        return levels
 
     def _write_pins(self, pins: Sequence[int], func: Callable[[int, int], int]):
         if min(pins) < 0:
@@ -154,3 +161,6 @@ class GPIO:
     def _bitmask_to_pins(mask: int) -> list[int]:
         """Convert a bitmask (integer) into a list pin indices."""
         return [i for i in range(8) if (mask & (1 << i))]
+
+    def supported_pins(self):
+        pass

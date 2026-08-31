@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import TYPE_CHECKING, Literal, final
+from typing import TYPE_CHECKING, Literal, Protocol
 
 import PalmSens
 
@@ -29,6 +29,10 @@ def bitmask_to_pins(mask: int) -> list[int]:
     return [i for i in range(8) if (mask & (1 << i))]
 
 
+class HasCommProtocol(Protocol):
+    _comm: PalmSens.CommManager
+
+
 class GPIOBase:
     @property
     def _is_methodscript(self) -> bool:
@@ -44,8 +48,8 @@ class GPIOBase:
         -------
         list[int]
             Sorted list of pin numbers that can be used with
-            `write_pin`, `write_pins`, `toggle_pin`,
-            and `toggle_pins`.
+            `write`, `write_many`, `toggle`,
+            and `toggle_many`.
         """
         if not self._is_methodscript:
             raise GPIOError('Only supported on MethodSCRIPT devices.')
@@ -60,7 +64,7 @@ class GPIOBase:
         -------
         list[int]
             Sorted list of pin numbers that can be used with
-            `read_pin` and `read_pins`.
+            `read` and `read_many`.
         """
         if not self._is_methodscript:
             raise GPIOError('Only supported on MethodSCRIPT devices.')
@@ -89,7 +93,6 @@ class GPIOBase:
         )
 
 
-@final
 class GPIO(GPIOBase):
     """Digital general-purpose input/output (GPIO) interface.
 
@@ -112,7 +115,7 @@ class GPIO(GPIOBase):
     def __init__(self, manager: InstrumentManager):
         self._manager = manager
 
-    def read_pin(self, pin: int) -> Literal['low', 'high']:
+    def read(self, pin: int) -> Literal['low', 'high']:
         """Read the logic level of a single digital input pin.
 
         The pin configuration is automatically switched to input if needed.
@@ -134,10 +137,10 @@ class GPIO(GPIOBase):
         PinNotSupportedError:
             If ``pin`` is not a supported input pin.
         """
-        [level] = self.read_pins([pin])
+        [level] = self.read_many([pin])
         return level
 
-    def read_pins(self, pins: Sequence[int]) -> list[Literal['low', 'high']]:
+    def read_many(self, pins: Sequence[int]) -> list[Literal['low', 'high']]:
         """Read the logic levels of multiple digital input pins.
 
         Parameters
@@ -162,7 +165,6 @@ class GPIO(GPIOBase):
         mask = pins_to_bitmask(pins)
 
         with self._manager._lock():
-            # TODO: fix bug, this returns either returns all True or all False
             level_mask = self._manager._comm.ClientConnection.ReadDigitalLine(mask)
 
         levels = []
@@ -170,23 +172,21 @@ class GPIO(GPIOBase):
             pin_mask = 1 << pin
             levels.append(pin_mask & level_mask == pin_mask)
 
-        print(f'{level_mask=}, {mask=}, {levels=}')
+        return [('low', 'high')[level] for level in levels]
 
-        return levels
-
-    def _write_pins(self, pins: Sequence[int], func: Callable[[int, int], int]):
+    def _write_many(self, pins: Sequence[int], func: Callable[[int, int], int]):
         self._raise_if_pins_not_supported(pins, 'write')
 
         mask = pins_to_bitmask(pins)
 
         current = self._manager._comm.DigitalOutput
 
-        mask = func(mask, current)
+        level_mask = func(current, mask)
 
         with self._manager._lock():
-            self._manager._comm.ClientConnection.SetDigitalOutput(mask)
+            self._manager._comm.ClientConnection.SetDigitalOutput(level_mask)
 
-    def write_pins(self, pins: Sequence[int], level: Literal['low', 'high'] = 'high'):
+    def write_many(self, pins: Sequence[int], level: Literal['low', 'high'] = 'high'):
         """Set the logic level of multiple digital output pins.
 
         Parameters
@@ -206,16 +206,18 @@ class GPIO(GPIOBase):
 
             def func(current: int, mask: int) -> int:
                 return current | mask  # high
+
         elif level == 'low':
 
             def func(current: int, mask: int) -> int:
                 return current & ~mask  # low
+
         else:
             raise ValueError("`level` must be one of 'low' or 'high'")
 
-        return self._write_pins(pins, func)
+        return self._write_many(pins, func)
 
-    def write_pin(self, pin: int, level: Literal['low', 'high'] = 'high'):
+    def write(self, pin: int, level: Literal['low', 'high'] = 'high'):
         """Set the logic level of a single digital output pin.
 
         Parameters
@@ -230,9 +232,9 @@ class GPIO(GPIOBase):
         PinNotSupportedError:
             If ``pin`` is not a supported input pin.
         """
-        self.write_pins([pin], level=level)
+        self.write_many([pin], level=level)
 
-    def toggle_pin(self, pin: int):
+    def toggle(self, pin: int):
         """Invert the logic level of a single digital output pin.
 
         A ``high`` state becomes ``low`` and vice-versa.
@@ -251,9 +253,9 @@ class GPIO(GPIOBase):
         PinNotSupportedError
             If ``pin`` is not a supported output pin.
         """
-        return self.toggle_pins([pin])
+        return self.toggle_many([pin])
 
-    def toggle_pins(self, pins: Sequence[int]):
+    def toggle_many(self, pins: Sequence[int]):
         """Invert the logic level of multiple digital output pins.
 
         Each pin is toggled independently: ``high`` becomes ``low``
@@ -273,4 +275,4 @@ class GPIO(GPIOBase):
         def func(current: int, mask: int) -> int:
             return current ^ mask  # toggle
 
-        return self._write_pins(pins, func)
+        return self._write_many(pins, func)

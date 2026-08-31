@@ -33,7 +33,7 @@ class GPIOAsync(GPIOBase):
     def __init__(self, manager: InstrumentManagerAsync):
         self._manager = manager
 
-    async def read_pin(self, pin: int) -> Literal['low', 'high']:
+    async def read(self, pin: int) -> Literal['low', 'high']:
         """Read the logic level of a single digital input pin.
 
         The pin configuration is automatically switched to input if needed.
@@ -55,10 +55,10 @@ class GPIOAsync(GPIOBase):
         PinNotSupportedError:
             If ``pin`` is not a supported input pin.
         """
-        [level] = await self.read_pins([pin])
+        [level] = await self.read_many([pin])
         return level
 
-    async def read_pins(self, pins: Sequence[int]) -> list[Literal['low', 'high']]:
+    async def read_many(self, pins: Sequence[int]) -> list[Literal['low', 'high']]:
         """Read the logic levels of multiple digital input pins.
 
         Parameters
@@ -83,8 +83,7 @@ class GPIOAsync(GPIOBase):
         mask = pins_to_bitmask(pins)
 
         async with self._manager._lock():
-            # TODO: fix bug, this returns either returns all True or all False
-            level_mask = await create_future(
+            level_mask: int = await create_future(
                 self._manager._comm.ClientConnection.ReadDigitalLineAsync(mask)
             )
 
@@ -93,11 +92,9 @@ class GPIOAsync(GPIOBase):
             pin_mask = 1 << pin
             levels.append(pin_mask & level_mask == pin_mask)
 
-        print(f'{level_mask=}, {mask=}, {levels=}')
+        return [('low', 'high')[level] for level in levels]
 
-        return levels
-
-    async def _write_pins(self, pins: Sequence[int], func: Callable[[int, int], int]):
+    async def _write_many(self, pins: Sequence[int], func: Callable[[int, int], int]):
         self._raise_if_pins_not_supported(pins, 'write')
 
         mask = pins_to_bitmask(pins)
@@ -111,7 +108,7 @@ class GPIOAsync(GPIOBase):
                 self._manager._comm.ClientConnection.SetDigitalOutputAsync(mask)
             )
 
-    async def write_pins(self, pins: Sequence[int], level: Literal['low', 'high'] = 'high'):
+    async def write_many(self, pins: Sequence[int], level: Literal['low', 'high'] = 'high'):
         """Set the logic level of multiple digital output pins.
 
         Parameters
@@ -138,9 +135,9 @@ class GPIOAsync(GPIOBase):
         else:
             raise ValueError("`level` must be one of 'low' or 'high'")
 
-        return await self._write_pins(pins, func)
+        return await self._write_many(pins, func)
 
-    async def write_pin(self, pin: int, level: Literal['low', 'high'] = 'high'):
+    async def write(self, pin: int, level: Literal['low', 'high'] = 'high'):
         """Set the logic level of a single digital output pin.
 
         Parameters
@@ -155,9 +152,9 @@ class GPIOAsync(GPIOBase):
         PinNotSupportedError:
             If ``pin`` is not a supported input pin.
         """
-        _ = await self.write_pins([pin], level=level)
+        _ = await self.write_many([pin], level=level)
 
-    async def toggle_pin(self, pin: int):
+    async def toggle(self, pin: int):
         """Invert the logic level of a single digital output pin.
 
         A ``high`` state becomes ``low`` and vice-versa.
@@ -176,9 +173,9 @@ class GPIOAsync(GPIOBase):
         PinNotSupportedError
             If ``pin`` is not a supported output pin.
         """
-        return await self.toggle_pins([pin])
+        return await self.toggle_many([pin])
 
-    async def toggle_pins(self, pins: Sequence[int]):
+    async def toggle_many(self, pins: Sequence[int]):
         """Invert the logic level of multiple digital output pins.
 
         Each pin is toggled independently: ``high`` becomes ``low``
@@ -198,4 +195,4 @@ class GPIOAsync(GPIOBase):
         def func(current: int, mask: int) -> int:
             return current ^ mask  # toggle
 
-        return await self._write_pins(pins, func)
+        return await self._write_many(pins, func)

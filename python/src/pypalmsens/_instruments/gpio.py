@@ -24,6 +24,10 @@ class GPIO:
     def __init__(self, manager: InstrumentManager):
         self.manager = manager
 
+    @property
+    def _is_methodscript(self):
+        return (self.manager._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS)
+
     def read_pin(self, pin: int) -> Literal['low', 'high']:
         """Reads the state of a GPIO pin.
 
@@ -46,25 +50,9 @@ class GPIO:
 
     def read_pins(self, pins: Sequence[int]) -> list[Literal['low', 'high']]:
         """Read pins configured as input."""
-        if min(pins) < 0:
-            raise ValueError('Pin cannot be negative.')
+        self._raise_if_pins_not_supported(pins, 'read')
 
         mask = self._pins_to_bitmask(pins)
-
-        is_methodscript = isinstance(
-            self.manager._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS
-        )
-
-        if is_methodscript:
-            supported_mask = (
-                self.manager._comm.ClientConnection.Capabilities.SupportedDigitalInputLineMask
-            )
-
-            if not (mask & supported_mask):
-                raise ValueError('Requested input pin is not supported by device.')
-        else:
-            if max(pins):
-                raise ValueError('Requested input pin is not supported by device.')
 
         with self.manager._lock():
             # TODO: fix bug, this returns either returns all True or all False
@@ -80,31 +68,15 @@ class GPIO:
         return levels
 
     def _write_pins(self, pins: Sequence[int], func: Callable[[int, int], int]):
-        if min(pins) < 0:
-            raise ValueError('Pin cannot be negative.')
+        self._raise_if_pins_not_supported(pins, 'write')
 
         mask = self._pins_to_bitmask(pins)
 
-        is_methodscript = isinstance(
-            self.manager._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS
-        )
+        current = self.manager._comm.DigitalOutput
+
+        mask = func(mask, current)
 
         with self.manager._lock():
-            if is_methodscript:
-                supported_mask = self.manager._comm.ClientConnection.Capabilities.SupportedDigitalOutputLineMask
-
-                if not (mask & supported_mask):
-                    raise ValueError('Requested output pin is not supported by device.')
-
-                current = self.manager._comm.ClientConnection.ReadDigitalLine(supported_mask)
-            else:
-                if max(pins) > 3:
-                    raise ValueError('Requested output pin is not supported by device.')
-
-                current = self.manager._comm.DigitalOutput
-
-            mask = func(mask, current)
-
             self.manager._comm.ClientConnection.SetDigitalOutput(mask)
 
     def write_pins(self, pins: Sequence[int], level: Literal['low', 'high'] = 'high'):
@@ -169,3 +141,24 @@ class GPIO:
     def supported_read_pins(self) -> list[int]:
         mask = self.manager._comm.ClientConnection.Capabilities.SupportedDigitalInputLineMask
         return self._bitmask_to_pins(mask)
+
+    def _raise_if_pins_not_supported(self, pins: Sequence[int], mode: Literal['read', 'write']):
+        if min(pins) < 0:
+            raise ValueError('Pin cannot be negative.')
+
+        if self._is_methodscript:
+            pin_mask = self._pins_to_bitmask(pins)
+            supported_mask = {
+                'write': self.manager._comm.ClientConnection.Capabilities.SupportedDigitalOutputLineMask,
+                'read': self.manager._comm.ClientConnection.Capabilities.SupportedDigitalInputLineMask,
+            }[mode]
+
+            if pin_mask & supported_mask:
+                return
+        else:
+            if max(pins) < 4:
+                return
+
+        raise ValueError(
+            f'Requested {mode} pin is not supported by {self.manager.instrument.name}.'
+        )

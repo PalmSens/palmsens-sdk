@@ -25,8 +25,8 @@ class GPIO:
         self.manager = manager
 
     @property
-    def _is_methodscript(self):
-        return (self.manager._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS)
+    def _is_methodscript(self) -> bool:
+        return isinstance(self.manager._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS)
 
     def read_pin(self, pin: int) -> Literal['low', 'high']:
         """Reads the state of a GPIO pin.

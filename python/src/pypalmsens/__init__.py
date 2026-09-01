@@ -30,8 +30,8 @@ from ._instruments.comm_protocol import CommProtocol
 from ._instruments.comm_protocol_async import CommProtocolAsync
 from ._instruments.filesystem import DeviceFileSystem, DevicePath
 from ._instruments.filesystem_async import DeviceFileSystemAsync
-from ._instruments.gpio import Gpio
-from ._instruments.gpio_async import GpioAsync
+from ._instruments.gpio import GPIO
+from ._instruments.gpio_async import GPIOAsync
 from ._instruments.instrument import Instrument, discover, discover_async
 from ._instruments.instrument_manager import (
     InstrumentManager,
@@ -82,6 +82,7 @@ from ._methods.techniques import (
 from ._stream import load_stream_file
 
 __all__ = [
+    'GPIO',
     'ACVoltammetry',
     'ChronoAmperometry',
     'ChronoCoulometry',
@@ -98,9 +99,8 @@ __all__ = [
     'FastCyclicVoltammetry',
     'FastGalvanostaticImpedanceSpectroscopy',
     'FastImpedanceSpectroscopy',
+    'GPIOAsync',
     'GalvanostaticImpedanceSpectroscopy',
-    'Gpio',
-    'GpioAsync',
     'Instrument',
     'InstrumentManager',
     'InstrumentManagerAsync',

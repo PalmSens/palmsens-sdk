@@ -30,7 +30,7 @@ from .callback import Callback, CallbackEIS, Status
 from .capabilities_mixin import CapabilitiesMixin
 from .comm_protocol import CommProtocol
 from .events_mixin import EventsMixin
-from .gpio import Gpio
+from .gpio import GPIO
 from .instrument import Instrument, discover
 from .measurement_manager_async import MeasurementManagerAsync
 from .shared import firmware_warning
@@ -127,7 +127,7 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         self.instrument: Instrument = instrument
         """Instrument being managed by this class."""
 
-        self.gpio: Gpio = Gpio(self)
+        self.gpio: GPIO = GPIO(self)
         """High-level GPIO interface."""
 
         self._comm: CommManager

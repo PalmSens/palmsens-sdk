@@ -1,16 +1,16 @@
 # Digital I/O (GPIO)
 
-The [pypalmsens.Gpio] and [pypalmsens.GpioAsync] classes provide access to the instrument’s digital input and output pins. Use it to read logic levels, drive outputs, or toggle control lines. The gpio api is exposed via the [InstrumentManager.gpio][pypalmsens.InstrumentManager.gpio] and [InstrumentManagerAsync.gpio][pypalmsens.InstrumentManagerAsync.gpio] attributes.
+The [pypalmsens.GPIO][] and [pypalmsens.GPIOAsync][] classes provide access to the instrument’s digital input and output pins. Use it to read logic levels, drive outputs, or toggle control lines. The gpio api is exposed via the [InstrumentManager.gpio][pypalmsens.InstrumentManager.gpio] and [InstrumentManagerAsync.gpio][pypalmsens.InstrumentManagerAsync.gpio] attributes.
 
-- **Direction auto-configuration:** For MethodSCRIPT devices, the library automatically configures pin direction when you call [read][pypalmsens.Gpio.read] (input) or [write][pypalmsens.Gpio.write] / [toggle][pypalmsens.Gpio.toggle] (output) operations. If you need explicit low-level control, use [MethodSCRIPT](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html), either directly or via [pypalmsens.CommProtocol][].
+- **Direction auto-configuration:** For MethodSCRIPT devices, the library automatically configures pin direction when you call [read][pypalmsens.GPIO.read] (input) or [write][pypalmsens.GPIO.write] / [toggle][pypalmsens.GPIO.toggle] (output) operations. If you need explicit low-level control, use [MethodSCRIPT](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html), either directly or via [pypalmsens.CommProtocol][].
 
-- **Atomicity:** [write_many][pypalmsens.Gpio.write_many] and [toggle_many][pypalmsens.Gpio.toggle_many] are sent as a single instruction. How the chip process the instruction may differ from device to device. If your use case requires strict timing (e.g., simultaneous pin changes), prefer the batch methods over multiple single-pin calls.
+- **Atomicity:** [write_many][pypalmsens.GPIO.write_many] and [toggle_many][pypalmsens.GPIO.toggle_many] are sent as a single instruction. How the chip process the instruction may differ from device to device. If your use case requires strict timing (e.g., simultaneous pin changes), prefer the batch methods over multiple single-pin calls.
 
 ## Pin numbering
 
 The integers you pass to read / write are the internal pin numbers exposed by the firmware API, not necessarily the labels on the hardware (e.g., d0, d3). The mapping is consistent for a given instrument model, so code that works on one unit will work on an identical unit. Consult the instrument manual for the physical mapping.
 
-Pin numbers and the mix of readable vs. writable pins depend on the specific instrument model. Consult [writable_pins][pypalmsens.Gpio.writable_pins] and [readable_pins][pypalmsens.Gpio.readable_pins] at runtime if you work with multiple device types.
+Pin numbers and the mix of readable vs. writable pins depend on the specific instrument model. Consult [writable_pins][pypalmsens.GPIO.writable_pins] and [readable_pins][pypalmsens.GPIO.readable_pins] at runtime if you work with multiple device types.
 
 ## Available pins
 

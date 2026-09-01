@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 @final
-class GpioAsync:
+class GPIOAsync:
     """Digital general-purpose input/output (GPIO) interface.
 
     This class provides high-level access to the instrument's digital

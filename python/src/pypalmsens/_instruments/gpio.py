@@ -84,7 +84,7 @@ def raise_if_pins_not_supported(
 
 
 @final
-class Gpio:
+class GPIO:
     """Digital general-purpose input/output (GPIO) interface.
 
     This class provides high-level access to the instrument's digital

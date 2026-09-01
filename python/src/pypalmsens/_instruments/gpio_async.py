@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Literal, final
 
-from .gpio import GPIOBase, pins_to_bitmask
+from .gpio import pins_to_bitmask, raise_if_pins_not_supported, readable_pins, writable_pins
 from .shared import create_future
 
 if TYPE_CHECKING:
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 @final
-class GPIOAsync(GPIOBase):
+class GPIOAsync:
     """Digital general-purpose input/output (GPIO) interface.
 
     This class provides high-level access to the instrument's digital
@@ -78,7 +78,9 @@ class GPIOAsync(GPIOBase):
         PinNotSupportedError
             If any pin in ``pins`` is not a supported input pin.
         """
-        self._raise_if_pins_not_supported(pins, 'read')
+        raise_if_pins_not_supported(
+            self._manager._comm.ClientConnection, pins=pins, mode='read'
+        )
 
         mask = pins_to_bitmask(pins)
 
@@ -95,7 +97,9 @@ class GPIOAsync(GPIOBase):
         return [('low', 'high')[level] for level in levels]
 
     async def _write_many(self, pins: Sequence[int], func: Callable[[int, int], int]):
-        self._raise_if_pins_not_supported(pins, 'write')
+        raise_if_pins_not_supported(
+            self._manager._comm.ClientConnection, pins=pins, mode='write'
+        )
 
         mask = pins_to_bitmask(pins)
 
@@ -128,10 +132,12 @@ class GPIOAsync(GPIOBase):
 
             def func(current: int, mask: int) -> int:
                 return current | mask  # high
+
         elif level == 'low':
 
             def func(current: int, mask: int) -> int:
                 return current & ~mask  # low
+
         else:
             raise ValueError("`level` must be one of 'low' or 'high'")
 
@@ -196,3 +202,28 @@ class GPIOAsync(GPIOBase):
             return current ^ mask  # toggle
 
         return await self._write_many(pins, func)
+
+    @property
+    def writable_pins(self) -> list[int]:
+        """Return the pin numbers that support digital output.
+
+        Returns
+        -------
+        list[int]
+            Sorted list of pin numbers that can be used with
+            `write`, `write_many`, `toggle`,
+            and `toggle_many`.
+        """
+        return writable_pins(self._manager._comm.ClientConnection)
+
+    @property
+    def readable_pins(self) -> list[int]:
+        """Return the pin numbers that support digital input.
+
+        Returns
+        -------
+        list[int]
+            Sorted list of pin numbers that can be used with
+            `read` and `read_many`.
+        """
+        return readable_pins(self._manager._comm.ClientConnection)

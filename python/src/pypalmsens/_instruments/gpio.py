@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import TYPE_CHECKING, Literal, Protocol
+from typing import TYPE_CHECKING, Literal, final
 
 import PalmSens
 
@@ -29,71 +29,67 @@ def bitmask_to_pins(mask: int) -> list[int]:
     return [i for i in range(8) if (mask & (1 << i))]
 
 
-class HasCommProtocol(Protocol):
-    _comm: PalmSens.CommManager
+def is_methodscript(client_connection: PalmSens.Comm.ClientConnection) -> bool:
+    return isinstance(client_connection, PalmSens.Comm.ClientConnectionMS)
 
 
-class GPIOBase:
-    @property
-    def _is_methodscript(self) -> bool:
-        return isinstance(
-            self._manager._comm.ClientConnection, PalmSens.Comm.ClientConnectionMS
-        )
+def writable_pins(client_connection: PalmSens.Comm.ClientConnection) -> list[int]:
+    """Return the pin numbers that support digital output.
 
-    @property
-    def writable_pins(self) -> list[int]:
-        """Return the pin numbers that support digital output.
-
-        Returns
-        -------
-        list[int]
-            Sorted list of pin numbers that can be used with
-            `write`, `write_many`, `toggle`,
-            and `toggle_many`.
-        """
-        if not self._is_methodscript:
-            raise GPIOError('Only supported on MethodSCRIPT devices.')
-        mask = self._manager._comm.ClientConnection.Capabilities.SupportedDigitalOutputLineMask
-        return bitmask_to_pins(mask)
-
-    @property
-    def readable_pins(self) -> list[int]:
-        """Return the pin numbers that support digital input.
-
-        Returns
-        -------
-        list[int]
-            Sorted list of pin numbers that can be used with
-            `read` and `read_many`.
-        """
-        if not self._is_methodscript:
-            raise GPIOError('Only supported on MethodSCRIPT devices.')
-        mask = self._manager._comm.ClientConnection.Capabilities.SupportedDigitalInputLineMask
-        return bitmask_to_pins(mask)
-
-    def _raise_if_pins_not_supported(self, pins: Sequence[int], mode: Literal['read', 'write']):
-        if min(pins) < 0:
-            raise PinNotSupportedError('Pin cannot be negative.')
-
-        if self._is_methodscript:
-            pin_mask = pins_to_bitmask(pins)
-            supported_mask = {
-                'write': self._manager._comm.ClientConnection.Capabilities.SupportedDigitalOutputLineMask,
-                'read': self._manager._comm.ClientConnection.Capabilities.SupportedDigitalInputLineMask,
-            }[mode]
-
-            if pin_mask & supported_mask:
-                return
-        else:
-            if max(pins) < 4:
-                return
-
-        raise PinNotSupportedError(
-            f'Requested {mode} pin is not supported by {self._manager.instrument.name}.'
-        )
+    Returns
+    -------
+    list[int]
+        Sorted list of pin numbers that can be used with
+        `write`, `write_many`, `toggle`,
+        and `toggle_many`.
+    """
+    if not is_methodscript(client_connection):
+        raise GPIOError('Only supported on MethodSCRIPT devices.')
+    mask = client_connection.Capabilities.SupportedDigitalOutputLineMask
+    return bitmask_to_pins(mask)
 
 
-class GPIO(GPIOBase):
+def readable_pins(client_connection: PalmSens.Comm.ClientConnection) -> list[int]:
+    """Return the pin numbers that support digital input.
+
+    Returns
+    -------
+    list[int]
+        Sorted list of pin numbers that can be used with
+        `read` and `read_many`.
+    """
+    if not is_methodscript(client_connection):
+        raise GPIOError('Only supported on MethodSCRIPT devices.')
+    mask = client_connection.Capabilities.SupportedDigitalInputLineMask
+    return bitmask_to_pins(mask)
+
+
+def raise_if_pins_not_supported(
+    client_connection: PalmSens.Comm.ClientConnection,
+    pins: Sequence[int],
+    mode: Literal['read', 'write'],
+):
+    if min(pins) < 0:
+        raise PinNotSupportedError('Pin cannot be negative.')
+
+    if is_methodscript(client_connection):
+        pin_mask = pins_to_bitmask(pins)
+        supported_mask = {
+            'write': client_connection.Capabilities.SupportedDigitalOutputLineMask,
+            'read': client_connection.Capabilities.SupportedDigitalInputLineMask,
+        }[mode]
+
+        if pin_mask & supported_mask:
+            return
+    else:
+        if max(pins) < 4:
+            return
+
+    raise PinNotSupportedError(f'Requested {mode} pin is not supported by device.')
+
+
+@final
+class GPIO:
     """Digital general-purpose input/output (GPIO) interface.
 
     This class provides high-level access to the instrument's digital
@@ -160,7 +156,9 @@ class GPIO(GPIOBase):
         PinNotSupportedError
             If any pin in ``pins`` is not a supported input pin.
         """
-        self._raise_if_pins_not_supported(pins, 'read')
+        raise_if_pins_not_supported(
+            self._manager._comm.ClientConnection, pins=pins, mode='read'
+        )
 
         mask = pins_to_bitmask(pins)
 
@@ -175,7 +173,9 @@ class GPIO(GPIOBase):
         return [('low', 'high')[level] for level in levels]
 
     def _write_many(self, pins: Sequence[int], func: Callable[[int, int], int]):
-        self._raise_if_pins_not_supported(pins, 'write')
+        raise_if_pins_not_supported(
+            self._manager._comm.ClientConnection, pins=pins, mode='write'
+        )
 
         mask = pins_to_bitmask(pins)
 
@@ -276,3 +276,28 @@ class GPIO(GPIOBase):
             return current ^ mask  # toggle
 
         return self._write_many(pins, func)
+
+    @property
+    def writable_pins(self) -> list[int]:
+        """Return the pin numbers that support digital output.
+
+        Returns
+        -------
+        list[int]
+            Sorted list of pin numbers that can be used with
+            `write`, `write_many`, `toggle`,
+            and `toggle_many`.
+        """
+        return writable_pins(self._manager._comm.ClientConnection)
+
+    @property
+    def readable_pins(self) -> list[int]:
+        """Return the pin numbers that support digital input.
+
+        Returns
+        -------
+        list[int]
+            Sorted list of pin numbers that can be used with
+            `read` and `read_many`.
+        """
+        return readable_pins(self._manager._comm.ClientConnection)

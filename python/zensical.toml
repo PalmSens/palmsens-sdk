@@ -17,6 +17,7 @@ nav = [
   "events.md",
   "filesystem.md",
   "comm_protocol.md",
+  "gpio.md",
   "circuit_fitting.md",
   "examples.md",
   { "Techniques" = [
@@ -70,6 +71,7 @@ nav = [
     "reference/instrument_async.md",
     "reference/filesystem.md",
     "reference/comm_protocol.md",
+    "reference/gpio.md",
     "reference/fitting.md",
     "reference/models.md",
     "reference/types.md",

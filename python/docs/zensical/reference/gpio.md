@@ -1,7 +1,7 @@
 # GPIO
 
 This class provides high-level access to the instrument's digital pins.
-The API is defined in [pypalmsens.Gpio][], and [pypalmsens.GpioAsync][] for asynchronous workflows.
+The API is defined in [pypalmsens.GPIO][], and [pypalmsens.GPIOAsync][] for asynchronous workflows.
 
 The intended usage of these classes is via the [InstrumentManager.gpio][pypalmsens.InstrumentManager.gpio] and [InstrumentManager.gpio][pypalmsens.InstrumentManager.gpio] attributes.
 
@@ -23,8 +23,8 @@ For more information how to use these classes, see [the documentation here](../g
 
 **Classes:**
 
-- [`pypalmsens.Gpio`][pypalmsens.Gpio]
-- [`pypalmsens.GpioAsync`][pypalmsens.GpioAsync]
+- [`pypalmsens.GPIO`][pypalmsens.GPIO]
+- [`pypalmsens.GPIOAsync`][pypalmsens.GPIOAsync]
 
-::: pypalmsens.Gpio
-::: pypalmsens.GpioAsync
+::: pypalmsens.GPIO
+::: pypalmsens.GPIOAsync

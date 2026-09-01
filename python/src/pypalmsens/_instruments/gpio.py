@@ -36,15 +36,11 @@ def is_methodscript(client_connection: PalmSens.Comm.ClientConnection) -> bool:
 def writable_pins(client_connection: PalmSens.Comm.ClientConnection) -> list[int]:
     """Return the pin numbers that support digital output.
 
-    Returns
-    -------
-    list[int]
-        Sorted list of pin numbers that can be used with
-        `write`, `write_many`, `toggle`,
-        and `toggle_many`.
+    Return fixed pin numbers for the most common configuration for
+    non-MethodSCRIPT devices.
     """
     if not is_methodscript(client_connection):
-        raise GPIOError('Only supported on MethodSCRIPT devices.')
+        return [0, 1, 2, 3]
     mask = client_connection.Capabilities.SupportedDigitalOutputLineMask
     return bitmask_to_pins(mask)
 
@@ -52,14 +48,11 @@ def writable_pins(client_connection: PalmSens.Comm.ClientConnection) -> list[int
 def readable_pins(client_connection: PalmSens.Comm.ClientConnection) -> list[int]:
     """Return the pin numbers that support digital input.
 
-    Returns
-    -------
-    list[int]
-        Sorted list of pin numbers that can be used with
-        `read` and `read_many`.
+    Return fixed pin numbers for the most common configuration for
+    non-MethodSCRIPT devices.
     """
     if not is_methodscript(client_connection):
-        raise GPIOError('Only supported on MethodSCRIPT devices.')
+        return [0]
     mask = client_connection.Capabilities.SupportedDigitalInputLineMask
     return bitmask_to_pins(mask)
 
@@ -96,8 +89,9 @@ class GPIO:
     pins. Pin numbering is hardware-specific. Consult the instrument
     manual for the physical mapping.
 
-    Note that the pins are typically referred to as `d0` or `d3`.
-    These correspond to pins 0 and 3 in this interface, respectively.
+    Note that the internal numbering of the pins exposed by this class
+    may differ from the documented pins numbering, e.g. `d0` or `d3`.
+    The pin numbering is interally consistent.
 
     For MethodSCRIPT devices, the underlying libraries auto-configures
     read/write direction on read/write instructions.

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 @final
-class GPIOAsync:
+class GpioAsync:
     """Digital general-purpose input/output (GPIO) interface.
 
     This class provides high-level access to the instrument's digital
@@ -26,14 +26,14 @@ class GPIOAsync:
 
     For explicit control, use the low-level MethodSCRIPT primitives directly:
 
-        - [pypalmsens.CommProtocol][]
-        - [MethodSCRIPT manual](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html)
+    - [pypalmsens.CommProtocol][]
+    - [MethodSCRIPT manual](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html)
     """
 
     def __init__(self, manager: InstrumentManagerAsync):
         self._manager = manager
 
-    async def read(self, pin: int) -> Literal['low', 'high']:
+    async def read_async(self, pin: int) -> Literal['low', 'high']:
         """Read the logic level of a single digital input pin.
 
         The pin configuration is automatically switched to input if needed.
@@ -55,10 +55,10 @@ class GPIOAsync:
         PinNotSupportedError:
             If ``pin`` is not a supported input pin.
         """
-        [level] = await self.read_many([pin])
+        [level] = await self.read_many_async([pin])
         return level
 
-    async def read_many(self, pins: Sequence[int]) -> list[Literal['low', 'high']]:
+    async def read_many_async(self, pins: Sequence[int]) -> list[Literal['low', 'high']]:
         """Read the logic levels of multiple digital input pins.
 
         Parameters
@@ -96,7 +96,7 @@ class GPIOAsync:
 
         return [('low', 'high')[level] for level in levels]
 
-    async def _write_many(self, pins: Sequence[int], func: Callable[[int, int], int]):
+    async def _write_many_async(self, pins: Sequence[int], func: Callable[[int, int], int]):
         raise_if_pins_not_supported(
             self._manager._comm.ClientConnection, pins=pins, mode='write'
         )
@@ -112,7 +112,9 @@ class GPIOAsync:
                 self._manager._comm.ClientConnection.SetDigitalOutputAsync(mask)
             )
 
-    async def write_many(self, pins: Sequence[int], level: Literal['low', 'high'] = 'high'):
+    async def write_many_async(
+        self, pins: Sequence[int], level: Literal['low', 'high'] = 'high'
+    ):
         """Set the logic level of multiple digital output pins.
 
         Parameters
@@ -141,9 +143,9 @@ class GPIOAsync:
         else:
             raise ValueError("`level` must be one of 'low' or 'high'")
 
-        return await self._write_many(pins, func)
+        return await self._write_many_async(pins, func)
 
-    async def write(self, pin: int, level: Literal['low', 'high'] = 'high'):
+    async def write_async(self, pin: int, level: Literal['low', 'high'] = 'high'):
         """Set the logic level of a single digital output pin.
 
         Parameters
@@ -158,9 +160,9 @@ class GPIOAsync:
         PinNotSupportedError:
             If ``pin`` is not a supported input pin.
         """
-        _ = await self.write_many([pin], level=level)
+        _ = await self.write_many_async([pin], level=level)
 
-    async def toggle(self, pin: int):
+    async def toggle_async(self, pin: int):
         """Invert the logic level of a single digital output pin.
 
         A ``high`` state becomes ``low`` and vice-versa.
@@ -179,9 +181,9 @@ class GPIOAsync:
         PinNotSupportedError
             If ``pin`` is not a supported output pin.
         """
-        return await self.toggle_many([pin])
+        return await self.toggle_many_async([pin])
 
-    async def toggle_many(self, pins: Sequence[int]):
+    async def toggle_many_async(self, pins: Sequence[int]):
         """Invert the logic level of multiple digital output pins.
 
         Each pin is toggled independently: ``high`` becomes ``low``
@@ -201,7 +203,7 @@ class GPIOAsync:
         def func(current: int, mask: int) -> int:
             return current ^ mask  # toggle
 
-        return await self._write_many(pins, func)
+        return await self._write_many_async(pins, func)
 
     @property
     def writable_pins(self) -> list[int]:

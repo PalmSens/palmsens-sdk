@@ -75,14 +75,16 @@ def raise_if_pins_not_supported(
         if pin_mask & supported_mask:
             return
     else:
-        if max(pins) < 4:
+        if mode == 'read' and max(pins) < 1:
+            return
+        if mode == 'write' and max(pins) < 4:
             return
 
     raise PinNotSupportedError(f'Requested {mode} pin is not supported by device.')
 
 
 @final
-class GPIO:
+class Gpio:
     """Digital general-purpose input/output (GPIO) interface.
 
     This class provides high-level access to the instrument's digital
@@ -98,8 +100,8 @@ class GPIO:
 
     For explicit control, use the low-level MethodSCRIPT primitives directly:
 
-        - [pypalmsens.CommProtocol][]
-        - [MethodSCRIPT manual](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html)
+    - [pypalmsens.CommProtocol][]
+    - [MethodSCRIPT manual](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html)
     """
 
     def __init__(self, manager: InstrumentManager):

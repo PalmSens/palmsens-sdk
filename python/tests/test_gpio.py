@@ -54,6 +54,7 @@ def test_bitmask_to_pins(mask, expected_pins):
     assert gpio.bitmask_to_pins(mask) == expected_pins
 
 
+@pytest.mark.instrument
 def test_raise_if_not_supported(manager):
     client = manager._comm.ClientConnection
 
@@ -76,18 +77,21 @@ def test_raise_if_not_supported(manager):
     gpio.raise_if_pins_not_supported(client, write_pins, mode='write')
 
 
+@pytest.mark.instrument
 def test_readable_pins(manager):
     pins = manager.gpio.readable_pins
     assert pins
     assert all(isinstance(val, int) for val in pins)
 
 
+@pytest.mark.instrument
 def test_writable_pins(manager):
     pins = manager.gpio.writable_pins
     assert pins
     assert all(isinstance(val, int) for val in pins)
 
 
+@pytest.mark.instrument
 def test_read(manager):
     pins = manager.gpio.readable_pins
 
@@ -101,6 +105,7 @@ def test_read(manager):
         _ = manager.gpio.read(1234)
 
 
+@pytest.mark.instrument
 def test_write(manager):
     pins = manager.gpio.writable_pins
 

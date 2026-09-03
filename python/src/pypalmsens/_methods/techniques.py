@@ -7,8 +7,8 @@ from typing import Literal
 
 import PalmSens
 from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
-from pydantic import Field, field_validator
-from typing_extensions import override
+from pydantic import Field, field_validator, model_validator
+from typing_extensions import Self, override
 
 from pypalmsens._methodscript import validate as validate_methodscript
 
@@ -2246,6 +2246,13 @@ class MethodScript(BaseTechnique):
     id: Literal['ms'] = 'ms'
     """Unique method identifier."""
 
+    version: Literal['1.10'] | None = '1.10'
+    """MethodSCRIPT language version.
+
+    Determines the version of the MethodSCRIPT parser to use for validating
+    the syntax of `script`. Set to `None` to skip script validation.
+    """
+
     script: str = """\
 wait 100m
 if 1 < 2
@@ -2367,9 +2374,14 @@ endif
         value = value.rstrip()
         value += '\n'
 
-        validate_methodscript(value)
-
         return value
+
+    @model_validator(mode='after')
+    def validate_script_parser(self) -> Self:
+        if self.version == '1.10':
+            validate_methodscript(self.script)
+
+        return self
 
     @property
     @override

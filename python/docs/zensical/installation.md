@@ -23,7 +23,7 @@ pip install pypalmsens
 ## Linux and macOS {#req-linux}
 
 *   Install [Python](https://python.org) version 3.10 or newer
-*   Install [.NET Runtime 9.0](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) or newer. You can typically find the required runtime (e.g., `dotnet-runtime-9.0`) in your [package manager](https://learn.microsoft.com/en-us/dotnet/core/install/linux).
+*   Install [.NET Runtime 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or newer. You can typically find the required runtime (e.g., `dotnet-runtime-10.0`) in your [package manager](https://learn.microsoft.com/en-us/dotnet/core/install/linux).
     *   [Installation guides for Ubuntu](https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-install)
     *   [Installation guides for Debian](https://learn.microsoft.com/en-us/dotnet/core/install/linux-debian)
     *   [Installation guides for Fedora](https://learn.microsoft.com/en-us/dotnet/core/install/linux-fedora)

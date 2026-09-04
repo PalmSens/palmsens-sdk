@@ -18,7 +18,7 @@ class FileSystemException(OSError):
 
 
 if sys.version_info < (3, 12):
-    # In 3.10 and 3.11, PurePath does not support subclassing
+    # In 3.11, PurePath does not support subclassing
     # See: https://docs.python.org/3.12/whatsnew/3.12.html#pathlib
 
     from pathlib import PurePosixPath

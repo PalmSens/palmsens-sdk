@@ -213,6 +213,5 @@ tmp
 docs/site
 typings/
 
+# dotnet packages
 Packages
-net_restore/bin
-net_restore/obj

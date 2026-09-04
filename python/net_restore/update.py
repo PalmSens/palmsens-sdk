@@ -4,7 +4,7 @@ import argparse
 import subprocess as sp
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from importlib.resources import files
 from pathlib import Path
 from typing import Literal
@@ -29,32 +29,49 @@ class Spec:
     """Directory name."""
     project: str
     """Project to run."""
+    delete: list[str] = field(default_factory=list)
+    """Files to remove afterwards."""
+    rename: list[tuple[str, str]] = field(default_factory=list)
+
+
+mono_delete=['mono.dll', 'mono', 'mono.pdb', 'mono.deps.json']
+mono_rename=[('mono.runtimeconfig.json', 'runtimeconfig.json')]
 
 
 linux_x64 = Spec(
     rid='linux-x64',
     name='linux-x64',
     project='mono.csproj',
+    delete=mono_delete,
+    rename=mono_rename,
 )
 linux_arm64 = Spec(
     rid='linux-arm64',
     name='linux-arm64',
     project='mono.csproj',
+    delete=mono_delete,
+    rename=mono_rename,
 )
 osx_arm64 = Spec(
     rid='osx-arm64',
     name='osx-arm64',
     project='mono.csproj',
+    delete=mono_delete,
+    rename=mono_rename,
 )
 osx_x64 = Spec(
     rid='osx-x64',
     name='osx-x64',
     project='mono.csproj',
+    delete=mono_delete,
+    rename=mono_rename,
 )
 win = Spec(
     rid='win-x64',
     name='win',
     project='windows.csproj',
+    delete=['windows.dll', 'windows.exe', 'windows.pdb', 'windows.deps.json'],
+    rename=[('windows.runtimeconfig.json', 'runtimeconfig.json')]
 )
 
 specs = linux_x64, linux_arm64, osx_arm64, osx_x64, win
@@ -87,6 +104,18 @@ def main():
 
         # print(cmd)
         _ = sp.run(cmd.split(), check=True)
+
+        for name in spec.delete:
+            to_remove = target_dir / name
+            assert to_remove.exists()
+            to_remove.unlink()
+
+        for _from, _to in spec.rename:
+            src = target_dir / _from
+            dst = target_dir / _to
+            assert src.exists()
+            dst.unlink(missing_ok=True)
+            src.rename(dst)
 
         # sys.exit()
 

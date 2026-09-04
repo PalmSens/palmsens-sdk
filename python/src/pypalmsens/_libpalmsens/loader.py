@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import atexit
 import platform
 from importlib.resources import files
 from pathlib import Path
@@ -81,10 +80,3 @@ def load() -> str:
     from System import Diagnostics
 
     return Diagnostics.FileVersionInfo.GetVersionInfo(str(core_dll)).ProductVersion
-
-
-unload = pythonnet.unload
-
-_ = atexit.register(pythonnet.unload)
-
-__all__ = ['load', 'unload']

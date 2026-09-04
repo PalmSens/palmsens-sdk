@@ -1,5 +1,5 @@
 from __future__ import annotations
 
-from .loader import load, unload
+from .loader import load
 
-__all__ = ['load', 'unload']
+__all__ = ['load']

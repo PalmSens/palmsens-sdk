@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import atexit
 import platform
 from importlib.resources import files
 from pathlib import Path
@@ -46,8 +45,16 @@ def load() -> str:
         Version of the PalmSens .NET SDK.
     """
 
-    # runtime must be loaded before `clr` is imported
-    pythonnet.load('coreclr', runtime_config=str(PSSDK_DIR / 'runtimeconfig.json'))
+    try:
+        # runtime must be loaded before `clr` is imported
+        pythonnet.load('coreclr', runtime_config=str(PSSDK_DIR / 'runtimeconfig.json'))
+    except RuntimeError as e:
+        e.add_note(
+            '\nThis error usually means the .NET runtime could not be found. '
+            '\nPyPalmSens requires .NET 10 or newer. '
+            '\n\nLearn more: https://dev.palmsens.com/python/latest/_attachments/installation/'
+        )
+        raise
 
     import clr
 
@@ -81,10 +88,3 @@ def load() -> str:
     from System import Diagnostics
 
     return Diagnostics.FileVersionInfo.GetVersionInfo(str(core_dll)).ProductVersion
-
-
-unload = pythonnet.unload
-
-_ = atexit.register(pythonnet.unload)
-
-__all__ = ['load', 'unload']

@@ -70,7 +70,7 @@ win = Spec(
     rid='win-x64',
     name='win',
     project='windows.csproj',
-    delete=['windows.dll', 'windows.exe', 'windows.pdb', 'windows.deps.json'],
+    delete=['Microsoft.Windows.SDK.NET.dll', 'windows.dll', 'windows.exe', 'windows.pdb', 'windows.deps.json',],
     rename=[('windows.runtimeconfig.json', 'runtimeconfig.json')]
 )
 

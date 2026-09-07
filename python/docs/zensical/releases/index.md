@@ -86,7 +86,7 @@ The new syntax uses *keywords* instead of bitmasks. This change also makes it cl
 - Old Syntax: `VersusOCP(mode=3, max_ocp_time=10)`
 - New Syntax: `VersusOCP(potentials=['vertex1', 'vertex2'], timeout=10)`
 
-**Example: CV with vertex 1 and 2 defined against OCP**
+Fox example, CV with vertex 1 and 2 defined against OCP:
 
 ```python
 >>> import pypalmsens as ps

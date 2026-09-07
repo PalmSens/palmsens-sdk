@@ -68,7 +68,7 @@ def update_python(new_tag: str, new_version: str) -> str:
     """)
 
     TEMPLATE_GH_RELEASES = dedent("""\
-    PyPalmSens {new_tag} is now available on PyPi.
+    PyPalmSens {new_version} is now available on PyPi.
 
     To upgrade: `pip install pypalmsens -U`.
 

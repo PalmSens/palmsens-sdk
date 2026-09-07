@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 import shutil
 import subprocess as sp
 import sys
@@ -105,16 +104,7 @@ def bump_version_to(sdk: SDK):
     print(f'Set {sdk.name} version to {sdk.version}')
 
 
-def assert_clean_worktree():
-    p = sp.run(['git', 'status', '--porcelain'], capture_output=True, check=True)
-    status = p.stdout.decode().strip()
-    if status:
-        raise RuntimeError(f'Git working tree is not clean:\n\n{status}')
-
-
 def prepare_release_branch(base_branch: str, release_branch: str):
-    assert_clean_worktree()
-
     sp.check_call(['git', 'fetch', 'origin'])
 
     sp.check_call(['git', 'checkout', f'origin/{base_branch}'])
@@ -124,7 +114,9 @@ def prepare_release_branch(base_branch: str, release_branch: str):
     print(f'Created branch {release_branch}')
 
 
-def push_branch_and_create_pr(sdk: SDK, *, body: str, base_branch: str, release_branch: str):
+def push_branch_and_create_pr(
+    sdk: SDK, *, body: str, base_branch: str, release_branch: str
+) -> int:
     sp.run(
         ['git', 'push', 'origin', f'HEAD:{release_branch}', '--force'],
         check=True,
@@ -144,14 +136,17 @@ def push_branch_and_create_pr(sdk: SDK, *, body: str, base_branch: str, release_
             f'--title=Release {sdk.tag}',
             f'--body={body}',
             '--draft',
-            '--json',
-            'url',
         ],
         capture_output=True,
         check=True,
     )
-    pr_url = json.loads(p.stdout)['url']
-    print(f'PR created: {pr_url}')
+    # gh pr create prints the PR URL as the last line of stdout.
+    pr_url = p.stdout.decode().strip().splitlines()[-1]
+    print(f'PR URL: {pr_url}')
+
+    pr_number = int(pr_url.rsplit('/', maxsplit=1)[-1])
+
+    return pr_number
 
 
 if __name__ == '__main__':
@@ -196,7 +191,7 @@ if __name__ == '__main__':
 
     bump_version_to(sdk)
 
-    push_branch_and_create_pr(
+    pr_number = push_branch_and_create_pr(
         sdk=sdk, body=gh_body, release_branch=release_branch, base_branch=base_branch
     )
 
@@ -214,7 +209,7 @@ Push additional changes to branch:
 
 Merge PR:
 
-    gh pr merge $PR --squash
+    gh pr merge {pr_number} --squash
 
 Make new release:
 

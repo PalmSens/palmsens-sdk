@@ -24,17 +24,17 @@ Software Development Kits (SDKs) are available for the ecosystems below. See the
 
 == Which SDK should you use?
 
-For new projects, we recommend using xref:python:ROOT:index.adoc[PyPalmSens] for research, data analysis and prototyping.
+For new projects, we recommend using xref:python:ROOT:index.adoc[PyPalmSens] for research, data analysis, and prototyping.
 PyPalmSens supports Windows, MacOS and Linux (including ARM-based single-board computers like Raspberry Pi).
 
 Use xref:maui:ROOT:index.adoc[.NET MAUI SDK] for native, cross-platform app development targeting Windows, Android, and iOS.
 Both of these are actively developed and will be first to receive new features, updates, and fixes.
 
-For existing codebases, we offer SDKS for xref:matlab:ROOT:index.adoc[MATLAB], xref:labview:ROOT:index.adoc[LabVIEW], xref:winforms:ROOT:index.adoc[WinForms], or xref:wpf:ROOT:index.adoc[WPF].
+For existing codebases, we offer SDKs for xref:matlab:ROOT:index.adoc[MATLAB], xref:labview:ROOT:index.adoc[LabVIEW], xref:winforms:ROOT:index.adoc[WinForms], or xref:wpf:ROOT:index.adoc[WPF].
 These SDKs will continue to receive occasional bug fixes but are no longer under active development.
 
 == Getting help
 
 The best way to get help with the PalmSens SDKs is to https://www.palmsens.com/contact/[contact us directly].
 
-For development related matter (e.g. bug reports), https://github.com/palmsens/palmsens-sdk/issues[open an issue on our git repository].
+For development related matters (e.g. bug reports), https://github.com/palmsens/palmsens-sdk/issues[open an issue on our git repository].

@@ -170,7 +170,7 @@ class FastCyclicVoltammetry(
     current_range: AllowedCurrentRanges = '1uA'
     """Fixed current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -851,7 +851,7 @@ class FastAmperometry(
     current_range: AllowedCurrentRanges = '100nA'
     """Fixed current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -1182,7 +1182,7 @@ class BaseOpenCircuitPotentiometry(
     record_we_current_range: AllowedCurrentRanges = '1uA'
     """Record working electrode current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -1253,7 +1253,7 @@ class BaseChronoPotentiometry(
     applied_current_range: AllowedCurrentRanges = '100mA'
     """Applied current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     interval_time: float = 0.1
     """Time between two potential samples in s."""
@@ -1368,7 +1368,7 @@ class StrippingChronoPotentiometry(
     applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     end_potential: float = 0.0
     """Potential where the measurement at stops in V ."""
@@ -1434,7 +1434,7 @@ class LinearSweepPotentiometry(
     applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     current_begin: float = -1.0
     """Current applied at beginning of measurement.
@@ -1527,7 +1527,7 @@ class MultiStepPotentiometry(
     applied_current_range: AllowedCurrentRanges = '1uA'
     """Applied current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     interval_time: float = 0.1
     """The time between two samples in s."""
@@ -2006,7 +2006,7 @@ class GalvanostaticImpedanceSpectroscopy(
     This is the range in which the specified current values (such as `ac_current`,
     `begin_current`, or `step_current) will be applied.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -2188,7 +2188,7 @@ class FastGalvanostaticImpedanceSpectroscopy(
     applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     run_time: float = 10.0
     """Total run time of the measurement in s."""

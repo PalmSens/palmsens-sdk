@@ -1,6 +1,169 @@
 # Changelog
 
 <!-- Latest-->
+# PyPalmSens 2.0.0
+
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-2.0.0">python-2.0.0</a>
+| :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/2.0.0">pypalmsens-2.0.0</a>
+| :fontawesome-solid-calendar: 2026-09-07
+
+PyPalmSens 2.0.0 is a major release that updates the PalmSens core libraries to .NET 10, streamlines several APIs for better readability, and adds support for digital GPIO.
+
+!!! Note "Breaking changes"
+
+    This release includes several breaking changes. System requirements have changed, and some functions were renamed or moved to improve clarity. Please see the changes below to make sure your code continues to work.
+
+## .NET 10
+
+All versions of PyPalmSens now depend on the **.NET 10 (LTS)** runtime. This unifies the build system across the library, making the code easier to update in the long term.
+
+| Platform | Dropped Support | Required Runtime | Action |
+| :--- | :--- | :--- | :--- |
+| Windows | .NET Framework 4.7.2 | .NET 10 (LTS) | Upgrade to .NET 10. |
+| Linux / Mac | .NET 9 | .NET 10 (LTS) | Upgrade to .NET 10. |
+
+Please make sure your environment is updated to .NET 10 before upgrading PyPalmSens.
+
+You can check which runtimes you have installed by running: `dotnet --list-runtimes`.
+
+See the updated [installation instructions]() to learn more.
+
+## Dropped support for Python 3.10
+
+Since Python 3.10 will no longer receive security updates after October, this release officially drops support for it. PyPalmSens now requires **Python 3.11 or higher**.
+
+## Digital GPIO
+
+You can now control the instrument's digital pins directly via the `pypalmsens.GPIO` and `pypalmsens.GPIOAsync` classes. This allows you to read logic levels, drive outputs, or toggle control lines for external hardware.
+
+The GPIO API is available through the `InstrumentManager.gpio` and `InstrumentManagerAsync.gpio` attributes, making it simple to read and write pin states:
+
+```python
+>>> manager = ps.connect()
+
+# Reading a pin
+>>> manager.gpio.read(0)
+'low'
+
+# Writing to a pin
+>>> manager.gpio.write(0, 'high')
+>>> manager.gpio.write(0, 'low')
+>>> manager.gpio.write(0, 'toggle')
+```
+
+Learn more: [GPIO Documentation](https://dev.palmsens.com/python/latest/_attachments/gpio/)
+
+## Deprecated functions
+
+This release removes several old function paths and class names that were previously marked as deprecated.
+
+Need to update your code? See the table below for renamed functions and their replacements.
+
+| Deprecated Function/Path | New Function/Path |
+| :--- | :--- |
+| `pypalmsens.data.Dataset.arrays_by_name` | `pypalmsens.data.Dataset.arrays(name=...)` |
+| `pypalmsens.data.Dataset.arrays_by_quantity` | `pypalmsens.data.Dataset.arrays(quantity=...)` |
+| `pypalmsens.data.Dataset.arrays_by_type` | `pypalmsens.data.Dataset.arrays(type=...)` |
+| `pypalmsens.mixed_mode.MixedMode` | `pypalmsens.MixedMode` |
+| `pypalmsens.mixed_mode.ConstantE` | `pypalmsens.stages.ConstantE` |
+| `pypalmsens.mixed_mode.ConstantI` | `pypalmsens.stages.ConstantI` |
+| `pypalmsens.mixed_mode.Impedance` | `pypalmsens.stages.Impedance` |
+| `pypalmsens.mixed_mode.OpenCircuit` | `pypalmsens.stages.OpenCircuit` |
+| `pypalmsens.mixed_mode.SweepE` | `pypalmsens.stages.SweepE` |
+| `pypalmsens.settings.AllowedCurrentRanges` | `pypalmsens.types.AllowedCurrentRanges` |
+| `pypalmsens.settings.AllowedDeviceState` | `pypalmsens.types.AllowedDeviceState` |
+| `pypalmsens.settings.AllowedMethods` | `pypalmsens.types.AllowedMethods` |
+| `pypalmsens.settings.AllowedPotentialRanges` | `pypalmsens.types.AllowedPotentialRanges` |
+| `pypalmsens.settings.AllowedReadingStatus` | `pypalmsens.types.AllowedReadingStatus` |
+| `pypalmsens.settings.AllowedTimingStatus` | `pypalmsens.types.AllowedTimingStatus` |
+
+## Updated *versus OCP* API
+
+We updated how to define "versus OCP" settings. In 1.x, these were configured using a bitmask via the `mode` parameter. This was often confusing for techniques like EIS, AD, and LSV.
+
+The new syntax uses *keywords* instead of bitmasks. This change also makes it clear which methods support OCP and which specific potentials can be defined against it.
+
+- Old Syntax: `VersusOCP(mode=3, max_ocp_time=10)`
+- New Syntax: `VersusOCP(potentials=['vertex1', 'vertex2'], timeout=10)`
+
+**Example: CV with vertex 1 and 2 defined against OCP**
+
+```python
+>>> import pypalmsens as ps
+>>> method = ps.CyclicVoltammetry(
+...     versus_ocp={
+...         'potentials': ['vertex1', 'vertex2'],
+...         'timeout': 10,  # s
+...     }
+... )
+>>> ps.measure(method, callback=print)
+```
+
+Learn more: [VersusOCP class](https://dev.palmsens.com/python/latest/_attachments/reference/methods/settings/#pypalmsens.settings.VersusOCP).
+
+## Updated Multiplexer API
+
+This release cleans up the multiplexer settings to make them easier to use and less error-prone.
+
+**1. Model names instead of integers**
+
+`initialize_multiplexer` now takes a model name instead of an integer:
+
+```python
+# Before
+manager.initialize_multiplexer(2)
+
+# After
+manager.initialize_multiplexer('mux8r2') # Valid values: 'mux8', 'mux16', 'mux8r2'
+```
+
+**2. Renamed Configuration Methods**
+
+`set_mux8r2_settings()` has been renamed to `configure_mux8r2()` for better clarity:
+
+- Before: `InstrumentManager(Async).set_mux8r2_settings()`
+- After: `InstrumentManager(Async).configure_mux8r2()`
+
+**3. Parameter and field renames**
+
+The keyword arguments for `configure_mux8r2` and fields for `settings.Multiplexer` are now _keyword-only_. We also shortened several long names and changed `unused_we` from an integer to a string (e.g., use `'float'`, `'ground'`, or `'standby'`).
+
+| Before (1.x) | After (2.x) |
+| :--- | :--- |
+| `connect_sense_to_working_electrode` | `connect_se_we` |
+| `combine_reference_and_counter_electrodes` | `combine_re_ce` |
+| `use_channel_1_reference_and_counter_electrodes` | `common_re_ce` |
+| `set_unselected_channel_working_electrode` (int) | `unused_we` (`'float'`, `'ground'`, `'standby'`) |
+
+For example, configuring a multiplexer for a CA experiment:
+
+```python
+ps.ChronoAmperometry(
+    multiplexer={
+        'mode': 'alternate',
+        'channels': [1, 2],
+        'connect_se_we': False,
+        'combine_re_ce': False,
+        'common_re_ce': False,
+        'unused_we': 'float',
+    },
+)
+```
+
+### What's changed
+
+- Move to .NET 10 for PyPalmSens on Windows ([#447](https://github.com/palmsens/palmsens-sdk/pull/447), [#472](https://github.com/palmsens/palmsens-sdk/pull/472))
+- Remove deprecated functions ([#455](https://github.com/palmsens/palmsens-sdk/pull/455))
+- Refactor setting vs OCP parameters ([#456](https://github.com/palmsens/palmsens-sdk/pull/456))
+- Remove BipotCurrentRange class and re-use CurrentRange ([#457](https://github.com/palmsens/palmsens-sdk/pull/457))
+- Update PalmSens-stubs for type checking ([#459](https://github.com/palmsens/palmsens-sdk/pull/459))
+- Improvements to circuit fitting ([#460](https://github.com/palmsens/palmsens-sdk/pull/460), [#461](https://github.com/palmsens/palmsens-sdk/pull/461), [#462](https://github.com/palmsens/palmsens-sdk/pull/462), [#463](https://github.com/palmsens/palmsens-sdk/pull/463))
+- Streamline multiplexer API with model literals and shorter names ([#467](https://github.com/palmsens/palmsens-sdk/pull/467))
+- Several small fixes ([#468](https://github.com/palmsens/palmsens-sdk/pull/468))
+- Implement read/write digital pins ([#469](https://github.com/palmsens/palmsens-sdk/pull/469), [#470](https://github.com/palmsens/palmsens-sdk/pull/470))
+- Add version tag to MethodScript ([#471](https://github.com/palmsens/palmsens-sdk/pull/471))
+- Drop support for Python 3.10 ([#474](https://github.com/palmsens/palmsens-sdk/pull/474))
+
 ## PyPalmSens 1.11.0
 
 > :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-1.11.0">python-1.11.0</a>

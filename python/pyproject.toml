@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 # https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
 [project]
 name = "PyPalmSens"
-version = "1.11.0"
+version = "2.0.0"
 description = "Python SDK for PalmSens instruments"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -65,9 +65,9 @@ publishing = [
 ]
 
 docs = [
-    "zensical >= 0.0.38",
-    "mkdocstrings >= 1.0.4",
-    "mkdocstrings-python >= 2.0.3",
+    "zensical >= 0.0.59",
+    "mkdocstrings >= 1.0.6",
+    "mkdocstrings-python >= 2.0.8",
 ]
 
 [tool.setuptools]
@@ -154,7 +154,7 @@ enableTypeIgnoreComments = true
 reportIgnoreCommentWithoutRule = false
 
 [tool.bumpversion]
-current_version = "1.11.0"
+current_version = "2.0.0"
 
 [[tool.bumpversion.files]]
 filename = "src/pypalmsens/__init__.py"

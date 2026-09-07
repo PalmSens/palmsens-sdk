@@ -261,7 +261,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         ----------
         current_range: AllowedCurrentRanges
             Set the current range as a string.
-            See `pypalmsens.settings.AllowedCurrentRanges` for options.
+            See [pypalmsens.types.AllowedCurrentRanges][] for options.
         """
         async with self._lock():
             await create_future(

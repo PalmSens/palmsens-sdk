@@ -260,7 +260,7 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         ----------
         current_range: AllowedCurrentRanges
             Set the current range as a string.
-            See `pypalmsens.settings.AllowedCurrentRanges` for options.
+            See [pypalmsens.types.AllowedCurrentRanges][] for options.
         """
         with self._lock():
             self._comm.CurrentRange = cr_string_to_enum(current_range)

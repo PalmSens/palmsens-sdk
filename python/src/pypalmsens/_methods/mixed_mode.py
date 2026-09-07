@@ -126,7 +126,7 @@ class ConstantI(
     applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     run_time: float = 1.0
     """Run time of the stage in s."""

@@ -34,17 +34,17 @@ class CurrentRange(BaseSettings):
     max: AllowedCurrentRanges = '10mA'
     """Maximum current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     min: AllowedCurrentRanges = '1uA'
     """Minimum current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     start: AllowedCurrentRanges = '100uA'
     """Start current range.
 
-    See `pypalmsens.settings.AllowedCurrentRanges` for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /, bipot: bool = False):
@@ -236,7 +236,7 @@ class BiPot(BaseSettings):
     Can be a fixed current range or a ranging current. See the specifications for your instrument.
     Internally, a fixed current range is represented by an autoranging current with equal min/max ranges.
 
-    See [pypalmsens.settings.AllowedCurrentRanges][] for options."""
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):

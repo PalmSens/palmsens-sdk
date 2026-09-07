@@ -489,7 +489,7 @@ manager.disconnect()
 
 
 Asynchronous workflows are supported via [pypalmsens.InstrumentManagerAsync.query][].
-For more information on the Communication Protocol and examples, see [the documentation here][./comm_protocol.md].
+For more information on the Communication Protocol and examples, see [the documentation here](./comm_protocol.md).
 
 
 ## Multichannel measurements

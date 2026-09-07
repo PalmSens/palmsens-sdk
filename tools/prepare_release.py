@@ -4,14 +4,17 @@ import argparse
 import json
 import shutil
 import subprocess as sp
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-for exe in ('gh', 'bump-my-version'):
-    assert shutil.which(exe)
-
 ROOT = Path(__file__).parents[1]
+
+
+for exe in ('gh', 'bump-my-version'):
+    if not shutil.which(exe):
+        sys.exit(f'{exe} is not installed or not on PATH')
 
 PR_BODY = """\
 This PR prepares for a new release of the {sdk.name} SDK.
@@ -63,12 +66,15 @@ def commit_file(path: str | Path, message: str):
 
 def update_releases(sdk: SDK, commit: bool = False):
     releases_path = Path(ROOT, 'docs', 'sdk', 'modules', 'ROOT', 'pages', 'releases.adoc')
-    assert releases_path.exists()
+
+    if not releases_path.exists():
+        sys.exit(f'{releases_path} does not exist')
+
     lines = releases_path.read_text().splitlines()
 
     index = lines.index('// latest')
 
-    if sdk.tag in lines[index + 1]:
+    if any(sdk.tag in line for line in lines):
         print('Tag already exists, skipping')
     else:
         new_line = (
@@ -106,7 +112,7 @@ def assert_clean_worktree():
         raise RuntimeError(f'Git working tree is not clean:\n\n{status}')
 
 
-def prepare_release_branch(base_branch: str, release_branch: str) -> str:
+def prepare_release_branch(base_branch: str, release_branch: str):
     assert_clean_worktree()
 
     sp.check_call(['git', 'fetch', 'origin'])
@@ -117,8 +123,6 @@ def prepare_release_branch(base_branch: str, release_branch: str) -> str:
 
     print(f'Created branch {release_branch}')
 
-    return release_branch
-
 
 def push_branch_and_create_pr(sdk: SDK, *, body: str, base_branch: str, release_branch: str):
     sp.run(
@@ -127,7 +131,7 @@ def push_branch_and_create_pr(sdk: SDK, *, body: str, base_branch: str, release_
     )
     print(f'Pushed {release_branch}')
 
-    body = PR_BODY.format(version=sdk.version, body=body, sdk=sdk, tag=sdk.tag)
+    body = PR_BODY.format(body=body, sdk=sdk)
     print(body)
 
     p = sp.run(
@@ -167,6 +171,14 @@ if __name__ == '__main__':
     else:
         sdk = SDK(options.sdk, options.version)
 
+    if not sdk.version:
+        sys.exit('Specify --version or --bump.')
+
+    current_version = sdk.old_version()
+    if current_version == sdk.version:
+        sys.exit(f'{sdk.name} is already at version {sdk.version}; nothing to do.')
+
+    print(f'Current version: {current_version}')
     print(f'New version: {sdk.tag=}')
 
     base_branch = 'main'

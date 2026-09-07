@@ -14,7 +14,7 @@ def get_latest_tag(component: str = 'python'):
     p = sp.run(cmd, capture_output=True, check=True)
     tags = p.stdout.decode().splitlines()
     for line in tags:
-        if line.startswith(component):
+        if line.startswith(f'{component}-'):
             latest = line
             break
     else:
@@ -23,15 +23,17 @@ def get_latest_tag(component: str = 'python'):
 
 
 def get_changes_since_tag(tag: str):
-    cmd = f'git log {tag}..HEAD --reverse --oneline'.split()
+    cmd = ['git', 'log', f'{tag}..HEAD', '--reverse', '--oneline']
     p = sp.run(cmd, capture_output=True, check=True)
     lines = p.stdout.decode().splitlines()
     lines = (line.split(maxsplit=1)[1] for line in lines)
 
     out = []
+    skipped = []
 
     for line in lines:
         if '(#' not in line and not line.endswith(')'):
+            skipped.append(line)
             continue
 
         if line.startswith('('):
@@ -45,11 +47,18 @@ def get_changes_since_tag(tag: str):
         )
         out.append(f'- {line}')
 
+    if skipped:
+        print('Warning: commits not included in changelog:')
+        for line in skipped:
+            print(f'  - {line}')
+
     return '\n'.join(out)
 
 
-def update_python(new_tag: str, new_version: str) -> str:
-    previous_tag = get_latest_tag()
+def update_python(new_tag: str, new_version: str, previous_tag: str | None = None) -> str:
+    if previous_tag is None:
+        previous_tag = get_latest_tag()
+
     changelog = get_changes_since_tag(previous_tag)
 
     time = datetime.datetime.now(tz=datetime.UTC)
@@ -124,10 +133,11 @@ if __name__ == '__main__':
     component = 'python'
     args = sys.argv[1:]
 
-    assert len(args) == 2
+    if len(args) != 2:
+        sys.exit(f'usage: {sys.argv[0]} <previous_version> <new_version>')
 
     previous_version, new_version = args
     previous_tag = f'{component}-{previous_version}'
     new_tag = f'{component}-{new_version}'
 
-    update_python(new_tag, new_version)
+    update_python(new_tag, new_version, previous_tag)

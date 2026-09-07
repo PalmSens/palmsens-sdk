@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import argparse
-import os
+import json
 import shutil
 import subprocess as sp
-from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
@@ -36,16 +35,14 @@ class SDK:
         """Get current version."""
         cmd = ['bump-my-version', 'show', 'current_version']
 
-        with self.chdir():
-            p = sp.run(cmd, capture_output=True, check=True)
+        p = sp.run(cmd, capture_output=True, check=True, cwd=self.workdir)
 
         return p.stdout.decode().strip()
 
     def bump(self, component: Literal['major', 'minor', 'patch']) -> SDK:
         cmd = ['bump-my-version', 'show', '--increment', component, 'new_version']
 
-        with self.chdir():
-            p = sp.run(cmd, capture_output=True, check=True)
+        p = sp.run(cmd, capture_output=True, check=True, cwd=self.workdir)
 
         new_version = p.stdout.decode().strip()
         return SDK(self.name, new_version)
@@ -57,15 +54,6 @@ class SDK:
     @property
     def workdir(self) -> Path:
         return ROOT / self.name
-
-    @contextmanager
-    def chdir(self):
-        prev_cwd = Path.cwd().resolve()
-        try:
-            os.chdir(self.workdir)
-            yield
-        finally:
-            os.chdir(prev_cwd)
 
 
 def commit_file(path: str | Path, message: str):
@@ -95,29 +83,37 @@ def update_releases(sdk: SDK, commit: bool = False):
 
 
 def bump_version_to(sdk: SDK):
-    with sdk.chdir():
-        sp.check_call(
-            [
-                'bump-my-version',
-                'bump',
-                '--new-version',
-                sdk.version,
-                'patch',
-                '--commit',
-                '--allow-dirty',
-            ]
-        )
+    sp.check_call(
+        [
+            'bump-my-version',
+            'bump',
+            '--new-version',
+            sdk.version,
+            'patch',
+            '--commit',
+            '--allow-dirty',
+        ],
+        cwd=sdk.workdir,
+    )
 
     print(f'Set {sdk.name} version to {sdk.version}')
 
 
+def assert_clean_worktree():
+    p = sp.run(['git', 'status', '--porcelain'], capture_output=True, check=True)
+    status = p.stdout.decode().strip()
+    if status:
+        raise RuntimeError(f'Git working tree is not clean:\n\n{status}')
+
+
 def prepare_release_branch(base_branch: str, release_branch: str) -> str:
+    assert_clean_worktree()
+
+    sp.check_call(['git', 'fetch', 'origin'])
+
     sp.check_call(['git', 'checkout', f'origin/{base_branch}'])
 
-    sp.run(
-        ['git', 'checkout', '-b', release_branch, f'origin/{base_branch}'],
-        check=True,
-    )
+    sp.check_call(['git', 'checkout', '-b', release_branch, f'origin/{base_branch}'])
 
     print(f'Created branch {release_branch}')
 
@@ -134,7 +130,7 @@ def push_branch_and_create_pr(sdk: SDK, *, body: str, base_branch: str, release_
     body = PR_BODY.format(version=sdk.version, body=body, sdk=sdk, tag=sdk.tag)
     print(body)
 
-    sp.run(
+    p = sp.run(
         [
             'gh',
             'pr',
@@ -144,14 +140,23 @@ def push_branch_and_create_pr(sdk: SDK, *, body: str, base_branch: str, release_
             f'--title=Release {sdk.tag}',
             f'--body={body}',
             '--draft',
+            '--json',
+            'url',
         ],
+        capture_output=True,
         check=True,
     )
+    pr_url = json.loads(p.stdout)['url']
+    print(f'PR created: {pr_url}')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('sdk', type=str)
+    parser.add_argument(
+        'sdk',
+        type=str,
+        choices=['python', 'matlab', 'maui', 'wpf', 'labview', 'winforms'],
+    )
     parser.add_argument('--version', type=str, help='Set version.')
     parser.add_argument('--bump', type=str, help='Major/minor/patch, overrides version.')
     options = parser.parse_args()
@@ -185,7 +190,7 @@ if __name__ == '__main__':
 
     if sdk.name == 'python':
         title = 'PyPalmSens'
-        notesopt = '--notes-file changelog-python.md'
+        notesopt = f'--notes-file {ROOT / "changelog-python.md"}'
     else:
         title = sdk.name
         notesopt = '--generate-notes'

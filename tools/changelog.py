@@ -112,7 +112,9 @@ def update_python(new_tag: str, new_version: str) -> str:
         anchor='pypalmsens-' + new_version.replace('.', ''),
     )
 
-    with open('changelog-python.md', 'w') as f:
+    notes_path = ROOT / 'changelog-python.md'
+
+    with open(notes_path, 'w') as f:
         f.write(gh_releases)
 
     return gh_releases

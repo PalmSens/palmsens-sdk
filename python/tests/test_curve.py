@@ -114,3 +114,18 @@ def test_curve_copy(curve_dpv):
     assert curve_dpv._pscurve is not new_curve._pscurve
     assert curve_dpv._pscurve.XAxisDataArray is not new_curve._pscurve.XAxisDataArray
     assert curve_dpv._pscurve.YAxisDataArray is not new_curve._pscurve.YAxisDataArray
+
+
+def test_curve_remove_baseline(curve_dpv):
+    corrected, baseline = curve_dpv.remove_baseline(max_sweeps=1001, window_size=2)
+
+    assert baseline.title.endswith('(baseline)')
+    assert corrected.title.endswith('(corrected)')
+
+    assert list(corrected.x_array) == list(curve_dpv.x_array)
+    assert list(baseline.x_array) == list(curve_dpv.x_array)
+
+    assert list(corrected.y_array) != list(curve_dpv.y_array)
+    assert list(baseline.y_array) != list(curve_dpv.y_array)
+
+    assert sum(curve_dpv.y_array) > sum(corrected.y_array) > sum(baseline.y_array)

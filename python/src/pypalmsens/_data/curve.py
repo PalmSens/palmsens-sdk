@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, final
+from typing import TYPE_CHECKING, Literal, NamedTuple, final
 
+import PalmSens
 import PalmSens.Analysis as PSAnalysis
 import System
 from PalmSens.Plottables import Curve as PSCurve
@@ -149,6 +150,65 @@ class Curve:
 
         return self.peaks
 
+    def remove_baseline(
+        self,
+        max_sweeps: int = 1001,
+        window_size: int = 2,
+        mode: Literal['moving-average'] = 'moving-average',
+    ) -> tuple[Curve, Curve]:
+        """Perform the moving average baseline correction on a curve.
+
+        This method calculates and applies a baseline correction using a specified
+        moving average window size and a maximum number of sweeps allowed.
+
+        Parameters
+        ----------
+        max_sweeps : int, optional
+            The maximum number of sweeps allowed during the baseline correction process.
+            Defaults to 1001.
+        window_size : int, optional
+            The size of the moving average window used for calculating the baseline.
+            Defaults to 2.
+        mode : str, optional
+            The method used for baseline correction (e.g., 'moving-average').
+            Defaults to 'moving-average'.
+
+        Returns
+        -------
+        BaselineResult
+            A named tuple containing:
+            - `corrected` : The baseline-corrected curve.
+            - `baseline` : The calculated baseline curve that was subtracted.
+
+        Examples
+        --------
+        Unpacking as a tuple:
+        >>> corrected, baseline = curve.remove_baseline(max_sweeps=500, window_size=2)
+
+        Attribute access:
+        >>> result = curve.remove_baseline(max_sweeps=500, window_size=2)
+        >>> plot(result.corrected, result.baseline)
+        """
+
+        assert mode == 'moving-average'
+
+        class BaselineResult(NamedTuple):
+            corrected: Curve
+            baseline: Curve
+
+        _corrected = PalmSens.Analysis.BaselineCorrection.GetMovingAverageBaselineCorrected(
+            self._pscurve, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=False
+        )
+        _corrected.Title = self.title + ' (corrected)'
+        _baseline = PalmSens.Analysis.BaselineCorrection.GetMovingAverageBaselineCorrected(
+            self._pscurve, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=True
+        )
+        _baseline.Title = self.title + ' (baseline)'
+
+        return BaselineResult(
+            corrected=Curve(pscurve=_corrected), baseline=Curve(pscurve=_baseline)
+        )
+
     @property
     def max_x(self) -> float:
         """Maximum X value found in this curve."""
@@ -187,20 +247,6 @@ class Curve:
     def ocp_value(self) -> float:
         """OCP value for curve."""
         return self._pscurve.OCPValue
-
-    @property
-    def reference_electrode_name(self) -> None | str:
-        """The name of the reference electrode. Return None if not set."""
-        if ret := self._pscurve.ReferenceElectrodeName:
-            return str(ret)
-        return None
-
-    @property
-    def reference_electrode_potential(self) -> None | str:
-        """The reference electrode potential offset. Return None if not set."""
-        if ret := self._pscurve.ReferenceElectrodePotential:
-            return str(ret)
-        return None
 
     @property
     def x_unit(self) -> str:

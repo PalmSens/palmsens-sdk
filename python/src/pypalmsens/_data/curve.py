@@ -177,6 +177,7 @@ class Curve:
         -------
         BaselineResult
             A named tuple containing:
+
             - `corrected` : The baseline-corrected curve.
             - `baseline` : The calculated baseline curve that was subtracted.
 
@@ -187,7 +188,7 @@ class Curve:
 
         Attribute access:
         >>> result = curve.remove_baseline(max_sweeps=500, window_size=2)
-        >>> plot(result.corrected, result.baseline)
+        >>> result.corrected, result.baseline
         """
 
         assert mode == 'moving-average'

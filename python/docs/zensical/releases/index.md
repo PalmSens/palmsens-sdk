@@ -1,7 +1,39 @@
 # Changelog
 
 <!-- Latest-->
-# PyPalmSens 2.0.0
+## PyPalmSens 2.1.0
+
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-2.1.0">python-2.1.0</a>
+| :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/2.1.0">pypalmsens-2.1.0</a>
+| :fontawesome-solid-calendar: 2026-09-08
+
+This is a minor release that adds baseline correction for curves.
+
+### Baseline correction
+
+This method calculates and applies a baseline correction using a specified
+moving average window size and a maximum number of sweeps allowed.
+
+The function returns a named tuple, so you can unpack the two values directly as a tuple:
+
+```pycon
+>>> corrected, baseline = curve.remove_baseline(max_sweeps=500, window_size=2)
+```
+
+Or access them by name:
+
+```pycon
+>>> result = curve.remove_baseline(max_sweeps=500, window_size=2)
+>>> result.corrected, result.baseline
+```
+
+See the [baseline correction](../data#baseline-correction) documentation to learn more.
+
+### What's changed
+
+- Add method for baseline correction ([#481](https://github.com/palmsens/palmsens-sdk/pull/481))
+
+## PyPalmSens 2.0.0
 
 > :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-2.0.0">python-2.0.0</a>
 | :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/2.0.0">pypalmsens-2.0.0</a>
@@ -13,7 +45,7 @@ PyPalmSens 2.0.0 is a major release that updates the PalmSens core libraries to 
 
     This release includes several breaking changes. System requirements have changed, and some functions were renamed or moved to improve clarity. Please see the changes below to make sure your code continues to work.
 
-## .NET 10
+### .NET 10
 
 All versions of PyPalmSens now depend on the **.NET 10 (LTS)** runtime. This unifies the build system across the library, making the code easier to update in the long term.
 
@@ -28,11 +60,11 @@ You can check which runtimes you have installed by running: `dotnet --list-runti
 
 See the updated [installation instructions]() to learn more.
 
-## Dropped support for Python 3.10
+### Dropped support for Python 3.10
 
 Since Python 3.10 will no longer receive security updates after October, this release officially drops support for it. PyPalmSens now requires **Python 3.11 or higher**.
 
-## Digital GPIO
+### Digital GPIO
 
 You can now control the instrument's digital pins directly via the `pypalmsens.GPIO` and `pypalmsens.GPIOAsync` classes. This allows you to read logic levels, drive outputs, or toggle control lines for external hardware.
 
@@ -53,7 +85,7 @@ The GPIO API is available through the `InstrumentManager.gpio` and `InstrumentMa
 
 Learn more: [GPIO Documentation](https://dev.palmsens.com/python/latest/_attachments/gpio/)
 
-## Deprecated functions
+### Deprecated functions
 
 This release removes several old function paths and class names that were previously marked as deprecated.
 
@@ -77,7 +109,7 @@ Need to update your code? See the table below for renamed functions and their re
 | `pypalmsens.settings.AllowedReadingStatus` | `pypalmsens.types.AllowedReadingStatus` |
 | `pypalmsens.settings.AllowedTimingStatus` | `pypalmsens.types.AllowedTimingStatus` |
 
-## Updated *versus OCP* API
+### Updated *versus OCP* API
 
 We updated how to define "versus OCP" settings. In 1.x, these were configured using a bitmask via the `mode` parameter. This was often confusing for techniques like EIS, AD, and LSV.
 
@@ -101,7 +133,7 @@ Fox example, CV with vertex 1 and 2 defined against OCP:
 
 Learn more: [VersusOCP class](https://dev.palmsens.com/python/latest/_attachments/reference/methods/settings/#pypalmsens.settings.VersusOCP).
 
-## Updated Multiplexer API
+### Updated Multiplexer API
 
 This release cleans up the multiplexer settings to make them easier to use and less error-prone.
 

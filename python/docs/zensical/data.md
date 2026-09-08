@@ -108,7 +108,9 @@ The resulting plot looks like this:
 
 ![Image of DPV plot](assets/dpv_figure_1.png){ width="80%" }
 
-The measurement stores a single peak. You can retrieve it using:
+### Peak-finding
+
+The measurement above stores a single peak. You can retrieve it using:
 
 ```pycon
 >>> peaks = curve.peaks
@@ -133,6 +135,8 @@ Alternatively, for Cyclic Voltammetry (CV) and Linear Sweep Voltammetry (LSV), y
     The peak finder may not always find peaks on the first attempt depending on your data. You may need to tune parameters for better results.
     See [pypalmsens.data.Curve.find_peaks][] for more information.
 
+### Smoothing
+
 You can also filter data using [pypalmsens.data.Curve.smooth][]. Note that this method updates the curve in-place:
 
 ```pycon
@@ -147,7 +151,42 @@ Or, you can use a [Savitsky-Golay filter](https://en.wikipedia.org/wiki/Savitzky
 
 ```
 
-Curve data are devived from the underlying [Dataset](#dataset), where variable data are stored in [DataArray](#dataarray)'s.
+### Baseline correction
+
+You can perform baseline correction using [pypalmsens.data.Curve.remove_baseline][].
+
+This applies a moving-average baseline correction and returns the corrected curve and the calculated baseline.
+This function is equivalent to the 'Moving Average Baseline' function in PSTrace.
+
+The function returns a `BaselineResult` named tuple, so you can unpack the two values directly:
+
+```pycon
+>>> corrected, baseline = curve.remove_baseline(max_sweeps=500, window_size=2)
+
+>>> corrected
+Curve(title=Curve (corrected), n_points=219)
+
+>>> baseline
+Curve(title=Curve (baseline), n_points=219)
+
+```
+
+Or access them by name:
+
+```pycon
+>>> result = curve.remove_baseline(max_sweeps=500, window_size=2)
+
+>>> result.corrected
+Curve(title=Curve (corrected), n_points=219)
+
+>>> result.baseline
+Curve(title=Curve (baseline), n_points=219)
+
+```
+
+### Data access
+
+Curve data are derived from the underlying [Dataset](#dataset), where variable data are stored in [DataArray](#dataarray)'s.
 To access the raw x and y data for custom plotting or analysis, use `curve.x_array` and `curve.y_array`.
 Both return [DataArray](#dataarray) objects that can be converted to standard Python floats or numpy arrays:
 

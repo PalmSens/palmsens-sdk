@@ -119,6 +119,27 @@ class DataArray(Sequence[float]):
 
     def __rmul__(self, value: object) -> Self:
         return self.__mul__(value)
+
+    def normalize(self) -> Self:
+        """Normalize values in array to the 0 - 1 range.
+
+        Values are scaled with ``(value - min) / (max - min)``,
+        where min and max are the min and max values.
+
+        The unit of the returned array is inherited from the source array.
+
+        Returns
+        -------
+        new_array : DataArray
+            Data array with normalized values.
+        """
+        new_values = PSMath.NormalizeArray(self._psarray.GetValues(), self.min(), self.max())
+        new_array = PSDataArray(
+            self._psarray.Description, self._psarray.Unit, self._psarray.ArrayType
+        )
+        new_array.AddRange(new_values)
+        return type(self)(psarray=new_array)
+
     def copy(self) -> DataArray:
         """Return a copy of the array."""
         return DataArray(psarray=self._psarray.Clone())

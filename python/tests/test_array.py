@@ -119,7 +119,7 @@ def test_array_sub(array):
     np.testing.assert_allclose(reverse.to_numpy(), -a.to_numpy())
     np.testing.assert_allclose(reverse.to_numpy(), -result.to_numpy())
 
-    zero = a-a
+    zero = a - a
     np.testing.assert_allclose(zero.to_numpy(), 0)
 
 
@@ -158,6 +158,16 @@ def test_array_ops_type_mismatch(array):
         _ = array * 'x'
     with pytest.raises(TypeError):
         _ = 'x' * array
+
+
+def test_array_normalize(array):
+    assert array.min() != 0
+    assert array.max() != 1
+
+    a = array.normalize()
+
+    assert a.min() == 0
+    assert a.max() == 1
 
 
 def test_current_array_midc(measurement_eis_5freq):

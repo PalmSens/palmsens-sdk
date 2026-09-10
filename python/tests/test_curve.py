@@ -153,7 +153,7 @@ def test_curve_sub(curve_dpv):
     np.testing.assert_allclose(reverse.y_array.to_numpy(), -a.y_array.to_numpy())
     np.testing.assert_allclose(reverse.y_array.to_numpy(), -result.y_array.to_numpy())
 
-    zero = a-a
+    zero = a - a
     np.testing.assert_allclose(zero.y_array.to_numpy(), 0)
 
 
@@ -189,3 +189,9 @@ def test_curve_remove_baseline(curve_dpv):
     assert list(baseline.y_array) != list(curve_dpv.y_array)
 
     assert sum(curve_dpv.y_array) > sum(corrected.y_array) > sum(baseline.y_array)
+
+
+def test_concat(curve_dpv):
+    c = curve_dpv.concat(curve_dpv)
+    assert len(c) == 2 * len(curve_dpv)
+    assert c.n_points == 2 * curve_dpv.n_points

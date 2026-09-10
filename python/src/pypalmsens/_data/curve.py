@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Literal, final
 
 import PalmSens.Analysis as PSAnalysis
 import System
+from PalmSens.Calculations import MathFunctions as PSMath
 from PalmSens.Plottables import Curve as PSCurve
 from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass as pydantic_dataclass
@@ -40,10 +41,44 @@ class Curve:
     ----------
     pscurve
         Reference to .NET curve object.
+
+    Notes
+    -----
+    Supports arithmetic between curves. ``curve_a + curve_b`` and
+    ``curve_a - curve_b`` return new curves.
     """
 
     def __init__(self, *, pscurve: PSCurve):
         self._pscurve = pscurve
+
+    def __add__(self, other: object) -> Curve:
+        if not isinstance(other, Curve):
+            return NotImplemented
+
+        operator = PSMath.enumOperator.Add
+        new_curve = PSMath.AddSubtractCurves(self._pscurve, other._pscurve, operator)
+
+        return Curve(pscurve=new_curve)
+
+    __radd__ = __add__
+
+    def __sub__(self, other: object) -> Curve:
+        if not isinstance(other, Curve):
+            return NotImplemented
+
+        operator = PSMath.enumOperator.Subtract
+        new_curve = PSMath.AddSubtractCurves(self._pscurve, other._pscurve, operator)
+
+        return Curve(pscurve=new_curve)
+
+    def __rsub__(self, other: object) -> Curve:
+        if not isinstance(other, Curve):
+            return NotImplemented
+
+        operator = PSMath.enumOperator.Subtract
+        new_curve = PSMath.AddSubtractCurves(other._pscurve, self._pscurve, operator)
+
+        return Curve(pscurve=new_curve)
 
     @override
     def __repr__(self):

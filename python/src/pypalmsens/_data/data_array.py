@@ -4,9 +4,9 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Self, overload
 
 import numpy as np
-from typing_extensions import override
-
 from PalmSens.Calculations import MathFunctions as PSMath
+from PalmSens.Data import DataArray as PSDataArray
+from typing_extensions import override
 
 from .._converters import cr_enum_to_string, pr_enum_to_string
 from .._types import (
@@ -20,7 +20,6 @@ from .types import AllowedArrayTypes, array_enum_to_str
 
 if TYPE_CHECKING:
     import pandas as pd
-    from PalmSens.Data import DataArray as PSDataArray
 
 
 def implementation(interface):
@@ -80,7 +79,7 @@ class DataArray(Sequence[float]):
             return NotImplemented
 
         operator = PSMath.enumOperator.Add
-        new_array = PSMath.AddSubtractCurves(self._psarray, other._psarray, operator)
+        new_array = PSMath.AddSubtractDataArrays(self._psarray, other._psarray, operator)
 
         return type(self)(psarray=new_array)
 
@@ -92,7 +91,7 @@ class DataArray(Sequence[float]):
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
-        new_array = PSMath.AddSubtractCurves(self._psarray, other._psarray, operator)
+        new_array = PSMath.AddSubtractDataArrays(self._psarray, other._psarray, operator)
 
         return type(self)(psarray=new_array)
 
@@ -101,7 +100,7 @@ class DataArray(Sequence[float]):
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
-        new_array = PSMath.AddSubtractCurves(other._psarray, self._psarray, operator)
+        new_array = PSMath.AddSubtractDataArrays(other._psarray, self._psarray, operator)
 
         return type(self)(psarray=new_array)
 
@@ -109,7 +108,13 @@ class DataArray(Sequence[float]):
         if not isinstance(value, (int, float)):
             return NotImplemented
 
-        new_array = PSMath.MultiplyDataArray(self._psarray, value)
+        new_values = PSMath.MultiplyDataArray(self._psarray.GetValues(), value)
+
+        new_array = PSDataArray(
+            self._psarray.Description, self._psarray.Unit, self._psarray.ArrayType
+        )
+        new_array.AddRange(new_values)
+
         return type(self)(psarray=new_array)
 
     def __rmul__(self, value: object) -> Self:

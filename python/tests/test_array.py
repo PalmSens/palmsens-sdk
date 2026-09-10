@@ -3,9 +3,10 @@ from __future__ import annotations
 from math import isnan
 
 import numpy as np
+import PalmSens
 import pytest
 
-from pypalmsens.data import CurrentArray, PotentialArray
+from pypalmsens.data import CurrentArray, DataArray, PotentialArray
 
 
 @pytest.fixture
@@ -200,3 +201,15 @@ def test_potential_array(measurement_cv_1scan):
 
     d = arr.to_dict()
     assert len(d) == 5
+
+
+def test_constructor():
+    arr = DataArray([1.0, 2.0, 3.0], array_type='Time', name='test')
+
+    assert isinstance(arr, DataArray)
+    assert len(arr) == 3
+    assert arr.to_list() == [1.0, 2.0, 3.0]
+    assert arr.name == 'test'
+    assert arr.type == 'Time'
+    assert arr.unit == 's'
+    assert isinstance(arr._psarray, PalmSens.Data.DataArray)

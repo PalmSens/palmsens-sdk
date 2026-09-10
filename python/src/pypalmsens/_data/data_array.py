@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Any, Self, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Self, overload
 
 import numpy as np
+import PalmSens
 from PalmSens.Calculations import MathFunctions as PSMath
 from PalmSens.Data import DataArray as PSDataArray
 from typing_extensions import override
@@ -31,7 +32,7 @@ def implementation(interface):
 
 
 class DataArray(Sequence[float]):
-    """Python wrapper for .NET DataArray class.
+    """Array of data values.
 
     A data array can be created from an iterable of values, or wrapped from an
     existing ``PSDataArray`` (see ``_wrap``).
@@ -57,7 +58,8 @@ class DataArray(Sequence[float]):
     ``array_a * factor`` return new arrays.
     """
 
-    __slots__ = ('_psarray',)
+    __slots__: ClassVar[tuple[str, ...]] = ('_psarray',)
+    _psarray: PSDataArray
 
     def __init__(
         self,
@@ -83,6 +85,17 @@ class DataArray(Sequence[float]):
         obj = cls.__new__(cls)
         obj._psarray = psarray
         return obj
+
+    @classmethod
+    def _wrap_dispatched(
+        cls, psarray: PSDataArray
+    ) -> DataArray | CurrentArray | PotentialArray:
+        if isinstance(psarray, PalmSens.Data.DataArrayPotentials):
+            return PotentialArray._wrap(psarray)
+        if isinstance(psarray, PalmSens.Data.DataArrayCurrents):
+            return CurrentArray._wrap(psarray)
+
+        return DataArray._wrap(psarray)
 
     @override
     def __repr__(self):
@@ -110,7 +123,7 @@ class DataArray(Sequence[float]):
     def __len__(self) -> int:
         return len(self._psarray)
 
-    def __add__(self, other: object) -> Self:
+    def __add__(self, other: object) -> DataArray:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
@@ -119,10 +132,10 @@ class DataArray(Sequence[float]):
 
         return type(self)._wrap(new_array)
 
-    def __radd__(self, other: object) -> Self:
+    def __radd__(self, other: object) -> DataArray:
         return self.__add__(other)
 
-    def __sub__(self, other: object) -> Self:
+    def __sub__(self, other: object) -> DataArray:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
@@ -131,7 +144,7 @@ class DataArray(Sequence[float]):
 
         return type(self)._wrap(new_array)
 
-    def __rsub__(self, other: object) -> Self:
+    def __rsub__(self, other: object) -> DataArray:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
@@ -140,7 +153,7 @@ class DataArray(Sequence[float]):
 
         return type(self)._wrap(new_array)
 
-    def __mul__(self, value: object) -> Self:
+    def __mul__(self, value: object) -> DataArray:
         if not isinstance(value, (int, float)):
             return NotImplemented
 
@@ -153,10 +166,10 @@ class DataArray(Sequence[float]):
 
         return type(self)._wrap(new_array)
 
-    def __rmul__(self, value: object) -> Self:
+    def __rmul__(self, value: object) -> DataArray:
         return self.__mul__(value)
 
-    def normalize(self) -> Self:
+    def normalize(self) -> DataArray:
         """Normalize values in array to the 0 - 1 range.
 
         Values are scaled with ``(value - min) / (max - min)``,
@@ -256,6 +269,8 @@ class CurrentArray(DataArray):
         Reference to .NET DataArray object.
     """
 
+    __slots__ = ()
+
     def current(self) -> list[float]:
         """Current in uA."""
         # Work-around for mIDC bug
@@ -329,9 +344,20 @@ class PotentialArray(DataArray):
 
     Parameters
     ----------
-    psarray
-        Reference to .NET DataArray object.
+    values : Iterable[float]
+        Values to store in the array.
+        Any iterable (list, tuple, generator, etc.)
+        of floats is accepted.
+    array_type : AllowedArrayTypes, optional
+        Type of the array. Defaults to `'Generic'`.
+        Use e.g. `'Current'` or `'Potential'` when constructing
+        arrays that represent measured quantities.
+    name : str, optional
+        Name of the array. Defaults to the value of `array_type` when not
+        given. The name is used in `__repr__` and for identification.
     """
+
+    __slots__ = ()
 
     def potential(self) -> list[float]:
         """Return list of potential values in V."""

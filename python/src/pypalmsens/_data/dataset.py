@@ -7,7 +7,7 @@ from PalmSens.Plottables import Curve as PSCurve
 from typing_extensions import override
 
 from .curve import Curve
-from .data_array import CurrentArray, DataArray, PotentialArray
+from .data_array import CurrentArray, DataArray
 from .types import AllowedArrayTypes, array_enum_to_str
 
 if TYPE_CHECKING:
@@ -18,24 +18,6 @@ if TYPE_CHECKING:
 
 def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, DataArray]:
     """Suffix non-unique keys with integer. Keys are derived from the array type."""
-    CURRENT_TYPES = (
-        'Current',
-        'Iac',
-        'miDC',
-        'BipotCurrent',
-        'ForwardCurrent',
-        'ReverseCurrent',
-        'CurrentExtraWE',
-        'DCCurrent',
-    )
-    POTENTIAL_TYPES = (
-        'Potential',
-        'BipotPotential',
-        'CEPotential',
-        'SE2vsXPotential',
-        'PotentialExtraRE',
-    )
-
     arrays: list[PSDataArray] = [array for array in psdataset.GetDataArrays()]
     array_types = [array_enum_to_str(array.ArrayType) for array in arrays]
 
@@ -53,14 +35,7 @@ def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, D
         else:
             key = array_type
 
-        if array_type in CURRENT_TYPES:
-            cls = CurrentArray  # type: ignore
-        elif array_type in POTENTIAL_TYPES:
-            cls = PotentialArray  # type: ignore
-        else:
-            cls = DataArray  # type: ignore
-
-        mapping[key] = cls._wrap(array)
+        mapping[key] = DataArray._wrap(array)
 
     return mapping
 

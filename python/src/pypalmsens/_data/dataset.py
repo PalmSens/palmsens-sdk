@@ -60,7 +60,7 @@ def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, D
         else:
             cls = DataArray  # type: ignore
 
-        mapping[key] = cls(psarray=array)
+        mapping[key] = cls._wrap(array)
 
     return mapping
 
@@ -178,7 +178,7 @@ class DataSet(Mapping[str, DataArray]):
         elif quantity:
             return self._filter(key=lambda array: array.quantity == quantity)
         elif hidden:
-            return [DataArray(psarray=psarray) for psarray in self._psdataset if psarray.Hidden]
+            return [DataArray._wrap(psarray) for psarray in self._psdataset if psarray.Hidden]
         else:
             return list(self.values())
 

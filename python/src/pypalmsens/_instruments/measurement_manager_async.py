@@ -315,8 +315,8 @@ class MeasurementManagerAsync:
         """Called when new data is added to the curve."""
 
         data = CallbackData(
-            x_array=DataArray(psarray=pscurve.XAxisDataArray),
-            y_array=DataArray(psarray=pscurve.YAxisDataArray),
+            x_array=DataArray._wrap(pscurve.XAxisDataArray),
+            y_array=DataArray._wrap(pscurve.YAxisDataArray),
             start=args.StartIndex,
             id=pscurve.GetHashCode(),
         )

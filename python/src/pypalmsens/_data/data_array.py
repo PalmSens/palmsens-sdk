@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Self, overload
 
 import numpy as np
@@ -16,7 +16,7 @@ from .._types import (
     AllowedTimingStatus,
 )
 from .data_value import CurrentReading, PotentialReading
-from .types import AllowedArrayTypes, array_enum_to_str
+from .types import AllowedArrayTypes, array_enum_to_str, array_str_to_enum
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -31,6 +31,8 @@ def implementation(interface):
 
 
 class DataArray(Sequence[float]):
+    __slots__ = ('_psarray',)
+
     """Python wrapper for .NET DataArray class.
 
     Parameters
@@ -45,8 +47,26 @@ class DataArray(Sequence[float]):
     ``array_a * factor`` return new arrays.
     """
 
-    def __init__(self, *, psarray: PSDataArray):
-        self._psarray: PSDataArray = psarray
+    def __init__(
+        self, values: Iterable[float], *, array_type: AllowedArrayTypes, name: str | None = None
+    ):
+        array_type_enum = array_str_to_enum(array_type)
+
+        if name is None:
+            name = array_type
+
+        unit = PSDataArray.GetDefaultUnit(array_type_enum)
+
+        new_array = PSDataArray(name, unit, array_type_enum)
+        new_array.AddRange(values)
+
+        self._psarray = new_array
+
+    @classmethod
+    def _wrap(cls, psarray: PSDataArray) -> Self:
+        obj = cls.__new__(cls)
+        obj._psarray = psarray
+        return obj
 
     @override
     def __repr__(self):
@@ -81,7 +101,7 @@ class DataArray(Sequence[float]):
         operator = PSMath.enumOperator.Add
         new_array = PSMath.AddSubtractDataArrays(self._psarray, other._psarray, operator)
 
-        return type(self)(psarray=new_array)
+        return type(self)._wrap(new_array)
 
     def __radd__(self, other: object) -> Self:
         return self.__add__(other)
@@ -93,7 +113,7 @@ class DataArray(Sequence[float]):
         operator = PSMath.enumOperator.Subtract
         new_array = PSMath.AddSubtractDataArrays(self._psarray, other._psarray, operator)
 
-        return type(self)(psarray=new_array)
+        return type(self)._wrap(new_array)
 
     def __rsub__(self, other: object) -> Self:
         if not isinstance(other, self.__class__):
@@ -102,7 +122,7 @@ class DataArray(Sequence[float]):
         operator = PSMath.enumOperator.Subtract
         new_array = PSMath.AddSubtractDataArrays(other._psarray, self._psarray, operator)
 
-        return type(self)(psarray=new_array)
+        return type(self)._wrap(new_array)
 
     def __mul__(self, value: object) -> Self:
         if not isinstance(value, (int, float)):
@@ -115,7 +135,7 @@ class DataArray(Sequence[float]):
         )
         new_array.AddRange(new_values)
 
-        return type(self)(psarray=new_array)
+        return type(self)._wrap(new_array)
 
     def __rmul__(self, value: object) -> Self:
         return self.__mul__(value)
@@ -138,11 +158,11 @@ class DataArray(Sequence[float]):
             self._psarray.Description, self._psarray.Unit, self._psarray.ArrayType
         )
         new_array.AddRange(new_values)
-        return type(self)(psarray=new_array)
+        return type(self)._wrap(new_array)
 
     def copy(self) -> DataArray:
         """Return a copy of the array."""
-        return DataArray(psarray=self._psarray.Clone())
+        return DataArray._wrap(self._psarray.Clone())
 
     def min(self) -> float:
         """Return min value."""

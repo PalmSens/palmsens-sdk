@@ -380,12 +380,12 @@ class Curve:
     @property
     def x_array(self) -> DataArray:
         """Y data for the curve."""
-        return DataArray(psarray=self._pscurve.XAxisDataArray)
+        return DataArray._wrap(self._pscurve.XAxisDataArray)
 
     @property
     def y_array(self) -> DataArray:
         """Y data for the curve."""
-        return DataArray(psarray=self._pscurve.YAxisDataArray)
+        return DataArray._wrap(self._pscurve.YAxisDataArray)
 
     def linear_slope(
         self, start: None | int = None, stop: None | int = None

@@ -31,14 +31,24 @@ def implementation(interface):
 
 
 class DataArray(Sequence[float]):
-    __slots__ = ('_psarray',)
-
     """Python wrapper for .NET DataArray class.
+
+    A data array can be created from an iterable of values, or wrapped from an
+    existing ``PSDataArray`` (see ``_wrap``).
 
     Parameters
     ----------
-    psarray
-        Reference to .NET DataArray object.
+    values : Iterable[float]
+        Values to store in the array.
+        Any iterable (list, tuple, generator, etc.)
+        of floats is accepted.
+    array_type : AllowedArrayTypes, optional
+        Type of the array. Defaults to `'Generic'`.
+        Use e.g. `'Current'` or `'Potential'` when constructing
+        arrays that represent measured quantities.
+    name : str, optional
+        Name of the array. Defaults to the value of `array_type` when not
+        given. The name is used in `__repr__` and for identification.
 
     Notes
     -----
@@ -47,8 +57,14 @@ class DataArray(Sequence[float]):
     ``array_a * factor`` return new arrays.
     """
 
+    __slots__ = ('_psarray',)
+
     def __init__(
-        self, values: Iterable[float], *, array_type: AllowedArrayTypes, name: str | None = None
+        self,
+        values: Iterable[float],
+        *,
+        array_type: AllowedArrayTypes = 'Generic',
+        name: str | None = None,
     ):
         array_type_enum = array_str_to_enum(array_type)
 

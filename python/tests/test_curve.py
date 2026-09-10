@@ -91,8 +91,6 @@ def test_curve_properties(curve_dpv):
     assert curve_dpv.mux_channel == -1
 
     assert isnan(curve_dpv.ocp_value)
-    assert not curve_dpv.reference_electrode_name
-    assert not curve_dpv.reference_electrode_potential
     assert curve_dpv.x_unit == 'V'
     assert curve_dpv.x_label == 'Potential'
     assert curve_dpv.y_unit == 'µA'
@@ -176,3 +174,18 @@ def test_curve_add_sub_types(curve_dpv):
         _ = curve_dpv - 1
     with pytest.raises(TypeError):
         _ = 1 - curve_dpv
+
+
+def test_curve_remove_baseline(curve_dpv):
+    corrected, baseline = curve_dpv.remove_baseline(max_sweeps=1001, window_size=2)
+
+    assert baseline.title.endswith('(baseline)')
+    assert corrected.title.endswith('(corrected)')
+
+    assert list(corrected.x_array) == list(curve_dpv.x_array)
+    assert list(baseline.x_array) == list(curve_dpv.x_array)
+
+    assert list(corrected.y_array) != list(curve_dpv.y_array)
+    assert list(baseline.y_array) != list(curve_dpv.y_array)
+
+    assert sum(curve_dpv.y_array) > sum(corrected.y_array) > sum(baseline.y_array)

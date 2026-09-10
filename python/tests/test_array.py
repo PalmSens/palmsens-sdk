@@ -85,6 +85,81 @@ def test_current_array(measurement_cv_1scan):
     assert len(d) == 5
 
 
+def test_array_add(array):
+    a = array.copy()
+    b = a + a
+
+    result = a + b
+    assert len(result) == len(a)
+
+    a_np = a.to_numpy()
+    expected = a_np + b.to_numpy()
+    np.testing.assert_allclose(result.to_numpy(), expected)
+
+
+def test_array_add_commutative(array):
+    a = array.copy()
+    b = a + a
+
+    np.testing.assert_allclose(
+        (a + b).to_numpy(),
+        (b + a).to_numpy(),
+    )
+
+
+def test_array_sub(array):
+    a = array.copy()
+    b = a + a
+
+    result = b - a
+    assert len(result) == len(a)
+    np.testing.assert_allclose(result.to_numpy(), a.to_numpy())
+
+    reverse = a - b
+    np.testing.assert_allclose(reverse.to_numpy(), -a.to_numpy())
+    np.testing.assert_allclose(reverse.to_numpy(), -result.to_numpy())
+
+    zero = a-a
+    np.testing.assert_allclose(zero.to_numpy(), 0)
+
+
+def test_array_rsub_direction(array):
+    a = array.copy()
+    b = a + a
+
+    result = type(array).__rsub__(a, b)
+
+    np.testing.assert_allclose(result.to_numpy(), (b - a).to_numpy())
+
+
+def test_array_mul(array):
+    a = array.copy()
+    a_np = a.to_numpy()
+
+    # value * array
+    for value in (2.0, 3):
+        result = a * value
+        expected = a_np * value
+        assert len(result) == len(a)
+        np.testing.assert_allclose(result.to_numpy(), expected)
+
+    # value * array
+    np.testing.assert_allclose((1.23 * a).to_numpy(), a_np * 1.23)
+    np.testing.assert_allclose((10 * a).to_numpy(), a_np * 10)
+
+
+def test_array_ops_type_mismatch(array):
+    """Operations against non-array / wrong-type operands are rejected."""
+    with pytest.raises(TypeError):
+        _ = array + 1
+    with pytest.raises(TypeError):
+        _ = array - 1
+    with pytest.raises(TypeError):
+        _ = array * 'x'
+    with pytest.raises(TypeError):
+        _ = 'x' * array
+
+
 def test_current_array_midc(measurement_eis_5freq):
     """Regression test for midc bug.
 

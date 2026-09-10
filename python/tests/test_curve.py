@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from math import isnan
 
+import numpy as np
 import pytest
+
+from pypalmsens.data import Curve
 
 
 @pytest.fixture
@@ -112,6 +115,65 @@ def test_curve_copy(curve_dpv):
     assert curve_dpv._pscurve is not new_curve._pscurve
     assert curve_dpv._pscurve.XAxisDataArray is not new_curve._pscurve.XAxisDataArray
     assert curve_dpv._pscurve.YAxisDataArray is not new_curve._pscurve.YAxisDataArray
+
+
+def test_curve_add(curve_dpv):
+    a = curve_dpv.copy()
+    b = a + a
+
+    result = a + b
+    assert isinstance(result, Curve)
+    assert len(result) == len(a)
+
+    a_np = a.y_array.to_numpy()
+    expected = a_np + b.y_array.to_numpy()
+    np.testing.assert_allclose(result.y_array.to_numpy(), expected)
+
+
+def test_curve_add_commutative(curve_dpv):
+    a = curve_dpv.copy()
+    b = a + a
+
+    np.testing.assert_allclose(
+        (a + b).y_array.to_numpy(),
+        (b + a).y_array.to_numpy(),
+    )
+
+
+def test_curve_sub(curve_dpv):
+    a = curve_dpv.copy()
+    b = a + a
+
+    result = b - a
+    assert isinstance(result, Curve)
+    assert len(result) == len(a)
+    np.testing.assert_allclose(result.y_array.to_numpy(), a.y_array.to_numpy())
+
+    reverse = a - b
+    np.testing.assert_allclose(reverse.y_array.to_numpy(), -a.y_array.to_numpy())
+    np.testing.assert_allclose(reverse.y_array.to_numpy(), -result.y_array.to_numpy())
+
+    zero = a-a
+    np.testing.assert_allclose(zero.y_array.to_numpy(), 0)
+
+
+def test_curve_rsub_direction(curve_dpv):
+    """__rsub__ must compute other - self (operands reversed vs __sub__)."""
+    a = curve_dpv.copy()
+    b = a + a
+
+    result = type(curve_dpv).__rsub__(a, b)
+
+    np.testing.assert_allclose(result.y_array.to_numpy(), (b - a).y_array.to_numpy())
+
+
+def test_curve_add_sub_types(curve_dpv):
+    with pytest.raises(TypeError):
+        _ = curve_dpv + 1
+    with pytest.raises(TypeError):
+        _ = curve_dpv - 1
+    with pytest.raises(TypeError):
+        _ = 1 - curve_dpv
 
 
 def test_curve_remove_baseline(curve_dpv):

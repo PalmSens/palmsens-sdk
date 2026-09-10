@@ -333,7 +333,7 @@ class MeasurementManagerAsync:
         pscurve.NewDataAdded -= self.event_handlers['curve_new_data']
         pscurve.Finished -= self.event_handlers['curve_end']
 
-        curve = Curve(pscurve=pscurve)
+        curve = Curve._wrap(pscurve)
 
         for callback in self.callbacks['curve_end']:
             _ = self.loop.call_soon_threadsafe(callback, curve)  # type: ignore
@@ -348,7 +348,7 @@ class MeasurementManagerAsync:
         pscurve.NewDataAdded += self.event_handlers['curve_new_data']
         pscurve.Finished += self.event_handlers['curve_end']
 
-        curve = Curve(pscurve=pscurve)
+        curve = Curve._wrap(pscurve)
 
         for callback in self.callbacks['curve_begin']:
             _ = self.loop.call_soon_threadsafe(callback, curve)  # type: ignore

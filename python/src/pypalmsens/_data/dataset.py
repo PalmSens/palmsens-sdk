@@ -113,7 +113,7 @@ class DataSet(Mapping[str, DataArray]):
 
         pscurve = PSCurve(xarray._psarray, yarray._psarray, title=title)
 
-        return Curve(pscurve=pscurve)
+        return Curve._wrap(pscurve)
 
     def arrays(
         self,

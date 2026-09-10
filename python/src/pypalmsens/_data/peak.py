@@ -47,7 +47,7 @@ class Peak:
         from .curve import Curve
 
         if not self._curve:
-            self._curve = Curve(pscurve=self._pspeak.Curve)
+            self._curve = Curve._wrap(self._pspeak.Curve)
         return self._curve
 
     @property

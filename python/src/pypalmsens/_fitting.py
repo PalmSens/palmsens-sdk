@@ -201,7 +201,7 @@ class FitResult:
         """
         psmodel = self.get_psmodel(data=data)
         curves = psmodel.GetNyquist()
-        calc, meas = (Curve(pscurve=pscurve) for pscurve in curves)
+        calc, meas = (Curve._wrap(pscurve) for pscurve in curves)
         return calc, meas
 
     def get_bode_z(self, data: EISData) -> tuple[Curve, Curve]:
@@ -220,7 +220,7 @@ class FitResult:
         """
         psmodel = self.get_psmodel(data=data)
         curves = psmodel.GetCurveZabsOverFrequency(False)
-        calc, meas = (Curve(pscurve=pscurve) for pscurve in curves)
+        calc, meas = (Curve._wrap(pscurve) for pscurve in curves)
         return calc, meas
 
     def get_bode_phase(self, data: EISData) -> tuple[Curve, Curve]:
@@ -239,7 +239,7 @@ class FitResult:
         """
         psmodel = self.get_psmodel(data=data)
         curves = psmodel.GetCurvePhaseOverFrequency(False)
-        calc, meas = (Curve(pscurve=pscurve) for pscurve in curves)
+        calc, meas = (Curve._wrap(pscurve) for pscurve in curves)
         return calc, meas
 
     def plot_nyquist(self, data: EISData) -> figure.Figure:

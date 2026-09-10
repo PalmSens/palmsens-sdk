@@ -127,7 +127,7 @@ class Measurement:
         """
         curve = self._psmeasurement.BlankCurve
         if curve:
-            return Curve(pscurve=curve)
+            return Curve._wrap(curve)
         return None
 
     @property
@@ -219,4 +219,4 @@ class Measurement:
         curves : list[Curve]
             List of curves
         """
-        return [Curve(pscurve=curve) for curve in self._psmeasurement.GetCurveArray()]
+        return [Curve._wrap(curve) for curve in self._psmeasurement.GetCurveArray()]

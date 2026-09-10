@@ -36,6 +36,8 @@ class CurveMetadata:
 
 @final
 class Curve:
+    __slots__ = ('_pscurve',)
+
     """Python wrapper for .NET Curve class.
 
     Parameters
@@ -49,8 +51,14 @@ class Curve:
     ``curve_a - curve_b`` return new curves.
     """
 
-    def __init__(self, *, pscurve: PSCurve):
-        self._pscurve = pscurve
+    def __init__(self, x: DataArray, y: DataArray, *, title: str = 'Curve'):
+        self._pscurve = PSCurve(x._psarray, y._psarray, title)
+
+    @classmethod
+    def _wrap(cls, pscurve: PSCurve) -> Self:
+        obj = cls.__new__(cls)
+        obj._pscurve = pscurve
+        return obj
 
     def __add__(self, other: object) -> Self:
         if not isinstance(other, Curve):
@@ -59,7 +67,7 @@ class Curve:
         operator = PSMath.enumOperator.Add
         new_curve = PSMath.AddSubtractCurves(self._pscurve, other._pscurve, operator)
 
-        return type(self)(pscurve=new_curve)
+        return type(self)._wrap(new_curve)
 
     __radd__ = __add__
 
@@ -70,7 +78,7 @@ class Curve:
         operator = PSMath.enumOperator.Subtract
         new_curve = PSMath.AddSubtractCurves(self._pscurve, other._pscurve, operator)
 
-        return type(self)(pscurve=new_curve)
+        return type(self)._wrap(new_curve)
 
     def __rsub__(self, other: object) -> Self:
         if not isinstance(other, Curve):
@@ -79,7 +87,7 @@ class Curve:
         operator = PSMath.enumOperator.Subtract
         new_curve = PSMath.AddSubtractCurves(other._pscurve, self._pscurve, operator)
 
-        return type(self)(pscurve=new_curve)
+        return type(self)._wrap(new_curve)
 
     @override
     def __repr__(self):
@@ -100,11 +108,11 @@ class Curve:
         """
         new_curve = PSMath.AppendCurves(self._pscurve, other._pscurve)
 
-        return type(self)(pscurve=new_curve)
+        return type(self)._wrap(new_curve)
 
     def copy(self) -> Curve:
         """Return a copy of this curve."""
-        return Curve(pscurve=PSCurve(self._pscurve, cloneData=True))
+        return Curve._wrap(PSCurve(self._pscurve, cloneData=True))
 
     def smooth(self, smooth_level: int = 0):
         """Smooth the .y_array using a Savitsky-Golay filter with the specified smooth
@@ -259,7 +267,7 @@ class Curve:
         _baseline.Title = self.title + ' (baseline)'
 
         return BaselineResult(
-            corrected=Curve(pscurve=_corrected), baseline=Curve(pscurve=_baseline)
+            corrected=Curve._wrap(_corrected), baseline=Curve._wrap(_baseline)
         )
 
     @property

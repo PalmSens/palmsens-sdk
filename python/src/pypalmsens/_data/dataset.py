@@ -35,7 +35,7 @@ def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, D
         else:
             key = array_type
 
-        mapping[key] = DataArray._wrap(array)
+        mapping[key] = DataArray._wrap_dispatched(array)
 
     return mapping
 

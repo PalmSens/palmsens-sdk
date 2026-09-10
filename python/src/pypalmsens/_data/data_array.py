@@ -4,9 +4,10 @@ from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Any, ClassVar, Self, overload
 
 import numpy as np
-import PalmSens
 from PalmSens.Calculations import MathFunctions as PSMath
 from PalmSens.Data import DataArray as PSDataArray
+from PalmSens.Data import DataArrayCurrents as PSDataArrayCurrents
+from PalmSens.Data import DataArrayPotentials as PSDataArrayPotentials
 from typing_extensions import override
 
 from .._converters import cr_enum_to_string, pr_enum_to_string
@@ -60,6 +61,7 @@ class DataArray(Sequence[float]):
 
     __slots__: ClassVar[tuple[str, ...]] = ('_psarray',)
     _psarray: PSDataArray
+    _ps_cls: ClassVar[type[PSDataArray]] = PSDataArray
 
     def __init__(
         self,
@@ -75,7 +77,8 @@ class DataArray(Sequence[float]):
 
         unit = PSDataArray.GetDefaultUnit(array_type_enum)
 
-        new_array = PSDataArray(name, unit, array_type_enum)
+        new_array = self._ps_cls(name, unit, array_type_enum)
+
         new_array.AddRange(values)
 
         self._psarray = new_array
@@ -90,9 +93,9 @@ class DataArray(Sequence[float]):
     def _wrap_dispatched(
         cls, psarray: PSDataArray
     ) -> DataArray | CurrentArray | PotentialArray:
-        if isinstance(psarray, PalmSens.Data.DataArrayPotentials):
+        if isinstance(psarray, PSDataArrayPotentials):
             return PotentialArray._wrap(psarray)
-        if isinstance(psarray, PalmSens.Data.DataArrayCurrents):
+        if isinstance(psarray, PSDataArrayCurrents):
             return CurrentArray._wrap(psarray)
 
         return DataArray._wrap(psarray)
@@ -271,6 +274,8 @@ class CurrentArray(DataArray):
 
     __slots__ = ()
 
+    _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayCurrents
+
     def current(self) -> list[float]:
         """Current in uA."""
         # Work-around for mIDC bug
@@ -358,6 +363,8 @@ class PotentialArray(DataArray):
     """
 
     __slots__ = ()
+
+    _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayPotentials
 
     def potential(self) -> list[float]:
         """Return list of potential values in V."""

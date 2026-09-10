@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, final
+from typing import TYPE_CHECKING, Literal, Self, final
 
 import PalmSens.Analysis as PSAnalysis
 import System
@@ -51,34 +51,34 @@ class Curve:
     def __init__(self, *, pscurve: PSCurve):
         self._pscurve = pscurve
 
-    def __add__(self, other: object) -> Curve:
+    def __add__(self, other: object) -> Self:
         if not isinstance(other, Curve):
             return NotImplemented
 
         operator = PSMath.enumOperator.Add
         new_curve = PSMath.AddSubtractCurves(self._pscurve, other._pscurve, operator)
 
-        return Curve(pscurve=new_curve)
+        return type(self)(pscurve=new_curve)
 
     __radd__ = __add__
 
-    def __sub__(self, other: object) -> Curve:
+    def __sub__(self, other: object) -> Self:
         if not isinstance(other, Curve):
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
         new_curve = PSMath.AddSubtractCurves(self._pscurve, other._pscurve, operator)
 
-        return Curve(pscurve=new_curve)
+        return type(self)(pscurve=new_curve)
 
-    def __rsub__(self, other: object) -> Curve:
+    def __rsub__(self, other: object) -> Self:
         if not isinstance(other, Curve):
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
         new_curve = PSMath.AddSubtractCurves(other._pscurve, self._pscurve, operator)
 
-        return Curve(pscurve=new_curve)
+        return type(self)(pscurve=new_curve)
 
     @override
     def __repr__(self):

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, overload
+from typing import TYPE_CHECKING, Any, Self, overload
 
 import numpy as np
 from typing_extensions import override
+
+from PalmSens.Calculations import MathFunctions as PSMath
 
 from .._converters import cr_enum_to_string, pr_enum_to_string
 from .._types import (
@@ -36,6 +38,12 @@ class DataArray(Sequence[float]):
     ----------
     psarray
         Reference to .NET DataArray object.
+
+    Notes
+    -----
+    Supports arithmetic between arrays of the same type.
+    ``array_a + array_b``, ``array_a - array_b`` and
+    ``array_a * factor`` return new arrays.
     """
 
     def __init__(self, *, psarray: PSDataArray):
@@ -67,6 +75,45 @@ class DataArray(Sequence[float]):
     def __len__(self) -> int:
         return len(self._psarray)
 
+    def __add__(self, other: object) -> Self:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        operator = PSMath.enumOperator.Add
+        new_array = PSMath.AddSubtractCurves(self._psarray, other._psarray, operator)
+
+        return type(self)(psarray=new_array)
+
+    def __radd__(self, other: object) -> Self:
+        return self.__add__(other)
+
+    def __sub__(self, other: object) -> Self:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        operator = PSMath.enumOperator.Subtract
+        new_array = PSMath.AddSubtractCurves(self._psarray, other._psarray, operator)
+
+        return type(self)(psarray=new_array)
+
+    def __rsub__(self, other: object) -> Self:
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        operator = PSMath.enumOperator.Subtract
+        new_array = PSMath.AddSubtractCurves(other._psarray, self._psarray, operator)
+
+        return type(self)(psarray=new_array)
+
+    def __mul__(self, value: object) -> Self:
+        if not isinstance(value, (int, float)):
+            return NotImplemented
+
+        new_array = PSMath.MultiplyDataArray(self._psarray, value)
+        return type(self)(psarray=new_array)
+
+    def __rmul__(self, value: object) -> Self:
+        return self.__mul__(value)
     def copy(self) -> DataArray:
         """Return a copy of the array."""
         return DataArray(psarray=self._psarray.Clone())

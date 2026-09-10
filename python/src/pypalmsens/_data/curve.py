@@ -85,6 +85,23 @@ class Curve:
     def __repr__(self):
         return f'{type(self).__name__}(title={self.title}, n_points={self.n_points})'
 
+    def concat(self, other: Curve) -> Self:
+        """Concatenate the x and y arrays of this curve with another curve.
+
+        Parameters
+        ----------
+        other: Curve
+            Curve whose points are appended after this curve's points.
+
+        Returns
+        -------
+        Curve
+            New curve with the concatenated x and y arrays.
+        """
+        new_curve = PSMath.AppendCurves(self._pscurve, other._pscurve)
+
+        return type(self)(pscurve=new_curve)
+
     def copy(self) -> Curve:
         """Return a copy of this curve."""
         return Curve(pscurve=PSCurve(self._pscurve, cloneData=True))

@@ -522,8 +522,7 @@ For more information, see [pypalmsens.data.PotentialArray][].
 
 Alternatively, use [DataArray.update][pypalmsens.data.DataArray.update] to replace all values at once. Both methods raise `ValueError` if the supplied data length does not match the DataArray.
 
-```python
->>> import pypalmsens as ps
+```pycon
 >>> arr = ps.data.DataArray([0, 0, 0, 0])
 
 # Replace the whole array in-place
@@ -542,7 +541,7 @@ Alternatively, use [DataArray.update][pypalmsens.data.DataArray.update] to repla
 [5.0, 6.0, 7.0, 8.0]
 ```
 
-Note if you got the data from a DataSet or Curve, the changes will propegate to the parent class as well.
+Note if you got the data from a [DataSet][pypalmsens.data.DataSet] or [Curve][pypalmsens.data.Curve], the changes will propagate to the parent class as well.
 
 ## EISData
 

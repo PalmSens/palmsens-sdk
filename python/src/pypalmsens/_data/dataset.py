@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, final
+from typing import TYPE_CHECKING, Any, ClassVar, Self, final
 
 from PalmSens.Plottables import Curve as PSCurve
 from typing_extensions import override
@@ -42,17 +42,31 @@ def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, D
 
 @final
 class DataSet(Mapping[str, DataArray]):
-    """Python wrapper for .NET DataSet class.
+    """Dataset containing measurement data.
 
-    Parameters
-    ----------
-    psdataset : PalmSens.Data.DataSet
-        Reference to .NET DataSet object.
+    Notes
+    -----
+    `__init__` is currently reserved for a future public API.
+    Obtain internal instances via `_wrap`.
     """
 
-    def __init__(self, *, psdataset: PSDataSet):
-        self._psdataset = psdataset
-        self._mapping = _dataset_to_mapping_with_unique_keys(psdataset)
+    __slots__: ClassVar[tuple[str, ...]] = ('_mapping', '_psdataset')
+
+    def __init__(self):
+        self._psdataset: PSDataSet
+        self._mapping: dict[str, DataArray]
+
+        raise TypeError(
+            'DataSet cannot be instantiated directly. '
+            'Obtain instances through measurements or io methods.'
+        )
+
+    @classmethod
+    def _wrap(cls, psdataset: PSDataSet) -> Self:
+        obj = cls.__new__(cls)
+        obj._psdataset = psdataset
+        obj._mapping = _dataset_to_mapping_with_unique_keys(psdataset)
+        return obj
 
     @override
     def __repr__(self):

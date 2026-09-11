@@ -57,7 +57,6 @@ def test_find_peaks(curve_dpv):
         12.203112,
         33.240610,
     ]
-    assert peaks[0].curve_title == curve_dpv.title
 
     curve_dpv.clear_peaks()
     assert not curve_dpv.peaks
@@ -73,7 +72,6 @@ def test_find_peaks_semiderivative(curve_cv):
 
     assert [peak.x for peak in peaks] == [0.284884, -0.0223047]
     assert [peak.y for peak in peaks] == [15.8404, -15.826]
-    assert peaks[0].curve_title == curve.title
 
     curve.clear_peaks()
     assert not curve.peaks

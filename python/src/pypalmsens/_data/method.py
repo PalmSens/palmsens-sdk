@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar, Self
 
 import PalmSens
 
@@ -11,10 +11,28 @@ from .._methods.techniques import BaseTechnique
 
 
 class Method:
-    """Wrapper for PalmSens.Method."""
+    """Wrapper for PalmSens.Method.
 
-    def __init__(self, *, psmethod: PalmSens.Method):
-        self._psmethod = psmethod
+    Notes
+    -----
+    Obtain internal instances via `_wrap`.
+    """
+
+    __slots__: ClassVar[tuple[str, ...]] = ('_psmethod',)
+
+    def __init__(self):
+        self._psmethod: PalmSens.Method
+
+        raise TypeError(
+            'Method cannot be instantiated directly. '
+            'Obtain instances through the Technique methods.'
+        )
+
+    @classmethod
+    def _wrap(cls, psmethod: PalmSens.Method) -> Self:
+        obj = cls.__new__(cls)
+        obj._psmethod = psmethod
+        return obj
 
     def __repr__(self) -> str:
         return f'{type(self).__name__}(name={self.name!r}, id={self.id!r})'

@@ -284,7 +284,7 @@ class MeasurementManagerAsync:
         self, sender: PalmSens.Comm.CommManager, args
     ) -> Task.CompletedTask:
         """Called when the measurement begins."""
-        measurement = Measurement(psmeasurement=args.NewMeasurement)
+        measurement = Measurement._wrap(args.NewMeasurement)
 
         self.last_measurement = measurement
 
@@ -372,7 +372,7 @@ class MeasurementManagerAsync:
             return
 
         data = CallbackDataEIS(
-            data=DataSet(psdataset=eis_data.EISDataSet),
+            data=DataSet._wrap(eis_data.EISDataSet),
             start=self.eis_last_data_index,
             index=count - 1,
             id=eis_data.GetHashCode(),

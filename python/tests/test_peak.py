@@ -14,9 +14,6 @@ def peak(measurement_dpv):
 
 
 def test_peak_properties(peak):
-    assert peak.curve_title == 'dpvexample'
-    assert peak.x_unit == 'V'
-    assert peak.y_unit == 'µA'
     assert peak.analyte_name is None
     assert peak.area == pytest.approx(0.08553185)
     assert peak.label == '1.465'

@@ -83,7 +83,7 @@ class EISData:
     @property
     def dataset(self) -> DataSet:
         """Dataset which contains multiple arrays of values."""
-        return DataSet(psdataset=self._pseis.EISDataSet)
+        return DataSet._wrap(self._pseis.EISDataSet)
 
     @property
     def subscans(self) -> list[EISData]:

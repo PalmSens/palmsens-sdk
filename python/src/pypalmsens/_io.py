@@ -71,7 +71,7 @@ def load_session_file(
     for psmeasurement in session:
         psmeasurement.Method.MethodFilename = str(path.absolute())
 
-    return [Measurement(psmeasurement=m) for m in session]
+    return [Measurement._wrap(m) for m in session]
 
 
 def save_session_file(path: str | Path, measurements: Sequence[Measurement]):
@@ -160,7 +160,7 @@ def _load_method_file(path: str | Path) -> Method:
 
     psmethod.MethodFilename = str(path.absolute())
 
-    return Method(psmethod=psmethod)
+    return Method._wrap(psmethod)
 
 
 def load_method_file(path: str | Path) -> MethodType:

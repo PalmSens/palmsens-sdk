@@ -37,12 +37,16 @@ class CurveMetadata:
 class Curve:
     __slots__ = ('_pscurve',)
 
-    """Python wrapper for .NET Curve class.
+    """Curve class with X and Y data of a single curve.
 
     Parameters
     ----------
-    pscurve
-        Reference to .NET curve object.
+    x : DataArray
+        Data values for the x axis
+    y : DataArray
+        Data values for the y axis
+    title : str, optional
+        Title for the curve
 
     Notes
     -----
@@ -174,7 +178,7 @@ class Curve:
             mergeOverlappingPeaks=merge_overlapping_peaks,
         )
 
-        peaks_list = [Peak(pspeak=peak) for peak in pspeaks]
+        peaks_list = [Peak._wrap(peak) for peak in pspeaks]
 
         return peaks_list
 
@@ -375,7 +379,7 @@ class Curve:
     def peaks(self) -> list[Peak]:
         """Return peaks stored on object."""
         try:
-            peaks = [Peak(pspeak=peak) for peak in self._pscurve.Peaks]
+            peaks = [Peak._wrap(peak) for peak in self._pscurve.Peaks]
         except TypeError:
             peaks = []
         return peaks

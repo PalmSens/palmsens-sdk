@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, final
+from typing import TYPE_CHECKING, ClassVar, Self, final
 
 from typing_extensions import override
 
@@ -14,18 +14,27 @@ if TYPE_CHECKING:
 
 @final
 class Peak:
-    """Python wrapper for .NET Peak class.
+    """Contains the peak data of one peak in a curve.
 
-    Parameters
-    ----------
-    pspeak : PalmSens.Analysis.Peak
-        Reference to .NET Peak object.
+    Notes
+    -----
+    Obtain internal instances via `_wrap`.
     """
 
-    def __init__(self, *, pspeak: PSPeak):
-        self._pspeak = pspeak
+    __slots__: ClassVar[tuple[str, ...]] = ('_pspeak',)
 
-        self._curve: Curve | None = None
+    def __init__(self):
+        self._pspeak: PSPeak
+
+        raise TypeError(
+            'Peak cannot be instantiated directly. Obtain instances through the Curve methods.'
+        )
+
+    @classmethod
+    def _wrap(cls, pspeak: PSPeak) -> Self:
+        obj = cls.__new__(cls)
+        obj._pspeak = pspeak
+        return obj
 
     @override
     def __repr__(self):
@@ -46,24 +55,7 @@ class Peak:
         """Parent curve associated with Peak."""
         from .curve import Curve
 
-        if not self._curve:
-            self._curve = Curve._wrap(self._pspeak.Curve)
-        return self._curve
-
-    @property
-    def curve_title(self) -> str:
-        """Title of parent curve."""
-        return self.curve.title
-
-    @property
-    def x_unit(self) -> str:
-        """Units of X axis."""
-        return self.curve.x_unit
-
-    @property
-    def y_unit(self) -> str:
-        """Units for Y axis."""
-        return self.curve.y_unit
+        return Curve._wrap(self._pspeak.Curve)
 
     @property
     def analyte_name(self) -> str:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TYPE_CHECKING, Literal, final
+from typing import TYPE_CHECKING, ClassVar, Literal, Self, final
 
 import System
 from pydantic import TypeAdapter
@@ -68,16 +68,29 @@ class MeasurementMetadata:
 
 @final
 class Measurement:
-    """Python wrapper for .NET Measurement class.
+    """Measurement class containing method parameters, curves, and raw data.
 
-    Parameters
-    ----------
-    psmeasurement
-        Reference to .NET measurement object.
+    Notes
+    -----
+    `__init__` is currently reserved for a future public API.
+    Obtain internal instances via `_wrap`.
     """
 
-    def __init__(self, *, psmeasurement: PSMeasurement):
-        self._psmeasurement = psmeasurement
+    __slots__: ClassVar[tuple[str, ...]] = ('_psmeasurement',)
+
+    def __init__(self):
+        self._psmeasurement: PSMeasurement
+
+        raise TypeError(
+            'Measurement cannot be instantiated directly. '
+            'Obtain instances through measurements or io methods.'
+        )
+
+    @classmethod
+    def _wrap(cls, psmeasurement: PSMeasurement) -> Self:
+        obj = cls.__new__(cls)
+        obj._psmeasurement = psmeasurement
+        return obj
 
     @override
     def __repr__(self):
@@ -147,7 +160,7 @@ class Measurement:
         All values are related by means of their indices.
         Data arrays in a dataset should always have an equal amount of entries.
         """
-        return DataSet(psdataset=self._psmeasurement.DataSet)
+        return DataSet._wrap(self._psmeasurement.DataSet)
 
     @property
     def eis_data(self) -> list[EISData]:
@@ -161,7 +174,7 @@ class Measurement:
         """Method related with this Measurement.
 
         The information from the Method is used when saving Curves."""
-        return Method(psmethod=self._psmeasurement.Method).to_settings()
+        return Method._wrap(self._psmeasurement.Method).to_settings()
 
     @property
     def channel(self) -> float:

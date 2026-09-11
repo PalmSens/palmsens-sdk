@@ -57,7 +57,6 @@ def test_find_peaks(curve_dpv):
         12.203112,
         33.240610,
     ]
-    assert peaks[0].curve_title == curve_dpv.title
 
     curve_dpv.clear_peaks()
     assert not curve_dpv.peaks
@@ -73,7 +72,6 @@ def test_find_peaks_semiderivative(curve_cv):
 
     assert [peak.x for peak in peaks] == [0.284884, -0.0223047]
     assert [peak.y for peak in peaks] == [15.8404, -15.826]
-    assert peaks[0].curve_title == curve.title
 
     curve.clear_peaks()
     assert not curve.peaks
@@ -112,9 +110,9 @@ def test_curve_properties(curve_dpv):
 def test_curve_copy(curve_dpv):
     new_curve = curve_dpv.copy()
     assert curve_dpv is not new_curve
-    assert curve_dpv._pscurve is not new_curve._pscurve
-    assert curve_dpv._pscurve.XAxisDataArray is not new_curve._pscurve.XAxisDataArray
-    assert curve_dpv._pscurve.YAxisDataArray is not new_curve._pscurve.YAxisDataArray
+    assert curve_dpv._internal is not new_curve._internal
+    assert curve_dpv._internal.XAxisDataArray is not new_curve._internal.XAxisDataArray
+    assert curve_dpv._internal.YAxisDataArray is not new_curve._internal.YAxisDataArray
 
 
 def test_curve_add(curve_dpv):

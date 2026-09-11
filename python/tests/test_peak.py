@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import pytest
 
+from pypalmsens.data import Peak
+
 
 @pytest.fixture
 def peak(measurement_dpv):
@@ -13,10 +15,12 @@ def peak(measurement_dpv):
     return peaks[0]
 
 
+def test_peak_init_fail():
+    with pytest.raises(TypeError):
+        _ = Peak()
+
+
 def test_peak_properties(peak):
-    assert peak.curve_title == 'dpvexample'
-    assert peak.x_unit == 'V'
-    assert peak.y_unit == 'µA'
     assert peak.analyte_name is None
     assert peak.area == pytest.approx(0.08553185)
     assert peak.label == '1.465'

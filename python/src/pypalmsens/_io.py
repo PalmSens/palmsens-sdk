@@ -71,7 +71,7 @@ def load_session_file(
     for psmeasurement in session:
         psmeasurement.Method.MethodFilename = str(path.absolute())
 
-    return [Measurement(psmeasurement=m) for m in session]
+    return [Measurement._wrap(m) for m in session]
 
 
 def save_session_file(path: str | Path, measurements: Sequence[Measurement]):
@@ -90,11 +90,11 @@ def save_session_file(path: str | Path, measurements: Sequence[Measurement]):
         raise ValueError('`measurements` must be a non-empty sequence of Measurement objects')
 
     session = PalmSens.Data.SessionManager()
-    session.MethodForEditor = measurements[0]._psmeasurement.Method
+    session.MethodForEditor = measurements[0]._internal.Method
     session.MethodForEditor.MethodFilename = str(path.absolute())
 
     for measurement in measurements:
-        session.AddMeasurement(measurement._psmeasurement)
+        session.AddMeasurement(measurement._internal)
 
     with stream_writer(str(path), append=False, encoding=Encoding.Unicode) as stream:
         session.Save(stream.BaseStream, str(path))
@@ -160,7 +160,7 @@ def _load_method_file(path: str | Path) -> Method:
 
     psmethod.MethodFilename = str(path.absolute())
 
-    return Method(psmethod=psmethod)
+    return Method._wrap(psmethod)
 
 
 def load_method_file(path: str | Path) -> MethodType:

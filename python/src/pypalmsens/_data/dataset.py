@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, final
+from typing import TYPE_CHECKING, Any, ClassVar, Self, final
 
-from PalmSens.Plottables import Curve as PSCurve
 from typing_extensions import override
 
 from .curve import Curve
@@ -42,17 +41,33 @@ def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, D
 
 @final
 class DataSet(Mapping[str, DataArray]):
-    """Python wrapper for .NET DataSet class.
+    """Dataset containing multiple data arrays.
 
-    Parameters
-    ----------
-    psdataset : PalmSens.Data.DataSet
-        Reference to .NET DataSet object.
+    All values are related by means of their indices.
+    DataArrays in a DataSet should always have an equal amount of entries.
+
+    Notes
+    -----
+    `__init__` is currently reserved for a future public API.
+    Obtain internal instances via `_wrap`.
     """
 
-    def __init__(self, *, psdataset: PSDataSet):
-        self._psdataset = psdataset
-        self._mapping = _dataset_to_mapping_with_unique_keys(psdataset)
+    __slots__: ClassVar[tuple[str, ...]] = ('_internal', '_mapping')
+    _internal: PSDataSet  # pyright: ignore[reportUninitializedInstanceVariable]
+    _mapping: dict[str, DataArray]  # pyright: ignore[reportUninitializedInstanceVariable]
+
+    def __init__(self):
+        raise TypeError(
+            'DataSet cannot be instantiated directly. '
+            'Obtain instances through measurements or io methods.'
+        )
+
+    @classmethod
+    def _wrap(cls, psdataset: PSDataSet) -> Self:
+        obj = cls.__new__(cls)
+        obj._internal = psdataset
+        obj._mapping = _dataset_to_mapping_with_unique_keys(psdataset)
+        return obj
 
     @override
     def __repr__(self):
@@ -79,14 +94,10 @@ class DataSet(Mapping[str, DataArray]):
         """
         return [array for array in self._mapping.values() if key(array)]
 
-    def _psarrays(self):
-        """Return underlying PalmSens SDK objects."""
-        return self._psdataset.GetDataArrays()
-
     @property
     def n_points(self) -> int:
         """Number of points in arrays."""
-        return self._psdataset.NPoints
+        return self._internal.NPoints
 
     def curve(self, x: str, y: str, title: str | None = None) -> Curve:
         """Construct a custom curve from x and y keys.
@@ -111,9 +122,7 @@ class DataSet(Mapping[str, DataArray]):
         if not title:
             title = f'{x}-{y}'
 
-        pscurve = PSCurve(xarray._psarray, yarray._psarray, title=title)
-
-        return Curve._wrap(pscurve)
+        return Curve(xarray, yarray, title=title)
 
     def arrays(
         self,
@@ -153,7 +162,7 @@ class DataSet(Mapping[str, DataArray]):
         elif quantity:
             return self._filter(key=lambda array: array.quantity == quantity)
         elif hidden:
-            return [DataArray._wrap(psarray) for psarray in self._psdataset if psarray.Hidden]
+            return [DataArray._wrap(psarray) for psarray in self._internal if psarray.Hidden]
         else:
             return list(self.values())
 

@@ -276,7 +276,7 @@ class MeasurementManagerAsync:
         assert self.last_measurement
 
         if isinstance(method, BaseMethodScriptTechnique):
-            self.last_measurement._psmeasurement.Title = method._name  # type: ignore
+            self.last_measurement._internal.Title = method._name  # type: ignore
 
         return self.last_measurement
 
@@ -284,7 +284,7 @@ class MeasurementManagerAsync:
         self, sender: PalmSens.Comm.CommManager, args
     ) -> Task.CompletedTask:
         """Called when the measurement begins."""
-        measurement = Measurement(psmeasurement=args.NewMeasurement)
+        measurement = Measurement._wrap(args.NewMeasurement)
 
         self.last_measurement = measurement
 
@@ -372,7 +372,7 @@ class MeasurementManagerAsync:
             return
 
         data = CallbackDataEIS(
-            data=DataSet(psdataset=eis_data.EISDataSet),
+            data=DataSet._wrap(eis_data.EISDataSet),
             start=self.eis_last_data_index,
             index=count - 1,
             id=eis_data.GetHashCode(),
@@ -406,7 +406,7 @@ class MeasurementManagerAsync:
 
         self.eis_last_data_index = 0
 
-        data = EISData(pseis=eis_data)
+        data = EISData._wrap(eis_data)
 
         for callback in self.callbacks['eis_data_begin']:
             _ = self.loop.call_soon_threadsafe(callback, data)

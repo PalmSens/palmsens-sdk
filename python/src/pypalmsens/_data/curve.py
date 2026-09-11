@@ -35,14 +35,16 @@ class CurveMetadata:
 
 @final
 class Curve:
-    __slots__ = ('_pscurve',)
-
-    """Python wrapper for .NET Curve class.
+    """Curve class with X and Y data of a single curve.
 
     Parameters
     ----------
-    pscurve
-        Reference to .NET curve object.
+    x : DataArray
+        Data values for the x axis
+    y : DataArray
+        Data values for the y axis
+    title : str, optional
+        Title for the curve
 
     Notes
     -----
@@ -50,13 +52,15 @@ class Curve:
     ``curve_a - curve_b`` return new curves.
     """
 
+    __slots__ = ('_internal',)
+
     def __init__(self, x: DataArray, y: DataArray, *, title: str = 'Curve'):
-        self._pscurve = PSCurve(x._psarray, y._psarray, title)
+        self._internal = PSCurve(x._internal, y._internal, title)
 
     @classmethod
     def _wrap(cls, pscurve: PSCurve) -> Self:
         obj = cls.__new__(cls)
-        obj._pscurve = pscurve
+        obj._internal = pscurve
         return obj
 
     def __add__(self, other: object) -> Self:
@@ -64,7 +68,7 @@ class Curve:
             return NotImplemented
 
         operator = PSMath.enumOperator.Add
-        new_curve = PSMath.AddSubtractCurves(self._pscurve, other._pscurve, operator)
+        new_curve = PSMath.AddSubtractCurves(self._internal, other._internal, operator)
 
         return type(self)._wrap(new_curve)
 
@@ -75,7 +79,7 @@ class Curve:
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
-        new_curve = PSMath.AddSubtractCurves(self._pscurve, other._pscurve, operator)
+        new_curve = PSMath.AddSubtractCurves(self._internal, other._internal, operator)
 
         return type(self)._wrap(new_curve)
 
@@ -84,7 +88,7 @@ class Curve:
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
-        new_curve = PSMath.AddSubtractCurves(other._pscurve, self._pscurve, operator)
+        new_curve = PSMath.AddSubtractCurves(other._internal, self._internal, operator)
 
         return type(self)._wrap(new_curve)
 
@@ -105,13 +109,13 @@ class Curve:
         Curve
             New curve with the concatenated x and y arrays.
         """
-        new_curve = PSMath.AppendCurves(self._pscurve, other._pscurve)
+        new_curve = PSMath.AppendCurves(self._internal, other._internal)
 
         return type(self)._wrap(new_curve)
 
     def copy(self) -> Curve:
         """Return a copy of this curve."""
-        return Curve._wrap(PSCurve(self._pscurve, cloneData=True))
+        return Curve._wrap(PSCurve(self._internal, cloneData=True))
 
     def smooth(self, smooth_level: int = 0):
         """Smooth the .y_array using a Savitsky-Golay filter with the specified smooth
@@ -123,7 +127,7 @@ class Curve:
             The smooth level to be used. -1 = none, 0 = no smooth (spike rejection only),
             1 = 5 points, 2 = 9 points, 3 = 15 points, 4 = 25 points
         """
-        success = self._pscurve.Smooth(smoothLevel=smooth_level)
+        success = self._internal.Smooth(smoothLevel=smooth_level)
         if not success:
             raise ValueError('Something went wrong.')
 
@@ -138,7 +142,7 @@ class Curve:
         window_size : int
             Size of the window
         """
-        self._pscurve.SavitskyGolay(windowSize=window_size)
+        self._internal.SavitskyGolay(windowSize=window_size)
 
     def find_peaks(
         self,
@@ -167,14 +171,14 @@ class Curve:
         -------
         peak_list : list[Peak]
         """
-        pspeaks = self._pscurve.FindPeaks(
+        pspeaks = self._internal.FindPeaks(
             minPeakWidth=min_peak_width,
             minPeakHeight=min_peak_height,
             peakShoulders=peak_shoulders,
             mergeOverlappingPeaks=merge_overlapping_peaks,
         )
 
-        peaks_list = [Peak(pspeak=peak) for peak in pspeaks]
+        peaks_list = [Peak._wrap(peak) for peak in pspeaks]
 
         return peaks_list
 
@@ -202,7 +206,7 @@ class Curve:
         peak_list : list[Peak]
         """
         dct = System.Collections.Generic.Dictionary[PSCurve, System.Double]()
-        dct[self._pscurve] = min_peak_height
+        dct[self._internal] = min_peak_height
 
         pd = PSAnalysis.SemiDerivativePeakDetection()
         pd.GetNonOverlappingPeaks(dct)
@@ -257,11 +261,11 @@ class Curve:
             baseline: Curve
 
         _corrected = PSAnalysis.BaselineCorrection.GetMovingAverageBaselineCorrected(
-            self._pscurve, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=False
+            self._internal, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=False
         )
         _corrected.Title = self.title + ' (corrected)'
         _baseline = PSAnalysis.BaselineCorrection.GetMovingAverageBaselineCorrected(
-            self._pscurve, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=True
+            self._internal, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=True
         )
         _baseline.Title = self.title + ' (baseline)'
 
@@ -272,28 +276,28 @@ class Curve:
     @property
     def max_x(self) -> float:
         """Maximum X value found in this curve."""
-        return self._pscurve.MaxX
+        return self._internal.MaxX
 
     @property
     def max_y(self) -> float:
         """Maximum Y value found in this curve."""
-        return self._pscurve.MaxY
+        return self._internal.MaxY
 
     @property
     def min_x(self) -> float:
         """Minimum X value found in this curve."""
-        return self._pscurve.MinX
+        return self._internal.MinX
 
     @property
     def min_y(self) -> float:
         """Minimum Y value found in this curve."""
-        return self._pscurve.MinY
+        return self._internal.MinY
 
     @property
     def mux_channel(self) -> int:
         """The corresponding MUX channel number with the curve starting at 0.
         Return -1 when no MUX channel used."""
-        return self._pscurve.MuxChannel
+        return self._internal.MuxChannel
 
     @property
     def n_points(self) -> int:
@@ -301,61 +305,61 @@ class Curve:
         return len(self)
 
     def __len__(self):
-        return self._pscurve.NPoints
+        return self._internal.NPoints
 
     @property
     def ocp_value(self) -> float:
         """OCP value for curve."""
-        return self._pscurve.OCPValue
+        return self._internal.OCPValue
 
     @property
     def x_unit(self) -> str:
         """Units for X dimension."""
-        return self._pscurve.XUnit.ToString()
+        return self._internal.XUnit.ToString()
 
     @property
     def x_label(self) -> str:
         """Label for X dimension."""
-        return self._pscurve.XUnit.Quantity
+        return self._internal.XUnit.Quantity
 
     @property
     def y_unit(self) -> str:
         """Units for Y dimension."""
-        return self._pscurve.YUnit.ToString()
+        return self._internal.YUnit.ToString()
 
     @property
     def y_label(self) -> str:
         """Label for Y dimension."""
-        return self._pscurve.YUnit.Quantity
+        return self._internal.YUnit.Quantity
 
     @property
     def z_unit(self) -> None | str:
         """Units for Z dimension. Returns None if not set."""
-        if ret := self._pscurve.ZUnit:
+        if ret := self._internal.ZUnit:
             return ret.ToString()
         return None
 
     @property
     def z_label(self) -> None | str:
         """Units for Z dimension. Returns None if not set."""
-        if ret := self._pscurve.ZUnit:
+        if ret := self._internal.ZUnit:
             return ret.Quantity
         return None
 
     @property
     def title(self) -> str:
         """Title for the curve."""
-        return self._pscurve.Title
+        return self._internal.Title
 
     @title.setter
     def title(self, title: str):
         """Set the title for the curve."""
-        self._pscurve.Title = title
+        self._internal.Title = title
 
     @property
     def id(self) -> int:
         """Unique identifier for curve object."""
-        return self._pscurve.GetHashCode()
+        return self._internal.GetHashCode()
 
     def metadata(self) -> CurveMetadata:
         """Generate curve metadata as dataclass."""
@@ -375,24 +379,24 @@ class Curve:
     def peaks(self) -> list[Peak]:
         """Return peaks stored on object."""
         try:
-            peaks = [Peak(pspeak=peak) for peak in self._pscurve.Peaks]
+            peaks = [Peak._wrap(peak) for peak in self._internal.Peaks]
         except TypeError:
             peaks = []
         return peaks
 
     def clear_peaks(self):
         """Clear peaks stored on object."""
-        self._pscurve.ClearPeaks()
+        self._internal.ClearPeaks()
 
     @property
     def x_array(self) -> DataArray:
         """Y data for the curve."""
-        return DataArray._wrap_dispatched(self._pscurve.XAxisDataArray)
+        return DataArray._wrap_dispatched(self._internal.XAxisDataArray)
 
     @property
     def y_array(self) -> DataArray:
         """Y data for the curve."""
-        return DataArray._wrap_dispatched(self._pscurve.YAxisDataArray)
+        return DataArray._wrap_dispatched(self._internal.YAxisDataArray)
 
     def linear_slope(
         self, start: None | int = None, stop: None | int = None
@@ -416,9 +420,9 @@ class Curve:
             Coefficient of determination (R2)
         """
         if start and stop:
-            return self._pscurve.LLS(start, stop)
+            return self._internal.LLS(start, stop)
         else:
-            return self._pscurve.LLS()
+            return self._internal.LLS()
 
     def plot(
         self,

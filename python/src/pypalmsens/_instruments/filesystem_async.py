@@ -167,7 +167,7 @@ class DeviceFileSystemAsync:
                 self._client_connection.LoadDeviceFileAsync(f)
             )
 
-        return Measurement(psmeasurement=psmeasurement)
+        return Measurement._wrap(psmeasurement)
 
     async def remove(self, path: str | DevicePath) -> None:
         """Remove a file from the device.

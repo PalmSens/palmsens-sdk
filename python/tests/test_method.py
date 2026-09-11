@@ -9,7 +9,12 @@ from pypalmsens._methods.adapters import technique_adapter
 
 @pytest.fixture
 def method(measurement_cv_1scan):
-    return Method(psmethod=measurement_cv_1scan._psmeasurement.Method)
+    return Method._wrap(measurement_cv_1scan._internal.Method)
+
+
+def test_method_init_fail():
+    with pytest.raises(TypeError):
+        _ = Method()
 
 
 def test_properties(method):

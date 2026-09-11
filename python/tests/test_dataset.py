@@ -2,12 +2,17 @@ from __future__ import annotations
 
 import pytest
 
-from pypalmsens.data import DataArray
+from pypalmsens.data import DataArray, DataSet
 
 
 @pytest.fixture
 def dataset(measurement_cv_1scan):
     return measurement_cv_1scan.dataset
+
+
+def test_dataset_init_fail():
+    with pytest.raises(TypeError):
+        _ = DataSet()
 
 
 def test_mapping(dataset):

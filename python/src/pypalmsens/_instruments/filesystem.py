@@ -208,7 +208,7 @@ class DeviceFileSystem:
 
         psmeasurement = self._client_connection.LoadDeviceFile(f)
 
-        return Measurement(psmeasurement=psmeasurement)
+        return Measurement._wrap(psmeasurement)
 
     def remove(self, path: str | DevicePath) -> None:
         """Remove a file from the device.

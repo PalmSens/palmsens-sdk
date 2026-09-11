@@ -85,8 +85,8 @@ class DataArray(Sequence[float]):
     ``array_a * factor`` return new arrays.
     """
 
-    __slots__: ClassVar[tuple[str, ...]] = ('_psarray',)
-    _psarray: PSDataArray
+    __slots__: ClassVar[tuple[str, ...]] = ('_internal',)
+    _internal: PSDataArray
     _ps_cls: ClassVar[type[PSDataArray]] = PSDataArray
 
     def __init__(
@@ -115,12 +115,12 @@ class DataArray(Sequence[float]):
 
         new_array.AddRange(values)
 
-        self._psarray = new_array
+        self._internal = new_array
 
     @classmethod
     def _wrap(cls, psarray: PSDataArray) -> Self:
         obj = cls.__new__(cls)
-        obj._psarray = psarray
+        obj._internal = psarray
         return obj
 
     @classmethod
@@ -152,20 +152,20 @@ class DataArray(Sequence[float]):
             if index >= len(self) or index < -len(self):
                 raise IndexError('list index out of range')
             index = index % len(self)
-            return self._psarray[index].Value
+            return self._internal[index].Value
 
         return self.to_list()[index]
 
     @override
     def __len__(self) -> int:
-        return len(self._psarray)
+        return len(self._internal)
 
     def __add__(self, other: object) -> DataArray:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
         operator = PSMath.enumOperator.Add
-        new_array = PSMath.AddSubtractDataArrays(self._psarray, other._psarray, operator)
+        new_array = PSMath.AddSubtractDataArrays(self._internal, other._internal, operator)
 
         return type(self)._wrap(new_array)
 
@@ -177,7 +177,7 @@ class DataArray(Sequence[float]):
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
-        new_array = PSMath.AddSubtractDataArrays(self._psarray, other._psarray, operator)
+        new_array = PSMath.AddSubtractDataArrays(self._internal, other._internal, operator)
 
         return type(self)._wrap(new_array)
 
@@ -186,7 +186,7 @@ class DataArray(Sequence[float]):
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
-        new_array = PSMath.AddSubtractDataArrays(other._psarray, self._psarray, operator)
+        new_array = PSMath.AddSubtractDataArrays(other._internal, self._internal, operator)
 
         return type(self)._wrap(new_array)
 
@@ -194,10 +194,10 @@ class DataArray(Sequence[float]):
         if not isinstance(value, (int, float)):
             return NotImplemented
 
-        new_values = PSMath.MultiplyDataArray(self._psarray.GetValues(), value)
+        new_values = PSMath.MultiplyDataArray(self._internal.GetValues(), value)
 
         new_array = PSDataArray(
-            self._psarray.Description, self._psarray.Unit, self._psarray.ArrayType
+            self._internal.Description, self._internal.Unit, self._internal.ArrayType
         )
         new_array.AddRange(new_values)
 
@@ -219,24 +219,24 @@ class DataArray(Sequence[float]):
         new_array : DataArray
             Data array with normalized values.
         """
-        new_values = PSMath.NormalizeArray(self._psarray.GetValues(), self.min(), self.max())
+        new_values = PSMath.NormalizeArray(self._internal.GetValues(), self.min(), self.max())
         new_array = PSDataArray(
-            self._psarray.Description, self._psarray.Unit, self._psarray.ArrayType
+            self._internal.Description, self._internal.Unit, self._internal.ArrayType
         )
         new_array.AddRange(new_values)
         return type(self)._wrap(new_array)
 
     def copy(self) -> DataArray:
         """Return a copy of the array."""
-        return DataArray._wrap(self._psarray.Clone())
+        return DataArray._wrap(self._internal.Clone())
 
     def min(self) -> float:
         """Return min value."""
-        return self._psarray.MinValue
+        return self._internal.MinValue
 
     def max(self) -> float:
         """Return max value."""
-        return self._psarray.MaxValue
+        return self._internal.MaxValue
 
     def savitsky_golay(self, window_size: int = 3) -> DataArray:
         """Smooth the array using a Savitsky-Golay filter with the window size.
@@ -249,7 +249,7 @@ class DataArray(Sequence[float]):
             Size of the window
         """
         new = self.copy()
-        success = new._psarray.Smooth(window_size, False)
+        success = new._internal.Smooth(window_size, False)
         if not success:
             raise ValueError('Something went wrong.')
         return new
@@ -257,35 +257,35 @@ class DataArray(Sequence[float]):
     @property
     def name(self) -> str:
         """Name of the array."""
-        return self._psarray.Description
+        return self._internal.Description
 
     def to_numpy(self) -> np.ndarray:
         """Export data array to numpy."""
-        return np.array(self._psarray.GetValues())
+        return np.array(self._internal.GetValues())
 
     def to_list(self) -> list[float]:
         """Export data array to list."""
-        return list(self._psarray.GetValues())
+        return list(self._internal.GetValues())
 
     @property
     def type(self) -> AllowedArrayTypes:
         """Array type as str."""
-        return array_enum_to_str(self._psarray.ArrayType)
+        return array_enum_to_str(self._internal.ArrayType)
 
     @property
     def unit(self) -> str:
         """Unit for array."""
-        return self._psarray.Unit.ToString()
+        return self._internal.Unit.ToString()
 
     @property
     def quantity(self) -> str:
         """Quantity for array."""
-        return self._psarray.Unit.Quantity
+        return self._internal.Unit.Quantity
 
     @property
     def ocp_value(self) -> float:
         """OCP Value."""
-        return self._psarray.OCPValue
+        return self._internal.OCPValue
 
     @property
     def is_derived(self) -> bool:
@@ -331,7 +331,7 @@ class CurrentArray(DataArray):
         """Current in µA."""
         # Work-around for mIDC bug
         if self.type == 'miDC':
-            return [implementation(val).Value for val in self._psarray]
+            return [implementation(val).Value for val in self._internal]
         return self.to_list()
 
     def current_in_range(self) -> list[float]:
@@ -339,23 +339,23 @@ class CurrentArray(DataArray):
 
         `current` = `current_in_range` * CR, e.g. 0.2 * 100uA = 2.0 uA
         """
-        return [implementation(val).ValueInRange for val in self._psarray]
+        return [implementation(val).ValueInRange for val in self._internal]
 
     def current_reading(self) -> list[CurrentReading]:
         """Return as list of potential reading objects."""
-        return [CurrentReading._from_psobject(implementation(val)) for val in self._psarray]
+        return [CurrentReading._from_psobject(implementation(val)) for val in self._internal]
 
     def current_range(self) -> list[AllowedCurrentRanges]:
         """Return current range as list of strings."""
-        return [cr_enum_to_string(implementation(val).CurrentRange) for val in self._psarray]
+        return [cr_enum_to_string(implementation(val).CurrentRange) for val in self._internal]
 
     def reading_status(self) -> list[AllowedReadingStatus]:
         """Return reading status as list of strings."""
-        return [str(implementation(val).ReadingStatus) for val in self._psarray]  # type:ignore
+        return [str(implementation(val).ReadingStatus) for val in self._internal]  # type:ignore
 
     def timing_status(self) -> list[AllowedTimingStatus]:
         """Return timing status as list of strings."""
-        return [str(implementation(val).TimingStatus) for val in self._psarray]  # type:ignore
+        return [str(implementation(val).TimingStatus) for val in self._internal]  # type:ignore
 
     def to_dict(self) -> dict[str, list[Any]]:
         """Return array as key/value mapping.
@@ -434,23 +434,23 @@ class PotentialArray(DataArray):
 
         `potential` = `potential_in_range` * PR, e.g. 2.0 * 100mV = 0.2V
         """
-        return [implementation(val).ValueInRange for val in self._psarray]
+        return [implementation(val).ValueInRange for val in self._internal]
 
     def potential_reading(self) -> list[PotentialReading]:
         """Return as list of potential reading objects."""
-        return [PotentialReading._from_psobject(implementation(val)) for val in self._psarray]
+        return [PotentialReading._from_psobject(implementation(val)) for val in self._internal]
 
     def potential_range(self) -> list[AllowedPotentialRanges]:
         """Return potential range as list of strings."""
-        return [pr_enum_to_string(implementation(val).Range) for val in self._psarray]
+        return [pr_enum_to_string(implementation(val).Range) for val in self._internal]
 
     def reading_status(self) -> list[AllowedReadingStatus]:
         """Return reading status as list of strings."""
-        return [str(implementation(val).ReadingStatus) for val in self._psarray]  # type:ignore
+        return [str(implementation(val).ReadingStatus) for val in self._internal]  # type:ignore
 
     def timing_status(self) -> list[AllowedTimingStatus]:
         """Return timing status as list of strings."""
-        return [str(implementation(val).TimingStatus) for val in self._psarray]  # type:ignore
+        return [str(implementation(val).TimingStatus) for val in self._internal]  # type:ignore
 
     def to_dict(self) -> dict[str, list[Any]]:
         """Return array as key/value mapping.

@@ -5,12 +5,17 @@ from datetime import datetime
 
 import pytest
 
-from pypalmsens.data import Curve
+from pypalmsens.data import Curve, Measurement
 
 
 @pytest.fixture
 def measurement(measurement_dpv):
     return measurement_dpv
+
+
+def test_measurement_init_fail():
+    with pytest.raises(TypeError):
+        _ = Measurement()
 
 
 def test_measurement_properties(measurement):

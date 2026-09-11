@@ -212,14 +212,14 @@ def test_constructor():
     assert arr.name == 'test'
     assert arr.type == 'Time'
     assert arr.unit == 's'
-    assert isinstance(arr._psarray, PSData.DataArray)
+    assert isinstance(arr._internal, PSData.DataArray)
 
     c_arr = CurrentArray([1, 2, 3])
-    assert isinstance(c_arr._psarray, PSData.DataArrayCurrents)
+    assert isinstance(c_arr._internal, PSData.DataArrayCurrents)
     assert c_arr.unit == 'µA'
 
     p_arr = PotentialArray([1, 2, 3])
-    assert isinstance(p_arr._psarray, PSData.DataArrayPotentials)
+    assert isinstance(p_arr._internal, PSData.DataArrayPotentials)
     assert p_arr.unit == 'V'
 
     g_arr = DataArray([1, 2, 3])

@@ -3,9 +3,9 @@ from __future__ import annotations
 import sys
 from collections.abc import Iterator
 
-import PalmSens
 import System
-from PalmSens.Data import DeviceFile
+from PalmSens import Comm as PSComm
+from PalmSens import Data as PSData
 from typing_extensions import override
 
 from ..data import Measurement
@@ -93,7 +93,7 @@ class DeviceFileSystem:
             self.manager = instrument_or_manager
 
     @property
-    def _client_connection(self) -> PalmSens.Comm.ClientConnection:
+    def _client_connection(self) -> PSComm.ClientConnection:
         """The active client connection used for device communication."""
         return self.manager._comm.ClientConnection
 
@@ -119,7 +119,7 @@ class DeviceFileSystem:
         """Join a path component to the root directory."""
         return self.root / path_str
 
-    def _get_device_file(self, path: str | DevicePath) -> PalmSens.Data.DeviceFile:
+    def _get_device_file(self, path: str | DevicePath) -> PSData.DeviceFile:
         """Retrieve the DeviceFile` for the given path."""
         if not isinstance(path, DevicePath):
             path = DevicePath(path)
@@ -138,7 +138,9 @@ class DeviceFileSystem:
         path._cached_device_file = ret  # type: ignore
         return ret
 
-    def _get_device_files(self, directory: DevicePath | str | None = None) -> list[DeviceFile]:
+    def _get_device_files(
+        self, directory: DevicePath | str | None = None
+    ) -> list[PSData.DeviceFile]:
         if not directory:
             directory = self.root
 

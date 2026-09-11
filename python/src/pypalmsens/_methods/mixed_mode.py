@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Annotated, ClassVar, Literal
 
 import PalmSens
+from PalmSens import Techniques as PSTechniques
 from pydantic import Field
 from typing_extensions import override
 
@@ -55,7 +56,7 @@ class BaseStage(BaseModel):
     def _export(self, psmethod: PalmSens.Method, /) -> PalmSens.Method:
         """Add stage to dotnet method, and update paramaters on dotnet stage."""
         stage_type = getattr(
-            PalmSens.Techniques.MixedMode.EnumMixedModeStageType,
+            PSTechniques.MixedMode.EnumMixedModeStageType,
             self.stage_type,  # type:ignore
         )
         psstage = psmethod.AddStage(stage_type)

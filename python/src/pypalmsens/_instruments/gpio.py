@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Literal, final
 
-import PalmSens
+from PalmSens import Comm as PSComm
 
 if TYPE_CHECKING:
     from .instrument_manager import InstrumentManager
@@ -29,11 +29,11 @@ def bitmask_to_pins(mask: int) -> list[int]:
     return [i for i in range(8) if (mask & (1 << i))]
 
 
-def is_methodscript(client_connection: PalmSens.Comm.ClientConnection) -> bool:
-    return isinstance(client_connection, PalmSens.Comm.ClientConnectionMS)
+def is_methodscript(client_connection: PSComm.ClientConnection) -> bool:
+    return isinstance(client_connection, PSComm.ClientConnectionMS)
 
 
-def writable_pins(client_connection: PalmSens.Comm.ClientConnection) -> list[int]:
+def writable_pins(client_connection: PSComm.ClientConnection) -> list[int]:
     """Return the pin numbers that support digital output.
 
     Return fixed pin numbers for the most common configuration for
@@ -45,7 +45,7 @@ def writable_pins(client_connection: PalmSens.Comm.ClientConnection) -> list[int
     return bitmask_to_pins(mask)
 
 
-def readable_pins(client_connection: PalmSens.Comm.ClientConnection) -> list[int]:
+def readable_pins(client_connection: PSComm.ClientConnection) -> list[int]:
     """Return the pin numbers that support digital input.
 
     Return fixed pin numbers for the most common configuration for
@@ -58,7 +58,7 @@ def readable_pins(client_connection: PalmSens.Comm.ClientConnection) -> list[int
 
 
 def raise_if_pins_not_supported(
-    client_connection: PalmSens.Comm.ClientConnection,
+    client_connection: PSComm.ClientConnection,
     pins: Sequence[int],
     mode: Literal['read', 'write'],
 ):
@@ -100,7 +100,7 @@ class GPIO:
 
     For explicit control, use the low-level MethodSCRIPT primitives directly:
 
-    - [pypalmsens.CommProtocol][]
+    - [pypSCommProtocol][]
     - [MethodSCRIPT manual](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html)
     """
 

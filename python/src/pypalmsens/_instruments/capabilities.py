@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import Literal
 
-import PalmSens
 import System
+from PalmSens import Comm as PSComm
+from PalmSens import Devices as PSDevices
+from PalmSens import Method as PSMethod
 from pydantic import BaseModel, ConfigDict, computed_field
 
 from .._converters import (
@@ -51,7 +53,7 @@ class AnalogComponent(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     @classmethod
-    def _from_pscomponent(cls, obj: PalmSens.Devices.AnalogComponent) -> AnalogComponent:
+    def _from_pscomponent(cls, obj: PSDevices.AnalogComponent) -> AnalogComponent:
         """Convert dotnet object."""
         return cls(
             bits=obj.Bits,
@@ -69,7 +71,7 @@ class AnalogComponent(BaseModel):
 class CapabilitiesInterface(BaseModel):
     """Interface to convert from PalmSens.Devices.Capabilities to dataclass."""
 
-    comm: PalmSens.Comm.CommManager
+    comm: PSComm.CommManager
 
     model_config = ConfigDict(
         frozen=True,
@@ -339,7 +341,7 @@ class CapabilitiesInterface(BaseModel):
 
         for number in self.comm.Capabilities.SupportedMethods:
             try:
-                id = PalmSens.Method.FromTechniqueNumber(number).MethodID
+                id = PSMethod.FromTechniqueNumber(number).MethodID
             except System.Exception:
                 pass
             else:
@@ -507,7 +509,7 @@ class Capabilities(BaseModel):
     """Whether the device contains and supports insternal storage"""
 
     @classmethod
-    def _from_comm(cls, comm: PalmSens.Comm.CommManager) -> Capabilities:
+    def _from_comm(cls, comm: PSComm.CommManager) -> Capabilities:
         """Initialize model from comm manager."""
         interface = CapabilitiesInterface(comm=comm)
         return cls.model_validate(interface.model_dump())

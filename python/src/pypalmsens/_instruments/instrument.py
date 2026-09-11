@@ -6,9 +6,8 @@ import warnings
 from dataclasses import dataclass, field
 from typing import Any
 
-import PalmSens
 import System
-from PalmSens.Comm import CommManager
+from PalmSens import Comm as PSComm
 from typing_extensions import override
 
 from .shared import create_future
@@ -36,7 +35,7 @@ class Instrument:
     Returns -1 if instrument is not part of a multichannel device."""
     interface: str
     """Type of the connection."""
-    device: PalmSens.Devices.Device = field(repr=False)
+    device: PSDevices.Device = field(repr=False)
     """Device connection class."""
 
     def __post_init__(self):
@@ -74,11 +73,11 @@ class Instrument:
         except System.NotSupportedException:
             self.device.Close()
 
-    async def _connect_async(self) -> CommManager:
+    async def _connect_async(self) -> PSComm.CommManager:
         """Open connection to instrument, return `CommManager` object."""
         device = await self._open_async()
 
-        return await create_future(CommManager.CommManagerAsync(device))
+        return await create_future(PSComm.CommManager.CommManagerAsync(device))
 
     @classmethod
     def from_port(cls, port: str, *, baudrate: int | None = None) -> Instrument:
@@ -126,7 +125,7 @@ class Instrument:
         return cls._from_device(device)
 
     @classmethod
-    def _from_device(cls, device: PalmSens.Devices.Device) -> Instrument:
+    def _from_device(cls, device: PSDevices.Device) -> Instrument:
         """Construct Instrument from PalmSens device connection class."""
         return cls(
             id=device.ToString(),
@@ -212,7 +211,7 @@ async def discover_async(
 
     for name, interface in interfaces.items():
         try:
-            devices: list[PalmSens.Devices.Device] = await create_future(
+            devices: list[PSDevices.Device] = await create_future(
                 interface.DiscoverDevicesAsync()
             )
         except System.DllNotFoundException:

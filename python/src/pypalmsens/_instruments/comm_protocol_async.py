@@ -5,7 +5,7 @@ import time
 from collections import deque
 from collections.abc import AsyncIterator
 
-import PalmSens
+from PalmSens import Devices as PSDevices
 from typing_extensions import Self, override
 
 from .comm_protocol import ERROR_PATTERN, CommProtocolError, parse_capabilities
@@ -30,7 +30,7 @@ class CommProtocolAsync:
         self.instrument: Instrument = instrument
         """Instrument handle."""
 
-        self._device: PalmSens.Devices.Device = self.instrument.device
+        self._device: PSDevices.Device = self.instrument.device
         """Low-level device implementing low-level communication primitives."""
 
         self.timeout: float = 10.0  # s

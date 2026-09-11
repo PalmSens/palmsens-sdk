@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal, NamedTuple, Self, final
 
-import PalmSens
-import PalmSens.Analysis as PSAnalysis
 import System
+from PalmSens import Analysis as PSAnalysis
 from PalmSens.Calculations import MathFunctions as PSMath
 from PalmSens.Plottables import Curve as PSCurve
 from pydantic import TypeAdapter
@@ -257,11 +256,11 @@ class Curve:
             corrected: Curve
             baseline: Curve
 
-        _corrected = PalmSens.Analysis.BaselineCorrection.GetMovingAverageBaselineCorrected(
+        _corrected = PSAnalysis.BaselineCorrection.GetMovingAverageBaselineCorrected(
             self._pscurve, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=False
         )
         _corrected.Title = self.title + ' (corrected)'
-        _baseline = PalmSens.Analysis.BaselineCorrection.GetMovingAverageBaselineCorrected(
+        _baseline = PSAnalysis.BaselineCorrection.GetMovingAverageBaselineCorrected(
             self._pscurve, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=True
         )
         _baseline.Title = self.title + ' (baseline)'

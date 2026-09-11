@@ -4,7 +4,7 @@ import re
 import time
 from collections import deque
 
-import PalmSens
+from PalmSens import Devices as PSDevices
 from typing_extensions import Generator, Self, override
 
 from .comm_registry import (
@@ -56,7 +56,7 @@ class CommProtocol:
         self.instrument: Instrument = instrument
         """Instrument handle."""
 
-        self._device: PalmSens.Devices.Device = self.instrument.device
+        self._device: PSDevices.Device = self.instrument.device
         """Low-level device implementing low-level communication primitives."""
 
         self.timeout: float = 10.0  # s

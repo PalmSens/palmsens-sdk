@@ -12,6 +12,11 @@ def method(measurement_cv_1scan):
     return Method._wrap(measurement_cv_1scan._psmeasurement.Method)
 
 
+def test_method_init_fail():
+    with pytest.raises(TypeError):
+        _ = Method()
+
+
 def test_properties(method):
     assert isinstance(repr(method), str)
     assert method.id == 'cv'

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import pytest
 
+from pypalmsens.data import Peak
+
 
 @pytest.fixture
 def peak(measurement_dpv):
@@ -11,6 +13,11 @@ def peak(measurement_dpv):
         min_peak_height=0,
     )
     return peaks[0]
+
+
+def test_peak_init_fail():
+    with pytest.raises(TypeError):
+        _ = Peak()
 
 
 def test_peak_properties(peak):

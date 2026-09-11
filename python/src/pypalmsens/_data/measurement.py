@@ -77,9 +77,9 @@ class Measurement:
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_psmeasurement',)
+    _psmeasurement: PSMeasurement  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
-        self._psmeasurement: PSMeasurement
 
         raise TypeError(
             'Measurement cannot be instantiated directly. '

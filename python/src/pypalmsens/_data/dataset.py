@@ -51,11 +51,10 @@ class DataSet(Mapping[str, DataArray]):
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_mapping', '_psdataset')
+    _psdataset: PSDataSet  # pyright: ignore[reportUninitializedInstanceVariable]
+    _mapping: dict[str, DataArray]  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
-        self._psdataset: PSDataSet
-        self._mapping: dict[str, DataArray]
-
         raise TypeError(
             'DataSet cannot be instantiated directly. '
             'Obtain instances through measurements or io methods.'

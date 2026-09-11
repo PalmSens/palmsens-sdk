@@ -19,10 +19,9 @@ class Method:
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_psmethod',)
+    _psmethod: PalmSens.Method  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
-        self._psmethod: PalmSens.Method
-
         raise TypeError(
             'Method cannot be instantiated directly. '
             'Obtain instances through the Technique methods.'

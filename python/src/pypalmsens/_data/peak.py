@@ -22,10 +22,9 @@ class Peak:
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_pspeak',)
+    _pspeak: PSPeak  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
-        self._pspeak: PSPeak
-
         raise TypeError(
             'Peak cannot be instantiated directly. Obtain instances through the Curve methods.'
         )

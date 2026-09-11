@@ -276,7 +276,7 @@ class MeasurementManagerAsync:
         assert self.last_measurement
 
         if isinstance(method, BaseMethodScriptTechnique):
-            self.last_measurement._psmeasurement.Title = method._name  # type: ignore
+            self.last_measurement._internal.Title = method._name  # type: ignore
 
         return self.last_measurement
 

@@ -46,8 +46,8 @@ class EISData:
     Obtain internal instances via `_wrap`.
     """
 
-    __slots__: ClassVar[tuple[str, ...]] = ('_pseis',)
-    _pseis: PSEISData  # pyright: ignore[reportUninitializedInstanceVariable]
+    __slots__: ClassVar[tuple[str, ...]] = ('_internal',)
+    _internal: PSEISData  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
         raise TypeError(
@@ -58,7 +58,7 @@ class EISData:
     @classmethod
     def _wrap(cls, pseis: PSEISData) -> Self:
         obj = cls.__new__(cls)
-        obj._pseis = pseis
+        obj._internal = pseis
         return obj
 
     @override
@@ -77,69 +77,69 @@ class EISData:
     @property
     def title(self) -> str:
         """Tite for EIS data."""
-        return self._pseis.Title
+        return self._internal.Title
 
     @property
     def frequency_type(self) -> AllowedFrequencyTypes:
         """Frequency type."""
-        return str(self._pseis.FreqType).lower()  # type: ignore
+        return str(self._internal.FreqType).lower()  # type: ignore
 
     @property
     def scan_type(self) -> AllowedScanTypes:
         """Scan type."""
-        value = str(self._pseis.ScanType)
+        value = str(self._internal.ScanType)
         mapping = {'TimeScan': 'time', 'PGScan': 'potential', 'Fixed': 'fixed'}
         return mapping[value]  # type: ignore
 
     @property
     def dataset(self) -> DataSet:
         """Dataset which contains multiple arrays of values."""
-        return DataSet._wrap(self._pseis.EISDataSet)
+        return DataSet._wrap(self._internal.EISDataSet)
 
     @property
     def subscans(self) -> list[EISData]:
         """Get list of subscans."""
-        return [EISData._wrap(subscan) for subscan in self._pseis.GetSubScans()]
+        return [EISData._wrap(subscan) for subscan in self._internal.GetSubScans()]
 
     @property
     def n_points(self) -> int:
         """Number of points (including subscans)."""
-        return self._pseis.NPoints
+        return self._internal.NPoints
 
     @property
     def n_frequencies(self) -> int:
         """Number of frequencies."""
-        return self._pseis.NFrequencies
+        return self._internal.NFrequencies
 
     @property
     def n_subscans(self) -> int:
         """Number of subscans."""
-        return len(self._pseis.GetSubScans())
+        return len(self._internal.GetSubScans())
 
     @property
     def x_unit(self) -> str:
         """Unit for array."""
-        return self._pseis.XUnit.ToString()
+        return self._internal.XUnit.ToString()
 
     @property
     def x_quantity(self) -> str:
         """Quantity for array."""
-        return self._pseis.XUnit.Quantity
+        return self._internal.XUnit.Quantity
 
     @property
     def ocp_value(self) -> float:
         """OCP Value."""
-        return self._pseis.OCPValue
+        return self._internal.OCPValue
 
     @property
     def has_subscans(self) -> bool:
         """Return True if data contains subscans."""
-        return self._pseis.HasSubScans
+        return self._internal.HasSubScans
 
     @property
     def mux_channel(self) -> int:
         """Mux channel."""
-        return self._pseis.MuxChannel
+        return self._internal.MuxChannel
 
     def get_data_for_frequency(self, frequency: int) -> dict[str, DataArray]:
         """Returns dictionary with data per frequency.
@@ -159,7 +159,7 @@ class EISData:
 
         return {
             str(row.Key): DataArray._wrap(row.Value)
-            for row in self._pseis.GetDataArrayVsX(frequency)
+            for row in self._internal.GetDataArrayVsX(frequency)
         }
 
     def arrays(self) -> list[DataArray]:
@@ -169,23 +169,24 @@ class EISData:
     def current_range(self) -> list[AllowedCurrentRanges]:
         """Current ranges for the measurement."""
         return [
-            cr_enum_to_string(self._pseis.GetCurrentRange(val)) for val in range(self.n_points)
+            cr_enum_to_string(self._internal.GetCurrentRange(val))
+            for val in range(self.n_points)
         ]
 
     @property
     def cdc(self) -> str:
         """Gets the CDC circuit for fitting."""
-        return self._pseis.CDC
+        return self._internal.CDC
 
     @property
     def cdc_values(self) -> list[float]:
         """Return values for circuit description code (CDC)."""
-        return list(self._pseis.CDCValues)
+        return list(self._internal.CDCValues)
 
     @property
     def id(self) -> int:
         """Unique identifier for curve object."""
-        return self._pseis.GetHashCode()
+        return self._internal.GetHashCode()
 
     def metadata(self) -> EISDataMetadata:
         """Return eis data metadata as dataclass"""

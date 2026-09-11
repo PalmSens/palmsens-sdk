@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, ClassVar, Self, final
 
-from PalmSens.Plottables import Curve as PSCurve
 from typing_extensions import override
 
 from .curve import Curve
@@ -42,7 +41,10 @@ def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, D
 
 @final
 class DataSet(Mapping[str, DataArray]):
-    """Dataset containing measurement data.
+    """Dataset containing multiple data arrays.
+
+    All values are related by means of their indices.
+    DataArrays in a DataSet should always have an equal amount of entries.
 
     Notes
     -----
@@ -50,8 +52,8 @@ class DataSet(Mapping[str, DataArray]):
     Obtain internal instances via `_wrap`.
     """
 
-    __slots__: ClassVar[tuple[str, ...]] = ('_mapping', '_psdataset')
-    _psdataset: PSDataSet  # pyright: ignore[reportUninitializedInstanceVariable]
+    __slots__: ClassVar[tuple[str, ...]] = ('_internal', '_mapping')
+    _internal: PSDataSet  # pyright: ignore[reportUninitializedInstanceVariable]
     _mapping: dict[str, DataArray]  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
@@ -63,7 +65,7 @@ class DataSet(Mapping[str, DataArray]):
     @classmethod
     def _wrap(cls, psdataset: PSDataSet) -> Self:
         obj = cls.__new__(cls)
-        obj._psdataset = psdataset
+        obj._internal = psdataset
         obj._mapping = _dataset_to_mapping_with_unique_keys(psdataset)
         return obj
 
@@ -92,14 +94,10 @@ class DataSet(Mapping[str, DataArray]):
         """
         return [array for array in self._mapping.values() if key(array)]
 
-    def _psarrays(self):
-        """Return underlying PalmSens SDK objects."""
-        return self._psdataset.GetDataArrays()
-
     @property
     def n_points(self) -> int:
         """Number of points in arrays."""
-        return self._psdataset.NPoints
+        return self._internal.NPoints
 
     def curve(self, x: str, y: str, title: str | None = None) -> Curve:
         """Construct a custom curve from x and y keys.
@@ -124,9 +122,7 @@ class DataSet(Mapping[str, DataArray]):
         if not title:
             title = f'{x}-{y}'
 
-        pscurve = PSCurve(xarray._psarray, yarray._psarray, title=title)
-
-        return Curve._wrap(pscurve)
+        return Curve(xarray, yarray, title=title)
 
     def arrays(
         self,
@@ -166,7 +162,7 @@ class DataSet(Mapping[str, DataArray]):
         elif quantity:
             return self._filter(key=lambda array: array.quantity == quantity)
         elif hidden:
-            return [DataArray._wrap(psarray) for psarray in self._psdataset if psarray.Hidden]
+            return [DataArray._wrap(psarray) for psarray in self._internal if psarray.Hidden]
         else:
             return list(self.values())
 

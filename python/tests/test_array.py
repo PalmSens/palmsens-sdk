@@ -3,8 +3,8 @@ from __future__ import annotations
 from math import isnan
 
 import numpy as np
-import PalmSens
 import pytest
+from PalmSens import Data as PSData
 
 from pypalmsens.data import CurrentArray, DataArray, PotentialArray
 
@@ -212,4 +212,29 @@ def test_constructor():
     assert arr.name == 'test'
     assert arr.type == 'Time'
     assert arr.unit == 's'
-    assert isinstance(arr._psarray, PalmSens.Data.DataArray)
+    assert isinstance(arr._psarray, PSData.DataArray)
+
+    c_arr = CurrentArray([1, 2, 3])
+    assert isinstance(c_arr._psarray, PSData.DataArrayCurrents)
+    assert c_arr.unit == 'µA'
+
+    p_arr = PotentialArray([1, 2, 3])
+    assert isinstance(p_arr._psarray, PSData.DataArrayPotentials)
+    assert p_arr.unit == 'V'
+
+    g_arr = DataArray([1, 2, 3])
+    assert g_arr.name == 'Generic'
+    assert g_arr.type == 'Generic'
+    assert g_arr.unit == 'Unknown'
+
+
+@pytest.mark.xfail(reason='Constructor does initialize values as CurrentReading')
+def test_constructor_current_reading_fail():
+    arr = CurrentArray([1, 2, 3])
+    _ = arr.current_reading()
+
+
+@pytest.mark.xfail(reason='Constructor does initialize values as PotentialReading')
+def test_constructor_potential_reading_fail():
+    arr = PotentialArray([1, 2, 3])
+    _ = arr.potential_reading()

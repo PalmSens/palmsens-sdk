@@ -4,6 +4,7 @@ from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Any, ClassVar, Self, overload
 
 import numpy as np
+from PalmSens import Units as PSUnits
 from PalmSens.Calculations import MathFunctions as PSMath
 from PalmSens.Data import DataArray as PSDataArray
 from PalmSens.Data import DataArrayCurrents as PSDataArrayCurrents
@@ -30,6 +31,31 @@ def implementation(interface):
     # if you need to "downcast" to the implementation class.
     # https://github.com/pythonnet/pythonnet/blob/a404d6e4d2ef6182763bd626ab08e0de4400e621/CHANGELOG.md?plain=1#L73-L77
     return interface.__implementation__
+
+
+DEFAULT_UNIT_MAPPING = {
+    'Time': PSUnits.Time,
+    'Potential': PSUnits.Volt,
+    'Current': PSUnits.MicroAmpere,
+    'Charge': PSUnits.MicroCoulomb,
+    'Temperature': PSUnits.Temperature,
+    'ExtraValue': PSUnits.Volt,
+    'AuxInput': PSUnits.Volt,
+    'ZRe': PSUnits.ZRe,
+    'ZIm': PSUnits.ZIm,
+    'Z': PSUnits.Z,
+    'Y': PSUnits.Y,
+    'YRe': PSUnits.YRe,
+    'YIm': PSUnits.YIm,
+    'Phase': PSUnits.Phase,
+    'Frequency': PSUnits.Hertz,
+    'Cs': PSUnits.Farad,
+    'CsRe': PSUnits.FahradReal,
+    'CsIm': PSUnits.FahradImaginary,
+    'mEdc': PSUnits.Volt,
+    'Eac': PSUnits.Volt,
+    'Idc': PSUnits.MicroAmpere,
+}
 
 
 class DataArray(Sequence[float]):
@@ -75,9 +101,17 @@ class DataArray(Sequence[float]):
         if name is None:
             name = array_type
 
-        unit = PSDataArray.GetDefaultUnit(array_type_enum)
+        if isinstance(self, CurrentArray):
+            new_array = PSDataArrayCurrents(name, array_type_enum)
+        elif isinstance(self, PotentialArray):
+            new_array = PSDataArrayPotentials(name, array_type_enum)
+        else:
+            try:
+                unit = DEFAULT_UNIT_MAPPING[array_type]()
+            except KeyError:
+                unit = PSUnits.FixedUnit('Unknown', '', '')
 
-        new_array = self._ps_cls(name, unit, array_type_enum)
+            new_array = self._ps_cls(name, unit, array_type_enum)
 
         new_array.AddRange(values)
 
@@ -285,8 +319,16 @@ class CurrentArray(DataArray):
 
     _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayCurrents
 
+    def __init__(
+        self,
+        values: Iterable[float],
+        *,
+        name: str | None = None,
+    ):
+        super().__init__(values, array_type='Current', name=name)
+
     def current(self) -> list[float]:
-        """Current in uA."""
+        """Current in µA."""
         # Work-around for mIDC bug
         if self.type == 'miDC':
             return [implementation(val).Value for val in self._psarray]
@@ -374,6 +416,14 @@ class PotentialArray(DataArray):
     __slots__ = ()
 
     _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayPotentials
+
+    def __init__(
+        self,
+        values: Iterable[float],
+        *,
+        name: str | None = None,
+    ):
+        super().__init__(values, array_type='Potential', name=name)
 
     def potential(self) -> list[float]:
         """Return list of potential values in V."""

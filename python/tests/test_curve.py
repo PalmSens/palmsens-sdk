@@ -5,7 +5,7 @@ from math import isnan
 import numpy as np
 import pytest
 
-from pypalmsens.data import Curve
+from pypalmsens.data import CurrentArray, Curve, PotentialArray
 
 
 @pytest.fixture
@@ -195,3 +195,17 @@ def test_concat(curve_dpv):
     c = curve_dpv.concat(curve_dpv)
     assert len(c) == 2 * len(curve_dpv)
     assert c.n_points == 2 * curve_dpv.n_points
+
+
+def test_constructor():
+    current = CurrentArray([1, 2, 3])
+    potential = PotentialArray([1, 2, 3])
+    curve = Curve(current, potential, title='my curve')
+
+    assert curve.x_unit == 'µA'
+    assert curve.y_unit == 'V'
+    assert curve.title == 'my curve'
+    assert len(curve) == 3
+
+    assert isinstance(curve.x_array, CurrentArray)
+    assert isinstance(curve.y_array, PotentialArray)

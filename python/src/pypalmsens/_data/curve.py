@@ -52,15 +52,15 @@ class Curve:
     ``curve_a - curve_b`` return new curves.
     """
 
-    __slots__ = ('_internal',)
+    __slots__ = ('_inner',)
 
     def __init__(self, x: DataArray, y: DataArray, *, title: str = 'Curve'):
-        self._internal = PSCurve(x._internal, y._internal, title)
+        self._inner = PSCurve(x._inner, y._inner, title)
 
     @classmethod
     def _wrap(cls, pscurve: PSCurve) -> Self:
         obj = cls.__new__(cls)
-        obj._internal = pscurve
+        obj._inner = pscurve
         return obj
 
     def __add__(self, other: object) -> Self:
@@ -68,7 +68,7 @@ class Curve:
             return NotImplemented
 
         operator = PSMath.enumOperator.Add
-        new_curve = PSMath.AddSubtractCurves(self._internal, other._internal, operator)
+        new_curve = PSMath.AddSubtractCurves(self._inner, other._inner, operator)
 
         return type(self)._wrap(new_curve)
 
@@ -79,7 +79,7 @@ class Curve:
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
-        new_curve = PSMath.AddSubtractCurves(self._internal, other._internal, operator)
+        new_curve = PSMath.AddSubtractCurves(self._inner, other._inner, operator)
 
         return type(self)._wrap(new_curve)
 
@@ -88,7 +88,7 @@ class Curve:
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
-        new_curve = PSMath.AddSubtractCurves(other._internal, self._internal, operator)
+        new_curve = PSMath.AddSubtractCurves(other._inner, self._inner, operator)
 
         return type(self)._wrap(new_curve)
 
@@ -109,13 +109,13 @@ class Curve:
         Curve
             New curve with the concatenated x and y arrays.
         """
-        new_curve = PSMath.AppendCurves(self._internal, other._internal)
+        new_curve = PSMath.AppendCurves(self._inner, other._inner)
 
         return type(self)._wrap(new_curve)
 
     def copy(self) -> Curve:
         """Return a copy of this curve."""
-        return Curve._wrap(PSCurve(self._internal, cloneData=True))
+        return Curve._wrap(PSCurve(self._inner, cloneData=True))
 
     def smooth(self, smooth_level: int = 0):
         """Smooth the .y_array using a Savitsky-Golay filter with the specified smooth
@@ -127,7 +127,7 @@ class Curve:
             The smooth level to be used. -1 = none, 0 = no smooth (spike rejection only),
             1 = 5 points, 2 = 9 points, 3 = 15 points, 4 = 25 points
         """
-        success = self._internal.Smooth(smoothLevel=smooth_level)
+        success = self._inner.Smooth(smoothLevel=smooth_level)
         if not success:
             raise ValueError('Something went wrong.')
 
@@ -142,7 +142,7 @@ class Curve:
         window_size : int
             Size of the window
         """
-        self._internal.SavitskyGolay(windowSize=window_size)
+        self._inner.SavitskyGolay(windowSize=window_size)
 
     def find_peaks(
         self,
@@ -171,7 +171,7 @@ class Curve:
         -------
         peak_list : list[Peak]
         """
-        pspeaks = self._internal.FindPeaks(
+        pspeaks = self._inner.FindPeaks(
             minPeakWidth=min_peak_width,
             minPeakHeight=min_peak_height,
             peakShoulders=peak_shoulders,
@@ -206,7 +206,7 @@ class Curve:
         peak_list : list[Peak]
         """
         dct = System.Collections.Generic.Dictionary[PSCurve, System.Double]()
-        dct[self._internal] = min_peak_height
+        dct[self._inner] = min_peak_height
 
         pd = PSAnalysis.SemiDerivativePeakDetection()
         pd.GetNonOverlappingPeaks(dct)
@@ -261,11 +261,11 @@ class Curve:
             baseline: Curve
 
         _corrected = PSAnalysis.BaselineCorrection.GetMovingAverageBaselineCorrected(
-            self._internal, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=False
+            self._inner, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=False
         )
         _corrected.Title = self.title + ' (corrected)'
         _baseline = PSAnalysis.BaselineCorrection.GetMovingAverageBaselineCorrected(
-            self._internal, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=True
+            self._inner, nWindowSize=window_size, maxNSweeps=max_sweeps, baseline=True
         )
         _baseline.Title = self.title + ' (baseline)'
 
@@ -276,28 +276,28 @@ class Curve:
     @property
     def max_x(self) -> float:
         """Maximum X value found in this curve."""
-        return self._internal.MaxX
+        return self._inner.MaxX
 
     @property
     def max_y(self) -> float:
         """Maximum Y value found in this curve."""
-        return self._internal.MaxY
+        return self._inner.MaxY
 
     @property
     def min_x(self) -> float:
         """Minimum X value found in this curve."""
-        return self._internal.MinX
+        return self._inner.MinX
 
     @property
     def min_y(self) -> float:
         """Minimum Y value found in this curve."""
-        return self._internal.MinY
+        return self._inner.MinY
 
     @property
     def mux_channel(self) -> int:
         """The corresponding MUX channel number with the curve starting at 0.
         Return -1 when no MUX channel used."""
-        return self._internal.MuxChannel
+        return self._inner.MuxChannel
 
     @property
     def n_points(self) -> int:
@@ -305,61 +305,61 @@ class Curve:
         return len(self)
 
     def __len__(self):
-        return self._internal.NPoints
+        return self._inner.NPoints
 
     @property
     def ocp_value(self) -> float:
         """OCP value for curve."""
-        return self._internal.OCPValue
+        return self._inner.OCPValue
 
     @property
     def x_unit(self) -> str:
         """Units for X dimension."""
-        return self._internal.XUnit.ToString()
+        return self._inner.XUnit.ToString()
 
     @property
     def x_label(self) -> str:
         """Label for X dimension."""
-        return self._internal.XUnit.Quantity
+        return self._inner.XUnit.Quantity
 
     @property
     def y_unit(self) -> str:
         """Units for Y dimension."""
-        return self._internal.YUnit.ToString()
+        return self._inner.YUnit.ToString()
 
     @property
     def y_label(self) -> str:
         """Label for Y dimension."""
-        return self._internal.YUnit.Quantity
+        return self._inner.YUnit.Quantity
 
     @property
     def z_unit(self) -> None | str:
         """Units for Z dimension. Returns None if not set."""
-        if ret := self._internal.ZUnit:
+        if ret := self._inner.ZUnit:
             return ret.ToString()
         return None
 
     @property
     def z_label(self) -> None | str:
         """Units for Z dimension. Returns None if not set."""
-        if ret := self._internal.ZUnit:
+        if ret := self._inner.ZUnit:
             return ret.Quantity
         return None
 
     @property
     def title(self) -> str:
         """Title for the curve."""
-        return self._internal.Title
+        return self._inner.Title
 
     @title.setter
     def title(self, title: str):
         """Set the title for the curve."""
-        self._internal.Title = title
+        self._inner.Title = title
 
     @property
     def id(self) -> int:
         """Unique identifier for curve object."""
-        return self._internal.GetHashCode()
+        return self._inner.GetHashCode()
 
     def metadata(self) -> CurveMetadata:
         """Generate curve metadata as dataclass."""
@@ -379,24 +379,24 @@ class Curve:
     def peaks(self) -> list[Peak]:
         """Return peaks stored on object."""
         try:
-            peaks = [Peak._wrap(peak) for peak in self._internal.Peaks]
+            peaks = [Peak._wrap(peak) for peak in self._inner.Peaks]
         except TypeError:
             peaks = []
         return peaks
 
     def clear_peaks(self):
         """Clear peaks stored on object."""
-        self._internal.ClearPeaks()
+        self._inner.ClearPeaks()
 
     @property
     def x_array(self) -> DataArray:
         """Y data for the curve."""
-        return DataArray._wrap_dispatched(self._internal.XAxisDataArray)
+        return DataArray._wrap_dispatched(self._inner.XAxisDataArray)
 
     @property
     def y_array(self) -> DataArray:
         """Y data for the curve."""
-        return DataArray._wrap_dispatched(self._internal.YAxisDataArray)
+        return DataArray._wrap_dispatched(self._inner.YAxisDataArray)
 
     def linear_slope(
         self, start: None | int = None, stop: None | int = None
@@ -420,9 +420,9 @@ class Curve:
             Coefficient of determination (R2)
         """
         if start and stop:
-            return self._internal.LLS(start, stop)
+            return self._inner.LLS(start, stop)
         else:
-            return self._internal.LLS()
+            return self._inner.LLS()
 
     def plot(
         self,

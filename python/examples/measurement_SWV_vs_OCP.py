@@ -15,8 +15,8 @@ with ps.connect(instrument) as manager:
             'conditioning_time': 2,  # seconds
         },
         versus_ocp={
-            'mode': 3,  # versus begin and end potential
-            'max_ocp_time': 1,  # seconds
+            'potentials': ['begin', 'end'],  # versus begin and end potential
+            'timeout': 1,  # seconds
         },
         begin_potential=-0.5,  # V
         end_potential=0.5,  # V

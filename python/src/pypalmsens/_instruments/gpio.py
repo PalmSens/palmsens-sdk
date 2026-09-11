@@ -100,7 +100,7 @@ class GPIO:
 
     For explicit control, use the low-level MethodSCRIPT primitives directly:
 
-    - [pypSCommProtocol][]
+    - [pypalmsens.CommProtocol][]
     - [MethodSCRIPT manual](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html)
     """
 

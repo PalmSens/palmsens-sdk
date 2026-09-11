@@ -421,7 +421,7 @@ def test_GeneralSettings():
     obj = Techniques.CyclicVoltammetry()
 
     params = ps.settings.General(
-        save_on_inner_storage=True,
+        save_on_internal_storage=True,
         use_hardware_sync=True,
         notes='testtest',
         power_frequency=60,

@@ -732,7 +732,7 @@ class DataProcessing(BaseSettings):
 class General(BaseSettings):
     """Sets general/other settings."""
 
-    save_on_inner_storage: bool = False
+    save_on_internal_storage: bool = False
     """Save on internal storage."""
 
     use_hardware_sync: bool = False
@@ -749,14 +749,14 @@ class General(BaseSettings):
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        psmethod.SaveOnDevice = self.save_on_inner_storage
+        psmethod.SaveOnDevice = self.save_on_internal_storage
         psmethod.UseHWSync = self.use_hardware_sync
         psmethod.Notes = self.notes
         psmethod.PowerFreq = self.power_frequency
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):
-        self.save_on_inner_storage = psmethod.SaveOnDevice
+        self.save_on_internal_storage = psmethod.SaveOnDevice
         self.use_hardware_sync = psmethod.UseHWSync
         self.notes = psmethod.Notes
         self.power_frequency = psmethod.PowerFreq

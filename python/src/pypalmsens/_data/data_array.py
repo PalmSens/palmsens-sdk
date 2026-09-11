@@ -360,10 +360,6 @@ class CurrentArray(DataArray):
         Values to store in the array.
         Any iterable (list, tuple, generator, etc.)
         of floats is accepted.
-    array_type : AllowedArrayTypes, optional
-        Type of the array. Defaults to `'Generic'`.
-        Use e.g. `'Current'` or `'Potential'` when constructing
-        arrays that represent measured quantities.
     name : str, optional
         Name of the array. Defaults to the value of `array_type` when not
         given. The name is used in `__repr__` and for identification.
@@ -458,10 +454,6 @@ class PotentialArray(DataArray):
         Values to store in the array.
         Any iterable (list, tuple, generator, etc.)
         of floats is accepted.
-    array_type : AllowedArrayTypes, optional
-        Type of the array. Defaults to `'Generic'`.
-        Use e.g. `'Current'` or `'Potential'` when constructing
-        arrays that represent measured quantities.
     name : str, optional
         Name of the array. Defaults to the value of `array_type` when not
         given. The name is used in `__repr__` and for identification.

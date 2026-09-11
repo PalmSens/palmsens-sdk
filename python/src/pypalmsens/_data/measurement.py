@@ -76,8 +76,8 @@ class Measurement:
     Obtain internal instances via `_wrap`.
     """
 
-    __slots__: ClassVar[tuple[str, ...]] = ('_internal',)
-    _internal: PSMeasurement  # pyright: ignore[reportUninitializedInstanceVariable]
+    __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
+    _inner: PSMeasurement  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
 
@@ -87,9 +87,9 @@ class Measurement:
         )
 
     @classmethod
-    def _wrap(cls, psmeasurement: PSMeasurement) -> Self:
+    def _wrap(cls, inner: PSMeasurement) -> Self:
         obj = cls.__new__(cls)
-        obj._internal = psmeasurement
+        obj._inner = inner
         return obj
 
     @override
@@ -99,7 +99,7 @@ class Measurement:
     @property
     def title(self) -> str:
         """Title for the measurement."""
-        return self._internal.Title
+        return self._inner.Title
 
     @property
     def timestamp(self) -> datetime:
@@ -108,7 +108,7 @@ class Measurement:
         Returns a timezone-naive `datetime` in local time, matching the format
         used by the SDK (e.g. ``2017-07-12 14:28:58``).
         """
-        timestamp = self._internal.TimeStamp
+        timestamp = self._inner.TimeStamp
         return datetime.fromisoformat(
             timestamp.ToString('s', System.Globalization.CultureInfo.InvariantCulture)
         )
@@ -116,7 +116,7 @@ class Measurement:
     @property
     def device(self) -> DeviceInfo:
         """Return dataclass with measurement device information."""
-        return DeviceInfo._from_psmeasurement(self._internal)
+        return DeviceInfo._from_psmeasurement(self._inner)
 
     def metadata(self) -> MeasurementMetadata:
         """Return measurement metadata as dataclass"""
@@ -138,7 +138,7 @@ class Measurement:
         if Blank curve is present (not null) a new curve will be added after each measurement
         containing the result of the measured curve subtracted with the Blank curve.
         """
-        curve = self._internal.BlankCurve
+        curve = self._inner.BlankCurve
         if curve:
             return Curve._wrap(curve)
         return None
@@ -146,12 +146,12 @@ class Measurement:
     @property
     def has_blank_subtracted_curves(self) -> bool:
         """Return True if the curve collection contains a blank subtracted curve."""
-        return self._internal.ContainsBlankSubtractedCurves
+        return self._inner.ContainsBlankSubtractedCurves
 
     @property
     def has_eis_data(self) -> bool:
         """Return True if EIS data are is available."""
-        return self._internal.ContainsEISdata
+        return self._inner.ContainsEISdata
 
     @property
     def dataset(self) -> DataSet:
@@ -160,12 +160,12 @@ class Measurement:
         All values are related by means of their indices.
         Data arrays in a dataset should always have an equal amount of entries.
         """
-        return DataSet._wrap(self._internal.DataSet)
+        return DataSet._wrap(self._inner.DataSet)
 
     @property
     def eis_data(self) -> list[EISData]:
         """EIS data in measurement."""
-        lst = [EISData._wrap(pseis) for pseis in self._internal.EISdata]
+        lst = [EISData._wrap(pseis) for pseis in self._inner.EISdata]
 
         return lst
 
@@ -174,27 +174,27 @@ class Measurement:
         """Method related with this Measurement.
 
         The information from the Method is used when saving Curves."""
-        return Method._wrap(self._internal.Method).to_settings()
+        return Method._wrap(self._inner.Method).to_settings()
 
     @property
     def channel(self) -> float:
         """Get the channel that the measurement was measured on."""
-        return self._internal.Channel
+        return self._inner.Channel
 
     @property
     def ocp_value(self) -> float:
         """First OCP Value from either curves or EISData."""
-        return self._internal.OcpValue
+        return self._inner.OcpValue
 
     @property
     def n_curves(self) -> int:
         """Number of curves that are part of the Measurement class."""
-        return self._internal.nCurves
+        return self._inner.nCurves
 
     @property
     def n_eis_data(self) -> int:
         """Number of EISdata curves (channels) that are part of the Measurement class."""
-        return self._internal.nEISdata
+        return self._inner.nEISdata
 
     @property
     def peaks(self) -> list[Peak]:
@@ -232,4 +232,4 @@ class Measurement:
         curves : list[Curve]
             List of curves
         """
-        return [Curve._wrap(curve) for curve in self._internal.GetCurveArray()]
+        return [Curve._wrap(curve) for curve in self._inner.GetCurveArray()]

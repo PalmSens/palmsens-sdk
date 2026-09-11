@@ -21,7 +21,7 @@ def test_save_load_session(tmpdir, measurement_dpv):
 
     measurement_dpv2 = session2[0]
 
-    method_filename = Path(measurement_dpv2._internal.Method.MethodFilename)
+    method_filename = Path(measurement_dpv2._inner.Method.MethodFilename)
     assert method_filename == path
     assert method_filename.is_absolute()
 

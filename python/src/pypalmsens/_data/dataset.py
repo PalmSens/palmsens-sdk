@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, ClassVar, Self, final
 
+from PalmSens.Data import DataSet as PSDataSet
 from typing_extensions import override
 
 from .curve import Curve
@@ -12,7 +13,6 @@ from .types import AllowedArrayTypes, array_enum_to_str
 if TYPE_CHECKING:
     import pandas as pd
     from PalmSens.Data import DataArray as PSDataArray
-    from PalmSens.Data import DataSet as PSDataSet
 
 
 def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, DataArray]:
@@ -52,20 +52,21 @@ class DataSet(Mapping[str, DataArray]):
     Obtain internal instances via `_wrap`.
     """
 
-    __slots__: ClassVar[tuple[str, ...]] = ('_internal', '_mapping')
-    _internal: PSDataSet  # pyright: ignore[reportUninitializedInstanceVariable]
+    __slots__: ClassVar[tuple[str, ...]] = ('_inner', '_mapping')
+    _inner: PSDataSet  # pyright: ignore[reportUninitializedInstanceVariable]
     _mapping: dict[str, DataArray]  # pyright: ignore[reportUninitializedInstanceVariable]
 
-    def __init__(self):
-        raise TypeError(
-            'DataSet cannot be instantiated directly. '
-            'Obtain instances through measurements or io methods.'
-        )
+    def __init__(self, arrays: Iterable[DataArray]):
+        inner = PSDataSet()
+        for array in arrays:
+            inner.Add(array._inner)
+
+        self._mapping = _dataset_to_mapping_with_unique_keys(inner)
 
     @classmethod
     def _wrap(cls, psdataset: PSDataSet) -> Self:
         obj = cls.__new__(cls)
-        obj._internal = psdataset
+        obj._inner = psdataset
         obj._mapping = _dataset_to_mapping_with_unique_keys(psdataset)
         return obj
 
@@ -97,7 +98,7 @@ class DataSet(Mapping[str, DataArray]):
     @property
     def n_points(self) -> int:
         """Number of points in arrays."""
-        return self._internal.NPoints
+        return self._inner.NPoints
 
     def curve(self, x: str, y: str, title: str | None = None) -> Curve:
         """Construct a custom curve from x and y keys.
@@ -162,7 +163,7 @@ class DataSet(Mapping[str, DataArray]):
         elif quantity:
             return self._filter(key=lambda array: array.quantity == quantity)
         elif hidden:
-            return [DataArray._wrap(psarray) for psarray in self._internal if psarray.Hidden]
+            return [DataArray._wrap(psarray) for psarray in self._inner if psarray.Hidden]
         else:
             return list(self.values())
 

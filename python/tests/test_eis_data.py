@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import pytest
 
+from pypalmsens.data import EISData
+
 
 @pytest.fixture
 def eis_simple(measurement_eis_5freq):
@@ -11,6 +13,11 @@ def eis_simple(measurement_eis_5freq):
 @pytest.fixture
 def eis_mux_subscans(measurement_eis_3ch_4scan_5freq):
     return measurement_eis_3ch_4scan_5freq.eis_data
+
+
+def test_eisdata_init_fail():
+    with pytest.raises(TypeError):
+        _ = EISData()
 
 
 def test_eis_data(eis_simple):

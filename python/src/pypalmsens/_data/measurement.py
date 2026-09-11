@@ -165,7 +165,7 @@ class Measurement:
     @property
     def eis_data(self) -> list[EISData]:
         """EIS data in measurement."""
-        lst = [EISData(pseis=pseis) for pseis in self._psmeasurement.EISdata]
+        lst = [EISData._wrap(pseis) for pseis in self._psmeasurement.EISdata]
 
         return lst
 

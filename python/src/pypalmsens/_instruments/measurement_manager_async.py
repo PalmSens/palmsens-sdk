@@ -406,7 +406,7 @@ class MeasurementManagerAsync:
 
         self.eis_last_data_index = 0
 
-        data = EISData(pseis=eis_data)
+        data = EISData._wrap(eis_data)
 
         for callback in self.callbacks['eis_data_begin']:
             _ = self.loop.call_soon_threadsafe(callback, data)

@@ -13,6 +13,11 @@ def measurement(measurement_dpv):
     return measurement_dpv
 
 
+def test_measurement_init_fail():
+    with pytest.raises(TypeError):
+        _ = Measurement()
+
+
 def test_measurement_properties(measurement):
     assert measurement.title == 'Square Wave Voltammetry'
     assert isinstance(measurement.timestamp, datetime)
@@ -30,8 +35,3 @@ def test_measurement_properties(measurement):
     device = measurement.device
     with pytest.raises(FrozenInstanceError):
         device.type = 'foo'
-
-
-def test_measurement_init_fail():
-    with pytest.raises(TypeError):
-        _ = Measurement()

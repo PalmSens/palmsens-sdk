@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, final
+from typing import TYPE_CHECKING, ClassVar, Literal, Self, final
 
 from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass as pydantic_dataclass
@@ -39,16 +39,27 @@ class EISDataMetadata:
 
 @final
 class EISData:
-    """Python wrapper for .NET EISdata class.
+    """Dataset containing impedance measurement results.
 
-    Parameters
-    ----------
-    pseis
-        Reference to .NET EISdata object.
+    Notes
+    -----
+    Obtain internal instances via `_wrap`.
     """
 
-    def __init__(self, *, pseis: PSEISData):
-        self._pseis = pseis
+    __slots__: ClassVar[tuple[str, ...]] = ('_pseis',)
+    _pseis: PSEISData  # pyright: ignore[reportUninitializedInstanceVariable]
+
+    def __init__(self):
+        raise TypeError(
+            'EISData cannot be instantiated directly. '
+            'Obtain instances through measurements or io methods.'
+        )
+
+    @classmethod
+    def _wrap(cls, pseis: PSEISData) -> Self:
+        obj = cls.__new__(cls)
+        obj._pseis = pseis
+        return obj
 
     @override
     def __repr__(self):
@@ -88,7 +99,7 @@ class EISData:
     @property
     def subscans(self) -> list[EISData]:
         """Get list of subscans."""
-        return [EISData(pseis=subscan) for subscan in self._pseis.GetSubScans()]
+        return [EISData._wrap(subscan) for subscan in self._pseis.GetSubScans()]
 
     @property
     def n_points(self) -> int:

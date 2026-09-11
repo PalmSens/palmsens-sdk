@@ -4,8 +4,7 @@ from collections.abc import Generator
 from dataclasses import dataclass, field
 from typing import Any, Literal, Protocol
 
-import PalmSens
-from PalmSens.Comm import StatusEventArgs
+from PalmSens import Comm as PSComm
 from typing_extensions import override
 
 from pypalmsens._converters import single_to_double
@@ -144,12 +143,12 @@ class CallbackEIS(Protocol):
 class Status:
     """Device Status class."""
 
-    _status: PalmSens.Comm.Status = field(repr=False)
+    _status: PSComm.Status = field(repr=False)
     device_state: AllowedDeviceState = 'Unknown'
     """Device state."""
 
     @classmethod
-    def _from_event_args(cls, args: StatusEventArgs) -> Status:
+    def _from_event_args(cls, args: PSComm.StatusEventArgs) -> Status:
         return cls(
             _status=args.GetStatus(),
             device_state=str(args.DeviceState),  # type:ignore

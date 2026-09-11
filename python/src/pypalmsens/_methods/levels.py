@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from dataclasses import field
 from typing import Literal
 
-import PalmSens
+from PalmSens import Techniques as PSTechniques
 
 from .._converters import single_to_double
 from .base_model import BaseModel
@@ -55,8 +55,8 @@ class ELevel(BaseModel):
 
         return use_limit_current_min or use_limit_current_max
 
-    def _to_psobj(self) -> PalmSens.Techniques.ELevel:
-        obj = PalmSens.Techniques.ELevel()
+    def _to_psobj(self) -> PSTechniques.ELevel:
+        obj = PSTechniques.ELevel()
 
         obj.Level = self.level
         obj.Duration = self.duration
@@ -76,7 +76,7 @@ class ELevel(BaseModel):
         return obj
 
     @classmethod
-    def _from_psobj(cls, psobj: PalmSens.Techniques.ELevel):
+    def _from_psobj(cls, psobj: PSTechniques.ELevel):
         """Construct ELevel dataclass from PalmSens.Techniques.ELevel object."""
         trigger_lines: list[Literal[0, 1, 2, 3]] = []
 
@@ -131,8 +131,8 @@ class ILevel(BaseModel):
 
         return use_limit_potential_min or use_limit_potential_max
 
-    def _to_psobj(self) -> PalmSens.Techniques.EILevel:
-        obj = PalmSens.Techniques.EILevel()
+    def _to_psobj(self) -> PSTechniques.EILevel:
+        obj = PSTechniques.EILevel()
 
         obj.Level = self.level
         obj.Duration = self.duration
@@ -152,7 +152,7 @@ class ILevel(BaseModel):
         return obj
 
     @classmethod
-    def _from_psobj(cls, psobj: PalmSens.Techniques.EILevel):
+    def _from_psobj(cls, psobj: PSTechniques.EILevel):
         """Construct ILevel dataclass from PalmSens.Techniques.ELevel object."""
         trigger_lines: list[Literal[0, 1, 2, 3]] = []
 

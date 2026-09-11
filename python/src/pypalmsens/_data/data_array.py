@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Self, overload
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Any, ClassVar, Self, overload
 
 import numpy as np
+from PalmSens import Units as PSUnits
 from PalmSens.Calculations import MathFunctions as PSMath
 from PalmSens.Data import DataArray as PSDataArray
+from PalmSens.Data import DataArrayCurrents as PSDataArrayCurrents
+from PalmSens.Data import DataArrayPotentials as PSDataArrayPotentials
 from typing_extensions import override
 
 from .._converters import cr_enum_to_string, pr_enum_to_string
@@ -16,7 +19,7 @@ from .._types import (
     AllowedTimingStatus,
 )
 from .data_value import CurrentReading, PotentialReading
-from .types import AllowedArrayTypes, array_enum_to_str
+from .types import AllowedArrayTypes, array_enum_to_str, array_str_to_enum
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -30,13 +33,50 @@ def implementation(interface):
     return interface.__implementation__
 
 
+DEFAULT_UNIT_MAPPING = {
+    'Time': PSUnits.Time,
+    'Potential': PSUnits.Volt,
+    'Current': PSUnits.MicroAmpere,
+    'Charge': PSUnits.MicroCoulomb,
+    'Temperature': PSUnits.Temperature,
+    'ExtraValue': PSUnits.Volt,
+    'AuxInput': PSUnits.Volt,
+    'ZRe': PSUnits.ZRe,
+    'ZIm': PSUnits.ZIm,
+    'Z': PSUnits.Z,
+    'Y': PSUnits.Y,
+    'YRe': PSUnits.YRe,
+    'YIm': PSUnits.YIm,
+    'Phase': PSUnits.Phase,
+    'Frequency': PSUnits.Hertz,
+    'Cs': PSUnits.Farad,
+    'CsRe': PSUnits.FahradReal,
+    'CsIm': PSUnits.FahradImaginary,
+    'mEdc': PSUnits.Volt,
+    'Eac': PSUnits.Volt,
+    'Idc': PSUnits.MicroAmpere,
+}
+
+
 class DataArray(Sequence[float]):
-    """Python wrapper for .NET DataArray class.
+    """Array of data values.
+
+    A data array can be created from an iterable of values, or wrapped from an
+    existing ``PSDataArray`` (see ``_wrap``).
 
     Parameters
     ----------
-    psarray
-        Reference to .NET DataArray object.
+    values : Iterable[float]
+        Values to store in the array.
+        Any iterable (list, tuple, generator, etc.)
+        of floats is accepted.
+    array_type : AllowedArrayTypes, optional
+        Type of the array. Defaults to `'Generic'`.
+        Use e.g. `'Current'` or `'Potential'` when constructing
+        arrays that represent measured quantities.
+    name : str, optional
+        Name of the array. Defaults to the value of `array_type` when not
+        given. The name is used in `__repr__` and for identification.
 
     Notes
     -----
@@ -45,8 +85,54 @@ class DataArray(Sequence[float]):
     ``array_a * factor`` return new arrays.
     """
 
-    def __init__(self, *, psarray: PSDataArray):
-        self._psarray: PSDataArray = psarray
+    __slots__: ClassVar[tuple[str, ...]] = ('_psarray',)
+    _psarray: PSDataArray
+    _ps_cls: ClassVar[type[PSDataArray]] = PSDataArray
+
+    def __init__(
+        self,
+        values: Iterable[float],
+        *,
+        array_type: AllowedArrayTypes = 'Generic',
+        name: str | None = None,
+    ):
+        array_type_enum = array_str_to_enum(array_type)
+
+        if name is None:
+            name = array_type
+
+        if isinstance(self, CurrentArray):
+            new_array = PSDataArrayCurrents(name, array_type_enum)
+        elif isinstance(self, PotentialArray):
+            new_array = PSDataArrayPotentials(name, array_type_enum)
+        else:
+            try:
+                unit = DEFAULT_UNIT_MAPPING[array_type]()
+            except KeyError:
+                unit = PSUnits.FixedUnit('Unknown', '', '')
+
+            new_array = self._ps_cls(name, unit, array_type_enum)
+
+        new_array.AddRange(values)
+
+        self._psarray = new_array
+
+    @classmethod
+    def _wrap(cls, psarray: PSDataArray) -> Self:
+        obj = cls.__new__(cls)
+        obj._psarray = psarray
+        return obj
+
+    @classmethod
+    def _wrap_dispatched(
+        cls, psarray: PSDataArray
+    ) -> DataArray | CurrentArray | PotentialArray:
+        if isinstance(psarray, PSDataArrayPotentials):
+            return PotentialArray._wrap(psarray)
+        if isinstance(psarray, PSDataArrayCurrents):
+            return CurrentArray._wrap(psarray)
+
+        return DataArray._wrap(psarray)
 
     @override
     def __repr__(self):
@@ -74,37 +160,37 @@ class DataArray(Sequence[float]):
     def __len__(self) -> int:
         return len(self._psarray)
 
-    def __add__(self, other: object) -> Self:
+    def __add__(self, other: object) -> DataArray:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
         operator = PSMath.enumOperator.Add
         new_array = PSMath.AddSubtractDataArrays(self._psarray, other._psarray, operator)
 
-        return type(self)(psarray=new_array)
+        return type(self)._wrap(new_array)
 
-    def __radd__(self, other: object) -> Self:
+    def __radd__(self, other: object) -> DataArray:
         return self.__add__(other)
 
-    def __sub__(self, other: object) -> Self:
+    def __sub__(self, other: object) -> DataArray:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
         new_array = PSMath.AddSubtractDataArrays(self._psarray, other._psarray, operator)
 
-        return type(self)(psarray=new_array)
+        return type(self)._wrap(new_array)
 
-    def __rsub__(self, other: object) -> Self:
+    def __rsub__(self, other: object) -> DataArray:
         if not isinstance(other, self.__class__):
             return NotImplemented
 
         operator = PSMath.enumOperator.Subtract
         new_array = PSMath.AddSubtractDataArrays(other._psarray, self._psarray, operator)
 
-        return type(self)(psarray=new_array)
+        return type(self)._wrap(new_array)
 
-    def __mul__(self, value: object) -> Self:
+    def __mul__(self, value: object) -> DataArray:
         if not isinstance(value, (int, float)):
             return NotImplemented
 
@@ -115,12 +201,12 @@ class DataArray(Sequence[float]):
         )
         new_array.AddRange(new_values)
 
-        return type(self)(psarray=new_array)
+        return type(self)._wrap(new_array)
 
-    def __rmul__(self, value: object) -> Self:
+    def __rmul__(self, value: object) -> DataArray:
         return self.__mul__(value)
 
-    def normalize(self) -> Self:
+    def normalize(self) -> DataArray:
         """Normalize values in array to the 0 - 1 range.
 
         Values are scaled with ``(value - min) / (max - min)``,
@@ -138,11 +224,11 @@ class DataArray(Sequence[float]):
             self._psarray.Description, self._psarray.Unit, self._psarray.ArrayType
         )
         new_array.AddRange(new_values)
-        return type(self)(psarray=new_array)
+        return type(self)._wrap(new_array)
 
     def copy(self) -> DataArray:
         """Return a copy of the array."""
-        return DataArray(psarray=self._psarray.Clone())
+        return DataArray._wrap(self._psarray.Clone())
 
     def min(self) -> float:
         """Return min value."""
@@ -216,12 +302,33 @@ class CurrentArray(DataArray):
 
     Parameters
     ----------
-    psarray
-        Reference to .NET DataArray object.
+    values : Iterable[float]
+        Values to store in the array.
+        Any iterable (list, tuple, generator, etc.)
+        of floats is accepted.
+    array_type : AllowedArrayTypes, optional
+        Type of the array. Defaults to `'Generic'`.
+        Use e.g. `'Current'` or `'Potential'` when constructing
+        arrays that represent measured quantities.
+    name : str, optional
+        Name of the array. Defaults to the value of `array_type` when not
+        given. The name is used in `__repr__` and for identification.
     """
 
+    __slots__ = ()
+
+    _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayCurrents
+
+    def __init__(
+        self,
+        values: Iterable[float],
+        *,
+        name: str | None = None,
+    ):
+        super().__init__(values, array_type='Current', name=name)
+
     def current(self) -> list[float]:
-        """Current in uA."""
+        """Current in µA."""
         # Work-around for mIDC bug
         if self.type == 'miDC':
             return [implementation(val).Value for val in self._psarray]
@@ -293,9 +400,30 @@ class PotentialArray(DataArray):
 
     Parameters
     ----------
-    psarray
-        Reference to .NET DataArray object.
+    values : Iterable[float]
+        Values to store in the array.
+        Any iterable (list, tuple, generator, etc.)
+        of floats is accepted.
+    array_type : AllowedArrayTypes, optional
+        Type of the array. Defaults to `'Generic'`.
+        Use e.g. `'Current'` or `'Potential'` when constructing
+        arrays that represent measured quantities.
+    name : str, optional
+        Name of the array. Defaults to the value of `array_type` when not
+        given. The name is used in `__repr__` and for identification.
     """
+
+    __slots__ = ()
+
+    _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayPotentials
+
+    def __init__(
+        self,
+        values: Iterable[float],
+        *,
+        name: str | None = None,
+    ):
+        super().__init__(values, array_type='Potential', name=name)
 
     def potential(self) -> list[float]:
         """Return list of potential values in V."""

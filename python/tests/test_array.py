@@ -4,8 +4,9 @@ from math import isnan
 
 import numpy as np
 import pytest
+from PalmSens import Data as PSData
 
-from pypalmsens.data import CurrentArray, PotentialArray
+from pypalmsens.data import CurrentArray, DataArray, PotentialArray
 
 
 @pytest.fixture
@@ -200,3 +201,40 @@ def test_potential_array(measurement_cv_1scan):
 
     d = arr.to_dict()
     assert len(d) == 5
+
+
+def test_constructor():
+    arr = DataArray([1.0, 2.0, 3.0], array_type='Time', name='test')
+
+    assert isinstance(arr, DataArray)
+    assert len(arr) == 3
+    assert arr.to_list() == [1.0, 2.0, 3.0]
+    assert arr.name == 'test'
+    assert arr.type == 'Time'
+    assert arr.unit == 's'
+    assert isinstance(arr._psarray, PSData.DataArray)
+
+    c_arr = CurrentArray([1, 2, 3])
+    assert isinstance(c_arr._psarray, PSData.DataArrayCurrents)
+    assert c_arr.unit == 'µA'
+
+    p_arr = PotentialArray([1, 2, 3])
+    assert isinstance(p_arr._psarray, PSData.DataArrayPotentials)
+    assert p_arr.unit == 'V'
+
+    g_arr = DataArray([1, 2, 3])
+    assert g_arr.name == 'Generic'
+    assert g_arr.type == 'Generic'
+    assert g_arr.unit == 'Unknown'
+
+
+@pytest.mark.xfail(reason='Constructor does initialize values as CurrentReading')
+def test_constructor_current_reading_fail():
+    arr = CurrentArray([1, 2, 3])
+    _ = arr.current_reading()
+
+
+@pytest.mark.xfail(reason='Constructor does initialize values as PotentialReading')
+def test_constructor_potential_reading_fail():
+    arr = PotentialArray([1, 2, 3])
+    _ = arr.potential_reading()

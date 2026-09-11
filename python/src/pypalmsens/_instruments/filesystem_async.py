@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 
-import PalmSens
 import System
-from PalmSens.Data import DeviceFile
+from PalmSens import Comm as PSComm
+from PalmSens import Data as PSData
+from PalmSens import Measurement as PSMeasurement
 
 from ..data import Measurement
 from .filesystem import DevicePath, FileSystemException
@@ -40,7 +41,7 @@ class DeviceFileSystemAsync:
             self.manager = instrument_or_manager
 
     @property
-    def _client_connection(self) -> PalmSens.Comm.ClientConnection:
+    def _client_connection(self) -> PSComm.ClientConnection:
         """The active client connection used for device communication."""
         return self.manager._comm.ClientConnection
 
@@ -66,7 +67,7 @@ class DeviceFileSystemAsync:
         """Join a path component to the root directory."""
         return self.root / path_str
 
-    async def _get_device_file(self, path: str | DevicePath) -> PalmSens.Data.DeviceFile:
+    async def _get_device_file(self, path: str | DevicePath) -> PSData.DeviceFile:
         """Retrieve the DeviceFile` for the given path."""
         if not isinstance(path, DevicePath):
             path = DevicePath(path)
@@ -80,7 +81,7 @@ class DeviceFileSystemAsync:
 
         async with self.manager._lock():
             try:
-                ret: PalmSens.Data.DeviceFile = await create_future(
+                ret: PSData.DeviceFile = await create_future(
                     self._client_connection.GetDeviceFileAsync(fspath)
                 )
             except System.Exception as exc:
@@ -93,7 +94,7 @@ class DeviceFileSystemAsync:
 
     async def _get_device_files(
         self, directory: DevicePath | str | None = None
-    ) -> list[DeviceFile]:
+    ) -> list[PSData.DeviceFile]:
         if not directory:
             directory = self.root
 
@@ -101,7 +102,7 @@ class DeviceFileSystemAsync:
             directory = DevicePath(directory)
 
         async with self.manager._lock():
-            ret: list[PalmSens.Data.DeviceFile] = await create_future(
+            ret: list[PSData.DeviceFile] = await create_future(
                 self._client_connection.GetDeviceFilesAsync(directory.__fspath__())
             )
 
@@ -162,7 +163,7 @@ class DeviceFileSystemAsync:
         f = await self._get_device_file(path)
 
         async with self.manager._lock():
-            psmeasurement: PalmSens.Measurement = await create_future(
+            psmeasurement: PSMeasurement = await create_future(
                 self._client_connection.LoadDeviceFileAsync(f)
             )
 

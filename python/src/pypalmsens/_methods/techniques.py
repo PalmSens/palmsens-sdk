@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Literal
 
 import PalmSens
+from PalmSens import Techniques as PSTechniques
 from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 from pydantic import Field, field_validator, model_validator
 from typing_extensions import Self, override
@@ -1065,7 +1066,7 @@ class PulsedAmperometricDetection(
         psmethod.RunTime = self.run_time
 
         mode = self._MODES.index(self.mode) + 1
-        psmethod.tMode = PalmSens.Techniques.PulsedAmpDetection.enumMode(mode)
+        psmethod.tMode = PSTechniques.PulsedAmpDetection.enumMode(mode)
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):

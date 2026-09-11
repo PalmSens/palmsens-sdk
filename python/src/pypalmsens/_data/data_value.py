@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import PalmSens
+from PalmSens import Data as PSData
 from typing_extensions import override
 
 from .._converters import (
@@ -44,7 +44,7 @@ class PotentialReading:
         return f'{self.potential:.3f} V'
 
     @classmethod
-    def _from_psobject(cls, obj: PalmSens.Data.VoltageReading):
+    def _from_psobject(cls, obj: PSData.VoltageReading):
         return cls(
             potential_range=pr_enum_to_string(obj.Range),
             potential=obj.Value,
@@ -81,7 +81,7 @@ class CurrentReading:
         return f'{self.current_in_range:.3f} * {self.current_range}'
 
     @classmethod
-    def _from_psobject(cls, obj: PalmSens.Data.CurrentReading):
+    def _from_psobject(cls, obj: PSData.CurrentReading):
         return cls(
             current_range=cr_enum_to_string(obj.CurrentRange),
             current=obj.Value,

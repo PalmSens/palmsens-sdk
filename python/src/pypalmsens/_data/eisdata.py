@@ -147,7 +147,7 @@ class EISData:
             raise ValueError(f'Frequency must be between 0 and {self.n_frequencies}')
 
         return {
-            str(row.Key): DataArray(psarray=row.Value)
+            str(row.Key): DataArray._wrap(row.Value)
             for row in self._pseis.GetDataArrayVsX(frequency)
         }
 

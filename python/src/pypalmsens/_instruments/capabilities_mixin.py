@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Protocol
 
-import PalmSens
-from PalmSens.Comm import CommManager
+from PalmSens import Comm as PSComm
+from PalmSens import Method as PSMethod
 
 from .._types import (
     AllowedCurrentRanges,
@@ -16,7 +16,7 @@ from .shared import MethodIncompatibleError
 
 
 class HasCommProtocol(Protocol):
-    _comm: CommManager
+    _comm: PSComm.CommManager
 
     def ensure_connection(self) -> None: ...
 
@@ -95,7 +95,7 @@ class CapabilitiesMixin:
 
     def get_estimated_duration(
         self: HasCommProtocol,
-        method: PalmSens.Method | MethodTypeCompatible,
+        method: PSMethod | MethodTypeCompatible,
     ) -> float:
         """Get the estimated duration for this method.
 
@@ -111,7 +111,7 @@ class CapabilitiesMixin:
         """
         self.ensure_connection()
 
-        if not isinstance(method, PalmSens.Method):
+        if not isinstance(method, PSMethod):
             method = method._to_psmethod()
 
         capabilities = self._comm.Capabilities

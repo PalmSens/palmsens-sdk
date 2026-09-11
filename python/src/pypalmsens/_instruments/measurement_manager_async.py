@@ -315,8 +315,8 @@ class MeasurementManagerAsync:
         """Called when new data is added to the curve."""
 
         data = CallbackData(
-            x_array=DataArray(psarray=pscurve.XAxisDataArray),
-            y_array=DataArray(psarray=pscurve.YAxisDataArray),
+            x_array=DataArray._wrap(pscurve.XAxisDataArray),
+            y_array=DataArray._wrap(pscurve.YAxisDataArray),
             start=args.StartIndex,
             id=pscurve.GetHashCode(),
         )
@@ -333,7 +333,7 @@ class MeasurementManagerAsync:
         pscurve.NewDataAdded -= self.event_handlers['curve_new_data']
         pscurve.Finished -= self.event_handlers['curve_end']
 
-        curve = Curve(pscurve=pscurve)
+        curve = Curve._wrap(pscurve)
 
         for callback in self.callbacks['curve_end']:
             _ = self.loop.call_soon_threadsafe(callback, curve)  # type: ignore
@@ -348,7 +348,7 @@ class MeasurementManagerAsync:
         pscurve.NewDataAdded += self.event_handlers['curve_new_data']
         pscurve.Finished += self.event_handlers['curve_end']
 
-        curve = Curve(pscurve=pscurve)
+        curve = Curve._wrap(pscurve)
 
         for callback in self.callbacks['curve_begin']:
             _ = self.loop.call_soon_threadsafe(callback, curve)  # type: ignore

@@ -110,9 +110,9 @@ def test_curve_properties(curve_dpv):
 def test_curve_copy(curve_dpv):
     new_curve = curve_dpv.copy()
     assert curve_dpv is not new_curve
-    assert curve_dpv._internal is not new_curve._internal
-    assert curve_dpv._internal.XAxisDataArray is not new_curve._internal.XAxisDataArray
-    assert curve_dpv._internal.YAxisDataArray is not new_curve._internal.YAxisDataArray
+    assert curve_dpv._inner is not new_curve._inner
+    assert curve_dpv._inner.XAxisDataArray is not new_curve._inner.XAxisDataArray
+    assert curve_dpv._inner.YAxisDataArray is not new_curve._inner.YAxisDataArray
 
 
 def test_curve_add(curve_dpv):

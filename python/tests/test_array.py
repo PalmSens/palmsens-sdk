@@ -60,7 +60,7 @@ def test_array_copy(array):
     new_array = array.copy()
     assert list(array) == list(new_array)  # data must match
     assert array is not new_array
-    assert array._internal is not new_array._internal
+    assert array._inner is not new_array._inner
 
 
 def test_array_status(measurement_cv_1scan):
@@ -212,14 +212,14 @@ def test_constructor():
     assert arr.name == 'test'
     assert arr.type == 'Time'
     assert arr.unit == 's'
-    assert isinstance(arr._internal, PSData.DataArray)
+    assert isinstance(arr._inner, PSData.DataArray)
 
     c_arr = CurrentArray([1, 2, 3])
-    assert isinstance(c_arr._internal, PSData.DataArrayCurrents)
+    assert isinstance(c_arr._inner, PSData.DataArrayCurrents)
     assert c_arr.unit == 'µA'
 
     p_arr = PotentialArray([1, 2, 3])
-    assert isinstance(p_arr._internal, PSData.DataArrayPotentials)
+    assert isinstance(p_arr._inner, PSData.DataArrayPotentials)
     assert p_arr.unit == 'V'
 
     g_arr = DataArray([1, 2, 3])
@@ -238,3 +238,49 @@ def test_constructor_current_reading_fail():
 def test_constructor_potential_reading_fail():
     arr = PotentialArray([1, 2, 3])
     _ = arr.potential_reading()
+
+
+def test_array_update():
+    arr = DataArray([0, 0, 0])
+
+    arr.update([4, 5, 6])
+    assert list(arr) == [4, 5, 6]
+
+    with pytest.raises(ValueError):
+        arr.update([1, 2])
+
+    with pytest.raises(ValueError):
+        arr.update([1, 2, 3, 4])
+
+
+def test_array_slice_assignment():
+    arr = DataArray([0, 0, 0])
+
+    arr[:] = [1, 2, 3]
+    assert list(arr) == [1, 2, 3]
+
+    arr[1:3] = [7, 8]
+    assert list(arr) == [1, 7, 8]
+
+    with pytest.raises(ValueError):
+        arr[:] = [1, 2]
+
+
+def test_array_slice_broadcast():
+    arr = DataArray([0, 0, 0, 0])
+
+    arr[1:3] = 123
+    assert list(arr) == [0, 123, 123, 0]
+
+    arr[:] = 7
+    assert list(arr) == [7, 7, 7, 7]
+
+
+def test_array_slice_sequence():
+    arr = DataArray([0, 0, 0])
+
+    arr[:] = [1, 2, 3]
+    assert list(arr) == [1, 2, 3]
+
+    with pytest.raises(ValueError):
+        arr[1:3] = [9, 8, 7]

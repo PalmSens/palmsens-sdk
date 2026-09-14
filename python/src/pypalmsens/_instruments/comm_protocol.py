@@ -19,6 +19,8 @@ ERROR_PATTERN = re.compile(r'.*!([0-9A-Fa-f]{4})(:.*|\n)')
 
 
 class CommProtocolError(ConnectionError):
+    """Raised when device returns an error response during read."""
+
     def __init__(self, *args, error_code: str, **kwargs):
         try:
             error_code, context = error_code.split(':', maxsplit=1)
@@ -223,8 +225,8 @@ class CommProtocol:
         ----------
         end : str
             The termination sequence that marks the end of the response.
-            Most commands use '\n'. Scripts and variable-length responses
-            typically use '\n\n'.
+            Most commands use '\\n'. Scripts and variable-length responses
+            typically use '\\n\\n'.
         delay : float, optional
             Pause (in seconds) between read attempts. Defaults to `self.delay`.
 
@@ -235,7 +237,7 @@ class CommProtocol:
 
         Raises
         ------
-        MethodScriptRuntimeError
+        CommProtocolError
             If the device returns an error response during reading.
         """
         buffer: list[str] = []
@@ -322,7 +324,7 @@ class CommProtocol:
         ----------
         script : str
             The MethodSCRIPT to run. The entire script must end
-            with exactly one newline ('\n').
+            with exactly one newline ('\\n').
 
         Returns
         -------

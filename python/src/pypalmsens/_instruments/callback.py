@@ -7,8 +7,7 @@ from typing import Any, Literal, Protocol
 from PalmSens import Comm as PSComm
 from typing_extensions import override
 
-from pypalmsens._converters import single_to_double
-
+from .._converters import single_to_double
 from .._types import AllowedDeviceState
 from ..data import CurrentReading, DataArray, DataSet, PotentialReading
 

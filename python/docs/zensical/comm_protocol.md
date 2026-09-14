@@ -112,7 +112,7 @@ The interface exposes configuration attributes for controlling timeouts and read
 
 ## Error handling
 
-Communication errors raise [MethodScriptRuntimeError][pypalmsens.MethodScriptRuntimeError] (a subclass of `ConnectionError`) when the device returns an error response. The error includes an error code that can be looked up in [the MethodSCRIPT manual](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html#app_err_error_codes):
+Communication errors raise [CommProtocolError][pypalmsens.exceptions.CommProtocolError] (a subclass of `ConnectionError`) when the device returns an error response. The error includes an error code that can be looked up in [the MethodSCRIPT manual](https://dev.palmsens.com/methodscript/latest/methodscript/methodscript_main.html#app_err_error_codes):
 
 ```pycon
 >>> comm.run_methodscript('invalid_command\n')

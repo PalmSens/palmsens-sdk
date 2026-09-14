@@ -7,9 +7,8 @@ import PalmSens
 from jinja2 import Environment, PackageLoader, StrictUndefined, select_autoescape
 from pydantic import BaseModel, Field, PrivateAttr
 
-from pypalmsens.types import MethodTypeCompatible
-
 from .. import __version__
+from .._types import MethodTypeCompatible
 from .settings import CustomUnits
 from .techniques import MethodScript
 

@@ -10,10 +10,9 @@ from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 from typing_extensions import override
 
-from pypalmsens._methods.adapters import EnergyTechniqueType, TechniqueType
-
 from .. import __sdk_version__, __version__
 from .._fitting import FitResult
+from .._methods.adapters import EnergyTechniqueType, TechniqueType
 from .._types import MethodTypeCompatible
 from .curve import Curve
 from .dataset import DataSet

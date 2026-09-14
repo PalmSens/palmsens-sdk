@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, ClassVar, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Self
 
 import PalmSens
 
-from pypalmsens.types import MethodType
-
 from .._methods.techniques import BaseTechnique
+
+if TYPE_CHECKING:
+    from ..types import MethodType
 
 
 class Method:

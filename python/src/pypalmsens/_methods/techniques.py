@@ -11,8 +11,6 @@ from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 from pydantic import Field, field_validator, model_validator
 from typing_extensions import Self, override
 
-from pypalmsens._methodscript import validate as validate_methodscript
-
 from .._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
@@ -20,6 +18,7 @@ from .._converters import (
     pr_string_to_enum,
     single_to_double,
 )
+from .._methodscript import validate as validate_methodscript
 from .._types import (
     AllowedCurrentRanges,
     AllowedFrequencyTypes,

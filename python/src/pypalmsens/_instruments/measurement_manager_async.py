@@ -17,9 +17,8 @@ from pydantic.dataclasses import dataclass
 from System import EventHandler
 from System.Threading.Tasks import Task
 
-from pypalmsens._methods.energy import BaseMethodScriptTechnique
-
 from .._data import DataSet
+from .._methods.energy import BaseMethodScriptTechnique
 from .._types import AllowedEvents, MethodTypeCompatible
 from ..data import Curve, DataArray, EISData, Measurement
 from .callback import Callback, CallbackData, CallbackDataEIS, CallbackEIS, DataRow

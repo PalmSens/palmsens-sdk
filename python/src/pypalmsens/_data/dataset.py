@@ -59,7 +59,7 @@ class DataSet(Mapping[str, DataArray]):
     def __init__(self, arrays: Iterable[DataArray]):
         inner = PSDataSet()
         for array in arrays:
-            inner.Add(array._inner)
+            _ = inner.AddDataArray(array._inner)
 
         self._inner = inner
         self._mapping = _dataset_to_mapping_with_unique_keys(inner)
@@ -199,14 +199,12 @@ class DataSet(Mapping[str, DataArray]):
         """
         dct: dict[str, Any] = {key: arr.to_list() for key, arr in self.items() if len(arr)}
 
-        try:
-            current = self.arrays(type='Current')[-1]
-            assert isinstance(current, CurrentArray)
-        except IndexError:  # e.g. OCP does not have a current array
-            pass
-        else:
-            dct['CR'] = current.current_range()
-            dct['ReadingStatus'] = current.reading_status()
+        if 'Current' in self.array_types:
+            *_, current = self.arrays(type='Current')
+
+            if isinstance(current, CurrentArray):
+                dct['CR'] = current.current_range()
+                dct['ReadingStatus'] = current.reading_status()
 
         return dct
 

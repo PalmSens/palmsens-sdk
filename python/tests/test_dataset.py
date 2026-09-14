@@ -10,9 +10,14 @@ def dataset(measurement_cv_1scan):
     return measurement_cv_1scan.dataset
 
 
-def test_dataset_init_fail():
-    with pytest.raises(TypeError):
-        _ = DataSet()
+def test_dataset_constructor():
+    time = DataArray([1, 2, 3], array_type='Time')
+    current = DataArray([10.1, 10.2, 10.3], array_type='Current')
+    potential = DataArray([0.2, 0.3, 0.3], array_type='Potential')
+
+    dataset = DataSet([time, current, potential])
+
+    _ = dataset.to_dataframe()
 
 
 def test_mapping(dataset):

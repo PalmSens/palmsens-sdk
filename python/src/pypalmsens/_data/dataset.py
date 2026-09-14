@@ -53,14 +53,15 @@ class DataSet(Mapping[str, DataArray]):
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_inner', '_mapping')
-    _inner: PSDataSet  # pyright: ignore[reportUninitializedInstanceVariable]
-    _mapping: dict[str, DataArray]  # pyright: ignore[reportUninitializedInstanceVariable]
+    _inner: PSDataSet
+    _mapping: dict[str, DataArray]
 
     def __init__(self, arrays: Iterable[DataArray]):
         inner = PSDataSet()
         for array in arrays:
             inner.Add(array._inner)
 
+        self._inner = inner
         self._mapping = _dataset_to_mapping_with_unique_keys(inner)
 
     @classmethod

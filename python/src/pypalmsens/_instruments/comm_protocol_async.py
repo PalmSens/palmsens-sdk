@@ -197,8 +197,8 @@ class CommProtocolAsync:
         ----------
         end : str
             The termination sequence that marks the end of the response.
-            Most commands use '\n'. Scripts and variable-length responses
-            typically use '\n\n'.
+            Most commands use '\\n'. Scripts and variable-length responses
+            typically use '\\n\\n'.
         delay : float, optional
             Pause (in seconds) between read attempts. Defaults to `self.delay`.
 
@@ -296,7 +296,7 @@ class CommProtocolAsync:
         ----------
         script : str
             The MethodSCRIPT to run. The entire script must end
-            with exactly one newline ('\n').
+            with exactly one newline ('\\n').
 
         Returns
         -------

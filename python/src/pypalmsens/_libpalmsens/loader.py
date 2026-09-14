@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import platform
 from importlib.resources import files
 from pathlib import Path
@@ -26,6 +27,7 @@ PLATFORM = PLATFORMS[
 ]
 
 PSSDK_DIR = files(f'pypalmsens._libpalmsens.{PLATFORM}')
+LABLINK_DIR = os.getenv('LABLINK_SDK')
 
 
 def unblock(path: Path):
@@ -34,6 +36,28 @@ def unblock(path: Path):
     Windows only."""
     zone_id = path.with_name(path.name + ':Zone.Identifier')
     zone_id.unlink(missing_ok=True)
+
+
+def load_lablink(dll_path: Path, *, clr):
+    assert PLATFORM == 'win'
+    assert dll_path.exists()
+
+    sdk_data = dll_path / 'PalmSens.Sdk.Data.dll'
+    sdk_lablink = dll_path / 'PalmSens.Sdk.Lablink.Example.dll'
+
+    assert isinstance(sdk_data, Path)
+    assert isinstance(sdk_lablink, Path)
+
+    assert sdk_data.exists()
+    assert sdk_lablink.exists()
+
+    unblock(sdk_data)
+    unblock(sdk_lablink)
+
+    clr.AddReference(str(sdk_data.with_suffix('')))
+    clr.AddReference(str(sdk_lablink.with_suffix('')))
+
+    print('> Loaded lablink dlls')
 
 
 def load() -> str:
@@ -77,6 +101,9 @@ def load() -> str:
     clr.AddReference(str(core_platform_dll.with_suffix('')))
 
     clr.AddReference('System')
+
+    if LABLINK_DIR:
+        load_lablink(Path(LABLINK_DIR), clr=clr)
 
     if PLATFORM == 'win':
         from PalmSens.Windows import CoreDependencies

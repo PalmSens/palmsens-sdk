@@ -6,7 +6,7 @@ from an expirement.
 
 These classes are wrappers for the underlying .NET code. Each Python
 wrapper in this module holds a reference to the underlying .NET SDK
-object in an attribute named `._internal` (e.g. `Measurement._internal`).
+object in an attribute named `._inner` (e.g. `Measurement._inner`).
 These .NET classes are instantiated by the measurement or data loading
 code. These wrappers are intended to be used for data processing and
 exploration and not to be directly instantiated.

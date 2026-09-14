@@ -68,8 +68,7 @@ class DataArray(Sequence[float]):
     ----------
     values : Iterable[float]
         Values to store in the array.
-        Any iterable (list, tuple, generator, etc.)
-        of floats is accepted.
+        Any iterable (list, tuple, generator, etc.) of floats is accepted.
     array_type : AllowedArrayTypes, optional
         Type of the array. Defaults to `'Generic'`.
         Use e.g. `'Current'` or `'Potential'` when constructing
@@ -140,6 +139,10 @@ class DataArray(Sequence[float]):
             f'{type(self).__name__}(name={self.name}, unit={self.unit}, n_points={len(self)})'
         )
 
+    @override
+    def __len__(self) -> int:
+        return len(self._inner)
+
     @overload
     def __getitem__(self, index: int) -> float: ...
 
@@ -156,9 +159,33 @@ class DataArray(Sequence[float]):
 
         return self.to_list()[index]
 
-    @override
-    def __len__(self) -> int:
-        return len(self._inner)
+    @overload
+    def __setitem__(self, index: int, value: float) -> None: ...
+
+    @overload
+    def __setitem__(self, index: slice, value: float | Sequence[float]) -> None: ...
+
+    def __setitem__(self, index, value):
+        if isinstance(index, slice):
+            start, stop, step = index.indices(len(self._inner))
+            slot_count = len(range(start, stop, step))
+
+            try:
+                new_values = list(value)
+            except TypeError:
+                for i in range(start, stop, step):
+                    self._inner[i].Value = value
+                return
+
+            if len(new_values) != slot_count:
+                raise ValueError(
+                    f'cannot assign sequence of size {len(new_values)} '
+                    f'to slice of size {slot_count}'
+                )
+            for i, val in zip(range(start, stop, step), new_values):
+                self._inner[i].Value = val
+        else:
+            self._inner[index].Value = value
 
     def __add__(self, other: object) -> DataArray:
         if not isinstance(other, self.__class__):
@@ -238,6 +265,28 @@ class DataArray(Sequence[float]):
         """Return max value."""
         return self._inner.MaxValue
 
+    def update(self, values: Sequence[float]):
+        """Update all values in-place.
+
+        Parameters
+        ----------
+        values : Iterable[float]
+            Values to store in the array.
+
+        Raises
+        ------
+        ValueError:
+            If `data` length differs from current length.
+        """
+        if len(values) != len(self._inner):
+            raise ValueError(
+                f'Replacement data must have same length ({len(self._inner)}), '
+                f'got {len(values)}'
+            )
+
+        for val, new in zip(self._inner, values):
+            val.Value = new
+
     def savitsky_golay(self, window_size: int = 3) -> DataArray:
         """Smooth the array using a Savitsky-Golay filter with the window size.
 
@@ -247,6 +296,11 @@ class DataArray(Sequence[float]):
         ----------
         window_size : int
             Size of the window
+
+        Returns
+        -------
+        new_array : DataArray
+            Smoothed DataArray
         """
         new = self.copy()
         success = new._inner.Smooth(window_size, False)
@@ -306,10 +360,6 @@ class CurrentArray(DataArray):
         Values to store in the array.
         Any iterable (list, tuple, generator, etc.)
         of floats is accepted.
-    array_type : AllowedArrayTypes, optional
-        Type of the array. Defaults to `'Generic'`.
-        Use e.g. `'Current'` or `'Potential'` when constructing
-        arrays that represent measured quantities.
     name : str, optional
         Name of the array. Defaults to the value of `array_type` when not
         given. The name is used in `__repr__` and for identification.
@@ -404,10 +454,6 @@ class PotentialArray(DataArray):
         Values to store in the array.
         Any iterable (list, tuple, generator, etc.)
         of floats is accepted.
-    array_type : AllowedArrayTypes, optional
-        Type of the array. Defaults to `'Generic'`.
-        Use e.g. `'Current'` or `'Potential'` when constructing
-        arrays that represent measured quantities.
     name : str, optional
         Name of the array. Defaults to the value of `array_type` when not
         given. The name is used in `__repr__` and for identification.

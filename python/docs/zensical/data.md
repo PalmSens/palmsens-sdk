@@ -425,6 +425,8 @@ array([0.352146, 0.351192, ..., 0.19908 , 0.199557])
 
 For more information on array structures, see [pypalmsens.data.DataArray][].
 
+
+
 ### CurrentArray
 
 `CurrentArray` derives from `DataArray` and includes additional methods for analyzing current readings, such as the current range, reading status, etc.:
@@ -513,6 +515,33 @@ Similar to currents, `PotentialArray` also derives from `DataArray` and provides
 5. returns timing status
 
 For more information, see [pypalmsens.data.PotentialArray][].
+
+### Updating values
+
+[DataArray][pypalmsens.data.DataArray] supports in-place mutation via Python slice assignment, so you can overwrite values without creating a new array. Assign a sequence to a slice to replace that range. You can also assign a scalar to broadcast it across the slice.
+
+Alternatively, use [DataArray.update][pypalmsens.data.DataArray.update] to replace all values at once. Both methods raise `ValueError` if the supplied data length does not match the DataArray.
+
+```pycon
+>>> arr = ps.data.DataArray([0, 0, 0, 0])
+
+# Replace the whole array in-place
+>>> arr[:] = [1, 2, 3, 4]
+>>> arr
+[1.0, 2.0, 3.0, 4.0]
+
+# Broadcast a scalar into a sub-range
+>>> arr[1:3] = 99
+>>> arr
+[1.0, 99.0, 99.0, 4.0]
+
+# Replace all values
+>>> arr.replace([5, 6, 7, 8])
+>>> arr
+[5.0, 6.0, 7.0, 8.0]
+```
+
+Note if you got the data from a [DataSet][pypalmsens.data.DataSet] or [Curve][pypalmsens.data.Curve], the changes will propagate to the parent class as well.
 
 ## EISData
 

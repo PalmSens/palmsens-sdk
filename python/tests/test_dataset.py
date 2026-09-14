@@ -17,6 +17,15 @@ def test_dataset_constructor():
 
     dataset = DataSet([time, current, potential])
 
+    assert len(dataset) == 3
+
+    assert dataset.array_names == {'Current', 'Potential', 'Time'}
+    assert dataset.array_types == {'Current', 'Potential', 'Time'}
+    assert dataset.array_quantities == {'Current', 'Potential', 'Time'}
+
+    current[:] = 0
+    assert all(v == 0 for v in dataset['Current'])
+
     _ = dataset.to_dataframe()
 
 

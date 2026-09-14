@@ -66,6 +66,7 @@ nav = [
   { "Reference" = [
     "reference/index.md",
     "reference/data.md",
+    "reference/exceptions.md",
     "reference/io.md",
     "reference/instrument.md",
     "reference/instrument_async.md",

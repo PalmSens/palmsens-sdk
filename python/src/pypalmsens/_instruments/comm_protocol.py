@@ -235,7 +235,7 @@ class CommProtocol:
 
         Raises
         ------
-        MethodScriptRuntimeError
+        CommProtocolError
             If the device returns an error response during reading.
         """
         buffer: list[str] = []

@@ -232,7 +232,7 @@ Check the device storage capacity:
 
 ## Error handling
 
-Filesystem operations raise [pypalmsens._instruments.FileSystemException][] (a subclass of `OSError`) when a device operation fails:
+Filesystem operations raise [pypalmsens.exceptions.FileSystemException][] (a subclass of `OSError`) when a device operation fails:
 
 ```pycon
 >>> fs.read_text('nonexistent_file.txt')

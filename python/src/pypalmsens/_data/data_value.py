@@ -49,8 +49,8 @@ class PotentialReading:
             potential_range=pr_enum_to_string(obj.Range),
             potential=obj.Value,
             potential_in_range=obj.ValueInRange,
-            timing_status=str(obj.ReadingStatus),  # type: ignore
-            reading_status=str(obj.TimingStatus),  # type: ignore
+            timing_status=str(obj.TimingStatus),  # type: ignore
+            reading_status=str(obj.ReadingStatus),  # type: ignore
         )
 
 
@@ -86,6 +86,6 @@ class CurrentReading:
             current_range=cr_enum_to_string(obj.CurrentRange),
             current=obj.Value,
             current_in_range=obj.ValueInRange,
-            timing_status=str(obj.ReadingStatus),  # type:ignore
-            reading_status=str(obj.TimingStatus),  # type:ignore
+            timing_status=str(obj.TimingStatus),  # type:ignore
+            reading_status=str(obj.ReadingStatus),  # type:ignore
         )

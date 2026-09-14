@@ -87,9 +87,9 @@ class Measurement:
         )
 
     @classmethod
-    def _wrap(cls, psmeasurement: PSMeasurement) -> Self:
+    def _wrap(cls, inner: PSMeasurement) -> Self:
         obj = cls.__new__(cls)
-        obj._inner = psmeasurement
+        obj._inner = inner
         return obj
 
     @override

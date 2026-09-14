@@ -101,25 +101,25 @@ class DataArray(Sequence[float]):
             name = array_type
 
         if isinstance(self, CurrentArray):
-            new_array = PSDataArrayCurrents(name, array_type_enum)
+            inner = PSDataArrayCurrents(name, array_type_enum)
         elif isinstance(self, PotentialArray):
-            new_array = PSDataArrayPotentials(name, array_type_enum)
+            inner = PSDataArrayPotentials(name, array_type_enum)
         else:
             try:
                 unit = DEFAULT_UNIT_MAPPING[array_type]()
             except KeyError:
                 unit = PSUnits.FixedUnit('Unknown', '', '')
 
-            new_array = self._ps_cls(name, unit, array_type_enum)
+            inner = self._ps_cls(name, unit, array_type_enum)
 
-        new_array.AddRange(values)
+        inner.AddRange(values)
 
-        self._inner = new_array
+        self._inner = inner
 
     @classmethod
-    def _wrap(cls, psarray: PSDataArray) -> Self:
+    def _wrap(cls, inner: PSDataArray) -> Self:
         obj = cls.__new__(cls)
-        obj._inner = psarray
+        obj._inner = inner
         return obj
 
     @classmethod

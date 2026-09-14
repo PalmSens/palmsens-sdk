@@ -30,9 +30,9 @@ class Peak:
         )
 
     @classmethod
-    def _wrap(cls, pspeak: PSPeak) -> Self:
+    def _wrap(cls, inner: PSPeak) -> Self:
         obj = cls.__new__(cls)
-        obj._inner = pspeak
+        obj._inner = inner
         return obj
 
     @override

@@ -28,9 +28,9 @@ class Method:
         )
 
     @classmethod
-    def _wrap(cls, psmethod: PalmSens.Method) -> Self:
+    def _wrap(cls, inner: PalmSens.Method) -> Self:
         obj = cls.__new__(cls)
-        obj._inner = psmethod
+        obj._inner = inner
         return obj
 
     def __repr__(self) -> str:

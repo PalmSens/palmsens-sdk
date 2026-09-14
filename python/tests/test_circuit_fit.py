@@ -84,3 +84,22 @@ def test_circuit_fit(measurement_eis_5freq):
     result3 = model.fit(eis_data, parameters=parameters)
 
     assert min(result3.parameters) >= 123
+
+
+@pytest.mark.xfail(
+    reason='Circuit fitting with modified Z data is gated by a hash check.',
+    raises=TypeError,
+)
+def test_eis_data_valid_hash_fail(measurement_eis_5freq):
+    eis_data = measurement_eis_5freq.eis_data[0]
+
+    assert eis_data._inner.ValidHash() == True
+
+    eis_data.dataset['ZRe'][:] = 0
+
+    assert eis_data._inner.ValidHash() == False
+
+    cdc = 'R(RC)'
+    model = CircuitModel(cdc=cdc)
+
+    _ = model.fit(eis_data)

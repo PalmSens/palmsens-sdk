@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, ClassVar, Self, final
 
+from PalmSens.Data import DataSet as PSDataSet
 from typing_extensions import override
 
 from .curve import Curve
@@ -12,7 +13,6 @@ from .types import AllowedArrayTypes, array_enum_to_str
 if TYPE_CHECKING:
     import pandas as pd
     from PalmSens.Data import DataArray as PSDataArray
-    from PalmSens.Data import DataSet as PSDataSet
 
 
 def _dataset_to_mapping_with_unique_keys(psdataset: PSDataSet, /) -> dict[str, DataArray]:
@@ -53,14 +53,16 @@ class DataSet(Mapping[str, DataArray]):
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_inner', '_mapping')
-    _inner: PSDataSet  # pyright: ignore[reportUninitializedInstanceVariable]
-    _mapping: dict[str, DataArray]  # pyright: ignore[reportUninitializedInstanceVariable]
+    _inner: PSDataSet
+    _mapping: dict[str, DataArray]
 
-    def __init__(self):
-        raise TypeError(
-            'DataSet cannot be instantiated directly. '
-            'Obtain instances through measurements or io methods.'
-        )
+    def __init__(self, arrays: Iterable[DataArray]):
+        inner = PSDataSet()
+        for array in arrays:
+            _ = inner.AddDataArray(array._inner)
+
+        self._inner = inner
+        self._mapping = _dataset_to_mapping_with_unique_keys(inner)
 
     @classmethod
     def _wrap(cls, psdataset: PSDataSet) -> Self:
@@ -197,14 +199,12 @@ class DataSet(Mapping[str, DataArray]):
         """
         dct: dict[str, Any] = {key: arr.to_list() for key, arr in self.items() if len(arr)}
 
-        try:
-            current = self.arrays(type='Current')[-1]
-            assert isinstance(current, CurrentArray)
-        except IndexError:  # e.g. OCP does not have a current array
-            pass
-        else:
-            dct['CR'] = current.current_range()
-            dct['ReadingStatus'] = current.reading_status()
+        if 'Current' in self.array_types:
+            *_, current = self.arrays(type='Current')
+
+            if isinstance(current, CurrentArray):
+                dct['CR'] = current.current_range()
+                dct['ReadingStatus'] = current.reading_status()
 
         return dct
 

@@ -58,9 +58,9 @@ class Curve:
         self._inner = PSCurve(x._inner, y._inner, title)
 
     @classmethod
-    def _wrap(cls, pscurve: PSCurve) -> Self:
+    def _wrap(cls, inner: PSCurve) -> Self:
         obj = cls.__new__(cls)
-        obj._inner = pscurve
+        obj._inner = inner
         return obj
 
     def __add__(self, other: object) -> Self:

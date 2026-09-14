@@ -14,12 +14,7 @@ if TYPE_CHECKING:
 
 @final
 class Peak:
-    """Contains the peak data of one peak in a curve.
-
-    Notes
-    -----
-    Obtain internal instances via `_wrap`.
-    """
+    """Contains the peak data of one peak in a curve."""
 
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSPeak  # pyright: ignore[reportUninitializedInstanceVariable]

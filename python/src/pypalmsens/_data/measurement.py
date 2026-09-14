@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TYPE_CHECKING, ClassVar, Literal, Self, final
+from typing import ClassVar, Literal, Self, final
 
 import System
+from PalmSens import Measurement as PSMeasurement
 from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 from typing_extensions import override
@@ -19,9 +20,6 @@ from .dataset import DataSet
 from .eisdata import EISData
 from .method import Method
 from .peak import Peak
-
-if TYPE_CHECKING:
-    from PalmSens import Measurement as PSMeasurement
 
 
 @dataclass(frozen=True)
@@ -70,21 +68,31 @@ class MeasurementMetadata:
 class Measurement:
     """Measurement class containing method parameters, curves, and raw data.
 
-    Notes
-    -----
-    `__init__` is currently reserved for a future public API.
-    Obtain internal instances via `_wrap`.
+    Instantiation via the constructor is limited.
+    Obtain instances through measurements or io methods.
+
+    Parameters
+    ----------
+    method : MethodTypeCompatible, optional
+        The electrochemical method associated with this measurement. Defaults to None.
+    dataset : DataSet, optional
+        The DataSet containing the raw data associated with this measurement. Defaults to None.
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
-    _inner: PSMeasurement  # pyright: ignore[reportUninitializedInstanceVariable]
+    _inner: PSMeasurement
 
-    def __init__(self):
+    def __init__(
+        self, method: MethodTypeCompatible | None = None, dataset: DataSet | None = None
+    ):
+        args = []
 
-        raise TypeError(
-            'Measurement cannot be instantiated directly. '
-            'Obtain instances through measurements or io methods.'
-        )
+        if method:
+            args.append(method._to_psmethod())
+        if dataset:
+            args.append(dataset._inner)
+
+        self._inner = PSMeasurement(*args)
 
     @classmethod
     def _wrap(cls, inner: PSMeasurement) -> Self:
@@ -135,8 +143,8 @@ class Measurement:
     def blank_curve(self) -> Curve | None:
         """Blank curve.
 
-        if Blank curve is present (not null) a new curve will be added after each measurement
-        containing the result of the measured curve subtracted with the Blank curve.
+        If the 'Use Blank' curve function was used in PSTrace, a new curve will be added after each measurement
+        containing the result of the measured curve subtracted with the blank curve.
         """
         curve = self._inner.BlankCurve
         if curve:
@@ -174,6 +182,9 @@ class Measurement:
         """Method related with this Measurement.
 
         The information from the Method is used when saving Curves."""
+        if not self._inner.Method:
+            raise AttributeError('No method associated with this measurement.')
+
         return Method._wrap(self._inner.Method).to_settings()
 
     @property

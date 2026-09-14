@@ -5,7 +5,8 @@ from datetime import datetime
 
 import pytest
 
-from pypalmsens.data import Curve, Measurement
+import pypalmsens as ps
+from pypalmsens.data import Curve, DataArray, DataSet, Measurement
 
 
 @pytest.fixture
@@ -13,9 +14,26 @@ def measurement(measurement_dpv):
     return measurement_dpv
 
 
-def test_measurement_init_fail():
-    with pytest.raises(TypeError):
-        _ = Measurement()
+def test_measurement_constructor():
+    empty = Measurement()
+    with pytest.raises(AttributeError):
+        _ = empty.method
+    assert not empty.dataset
+
+    time = DataArray([1, 2, 3], array_type='Time')
+    current = DataArray([10.1, 10.2, 10.3], array_type='Current')
+    potential = DataArray([0.2, 0.3, 0.3], array_type='Potential')
+
+    dataset = DataSet([time, current, potential])
+    method = ps.CyclicVoltammetry()
+
+    measurement = Measurement(dataset=dataset, method=method)
+
+    assert measurement.title == 'Cyclic Voltammetry'
+    assert measurement.method.id == 'cv'
+    assert set(measurement.dataset) == {'Current', 'Potential', 'Time'}
+    assert measurement.curves == []
+    assert measurement.timestamp
 
 
 def test_measurement_properties(measurement):

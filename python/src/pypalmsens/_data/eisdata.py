@@ -41,9 +41,8 @@ class EISDataMetadata:
 class EISData:
     """Dataset containing impedance measurement results.
 
-    Notes
-    -----
-    Obtain internal instances via `_wrap`.
+    EISData cannot be instantiated directly.
+    Obtain instances through measurements or io methods.
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)

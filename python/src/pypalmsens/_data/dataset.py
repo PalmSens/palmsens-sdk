@@ -4,6 +4,7 @@ from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, ClassVar, Self, final
 
 from PalmSens.Data import DataSet as PSDataSet
+from PalmSens.Data import DataSetCommon as PSDataSetCommon
 from typing_extensions import override
 
 from .curve import Curve
@@ -46,10 +47,10 @@ class DataSet(Mapping[str, DataArray]):
     All values are related by means of their indices.
     DataArrays in a DataSet should always have an equal amount of entries.
 
-    Notes
-    -----
-    `__init__` is currently reserved for a future public API.
-    Obtain internal instances via `_wrap`.
+    Parameters
+    ----------
+    arrays : Iterable[DataArray]
+        List of DataArray objects to include in the dataset.
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_inner', '_mapping')
@@ -57,7 +58,7 @@ class DataSet(Mapping[str, DataArray]):
     _mapping: dict[str, DataArray]
 
     def __init__(self, arrays: Iterable[DataArray]):
-        inner = PSDataSet()
+        inner = PSDataSetCommon()
         for array in arrays:
             _ = inner.AddDataArray(array._inner)
 

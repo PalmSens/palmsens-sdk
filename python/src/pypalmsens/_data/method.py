@@ -13,9 +13,7 @@ from .._methods.techniques import BaseTechnique
 class Method:
     """Wrapper for PalmSens.Method.
 
-    Notes
-    -----
-    Obtain internal instances via `_wrap`.
+    Meant for internal use only.
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)

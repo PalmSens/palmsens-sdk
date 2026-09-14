@@ -9,11 +9,11 @@ from typing import TYPE_CHECKING
 from System.Threading.Tasks import Task
 from typing_extensions import override
 
-from ..types import AllowedEvents
 from .callback import Status
 
 if TYPE_CHECKING:
     from ..data import Curve, EISData, Measurement
+    from ..types import AllowedEvents
     from .callback import CallbackData, CallbackDataEIS
 
 

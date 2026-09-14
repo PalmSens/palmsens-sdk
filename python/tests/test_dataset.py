@@ -26,7 +26,7 @@ def test_dataset_constructor():
     current[:] = 0
     assert all(v == 0 for v in dataset['Current'])
 
-    _ = dataset.to_dataframe()
+    _ = dataset.to_dict()
 
 
 def test_mapping(dataset):

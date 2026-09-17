@@ -7,9 +7,12 @@ from typing import Any, ClassVar, Self, overload, override
 import System
 from PalmSens import Method as PSMethod
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
+from PalmSens.Sdk.Lablink.Example.Lablink.Models import Dtos as PSDtos
 
+from pypalmsens._converters import single_to_double
 from pypalmsens._data import Method
 from pypalmsens._data.data_array import implementation
+from pypalmsens._types import AllowedCurrentRanges, AllowedReadingStatus, AllowedTimingStatus
 from pypalmsens.types import AllowedMethods, MethodTypeCompatible
 
 
@@ -80,8 +83,29 @@ def _converts(value_type: type):
 
 
 @_converts(System.TimeSpan)
-def _timespan_to_seconds(obj: System.TimeSpan) -> float:
+def _(obj: System.TimeSpan) -> float:
     return obj.TotalSeconds
+
+
+@_converts(PSDtos.TimingStatus)
+def _(obj: PSDtos.TimingStatus) -> AllowedTimingStatus:
+    return str(obj)
+
+
+@_converts(PSData.CurrentRange)
+def _(obj: PSData.CurrentRange) -> AllowedCurrentRanges:
+    # Alternative: also has obj.Factor
+    return obj.Value.ToString().lstrip('cr')
+
+
+@_converts(PSDtos.ReadingStatus)
+def _(obj: PSDtos.ReadingStatus) -> AllowedReadingStatus:
+    return str(obj)
+
+
+@_converts(float)
+def _(obj: float) -> float:
+    return single_to_double(obj)
 
 
 class DataArray(Sequence[Any]):
@@ -103,8 +127,6 @@ class DataArray(Sequence[Any]):
         )
 
     def _resolve_converter(self) -> Converter:
-        print(self.type, type(self._inner[0]))
-
         value_type = type(self._inner[0]) if len(self) else None
         if value_type is None:
             return lambda x: x

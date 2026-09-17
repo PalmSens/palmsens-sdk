@@ -54,6 +54,9 @@ async def main():
 
     ds = m.datasets[0]
 
+    for array in ds:
+        print(list(array))
+
     t = ds[0]
 
     breakpoint()  # noqa

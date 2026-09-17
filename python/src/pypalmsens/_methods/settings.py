@@ -758,7 +758,7 @@ class General(BaseSettings):
     def _import(self, psmethod: PalmSens.Method, /):
         self.save_on_internal_storage = psmethod.SaveOnDevice
         self.use_hardware_sync = psmethod.UseHWSync
-        self.notes = psmethod.Notes
+        self.notes = psmethod.Notes or ''
         self.power_frequency = psmethod.PowerFreq
 
 

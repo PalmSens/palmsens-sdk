@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from datetime import datetime
-from typing import Any, ClassVar, Self, overload, override
+from typing import Any, ClassVar, Literal, Self, overload, override
 
 import System
 from PalmSens import Method as PSMethod
@@ -65,6 +65,63 @@ class MeasurementInfo:
 
     def user(self) -> str | None:
         return self._inner.User
+
+
+AllowedDataValueTypes = Literal[
+    'Index',
+    'CycleIndex',
+    'LevelIndex',
+    'Timestamp',
+    'Frequency',
+    'TimingStatus',
+    'AppliedCurrent',
+    'MeasuredCurrent',
+    'ForwardCurrent',
+    'ReverseCurrent',
+    'ACCurrent',
+    'DCCurrent',
+    'CurrentRange',
+    'CurrentReadingStatus',
+    'ForwardCurrentReadingStatus',
+    'ReverseCurrentReadingStatus',
+    'MeasuredWE2Current',
+    'ForwardWE2Current',
+    'ReverseWE2Current',
+    'ACWE2Current',
+    'DCWE2Current',
+    'WE2CurrentRange',
+    'WE2CurrentReadingStatus',
+    'ForwardWE2CurrentReadingStatus',
+    'ReverseWE2CurrentReadingStatus',
+    'AppliedPotential',
+    'AppliedWE2Potential',
+    'MeasuredPotential',
+    'MeasuredWECEPotential',
+    'ACPotential',
+    'DCPotential',
+    'ACWECEPotential',
+    'DCWECEPotential',
+    'ACRECEPotential',
+    'DCRECEPotential',
+    'PotentialRange',
+    'PotentialReadingStatus',
+    'AuxiliaryPotential',
+    'Charge',
+    'ImpedanceReal',
+    'ImpedanceImaginary',
+    'ImpedanceMagnitude',
+    'ImpedancePhase',
+    'AdmittanceReal',
+    'AdmittanceImaginary',
+    'AdmittanceMagnitude',
+    'CapacitanceReal',
+    'CapacitanceImaginary',
+    'CapacitanceSeries',
+    'ScpValue',
+    'dEdt',
+    'Temperature',
+    'CustomUnit',
+]
 
 
 Converter = Callable[[Any], Any]
@@ -168,8 +225,8 @@ class DataArray(Sequence[Any]):
         return self.type
 
     @property
-    def type(self) -> str:
-        return str(self._inner.DataValueType)
+    def type(self) -> AllowedDataValueTypes:
+        return str(self._inner.DataValueType)  # type: ignore
 
     @property
     def unit(self) -> str:
@@ -186,7 +243,7 @@ class Dataset(Sequence[DataArray]):
         )
 
     def __repr__(self) -> str:
-        return f'{type(self).__name__}(...)'
+        return f'{type(self).__name__}({self.array_types()})'
 
     @classmethod
     def _wrap(cls, inner: PSData.LablinkDataSet) -> Self:
@@ -214,6 +271,9 @@ class Dataset(Sequence[DataArray]):
 
         if isinstance(index, slice):
             raise NotImplementedError
+
+    def array_types(self) -> list[str]:
+        return [array.type for array in self.arrays()]
 
     def arrays(self) -> list[DataArray]:
         return [DataArray._wrap(obj) for obj in self._inner]

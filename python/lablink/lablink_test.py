@@ -22,6 +22,7 @@ def r(f):
 
 async def main():
     method = ps.ChronoAmperometry(run_time=1)
+    method = ps.CyclicVoltammetry(n_scans=3)
 
     # handles = await discover()
 

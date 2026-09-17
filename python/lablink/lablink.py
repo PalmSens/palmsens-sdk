@@ -4,8 +4,8 @@ from collections.abc import Sequence
 from typing import ClassVar, Self
 
 import System
-from instrument import Instrument, InstrumentInfo
-from measurement import LablinkMeasurement, MeasurementInfo
+from instrument import InstrumentHandle, InstrumentInfo
+from measurement import MeasurementHandle, MeasurementInfo
 from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 from PalmSens.Sdk.Lablink.Example.Lablink.Services import Client as PSClient
@@ -107,7 +107,7 @@ class Lablink:
         """Return cached instrument listing?"""
         return [InstrumentInfo._wrap(refs) for refs in self._inner.Instruments]
 
-    async def claim(self, instruments: Sequence[InstrumentInfo]) -> list[Instrument]:
+    async def claim(self, instruments: Sequence[InstrumentInfo]) -> list[InstrumentHandle]:
         """Claims instrument."""
         lst = System.Collections.Generic.List[PSModels.LablinkInstrumentInfo]()
 
@@ -116,23 +116,23 @@ class Lablink:
 
         ref = await create_future(self._inner.ConnectInstruments(lst))
 
-        return [Instrument._wrap(ref) for ref in ref]
+        return [InstrumentHandle._wrap(ref) for ref in ref]
 
     async def measurements(self) -> list[MeasurementInfo]:
         refs = await create_future(self._inner.GetMeasurements())
         return [MeasurementInfo._wrap(ref) for ref in refs]
 
-    async def download_measurement(self, measurement: MeasurementInfo) -> LablinkMeasurement:
+    async def download_measurement(self, measurement: MeasurementInfo) -> MeasurementHandle:
         """Not working, error: `InvalidOperationException: Sequence contains no matching element`
 
         https://stackoverflow.com/questions/3994336/sequence-contains-no-matching-element
         """
         ref = await create_future(self._inner.GetMeasurement(measurement._inner.Id))
-        return LablinkMeasurement._wrap(ref)
+        return MeasurementHandle._wrap(ref)
 
     async def start_measurements(
-        self, instruments: Sequence[Instrument], method: MethodTypeCompatible
-    ) -> list[LablinkMeasurement]:
+        self, instruments: Sequence[InstrumentHandle], method: MethodTypeCompatible
+    ) -> list[MeasurementHandle]:
         """Not working, error: `unknown CellModeAfterMeasurement CellModePotentiostatic`"""
         lst = System.Collections.Generic.List[PSLablink.LablinkInstrument]()
 
@@ -140,7 +140,7 @@ class Lablink:
             lst.Add(instrument._inner)
 
         refs = await create_future(self._inner.StartMeasurements(lst, method._to_psmethod()))
-        return [LablinkMeasurement._wrap(ref) for ref in refs]
+        return [MeasurementHandle._wrap(ref) for ref in refs]
 
     @property
     def address(self) -> str:

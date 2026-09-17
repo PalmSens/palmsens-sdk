@@ -62,7 +62,7 @@ class MeasurementInfo:
         return self._inner.User
 
 
-class LablinkMeasurement:
+class MeasurementHandle:
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSData.LablinkMeasurement  # pyright: ignore[reportUninitializedInstanceVariable]
 
@@ -73,7 +73,7 @@ class LablinkMeasurement:
         )
 
     def __repr__(self) -> str:
-        return f'{type(self).__name__}(...)'
+        return f"{type(self).__name__}(name='{self._inner.Method.Name}', timestamp='{self.timestamp}')"
 
     @classmethod
     def _wrap(cls, inner: PSData.LablinkMeasurement) -> Self:
@@ -84,23 +84,29 @@ class LablinkMeasurement:
     def __len__(self):
         return self._inner.Count
 
+    @property
     def guid(self) -> str:
-        return self._inner.Guid
+        return str(self._inner.Id)
 
-    def instrument_serial_number(self) -> str:
+    @property
+    def serial_number(self) -> str:
         return self._inner.InstrumentSerial
 
+    @property
     def method(self) -> MethodTypeCompatible:
         return Method._wrap(self._inner.Method).to_settings()
 
+    @property
     def timestamp(self) -> datetime:
-        timestamp = self._inner.UtcDate
+        timestamp = self._inner.UtcDateTime
         return datetime.fromisoformat(
             timestamp.ToString('s', System.Globalization.CultureInfo.InvariantCulture)
         )
 
+    @property
     def is_read_only(self) -> bool:
         return self._inner.IsReadOnly
 
+    @property
     def is_finished(self) -> bool:
         return self._inner.IsFinished

@@ -88,7 +88,7 @@ class InstrumentInfo:
         return self._inner.Serial
 
 
-class Instrument:
+class InstrumentHandle:
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSLablink.LablinkInstrument  # pyright: ignore[reportUninitializedInstanceVariable]
 

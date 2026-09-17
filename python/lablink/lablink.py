@@ -5,7 +5,7 @@ from typing import ClassVar, Self
 
 import System
 from instrument import InstrumentHandle, InstrumentInfo
-from measurement import MeasurementHandle, MeasurementInfo
+from measurement import Measurement, MeasurementInfo
 from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 from PalmSens.Sdk.Lablink.Example.Lablink.Services import Client as PSClient
@@ -122,17 +122,17 @@ class Lablink:
         refs = await create_future(self._inner.GetMeasurements())
         return [MeasurementInfo._wrap(ref) for ref in refs]
 
-    async def download_measurement(self, measurement: MeasurementInfo) -> MeasurementHandle:
+    async def download_measurement(self, measurement: MeasurementInfo) -> Measurement:
         """Not working, error: `InvalidOperationException: Sequence contains no matching element`
 
         https://stackoverflow.com/questions/3994336/sequence-contains-no-matching-element
         """
         ref = await create_future(self._inner.GetMeasurement(measurement._inner.Id))
-        return MeasurementHandle._wrap(ref)
+        return Measurement._wrap(ref)
 
     async def start_measurements(
         self, instruments: Sequence[InstrumentHandle], method: MethodTypeCompatible
-    ) -> list[MeasurementHandle]:
+    ) -> list[Measurement]:
         """Not working, error: `unknown CellModeAfterMeasurement CellModePotentiostatic`"""
         lst = System.Collections.Generic.List[PSLablink.LablinkInstrument]()
 
@@ -140,7 +140,7 @@ class Lablink:
             lst.Add(instrument._inner)
 
         refs = await create_future(self._inner.StartMeasurements(lst, method._to_psmethod()))
-        return [MeasurementHandle._wrap(ref) for ref in refs]
+        return [Measurement._wrap(ref) for ref in refs]
 
     @property
     def address(self) -> str:

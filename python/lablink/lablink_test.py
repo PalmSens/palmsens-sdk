@@ -21,7 +21,7 @@ def r(f):
 
 
 async def main():
-    method = ps.ChronoAmperometry(run_time=3)
+    method = ps.ChronoAmperometry(run_time=1)
 
     # handles = await discover()
 
@@ -51,6 +51,10 @@ async def main():
         print('waiting...')
 
     assert m.is_finished
+
+    ds = m.datasets[0]
+
+    t = ds[0]
 
     breakpoint()  # noqa
 

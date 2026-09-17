@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+from collections.abc import Callable, Sequence
 from datetime import datetime
-from typing import ClassVar, Self
+from typing import Any, ClassVar, Self, overload, override
 
 import System
 from PalmSens import Method as PSMethod
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 
 from pypalmsens._data import Method
+from pypalmsens._data.data_array import implementation
 from pypalmsens.types import AllowedMethods, MethodTypeCompatible
 
 
@@ -62,7 +64,140 @@ class MeasurementInfo:
         return self._inner.User
 
 
-class MeasurementHandle:
+Converter = Callable[[Any], Any]
+
+_CONVERTERS: dict[type, Converter] = {}
+
+
+def _converts(value_type: type):
+    """Decorator registering a converter for the DataValueType."""
+
+    def _wrapped(fn: Converter) -> Converter:
+        _CONVERTERS[value_type] = fn
+        return fn
+
+    return _wrapped
+
+
+@_converts(System.TimeSpan)
+def _timespan_to_seconds(obj: System.TimeSpan) -> float:
+    return obj.TotalSeconds
+
+
+class DataArray(Sequence[Any]):
+    __slots__: ClassVar[tuple[str, ...]] = (
+        '_converter',
+        '_inner',
+    )
+    _inner: PSData.LablinkArray  # pyright: ignore[reportUninitializedInstanceVariable]
+    _converter: Converter  # pyright: ignore[reportUninitializedInstanceVariable]
+
+    def __init__(self):
+        raise TypeError(
+            'Dataset cannot be instantiated directly. Obtain instances through other classes.'
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f'{type(self).__name__}(name={self.name}, unit={self.unit}, n_points={len(self)})'
+        )
+
+    def _resolve_converter(self) -> Converter:
+        print(self.type, type(self._inner[0]))
+
+        value_type = type(self._inner[0]) if len(self) else None
+        if value_type is None:
+            return lambda x: x
+        for cls in type.mro(value_type):
+            if cls in _CONVERTERS:
+                return _CONVERTERS[cls]
+        return lambda x: x
+
+    @classmethod
+    def _wrap(cls, inner: PSData.LablinkArray) -> Self:
+        obj = cls.__new__(cls)
+        obj._inner = implementation(inner)
+        obj._converter = obj._resolve_converter()
+        return obj
+
+    def __len__(self) -> int:
+        return self._inner.Count
+
+    @overload
+    def __getitem__(self, index: int) -> Any: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> Sequence[Any]: ...
+
+    @override
+    def __getitem__(self, index):
+        length = len(self)
+        if isinstance(index, slice):
+            return [self._converter(v) for v in self._inner[index]]
+        if not isinstance(index, int):
+            raise TypeError(f'indices must be integers, not {type(index).__name__}')
+        if index >= length or index < -length:
+            raise IndexError('list index out of range')
+
+        return self._converter(self._inner[index % length])
+
+    @property
+    def name(self) -> str:
+        return self.type
+
+    @property
+    def type(self) -> str:
+        return str(self._inner.DataValueType)
+
+    @property
+    def unit(self) -> str:
+        return self._inner.Unit
+
+
+class Dataset(Sequence[DataArray]):
+    __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
+    _inner: PSData.LablinkDataSet  # pyright: ignore[reportUninitializedInstanceVariable]
+
+    def __init__(self):
+        raise TypeError(
+            'Dataset cannot be instantiated directly. Obtain instances through other classes.'
+        )
+
+    def __repr__(self) -> str:
+        return f'{type(self).__name__}(...)'
+
+    @classmethod
+    def _wrap(cls, inner: PSData.LablinkDataSet) -> Self:
+        obj = cls.__new__(cls)
+        obj._inner = inner
+        return obj
+
+    @override
+    def __len__(self):
+        return self._inner.Count
+
+    @overload
+    def __getitem__(self, index: int) -> DataArray: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> Sequence[DataArray]: ...
+
+    @override
+    def __getitem__(self, index):
+        if isinstance(index, int):
+            if index >= len(self) or index < -len(self):
+                raise IndexError('list index out of range')
+            index = index % len(self)
+            return DataArray._wrap(self._inner[index])
+
+        if isinstance(index, slice):
+            raise NotImplementedError
+
+    def arrays(self) -> list[DataArray]:
+        return [DataArray._wrap(obj) for obj in self._inner]
+
+
+class Measurement(Sequence[Dataset]):
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSData.LablinkMeasurement  # pyright: ignore[reportUninitializedInstanceVariable]
 
@@ -81,8 +216,30 @@ class MeasurementHandle:
         obj._inner = inner
         return obj
 
+    @override
     def __len__(self):
         return self._inner.Count
+
+    @overload
+    def __getitem__(self, index: int) -> Dataset: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> Sequence[Dataset]: ...
+
+    @override
+    def __getitem__(self, index):
+        if isinstance(index, int):
+            if index >= len(self) or index < -len(self):
+                raise IndexError('list index out of range')
+            index = index % len(self)
+            return Dataset._wrap(self._inner[index])
+
+        if isinstance(index, slice):
+            raise NotImplementedError
+
+    @property
+    def datasets(self) -> list[Dataset]:
+        return [Dataset._wrap(obj) for obj in self._inner]
 
     @property
     def guid(self) -> str:

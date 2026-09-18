@@ -1,0 +1,13 @@
+from PalmSens.Sdk.Lablink.Example.Lablink.Clients import LablinkHttpClient
+from System import Uri
+from Microsoft.AspNetCore.SignalR.Client import HubConnection
+from System.Net.Http import HttpClient
+
+class LablinkHttpClientFactory:
+    def __init__(self) -> None: ...
+    def Create(self, uri: Uri) -> LablinkHttpClient: ...
+
+
+class LablinkSignalRHubFactory:
+    def __init__(self) -> None: ...
+    def Create(self, client: HttpClient, path: str) -> HubConnection: ...

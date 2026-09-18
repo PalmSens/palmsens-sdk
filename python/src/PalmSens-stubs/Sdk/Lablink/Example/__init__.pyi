@@ -1,0 +1,9 @@
+from Microsoft.Extensions.Hosting import IHostedService
+from PalmSens.Sdk.Lablink.Example.Lablink.Services import LablinkFactory
+from System.Threading.Tasks import Task
+from System.Threading import CancellationToken
+
+class Main(IHostedService):
+    def __init__(self, lablinkFactory: LablinkFactory) -> None: ...
+    def StartAsync(self, cancellationToken: CancellationToken) -> Task: ...
+    def StopAsync(self, cancellationToken: CancellationToken) -> Task: ...

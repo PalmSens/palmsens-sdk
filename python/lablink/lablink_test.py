@@ -29,7 +29,8 @@ async def main():
     for instance in instances:
         print(instance)
 
-    local = await Instance.from_uri('https://127.0.0.1/')
+    local = Instance('https://127.0.0.1/')
+    await local.fetch_metadata()
     session = await local.login('test', 'test')
 
     instruments = await session.list_instruments()

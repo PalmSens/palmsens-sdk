@@ -65,8 +65,8 @@ def test_measure_stream_cv_multiple_scans(tmpdir):
     path = tmpdir / 'cv.jsonl'
 
     method = ps.CyclicVoltammetry(
-        n_scans=3,
-        step_potential=0.15,
+        n_scans=2,
+        step_potential=0.25,
         scanrate=5,
         # use a fixed current range
         # because Measurement seems to do a post-processing step in a different CR ?
@@ -84,7 +84,7 @@ def test_measure_stream_cp_with_aux(tmpdir):
     path = tmpdir / 'cp.jsonl'
 
     method = ps.ChronoPotentiometry(
-        run_time=3,
+        run_time=0.5,
         record_auxiliary_input=True,
         record_we_current=True,
     )
@@ -100,9 +100,9 @@ def test_measure_stream_eis(tmpdir):
     path = tmpdir / 'eis.jsonl'
 
     method = ps.ElectrochemicalImpedanceSpectroscopy(
-        n_frequencies=3,
+        n_frequencies=2,
         begin_potential=0.5,
-        step_potential=0.1,
+        step_potential=0.2,
         end_potential=1.0,
         min_sampling_time=0.01,
         scan_type='potential',

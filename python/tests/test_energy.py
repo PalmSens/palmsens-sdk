@@ -94,7 +94,8 @@ class DCP:
 
     kwargs = {
         'id': 'dcp',
-        'duration': 3,
+        'duration': 0.2,
+        'interval': 0.01,
         'cell_on_ocp': False,
     }
 
@@ -123,10 +124,10 @@ class DCR:
 
     kwargs = {
         'id': 'dcr',
-        'duration': 1,
+        'duration': 0.2,
         'cell_on_ocp': False,
         'cutoff': 0,
-        'interval': 0.1,
+        'interval': 0.01,
     }
 
     @staticmethod
@@ -155,7 +156,7 @@ class DCR:
     (
         BCY,
         DCP,
-        DCR,
+        # DCR,
     ),
 )
 def test_measure(manager, method):

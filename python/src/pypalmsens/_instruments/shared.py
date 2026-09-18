@@ -20,12 +20,8 @@ T = TypeVar('T')
 class MethodIncompatibleError(ValueError): ...
 
 
-def create_future(clr_task: System.Task[T]) -> asyncio.Future[T]:
-    """Bridge a .NET Task to an asyncio Future so it can be awaited.
-
-    Faulted tasks resolve with a ClrError wrapping the CLR exception.
-    Cancelled tasks propagate as asyncio cancellation.
-    """
+def wrap_task(clr_task: System.Task[T]) -> asyncio.Future[T]:
+    """Wrap a C# Task in an awaitable asyncio.Future."""
     loop = asyncio.get_running_loop()
     future = loop.create_future()
 
@@ -51,7 +47,7 @@ def create_future(clr_task: System.Task[T]) -> asyncio.Future[T]:
         System.Action(lambda: loop.call_soon_threadsafe(_clr_completed))
     )
 
-    def _py_cancelled(future):
+    def _py_cancelled(future: asyncio.Future[T]):
         if not future.cancelled() or clr_task.IsCompleted:
             return
         try:

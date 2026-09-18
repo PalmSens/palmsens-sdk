@@ -4,7 +4,7 @@ from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Literal, final
 
 from .gpio import pins_to_bitmask, raise_if_pins_not_supported, readable_pins, writable_pins
-from .shared import create_future
+from .shared import wrap_task
 
 if TYPE_CHECKING:
     from .instrument_manager_async import InstrumentManagerAsync
@@ -85,7 +85,7 @@ class GPIOAsync:
         mask = pins_to_bitmask(pins)
 
         async with self._manager._lock():
-            level_mask: int = await create_future(
+            level_mask: int = await wrap_task(
                 self._manager._comm.ClientConnection.ReadDigitalLineAsync(mask)
             )
 
@@ -108,9 +108,7 @@ class GPIOAsync:
         mask = func(mask, current)
 
         async with self._manager._lock():
-            await create_future(
-                self._manager._comm.ClientConnection.SetDigitalOutputAsync(mask)
-            )
+            await wrap_task(self._manager._comm.ClientConnection.SetDigitalOutputAsync(mask))
 
     async def write_many_async(
         self, pins: Sequence[int], level: Literal['low', 'high'] = 'high'

@@ -22,7 +22,7 @@ from .._methods.energy import BaseMethodScriptTechnique
 from .._types import AllowedEvents, MethodTypeCompatible
 from ..data import Curve, DataArray, EISData, Measurement
 from .callback import Callback, CallbackData, CallbackDataEIS, CallbackEIS, DataRow
-from .shared import create_future
+from .shared import wrap_task
 
 
 @dataclass(
@@ -214,9 +214,9 @@ class MeasurementManagerAsync:
 
         Obtaining a lock on the `ClientConnection` (via semaphore) is required when
         communicating with the instrument."""
-        await create_future(self.comm.ClientConnection.Semaphore.WaitAsync())
+        await wrap_task(self.comm.ClientConnection.Semaphore.WaitAsync())
 
-        _ = await create_future(self.comm.MeasureAsync(method))
+        _ = await wrap_task(self.comm.MeasureAsync(method))
 
         _ = self.comm.ClientConnection.Semaphore.Release()
 

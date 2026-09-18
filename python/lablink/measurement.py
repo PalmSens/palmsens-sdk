@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Callable, Sequence
 from datetime import datetime
 from typing import Any, ClassVar, Literal, Self, overload, override
@@ -16,7 +17,7 @@ from pypalmsens._types import AllowedCurrentRanges, AllowedReadingStatus, Allowe
 from pypalmsens.types import AllowedMethods, MethodTypeCompatible
 
 
-class MeasurementInfo:
+class MeasurementRef:
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSData.MeasurementInfo  # pyright: ignore[reportUninitializedInstanceVariable]
 
@@ -277,6 +278,30 @@ class Dataset(Sequence[DataArray]):
 
     def arrays(self) -> list[DataArray]:
         return [DataArray._wrap(obj) for obj in self._inner]
+
+
+class MeasurementJob:
+    def __init__(self, session, ref: MeasurementRef):
+        self._session = session
+        self.ref = ref
+        self._task: asyncio.Task | None = None
+
+    def _ensure_task(self) -> asyncio.Task:
+        if self._task is None or self._task.done():
+            self._task = asyncio.create_task(self._poll_until_done())
+        return self._task
+
+    async def _poll_until_done(self) -> Measurement:
+        return await self._session._wait_for_measurement(self.ref)
+
+    def __await__(self):
+        return self._ensure_task().__await__()
+
+    async def result(self) -> Measurement:
+        return await self._ensure_task()
+
+    def __repr__(self):
+        return f'<MeasurementJob {self.ref}>'
 
 
 class Measurement(Sequence[Dataset]):

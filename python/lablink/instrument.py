@@ -8,10 +8,10 @@ from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 from pypalmsens._instruments.shared import create_future
 
 if TYPE_CHECKING:
-    from lablink import Lablink
+    from lablink import Session
 
 
-class InstrumentInfo:
+class InstrumentRef:
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSModels.LablinkInstrumentInfo  # pyright: ignore[reportUninitializedInstanceVariable]
 
@@ -88,7 +88,7 @@ class InstrumentInfo:
         return self._inner.Serial
 
 
-class InstrumentHandle:
+class InstrumentClaim:
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSLablink.LablinkInstrument  # pyright: ignore[reportUninitializedInstanceVariable]
 
@@ -108,10 +108,10 @@ class InstrumentHandle:
         return obj
 
     @property
-    def lablink(self) -> Lablink:
-        from lablink import Lablink
+    def session(self) -> Session:
+        from lablink import Session
 
-        return Lablink._wrap(self._inner.Parent)
+        return Session._wrap(self._inner.Parent)
 
     @property
     def serial_number(self) -> str:

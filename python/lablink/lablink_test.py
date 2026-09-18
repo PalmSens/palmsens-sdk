@@ -9,7 +9,7 @@ from pypalmsens._instruments.shared import create_future
 
 nest_asyncio.apply()
 
-from lablink import LablinkInfo
+from lablink import Instance, discover
 
 
 def a(f):
@@ -24,36 +24,57 @@ async def main():
     method = ps.ChronoAmperometry(run_time=1)
     method = ps.CyclicVoltammetry(n_scans=3)
 
-    # handles = await discover()
+    instances = await discover()
 
-    # for handle in handles:
-    #     print(handle)
+    for instance in instances:
+        print(instance)
 
-    local_handle = await LablinkInfo.from_uri('https://127.0.0.1/')
+    local = await Instance.from_uri('https://127.0.0.1/')
+    session = await local.login('test', 'test')
 
-    lablink = await local_handle.login('test', 'test')
-
-    instruments = lablink.instruments
-
+    instruments = await session.list_instruments()
     for instrument in instruments:
         print(instrument)
 
-    measurements = await lablink.measurements()
+    measurements = await session.list_measurements()
+    for ref in measurements[0:5]:
+        print(ref)
 
-    for measurement in measurements[0:5]:
-        print(measurement)
+    old_data = await measurements[0].fetch()
+    print(old_data)
 
-    instrument_handles = await lablink.claim(instruments)
+    # Claim one instrument, start a measurement
+    async with await session.claim(instruments[0]) as claim:
+        job = await session.start(claim, method)
+        assert not job.is_finished
+        data = await job
+        assert job.is_finished
 
-    m, *_ = await lablink.start_measurements(instrument_handles, method)
+    claims = await session.claim(instruments)
 
-    while not m.is_finished:
+    # Start same method on many instruments
+    claims = await session.claim_many(instruments)
+    try:
+        batch = await session.start_many(claims, method)
+        assert not batch.is_finished
+        for job in batch.jobs:
+            print(job.status, job.ref)
+        data = await batch.jobs[0]
+        for ref, error in batch.failures:
+            print(f'{ref} failed: {error}')
+    finally:
+        for claim in claims:
+            await claim.release()
+
+    assert batch.is_finished
+
+    while not job.is_finished:
         await asyncio.sleep(1)
         print('waiting...')
 
-    assert m.is_finished
+    assert job.is_finished
 
-    ds = m.datasets[0]
+    ds = job.datasets[0]
 
     for array in ds:
         print(list(array))

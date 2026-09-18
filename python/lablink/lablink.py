@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from typing import ClassVar, Self
 
 import System
-from instrument import InstrumentHandle, InstrumentInfo
+from instrument import InstrumentClaim, InstrumentRef
 from measurement import Measurement, MeasurementInfo
 from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
@@ -19,12 +19,12 @@ factory = PSLabLinkFactory(
 )
 
 
-async def discover() -> list[LablinkInfo]:
+async def discover() -> list[Instance]:
     devices = await create_future(PSLablink.Lablink.Discover())
-    return [LablinkInfo._wrap(device) for device in devices]
+    return [Instance._wrap(device) for device in devices]
 
 
-class LablinkInfo:
+class Instance:
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSModels.LablinkInfo  # pyright: ignore[reportUninitializedInstanceVariable]
 
@@ -65,17 +65,17 @@ class LablinkInfo:
     def serial_number(self) -> str:
         return self._inner.Serial
 
-    async def login(self, name: str, password: str) -> Lablink:
+    async def login(self, name: str, password: str) -> Session:
         ref = await create_future(factory.Login(self._inner, name, password))
-        return Lablink._wrap(ref)
+        return Session._wrap(ref)
 
 
-class Lablink:
+class Session:
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSLablink.Lablink  # pyright: ignore[reportUninitializedInstanceVariable]
 
     # Eventst
-    # - _inner.OnInstrumentInfoChanged
+    # - _inner.OnInstrumentRefChanged
 
     def __init__(self):
         raise TypeError(
@@ -92,31 +92,31 @@ class Lablink:
         obj._inner = inner
         return obj
 
-    async def refresh(self) -> list[InstrumentInfo]:
+    async def refresh(self) -> list[InstrumentRef]:
         """Refresh instrument listing?"""
         psinstruments = await create_future(self._inner.DiscoverInstruments())
-        return [InstrumentInfo._wrap(psinstrument) for psinstrument in psinstruments]
+        return [InstrumentRef._wrap(psinstrument) for psinstrument in psinstruments]
 
-    async def discover(self) -> list[LablinkInfo]:
+    async def discover(self) -> list[Instance]:
         """Discover lablinks?"""
         refs = await create_future(self._inner.Discover())
-        return [LablinkInfo._wrap(ref) for ref in refs]
+        return [Instance._wrap(ref) for ref in refs]
 
     @property
-    def instruments(self) -> list[InstrumentInfo]:
+    def instruments(self) -> list[InstrumentRef]:
         """Return cached instrument listing?"""
-        return [InstrumentInfo._wrap(refs) for refs in self._inner.Instruments]
+        return [InstrumentRef._wrap(refs) for refs in self._inner.Instruments]
 
-    async def claim(self, instruments: Sequence[InstrumentInfo]) -> list[InstrumentHandle]:
+    async def claim(self, instruments: Sequence[InstrumentRef]) -> list[InstrumentClaim]:
         """Claims instrument."""
-        lst = System.Collections.Generic.List[PSModels.LablinkInstrumentInfo]()
+        lst = System.Collections.Generic.List[PSModels.LablinkInstrument]()
 
         for instrument in instruments:
             lst.Add(instrument._inner)
 
         ref = await create_future(self._inner.ConnectInstruments(lst))
 
-        return [InstrumentHandle._wrap(ref) for ref in ref]
+        return [InstrumentClaim._wrap(ref) for ref in ref]
 
     async def measurements(self) -> list[MeasurementInfo]:
         refs = await create_future(self._inner.GetMeasurements())
@@ -131,7 +131,7 @@ class Lablink:
         return Measurement._wrap(ref)
 
     async def start_measurements(
-        self, instruments: Sequence[InstrumentHandle], method: MethodTypeCompatible
+        self, instruments: Sequence[InstrumentClaim], method: MethodTypeCompatible
     ) -> list[Measurement]:
         """Not working, error: `unknown CellModeAfterMeasurement CellModePotentiostatic`"""
         lst = System.Collections.Generic.List[PSLablink.LablinkInstrument]()

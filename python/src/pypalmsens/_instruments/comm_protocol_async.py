@@ -15,7 +15,7 @@ from .comm_registry import (
     NEWLINE_TERMINATORS,
 )
 from .instrument import Instrument
-from .shared import create_future
+from .shared import wrap_task
 
 
 class CommProtocolAsync:
@@ -72,7 +72,7 @@ class CommProtocolAsync:
             Command or data to send. To submit a command for execution,
             append a newline character (`'\\n'`) to the end of the string.
         """
-        await create_future(self._device.WriteAsync(data))
+        await wrap_task(self._device.WriteAsync(data))
 
     async def read(self) -> str:
         """Read the next available chunk from the instrument's input buffer.
@@ -87,7 +87,7 @@ class CommProtocolAsync:
             contains no data. Each read is recorded in `self.history` for
             debugging and inspection.
         """
-        response: str = await create_future(self._device.ReadAsync())
+        response: str = await wrap_task(self._device.ReadAsync())
 
         if response:
             self.history.append(response)

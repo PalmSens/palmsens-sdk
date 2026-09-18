@@ -26,7 +26,7 @@ def wrap_task(clr_task: System.Task[T]) -> asyncio.Future[T]:
     future = loop.create_future()
 
     def _clr_completed():
-        if future.cancelled():
+        if future.done():
             return
         if clr_task.IsFaulted:
             future.set_exception(clr_task.Exception.GetBaseException())
@@ -35,7 +35,7 @@ def wrap_task(clr_task: System.Task[T]) -> asyncio.Future[T]:
             _ = future.cancel()
             return
         try:
-            result = future.set_result(clr_task.GetAwaiter().GetResult())
+            result = clr_task.GetAwaiter().GetResult()
         except System.OperationCanceledException:
             _ = future.cancel()
         except System.Exception as e:

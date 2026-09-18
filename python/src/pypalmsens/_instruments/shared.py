@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import warnings
-from functools import partial
 from math import floor
 from typing import TYPE_CHECKING, TypeVar
 
@@ -22,24 +21,48 @@ class MethodIncompatibleError(ValueError): ...
 
 
 def create_future(clr_task: System.Task[T]) -> asyncio.Future[T]:
+    """Bridge a .NET Task to an asyncio Future so it can be awaited.
+
+    Faulted tasks resolve with a ClrError wrapping the CLR exception.
+    Cancelled tasks propagate as asyncio cancellation.
+    """
     loop = asyncio.get_running_loop()
     future = loop.create_future()
-    callback = System.Action(partial(on_completion, future, loop, clr_task))
 
-    clr_task.GetAwaiter().OnCompleted(callback)
+    def _clr_completed():
+        if future.cancelled():
+            return
+        if clr_task.IsFaulted:
+            future.set_exception(clr_task.Exception.GetBaseException())
+            return
+        if clr_task.IsCanceled:
+            _ = future.cancel()
+            return
+        try:
+            result = future.set_result(clr_task.GetAwaiter().GetResult())
+        except System.OperationCanceledException:
+            _ = future.cancel()
+        except System.Exception as e:
+            future.set_exception(e)
+        else:
+            future.set_result(result)
+
+    clr_task.GetAwaiter().OnCompleted(
+        System.Action(lambda: loop.call_soon_threadsafe(_clr_completed))
+    )
+
+    def _py_cancelled(future):
+        if not future.cancelled() or clr_task.IsCompleted:
+            return
+        try:
+            clr_task.Cancel()
+        except System.InvalidOperationException:
+            pass
+        except Exception as e:  # noqa
+            print('Could not cancel CLR task: %r', e)
+
+    future.add_done_callback(_py_cancelled)
     return future
-
-
-def on_completion(
-    future: asyncio.Future[T],
-    loop: asyncio.AbstractEventLoop,
-    task: System.Task[T],
-) -> None:
-    if task.IsFaulted:
-        clr_error = task.Exception.GetBaseException()
-        _ = loop.call_soon_threadsafe(future.set_exception, clr_error)
-    else:
-        _ = loop.call_soon_threadsafe(future.set_result, task.GetAwaiter().GetResult())
 
 
 def firmware_warning(capabilities: DeviceCapabilities, /) -> None:

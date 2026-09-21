@@ -50,9 +50,6 @@ class Session:
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSLablink.Lablink  # pyright: ignore[reportUninitializedInstanceVariable]
 
-    # Events
-    # - _inner.OnInstrumentRefChanged
-
     def __init__(self):
         raise TypeError(
             'Lablink instance cannot be instantiated directly. '

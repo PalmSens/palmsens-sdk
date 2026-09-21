@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import ClassVar, Self
+from typing import ClassVar, Self, overload, override
 
 import System
 from instrument import InstrumentClaim, InstrumentRef
@@ -11,6 +11,39 @@ from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 
 from pypalmsens._instruments.shared import create_future
 from pypalmsens.types import MethodTypeCompatible
+
+
+class ClaimBatch(Sequence[InstrumentClaim]):
+    def __init__(self, claims: list[InstrumentClaim]):
+        self.claims: list[InstrumentClaim] = claims
+
+    @override
+    def __repr__(self):
+        return f'{type(self).__name__}({self.claims})'
+
+    @overload
+    def __getitem__(self, index: int) -> InstrumentClaim: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> list[InstrumentClaim]: ...
+
+    @override
+    def __getitem__(self, index) -> InstrumentClaim | list[InstrumentClaim]:
+        return self.claims[index]
+
+    @override
+    def __len__(self):
+        return len(self.claims)
+
+    async def __aenter__(self) -> list[InstrumentClaim]:
+        return self.claims
+
+    async def __aexit__(self, *exc_info) -> None:
+        await self.release()
+
+    async def release(self):
+        for claim in self.claims:
+            await claim.release()
 
 
 class Session:
@@ -53,22 +86,24 @@ class Session:
             for refs in await create_future(self._inner.ListInstruments())
         ]
 
-    async def claim(self, instrument: InstrumentRef) -> InstrumentClaim:
-        """Claims instrument."""
-        [claim] = await self.claim_many([instrument])
-        return claim
-
-    async def claim_many(self, instruments: Sequence[InstrumentRef]) -> list[InstrumentClaim]:
-        """Claims list of instruments."""
-        # lst = System.Collections.Generic.List[PSLablink.LablinkInstrument]()
+    async def _claim(self, instruments: Sequence[InstrumentRef]) -> list[InstrumentClaim]:
         lst = System.Collections.Generic.List[PSModels.LablinkInstrumentInfo]()
 
         for instrument in instruments:
             lst.Add(instrument._inner)
 
         refs = await create_future(self._inner.ConnectInstruments(lst))
-
         return [InstrumentClaim._wrap(ref) for ref in refs]
+
+    async def claim(self, instrument: InstrumentRef) -> InstrumentClaim:
+        """Claims instrument."""
+        [claim] = await self._claim([instrument])
+        return claim
+
+    async def claim_many(self, instruments: Sequence[InstrumentRef]) -> ClaimBatch:
+        """Claims list of instruments."""
+        claims = await self._claim(instruments)
+        return ClaimBatch(claims)
 
     async def list_measurements(self) -> list[MeasurementRef]:
         refs = await create_future(self._inner.GetMeasurements())

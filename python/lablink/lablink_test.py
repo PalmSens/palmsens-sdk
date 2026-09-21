@@ -51,39 +51,30 @@ async def main():
     print(old_data)
 
     print('\n# Measurements')
+
+    print('\n## Single')
+
     # Claim one instrument, start a measurement
     async with await session.claim(instruments[0]) as claim:
         job = await session.start(claim, method=method)
-        print(job)
         measurement = await job
 
+    print(job)
     print(measurement)
 
-    return
+    print('\n## Batch')
 
     # Start same method on many instruments
-    claims = await session.claim_many(instruments)
-    try:
-        batch = await session.start_many(claims, method)
-        assert not batch.is_finished
-        for job in batch.jobs:
-            print(job.status, job.ref)
-        data = await batch.jobs[0]
-        for ref, error in batch.failures:
-            print(f'{ref} failed: {error}')
-    finally:
-        for claim in claims:
-            await claim.release()
+    async with await session.claim_many(instruments) as claims:
+        jobs = await session.start_many(claims, method=method)
+        measurements = await asyncio.gather(*jobs)
 
-    assert batch.is_finished
+    print(jobs)
+    print(measurements)
 
-    while not job.is_finished:
-        await asyncio.sleep(1)
-        print('waiting...')
+    print('\n# Data')
 
-    assert job.is_finished
-
-    ds = job.datasets[0]
+    ds = measurement.datasets[0]
 
     for array in ds:
         print(list(array))

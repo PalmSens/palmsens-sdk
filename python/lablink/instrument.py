@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal, Self
+from typing import ClassVar, Literal, Self
 
 from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 
 from pypalmsens._instruments.shared import create_future
-
-if TYPE_CHECKING:
-    from lablink import Session
 
 
 class InstrumentRef:
@@ -99,7 +96,13 @@ class InstrumentClaim:
         )
 
     def __repr__(self) -> str:
-        return f'{type(self).__name__}(serial_number={self.serial_number})'
+        return f'{type(self).__name__}(serial_number={self.serial_number!r})'
+
+    async def __aenter__(self) -> Self:
+        return self
+
+    async def __aexit__(self, *exc) -> None:
+        await self.release()
 
     @classmethod
     def _wrap(cls, inner: PSLablink.LablinkInstrument) -> Self:
@@ -108,14 +111,8 @@ class InstrumentClaim:
         return obj
 
     @property
-    def session(self) -> Session:
-        from lablink import Session
-
-        return Session._wrap(self._inner.Parent)
-
-    @property
     def serial_number(self) -> str:
         return self._inner.Serial
 
-    async def unclaim(self) -> None:
+    async def release(self) -> None:
         await create_future(self._inner.DisposeAsync())

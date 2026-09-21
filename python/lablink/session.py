@@ -53,33 +53,41 @@ class Session:
             for refs in await create_future(self._inner.ListInstruments())
         ]
 
-    async def claim(self, instruments: Sequence[InstrumentRef]) -> list[InstrumentClaim]:
+    async def claim(self, instrument: InstrumentRef) -> InstrumentClaim:
         """Claims instrument."""
-        lst = System.Collections.Generic.List[PSModels.LablinkInstrument]()
+        [claim] = await self.claim_many([instrument])
+        return claim
+
+    async def claim_many(self, instruments: Sequence[InstrumentRef]) -> list[InstrumentClaim]:
+        """Claims list of instruments."""
+        # lst = System.Collections.Generic.List[PSLablink.LablinkInstrument]()
+        lst = System.Collections.Generic.List[PSModels.LablinkInstrumentInfo]()
 
         for instrument in instruments:
             lst.Add(instrument._inner)
 
-        ref = await create_future(self._inner.ConnectInstruments(lst))
+        refs = await create_future(self._inner.ConnectInstruments(lst))
 
-        return [InstrumentClaim._wrap(ref) for ref in ref]
+        return [InstrumentClaim._wrap(ref) for ref in refs]
 
     async def list_measurements(self) -> list[MeasurementRef]:
         refs = await create_future(self._inner.GetMeasurements())
         return [MeasurementRef._wrap(ref, self) for ref in refs]
 
     async def fetch_measurement(self, measurement: MeasurementRef) -> Measurement:
-        """Not working, error: `InvalidOperationException: Sequence contains no matching element`
-
-        https://stackoverflow.com/questions/3994336/sequence-contains-no-matching-element
-        """
+        """Fetch measurement data."""
         ref = await create_future(self._inner.GetMeasurement(measurement._inner.Id))
         return Measurement._wrap(ref)
 
-    async def start_measurements(
-        self, instruments: Sequence[InstrumentClaim], method: MethodTypeCompatible
+    async def start(
+        self, instrument: InstrumentClaim, *, method: MethodTypeCompatible
+    ) -> Measurement:
+        [measurement] = await self.start_many([instrument], method=method)
+        return measurement
+
+    async def start_many(
+        self, instruments: Sequence[InstrumentClaim], *, method: MethodTypeCompatible
     ) -> list[Measurement]:
-        """Not working, error: `unknown CellModeAfterMeasurement CellModePotentiostatic`"""
         lst = System.Collections.Generic.List[PSLablink.LablinkInstrument]()
 
         for instrument in instruments:

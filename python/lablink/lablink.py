@@ -5,7 +5,7 @@ from typing import ClassVar, Self
 
 import System
 from instrument import InstrumentClaim, InstrumentRef
-from measurement import Measurement, MeasurementInfo
+from measurement import Measurement, MeasurementRef
 from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 from PalmSens.Sdk.Lablink.Example.Lablink.Services import Client as PSClient
@@ -26,13 +26,11 @@ async def discover() -> list[Instance]:
 
 class Instance:
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
-    _inner: PSModels.LablinkInfo  # pyright: ignore[reportUninitializedInstanceVariable]
+    _inner: PSModels.LablinkInfo
 
-    def __init__(self):
-        raise TypeError(
-            'Lablink info cannot be instantiated directly. '
-            'Obtain instances through `discover().'
-        )
+    def __init__(self, address: str = 'https://127.0.0.1/'):
+        uri = System.Uri(address)
+        self._inner = PSModels.LablinkInfo(uri)
 
     @classmethod
     def _wrap(cls, inner: PSModels.LablinkInfo) -> Self:
@@ -41,13 +39,13 @@ class Instance:
         return obj
 
     def __repr__(self) -> str:
-        return f'{type(self).__name__}(name={self.name}, address={self.address})'
+        s = []
 
-    @classmethod
-    async def from_uri(cls, address: str = 'https://127.0.0.1/') -> Self:
-        address = System.Uri(address)
-        inner = await create_future(factory.GetLablinkInfo(address))
-        return cls._wrap(inner)
+        if name := self.name:
+            s.append(f'name={name!r}')
+        s.append(f'address={self.address!r}')
+
+        return f'{type(self).__name__}({", ".join(s)}'
 
     @property
     def address(self) -> str:
@@ -65,9 +63,14 @@ class Instance:
     def serial_number(self) -> str:
         return self._inner.Serial
 
+    async def fetch_metadata(self):
+        """Fetch metadata (name, version, serial) for this instance."""
+        self._inner = await create_future(factory.GetLablinkInfo(self._inner.AddressUri))
+
     async def login(self, name: str, password: str) -> Session:
         ref = await create_future(factory.Login(self._inner, name, password))
         return Session._wrap(ref)
+
 
 
 class Session:
@@ -118,11 +121,11 @@ class Session:
 
         return [InstrumentClaim._wrap(ref) for ref in ref]
 
-    async def measurements(self) -> list[MeasurementInfo]:
+    async def measurements(self) -> list[MeasurementRef]:
         refs = await create_future(self._inner.GetMeasurements())
-        return [MeasurementInfo._wrap(ref) for ref in refs]
+        return [MeasurementRef._wrap(ref) for ref in refs]
 
-    async def download_measurement(self, measurement: MeasurementInfo) -> Measurement:
+    async def download_measurement(self, measurement: MeasurementRef) -> Measurement:
         """Not working, error: `InvalidOperationException: Sequence contains no matching element`
 
         https://stackoverflow.com/questions/3994336/sequence-contains-no-matching-element

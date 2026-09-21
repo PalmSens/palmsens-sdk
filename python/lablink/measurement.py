@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Callable, Sequence
 from datetime import datetime
-from typing import Any, ClassVar, Literal, Self, overload, override
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self, overload, override
 
 import System
 from PalmSens import Method as PSMethod
@@ -16,10 +16,14 @@ from pypalmsens._data.data_array import implementation
 from pypalmsens._types import AllowedCurrentRanges, AllowedReadingStatus, AllowedTimingStatus
 from pypalmsens.types import AllowedMethods, MethodTypeCompatible
 
+if TYPE_CHECKING:
+    from lablink.lablink import Session
+
 
 class MeasurementRef:
-    __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
+    __slots__: ClassVar[tuple[str, ...]] = ('_inner', '_session')
     _inner: PSData.MeasurementInfo  # pyright: ignore[reportUninitializedInstanceVariable]
+    _session: Session  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
         raise TypeError(
@@ -28,12 +32,13 @@ class MeasurementRef:
         )
 
     def __repr__(self) -> str:
-        return f'{type(self).__name__}(name={self.name}, guid={self.guid})'
+        return f'{type(self).__name__}(guid={self.guid!r})'
 
     @classmethod
-    def _wrap(cls, inner: PSData.MeasurementInfo) -> Self:
+    def _wrap(cls, inner: PSData.MeasurementInfo, session: Session) -> Self:
         obj = cls.__new__(cls)
         obj._inner = inner
+        obj._session = session
         return obj
 
     @property
@@ -66,6 +71,10 @@ class MeasurementRef:
 
     def user(self) -> str | None:
         return self._inner.User
+
+    async def fetch(self) -> Measurement:
+        """Fetch data for this measurement."""
+        return await self._session.fetch_measurement(self)
 
 
 AllowedDataValueTypes = Literal[

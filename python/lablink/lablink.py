@@ -72,18 +72,17 @@ class Instance:
         return Session._wrap(ref)
 
 
-
 class Session:
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSLablink.Lablink  # pyright: ignore[reportUninitializedInstanceVariable]
 
-    # Eventst
+    # Events
     # - _inner.OnInstrumentRefChanged
 
     def __init__(self):
         raise TypeError(
             'Lablink instance cannot be instantiated directly. '
-            'Obtain instances through `LablinkInfo.login()`.'
+            'Obtain instances through `Instance.login()`.'
         )
 
     def __repr__(self) -> str:
@@ -107,8 +106,21 @@ class Session:
 
     @property
     def instruments(self) -> list[InstrumentRef]:
-        """Return cached instrument listing?"""
+        """Instruments seen by the most recent `list_instruments()` call.
+
+        May be stale or empty.
+        """
         return [InstrumentRef._wrap(refs) for refs in self._inner.Instruments]
+
+    async def list_instruments(self) -> list[InstrumentRef]:
+        """List currently attached instruments
+
+        Refreshes `self.instruments`."""
+        raise NotImplementedError('Needs PalmSens.Sdk.Lablink update')
+        return [
+            InstrumentRef._wrap(refs)
+            for refs in await create_future(self._inner.ListInstruments())
+        ]
 
     async def claim(self, instruments: Sequence[InstrumentRef]) -> list[InstrumentClaim]:
         """Claims instrument."""
@@ -121,11 +133,11 @@ class Session:
 
         return [InstrumentClaim._wrap(ref) for ref in ref]
 
-    async def measurements(self) -> list[MeasurementRef]:
+    async def list_measurements(self) -> list[MeasurementRef]:
         refs = await create_future(self._inner.GetMeasurements())
-        return [MeasurementRef._wrap(ref) for ref in refs]
+        return [MeasurementRef._wrap(ref, self) for ref in refs]
 
-    async def download_measurement(self, measurement: MeasurementRef) -> Measurement:
+    async def fetch_measurement(self, measurement: MeasurementRef) -> Measurement:
         """Not working, error: `InvalidOperationException: Sequence contains no matching element`
 
         https://stackoverflow.com/questions/3994336/sequence-contains-no-matching-element

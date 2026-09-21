@@ -5,7 +5,7 @@ from typing import ClassVar, Self
 
 import System
 from instrument import InstrumentClaim, InstrumentRef
-from measurement import Measurement, MeasurementRef
+from measurement import Measurement, MeasurementJob, MeasurementRef
 from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 
@@ -81,20 +81,20 @@ class Session:
 
     async def start(
         self, instrument: InstrumentClaim, *, method: MethodTypeCompatible
-    ) -> Measurement:
+    ) -> MeasurementJob:
         [measurement] = await self.start_many([instrument], method=method)
         return measurement
 
     async def start_many(
         self, instruments: Sequence[InstrumentClaim], *, method: MethodTypeCompatible
-    ) -> list[Measurement]:
+    ) -> list[MeasurementJob]:
         lst = System.Collections.Generic.List[PSLablink.LablinkInstrument]()
 
         for instrument in instruments:
             lst.Add(instrument._inner)
 
         refs = await create_future(self._inner.StartMeasurements(lst, method._to_psmethod()))
-        return [Measurement._wrap(ref) for ref in refs]
+        return [MeasurementJob(ref) for ref in refs]
 
     @property
     def address(self) -> str:

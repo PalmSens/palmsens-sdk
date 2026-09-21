@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from collections.abc import Callable, Sequence
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, Self, overload, override
@@ -13,11 +12,12 @@ from PalmSens.Sdk.Lablink.Example.Lablink.Models import Dtos as PSDtos
 from pypalmsens._converters import single_to_double
 from pypalmsens._data import Method
 from pypalmsens._data.data_array import implementation
+from pypalmsens._instruments.shared import create_future
 from pypalmsens._types import AllowedCurrentRanges, AllowedReadingStatus, AllowedTimingStatus
 from pypalmsens.types import AllowedMethods, MethodTypeCompatible
 
 if TYPE_CHECKING:
-    from lablink.lablink import Session
+    from session import Session
 
 
 class MeasurementRef:
@@ -290,27 +290,22 @@ class Dataset(Sequence[DataArray]):
 
 
 class MeasurementJob:
-    def __init__(self, session, ref: MeasurementRef):
-        self._session = session
-        self.ref = ref
-        self._task: asyncio.Task | None = None
-
-    def _ensure_task(self) -> asyncio.Task:
-        if self._task is None or self._task.done():
-            self._task = asyncio.create_task(self._poll_until_done())
-        return self._task
-
-    async def _poll_until_done(self) -> Measurement:
-        return await self._session._wait_for_measurement(self.ref)
-
-    def __await__(self):
-        return self._ensure_task().__await__()
-
-    async def result(self) -> Measurement:
-        return await self._ensure_task()
+    def __init__(self, _net_measurement: PSData.LablinkMeasurement):
+        self._inner = _net_measurement
 
     def __repr__(self):
-        return f'<MeasurementJob {self.ref}>'
+        return f'{type(self).__name__}(guid={self.guid!r})'
+
+    @property
+    def guid(self):
+        return str(self._inner.Id)
+
+    async def result(self) -> Measurement:
+        await create_future(self._inner.AwaitFinish)
+        return Measurement._wrap(self._inner)
+
+    def __await__(self):
+        return self.result().__await__()
 
 
 class Measurement(Sequence[Dataset]):
@@ -319,8 +314,8 @@ class Measurement(Sequence[Dataset]):
 
     def __init__(self):
         raise TypeError(
-            'LablinkMeasurement cannot be instantiated directly. '
-            'Obtain instances through Lablink class.'
+            'Measurement cannot be instantiated directly. '
+            'Obtain instances through the Session class.'
         )
 
     def __repr__(self) -> str:

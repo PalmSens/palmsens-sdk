@@ -9,7 +9,7 @@ from pypalmsens._instruments.shared import create_future
 
 nest_asyncio.apply()
 
-from lablink import Instance, discover
+from instance import Instance, discover
 
 
 def a(f):
@@ -21,26 +21,28 @@ def r(f):
 
 
 async def main():
-    method = ps.ChronoAmperometry(run_time=1)
     method = ps.CyclicVoltammetry(n_scans=3)
+    method = ps.ChronoAmperometry(run_time=3)
 
     instances = await discover()
-
+    print('\n# Lablink instances')
     for instance in instances:
         print(instance)
 
     print('---')
 
     local = Instance('https://127.0.0.1/')
-    print(local)
     await local.fetch_metadata()
     print(local)
     session = await local.login('test', 'test')
 
-    instruments = await session.list_instruments()
+    print('\n# Instruments')
+    # instruments = await session.fetch_instruments()  # needs SDK update
+    instruments = session.instruments
     for instrument in instruments:
         print(instrument)
 
+    print('\n# Data')
     measurements = await session.list_measurements()
     for ref in measurements[0:5]:
         print(ref)
@@ -48,14 +50,16 @@ async def main():
     old_data = await measurements[0].fetch()
     print(old_data)
 
+    print('\n# Measurements')
     # Claim one instrument, start a measurement
     async with await session.claim(instruments[0]) as claim:
-        job = await session.start(claim, method)
-        assert not job.is_finished
-        data = await job
-        assert job.is_finished
+        job = await session.start(claim, method=method)
+        print(job)
+        measurement = await job
 
-    claims = await session.claim(instruments)
+    print(measurement)
+
+    return
 
     # Start same method on many instruments
     claims = await session.claim_many(instruments)

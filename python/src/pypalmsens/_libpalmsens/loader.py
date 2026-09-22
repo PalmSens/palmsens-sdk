@@ -57,8 +57,6 @@ def load_lablink(dll_path: Path, *, clr):
     clr.AddReference(str(sdk_data.with_suffix('')))
     clr.AddReference(str(sdk_lablink.with_suffix('')))
 
-    print('> Loaded lablink dlls')
-
 
 def load() -> str:
     """Load .NET platform dependencies and init SDK.

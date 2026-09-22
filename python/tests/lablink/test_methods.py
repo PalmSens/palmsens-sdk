@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 import pytest_asyncio
 import System
@@ -38,6 +40,7 @@ from test_techniques import (
     LSV_aux,
 )
 
+import pypalmsens as ps
 from pypalmsens import lablink
 from pypalmsens._methods import BaseTechnique
 
@@ -46,6 +49,34 @@ from pypalmsens._methods import BaseTechnique
 async def session():
     session = await lablink.Instance().login('test', 'test')
     return session
+
+
+@pytest.mark.lablink
+@pytest.mark.asyncio
+async def test_start_single(session: lablink.Session):
+    [instrument] = session.instruments
+    method = ps.ChronoAmperometry(run_time=0.1, interval_time=0.01)
+
+    async with await session.claim(instrument) as claim:
+        job = await session.start(claim, method=method)
+        measurement = await job
+
+    assert measurement
+    assert measurement.is_finished
+
+
+@pytest.mark.lablink
+@pytest.mark.asyncio
+async def test_start_many(session: lablink.Session):
+    instruments = session.instruments
+    method = ps.ChronoAmperometry(run_time=0.1, interval_time=0.01)
+
+    async with await session.claim_many(instruments) as claims:
+        jobs = await session.start_many(claims, method=method)
+        measurements = await asyncio.gather(*jobs)
+
+    assert measurements
+    assert all(measurement.is_finished for measurement in measurements)
 
 
 @pytest.mark.lablink
@@ -225,7 +256,7 @@ async def session():
         ),
     ),
 )
-async def test_lablink_measurements(session, method):
+async def test_measurements(session, method):
     params = BaseTechnique._registry[method.id].from_dict(method.kwargs)
 
     [instrument] = session.instruments

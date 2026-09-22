@@ -58,7 +58,13 @@ class Session:
         )
 
     def __repr__(self) -> str:
-        return f'{type(self).__name__}(name={self.name}, address={self.address})'
+        s = []
+
+        if name := self.name:
+            s.append(f'name={name!r}')
+        s.append(f'address={self.address!r}')
+
+        return f'{type(self).__name__}({", ".join(s)})'
 
     @classmethod
     def _wrap(cls, inner: PSLablink.Lablink) -> Self:

@@ -6,7 +6,7 @@ from typing import Any, ClassVar, Literal, Self, overload, override
 import System
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Dtos as PSDtos
-
+import xarray as xr
 from pypalmsens._converters import single_to_double
 from pypalmsens._data.data_array import implementation
 from pypalmsens._types import AllowedCurrentRanges, AllowedReadingStatus, AllowedTimingStatus
@@ -70,43 +70,53 @@ AllowedDataValueTypes = Literal[
 
 Converter = Callable[[Any], Any]
 
-_CONVERTERS: dict[type, Converter] = {}
+_CONVERTERS: dict[str, Converter] = {}
 
 
-def _converts(value_type: type):
+def _converts(value_types: str | list[str]):
     """Decorator registering a converter for the DataValueType."""
 
     def _wrapped(fn: Converter) -> Converter:
-        _CONVERTERS[value_type] = fn
+        if isinstance(value_types, str):
+            value_type = value_types
+            _CONVERTERS[value_type] = fn
+        else:
+            for value_type in value_types:
+                _CONVERTERS[value_type] = fn
         return fn
 
     return _wrapped
 
 
-@_converts(System.TimeSpan)
+@_converts(['Timestamp'])
 def _(obj: System.TimeSpan) -> float:
     return obj.TotalSeconds
 
 
-@_converts(PSDtos.TimingStatus)
+@_converts(['TimingStatus'])
 def _(obj: PSDtos.TimingStatus) -> AllowedTimingStatus:
     return str(obj)
 
 
-@_converts(PSData.CurrentRange)
+@_converts(['CurrentRange'])
 def _(obj: PSData.CurrentRange) -> AllowedCurrentRanges:
     # Alternative: also has obj.Factor
     return obj.Value.ToString().lstrip('cr')
 
 
-@_converts(PSDtos.ReadingStatus)
+@_converts(['CurrentReadingStatus', 'ForwardCurrentReadingStatus', 'ReverseCurrentReadingStatus'])
 def _(obj: PSDtos.ReadingStatus) -> AllowedReadingStatus:
     return str(obj)
 
 
-@_converts(float)
+@_converts(['AppliedPotential', 'Charge', 'MeasuredCurrent', 'AuxiliaryPotential','ReverseCurrent', 'ForwardCurrent'])
 def _(obj: float) -> float:
-    return single_to_double(obj)
+    return obj
+
+
+@_converts(['Index', 'CycleIndex', 'LevelIndex'])
+def _(obj: int) -> int:
+    return obj
 
 
 class DataArray(Sequence[Any]):
@@ -126,15 +136,6 @@ class DataArray(Sequence[Any]):
         return (
             f'{type(self).__name__}(name={self.name}, unit={self.unit}, n_points={len(self)})'
         )
-
-    def _resolve_converter(self) -> Converter:
-        value_type = type(self._inner[0]) if len(self) else None
-        if value_type is None:
-            return lambda x: x
-        for cls in type.mro(value_type):
-            if cls in _CONVERTERS:
-                return _CONVERTERS[cls]
-        return lambda x: x
 
     @classmethod
     def _wrap(cls, inner: PSData.LablinkArray) -> Self:
@@ -221,3 +222,25 @@ class Dataset(Sequence[DataArray]):
 
     def arrays(self) -> list[DataArray]:
         return [DataArray._wrap(obj) for obj in self._inner]
+
+    def xarray(self) -> xr.Datase:
+        arrays = list(self._inner)
+
+        data_vars = {}
+        coords = {'point': range(len(arrays[0].__implementation__))}
+        attrs = {}
+
+        for array in arrays:
+            array = array.__implementation__
+
+            key = str(array.DataValueType)
+
+            try:
+                converter = _CONVERTERS[key]
+            except KeyError:
+                print(f'{key=}, \n{array.Type=}, \n{array[0]=}, \n{array=}')
+                raise
+
+            data_vars[key] = ('point', [converter(val) for val in array], {'unit': array.Unit})
+
+        return xr.Dataset(data_vars=data_vars, coords=coords, attrs=attrs)

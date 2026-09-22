@@ -11,7 +11,7 @@ from ..data import Measurement
 from .filesystem import DevicePath, FileSystemException
 from .instrument import Instrument
 from .instrument_manager_async import InstrumentManagerAsync
-from .shared import create_future
+from .shared import wrap_task
 
 
 class DeviceFileSystemAsync:
@@ -81,7 +81,7 @@ class DeviceFileSystemAsync:
 
         async with self.manager._lock():
             try:
-                ret: PSData.DeviceFile = await create_future(
+                ret: PSData.DeviceFile = await wrap_task(
                     self._client_connection.GetDeviceFileAsync(fspath)
                 )
             except System.Exception as exc:
@@ -102,7 +102,7 @@ class DeviceFileSystemAsync:
             directory = DevicePath(directory)
 
         async with self.manager._lock():
-            ret: list[PSData.DeviceFile] = await create_future(
+            ret: list[PSData.DeviceFile] = await wrap_task(
                 self._client_connection.GetDeviceFilesAsync(directory.__fspath__())
             )
 
@@ -163,7 +163,7 @@ class DeviceFileSystemAsync:
         f = await self._get_device_file(path)
 
         async with self.manager._lock():
-            psmeasurement: PSMeasurement = await create_future(
+            psmeasurement: PSMeasurement = await wrap_task(
                 self._client_connection.LoadDeviceFileAsync(f)
             )
 
@@ -181,7 +181,7 @@ class DeviceFileSystemAsync:
             path = DevicePath(path)
 
         async with self.manager._lock():
-            await create_future(self._client_connection.DeleteDeviceFileAsync(str(path)))
+            await wrap_task(self._client_connection.DeleteDeviceFileAsync(str(path)))
 
     async def delete_all_files(self, confirm: bool = False) -> None:
         """Delete all files on the device.
@@ -195,7 +195,7 @@ class DeviceFileSystemAsync:
         """
         if confirm:
             async with self.manager._lock():
-                await create_future(self._client_connection.ClearDeviceFilesAsync())
+                await wrap_task(self._client_connection.ClearDeviceFilesAsync())
 
     async def free(self) -> int:
         """Return free space on filesystem.
@@ -206,7 +206,7 @@ class DeviceFileSystemAsync:
             Free space in kB (1 kB = 1024 bytes).
         """
         async with self.manager._lock():
-            return await create_future(self._client_connection.GetDeviceFreeAsync())
+            return await wrap_task(self._client_connection.GetDeviceFreeAsync())
 
     async def size(self) -> int:
         """Return total size of filesystem.
@@ -217,7 +217,7 @@ class DeviceFileSystemAsync:
             Total size in kB (1 kB = 1024 bytes).
         """
         async with self.manager._lock():
-            return await create_future(self._client_connection.GetDeviceSizeAsync())
+            return await wrap_task(self._client_connection.GetDeviceSizeAsync())
 
     async def timestamp_of(self, path: str | DevicePath) -> str:
         """Get the modification timestamp of a file.

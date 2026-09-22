@@ -10,7 +10,7 @@ import System
 from PalmSens import Comm as PSComm
 from typing_extensions import override
 
-from .shared import create_future
+from .shared import wrap_task
 
 WINDOWS = sys.platform == 'win32'
 LINUX = not WINDOWS
@@ -55,7 +55,7 @@ class Instrument:
                 # OpenAsync is not available on TCPDevices
                 self.device.Open()
             else:
-                await create_future(self.device.OpenAsync())
+                await wrap_task(self.device.OpenAsync())
         except System.UnauthorizedAccessException as err:
             raise ConnectionError(
                 f'Cannot open instrument connection (reason: {err.Message}). Check if the device is already in use.'
@@ -69,7 +69,7 @@ class Instrument:
     async def _close_async(self):
         """Close connection with instrument."""
         try:
-            await create_future(self.device.CloseAsync())
+            await wrap_task(self.device.CloseAsync())
         except System.NotSupportedException:
             self.device.Close()
 
@@ -77,7 +77,7 @@ class Instrument:
         """Open connection to instrument, return `CommManager` object."""
         device = await self._open_async()
 
-        return await create_future(PSComm.CommManager.CommManagerAsync(device))
+        return await wrap_task(PSComm.CommManager.CommManagerAsync(device))
 
     @classmethod
     def from_port(cls, port: str, *, baudrate: int | None = None) -> Instrument:
@@ -211,9 +211,7 @@ async def discover_async(
 
     for name, interface in interfaces.items():
         try:
-            devices: list[PSDevices.Device] = await create_future(
-                interface.DiscoverDevicesAsync()
-            )
+            devices: list[PSDevices.Device] = await wrap_task(interface.DiscoverDevicesAsync())
         except System.DllNotFoundException:
             if ignore_errors:
                 continue

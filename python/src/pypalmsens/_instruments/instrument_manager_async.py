@@ -34,7 +34,7 @@ from .events_mixin import EventsMixin
 from .gpio_async import GPIOAsync
 from .instrument import Instrument, discover_async
 from .measurement_manager_async import MeasurementManagerAsync
-from .shared import create_future, firmware_warning
+from .shared import firmware_warning, wrap_task
 
 WINDOWS = sys.platform == 'win32'
 LINUX = not WINDOWS
@@ -152,7 +152,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
     async def _lock(self) -> AsyncGenerator[CommManager]:
         self.ensure_connection()
 
-        await create_future(self._comm.ClientConnection.Semaphore.WaitAsync())
+        await wrap_task(self._comm.ClientConnection.Semaphore.WaitAsync())
 
         try:
             yield self._comm
@@ -177,7 +177,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         self._comm = await self.instrument._connect_async()
 
         # Disable idle messages to improve response time and reduce noise
-        await create_future(self._comm.SetStatusWhenIdleAsync(False))
+        await wrap_task(self._comm.SetStatusWhenIdleAsync(False))
 
         firmware_warning(self._comm.Capabilities)
 
@@ -212,7 +212,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             If true, turn on the cell
         """
         async with self._lock():
-            await create_future(self._comm.SetCellOnAsync(cell_on))
+            await wrap_task(self._comm.SetCellOnAsync(cell_on))
 
     async def is_cell_on(self) -> bool:
         """Get cell status.
@@ -223,7 +223,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             Return true if the cell is on
         """
         async with self._lock():
-            cell_on: bool = await create_future(self._comm.GetCellOnAsync())
+            cell_on: bool = await wrap_task(self._comm.GetCellOnAsync())
 
         return cell_on
 
@@ -236,7 +236,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             Current in µA.
         """
         async with self._lock():
-            current: float = await create_future(self._comm.GetCurrentAsync())
+            current: float = await wrap_task(self._comm.GetCurrentAsync())
 
         return single_to_double(current)
 
@@ -248,9 +248,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         current_range: AllowedCurrentRanges
         """
         async with self._lock():
-            value: PalmSens.CurrentRange = await create_future(
-                self._comm.GetCurrentRangeAsync()
-            )
+            value: PalmSens.CurrentRange = await wrap_task(self._comm.GetCurrentRangeAsync())
 
         return cr_enum_to_string(value)
 
@@ -264,9 +262,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             See [pypalmsens.types.AllowedCurrentRanges][] for options.
         """
         async with self._lock():
-            await create_future(
-                self._comm.SetCurrentRangeAsync(cr_string_to_enum(current_range))
-            )
+            await wrap_task(self._comm.SetCurrentRangeAsync(cr_string_to_enum(current_range)))
 
     async def read_potential(self) -> float:
         """Read the potential in V.
@@ -278,7 +274,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         """
 
         async with self._lock():
-            potential: float = await create_future(self._comm.GetPotentialAsync())
+            potential: float = await wrap_task(self._comm.GetPotentialAsync())
 
         return single_to_double(potential)
 
@@ -291,7 +287,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             Potential in V
         """
         async with self._lock():
-            await create_future(self._comm.SetPotentialAsync(potential))
+            await wrap_task(self._comm.SetPotentialAsync(potential))
 
     async def get_potential_range(self) -> AllowedPotentialRanges:
         """Get the potential range for the cell.
@@ -314,7 +310,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             See `pypalmsens.settings.AllowedPotentialRanges` for options.
         """
         async with self._lock():
-            await create_future(
+            await wrap_task(
                 self._comm.SetPotentialRangeAsync(pr_string_to_enum(potential_range))
             )
 
@@ -327,7 +323,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             Instrument serial.
         """
         async with self._lock():
-            serial: PalmSens.Comm.DeviceSerialV3 = await create_future(
+            serial: PalmSens.Comm.DeviceSerialV3 = await wrap_task(
                 self._comm.GetDeviceSerialAsync()
             )
 
@@ -433,14 +429,14 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         """
         async with self._lock():
             while True:
-                if await create_future(self._comm.DigitalLineD0Async()) == wait_for_high:
+                if await wrap_task(self._comm.DigitalLineD0Async()) == wait_for_high:
                     break
                 await asyncio.sleep(0.05)
 
     async def abort(self) -> None:
         """Abort measurement."""
         async with self._lock():
-            await create_future(self._comm.AbortAsync())
+            await wrap_task(self._comm.AbortAsync())
 
     async def query(self, command: str, delay: float | None = None) -> str:
         """Send a command using the communication protocol and return its response.
@@ -476,8 +472,8 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
         async with self._lock():
             # this temporarily turns off idle messages to reduce cross-talk
-            if emit_idle_messages := await create_future(self._comm.GetStatusWhenIdleAsync()):
-                await create_future(self._comm.SetStatusWhenIdleAsync(False))
+            if emit_idle_messages := await wrap_task(self._comm.GetStatusWhenIdleAsync()):
+                await wrap_task(self._comm.SetStatusWhenIdleAsync(False))
 
             comm = CommProtocolAsync(self.instrument)
 
@@ -485,7 +481,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
                 response = await comm.query(command, delay=delay)
             finally:
                 if emit_idle_messages:
-                    await create_future(self._comm.SetStatusWhenIdleAsync(emit_idle_messages))
+                    await wrap_task(self._comm.SetStatusWhenIdleAsync(emit_idle_messages))
 
         return response
 
@@ -521,7 +517,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
                     clr.GetClrType(PalmSens.Comm.ClientConnectionMS)
                 )
             ):
-                await create_future(self._comm.ClientConnection.ReadMuxInfoAsync())
+                await wrap_task(self._comm.ClientConnection.ReadMuxInfoAsync())
 
             self._comm.Capabilities.MuxModel = mux_model
 
@@ -530,7 +526,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             elif self._comm.Capabilities.MuxModel == PalmSens.MuxModel.MUX16:
                 self._comm.Capabilities.NumMuxChannels = 16
             elif self._comm.Capabilities.MuxModel == PalmSens.MuxModel.MUX8R2:
-                await create_future(self._comm.ClientConnection.ReadMuxInfoAsync())
+                await wrap_task(self._comm.ClientConnection.ReadMuxInfoAsync())
 
         channels = self._comm.Capabilities.NumMuxChannels
         return channels
@@ -580,7 +576,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         mux_settings.UnselWE = unused_we_setting
 
         async with self._lock():
-            await create_future(
+            await wrap_task(
                 self._comm.ClientConnection.SetMuxSettingsAsync(MuxType(1), mux_settings)
             )
 
@@ -593,14 +589,14 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             Index of the channel to set.
         """
         async with self._lock():
-            await create_future(self._comm.ClientConnection.SetMuxChannelAsync(channel))
+            await wrap_task(self._comm.ClientConnection.SetMuxChannelAsync(channel))
 
     async def disconnect(self):
         """Disconnect from the instrument."""
         if not self.is_connected():
             return
 
-        await create_future(self._comm.DisconnectAsync())
+        await wrap_task(self._comm.DisconnectAsync())
         self._comm.Dispose()
 
         del self._comm

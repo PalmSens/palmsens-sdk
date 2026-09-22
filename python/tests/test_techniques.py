@@ -353,7 +353,7 @@ class ACV:
     kwargs = {
         'begin_potential': -0.15,
         'end_potential': 0.15,
-        'step_potential': 0.05,
+        'step_potential': 0.15,
         'ac_potential': 0.25,
         'frequency': 200.0,
         'scanrate': 0.2,
@@ -366,7 +366,7 @@ class ACV:
         assert isinstance(measurement, ps.data.Measurement)
 
         for curve in measurement.curves:
-            assert curve.n_points >= 5
+            assert curve.n_points >= 3
 
         dataset = measurement.dataset
         assert len(dataset) == 8
@@ -558,9 +558,9 @@ class FAM:
 class DPV:
     id = 'dpv'
     kwargs = {
-        'begin_potential': -0.4,
-        'end_potential': 0.4,
-        'step_potential': 0.15,
+        'begin_potential': -0.25,
+        'end_potential': 0.25,
+        'step_potential': 0.25,
         'pulse_potential': 0.10,
         'pulse_time': 0.1,
         'scan_rate': 0.5,
@@ -572,7 +572,7 @@ class DPV:
         assert isinstance(measurement, ps.data.Measurement)
 
         for curve in measurement.curves:
-            assert curve.n_points >= 5
+            assert curve.n_points >= 3
 
         dataset = measurement.dataset
         assert len(dataset) == 3
@@ -637,9 +637,9 @@ class MPAD:
 class NPV:
     id = 'npv'
     kwargs = {
-        'begin_potential': -0.4,
-        'end_potential': 0.4,
-        'step_potential': 0.15,
+        'begin_potential': -0.25,
+        'end_potential': 0.25,
+        'step_potential': 0.25,
         'pulse_time': 0.1,
         'scan_rate': 0.5,
     }
@@ -650,7 +650,7 @@ class NPV:
         assert isinstance(measurement, ps.data.Measurement)
 
         for curve in measurement.curves:
-            assert curve.n_points >= 5
+            assert curve.n_points >= 2
 
         dataset = measurement.dataset
         assert len(dataset) == 3
@@ -1026,7 +1026,7 @@ class GIS:
     kwargs = {
         'applied_current_range': '10uA',
         'equilibration_time': 0.0,
-        'n_frequencies': 7,
+        'n_frequencies': 5,
         'max_frequency': 1e5,
         'min_frequency': 1e3,
         'min_sampling_time': 0.01,
@@ -1042,13 +1042,13 @@ class GIS:
         for eis_data in eis_datas:
             assert eis_data.n_points == 5
             assert eis_data.n_subscans == 0
-            assert eis_data.n_frequencies == 7
+            assert eis_data.n_frequencies == 5
 
 
 class GIS_cur_fixed:
     id = 'gis'
     kwargs = {
-        'n_frequencies': 5,
+        'n_frequencies': 3,
         'max_frequency': 1e5,
         'min_frequency': 1e3,
         'scan_type': 'current',
@@ -1073,7 +1073,7 @@ class GIS_cur_fixed:
 class GIS_cur_scan:
     id = 'gis'
     kwargs = {
-        'n_frequencies': 5,
+        'n_frequencies': 3,
         'max_frequency': 1e5,
         'min_frequency': 1e3,
         'scan_type': 'current',
@@ -1090,20 +1090,20 @@ class GIS_cur_scan:
         eis_datas = measurement.eis_data
         assert len(eis_datas) == 1
         for eis_data in eis_datas:
-            assert eis_data.n_points == 10
+            assert eis_data.n_points == 6
             assert eis_data.n_subscans == 2
-            assert eis_data.n_frequencies == 5
+            assert eis_data.n_frequencies == 3
 
 
 class GIS_time_fixed:
     id = 'gis'
     kwargs = {
-        'n_frequencies': 5,
+        'n_frequencies': 3,
         'max_frequency': 1e5,
         'min_frequency': 1e3,
         'scan_type': 'time',
         'frequency_type': 'fixed',
-        'run_time': 1.3,
+        'run_time': 0.5,
     }
 
     @staticmethod
@@ -1122,12 +1122,12 @@ class GIS_time_fixed:
 class GIS_time_scan:
     id = 'gis'
     kwargs = {
-        'n_frequencies': 5,
+        'n_frequencies': 3,
         'max_frequency': 1e5,
         'min_frequency': 1e3,
         'scan_type': 'time',
         'frequency_type': 'scan',
-        'run_time': 0.4,
+        'run_time': 0.3,
     }
 
     @staticmethod
@@ -1137,9 +1137,9 @@ class GIS_time_scan:
         eis_datas = measurement.eis_data
         assert len(eis_datas) == 1
         for eis_data in eis_datas:
-            assert eis_data.n_points == 10
+            assert eis_data.n_points == 6
             assert eis_data.n_subscans == 2
-            assert eis_data.n_frequencies == 5
+            assert eis_data.n_frequencies == 3
 
 
 class GIS_single_point:

@@ -8,7 +8,7 @@ from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 from PalmSens.Sdk.Lablink.Example.Lablink.Services import Client as PSClient
 from PalmSens.Sdk.Lablink.Example.Lablink.Services import LablinkFactory as PSLabLinkFactory
 
-from .._instruments.shared import create_future
+from .._instruments.shared import wrap_task
 from ._session import Session
 
 factory = PSLabLinkFactory(
@@ -17,7 +17,7 @@ factory = PSLabLinkFactory(
 
 
 async def discover() -> list[Instance]:
-    devices: list[PSModels.LablinkInfo] = await create_future(PSLablink.Lablink.Discover())
+    devices: list[PSModels.LablinkInfo] = await wrap_task(PSLablink.Lablink.Discover())
     return [Instance._wrap(device) for device in devices]
 
 
@@ -62,8 +62,8 @@ class Instance:
 
     async def fetch_metadata(self):
         """Fetch metadata (name, version, serial) for this instance."""
-        self._inner = await create_future(factory.GetLablinkInfo(self._inner.AddressUri))
+        self._inner = await wrap_task(factory.GetLablinkInfo(self._inner.AddressUri))
 
     async def login(self, name: str, password: str) -> Session:
-        ref: PSLablink.Lablink = await create_future(factory.Login(self._inner, name, password))
+        ref: PSLablink.Lablink = await wrap_task(factory.Login(self._inner, name, password))
         return Session._wrap(ref)

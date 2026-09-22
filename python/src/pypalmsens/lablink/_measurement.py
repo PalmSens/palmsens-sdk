@@ -9,7 +9,7 @@ from PalmSens import Method as PSMethod
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 
 from .._data import Method
-from .._instruments.shared import create_future
+from .._instruments.shared import wrap_task
 from .._types import AllowedMethods, MethodTypeCompatible
 from ._data import Dataset
 
@@ -86,7 +86,7 @@ class MeasurementJob:
         return str(self._inner.Id)
 
     async def result(self) -> Measurement:
-        await create_future(self._inner.AwaitFinish)
+        await wrap_task(self._inner.AwaitFinish)
         return Measurement._wrap(self._inner)
 
     def __await__(self):

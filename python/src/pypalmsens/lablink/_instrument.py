@@ -5,7 +5,7 @@ from typing import ClassVar, Literal, Self
 from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 
-from .._instruments.shared import create_future
+from .._instruments.shared import wrap_task
 
 
 class InstrumentRef:
@@ -115,4 +115,4 @@ class InstrumentClaim:
         return self._inner.Serial
 
     async def release(self) -> None:
-        await create_future(self._inner.DisposeAsync())
+        await wrap_task(self._inner.DisposeAsync())

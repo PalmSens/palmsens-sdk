@@ -8,7 +8,7 @@ from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 
-from .._instruments.shared import create_future
+from .._instruments.shared import wrap_task
 from ..types import MethodTypeCompatible
 from ._instrument import InstrumentClaim, InstrumentRef
 from ._measurement import Measurement, MeasurementJob, MeasurementRef
@@ -86,8 +86,7 @@ class Session:
         Refreshes `self.instruments`."""
         raise NotImplementedError('Needs PalmSens.Sdk.Lablink update')
         return [
-            InstrumentRef._wrap(refs)
-            for refs in await create_future(self._inner.ListInstruments())
+            InstrumentRef._wrap(refs) for refs in await wrap_task(self._inner.ListInstruments())
         ]
 
     async def _claim(self, instruments: Sequence[InstrumentRef]) -> list[InstrumentClaim]:
@@ -96,7 +95,7 @@ class Session:
         for instrument in instruments:
             lst.Add(instrument._inner)
 
-        refs: list[PSLablink.LablinkInstrument] = await create_future(
+        refs: list[PSLablink.LablinkInstrument] = await wrap_task(
             self._inner.ConnectInstruments(lst)
         )
         return [InstrumentClaim._wrap(ref) for ref in refs]
@@ -112,12 +111,12 @@ class Session:
         return ClaimBatch(claims)
 
     async def list_measurements(self) -> list[MeasurementRef]:
-        refs: list[PSData.MeasurementInfo] = await create_future(self._inner.GetMeasurements())
+        refs: list[PSData.MeasurementInfo] = await wrap_task(self._inner.GetMeasurements())
         return [MeasurementRef._wrap(ref, self) for ref in refs]
 
     async def fetch_measurement(self, measurement: MeasurementRef) -> Measurement:
         """Fetch measurement data."""
-        ref: PSData.LablinkMeasurement = await create_future(
+        ref: PSData.LablinkMeasurement = await wrap_task(
             self._inner.GetMeasurement(measurement._inner.Id)
         )
         return Measurement._wrap(ref)
@@ -136,7 +135,7 @@ class Session:
         for instrument in instruments:
             lst.Add(instrument._inner)
 
-        refs: list[PSData.LablinkMeasurement] = await create_future(
+        refs: list[PSData.LablinkMeasurement] = await wrap_task(
             self._inner.StartMeasurements(lst, method._to_psmethod())
         )
         return [MeasurementJob(ref) for ref in refs]

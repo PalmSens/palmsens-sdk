@@ -7,9 +7,9 @@ from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 from PalmSens.Sdk.Lablink.Example.Lablink.Services import Client as PSClient
 from PalmSens.Sdk.Lablink.Example.Lablink.Services import LablinkFactory as PSLabLinkFactory
-from session import Session
 
-from pypalmsens._instruments.shared import create_future
+from .._instruments.shared import create_future
+from ._session import Session
 
 factory = PSLabLinkFactory(
     PSClient.LablinkHttpClientFactory(), PSClient.LablinkSignalRHubFactory()
@@ -17,7 +17,7 @@ factory = PSLabLinkFactory(
 
 
 async def discover() -> list[Instance]:
-    devices = await create_future(PSLablink.Lablink.Discover())
+    devices: list[PSModels.LablinkInfo] = await create_future(PSLablink.Lablink.Discover())
     return [Instance._wrap(device) for device in devices]
 
 
@@ -65,5 +65,5 @@ class Instance:
         self._inner = await create_future(factory.GetLablinkInfo(self._inner.AddressUri))
 
     async def login(self, name: str, password: str) -> Session:
-        ref = await create_future(factory.Login(self._inner, name, password))
+        ref: PSLablink.Lablink = await create_future(factory.Login(self._inner, name, password))
         return Session._wrap(ref)

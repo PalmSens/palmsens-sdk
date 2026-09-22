@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Any, ClassVar, Literal, Self, overload, override
+from typing import Any, ClassVar, Literal, Self, cast, overload, override
 
 import System
+import xarray as xr
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Dtos as PSDtos
-import xarray as xr
-from pypalmsens._converters import single_to_double
-from pypalmsens._data.data_array import implementation
-from pypalmsens._types import AllowedCurrentRanges, AllowedReadingStatus, AllowedTimingStatus
+
+from .._data.data_array import implementation
+from .._types import AllowedCurrentRanges, AllowedReadingStatus, AllowedTimingStatus
 
 AllowedDataValueTypes = Literal[
     'Index',
@@ -95,7 +95,7 @@ def _(obj: System.TimeSpan) -> float:
 
 @_converts(['TimingStatus'])
 def _(obj: PSDtos.TimingStatus) -> AllowedTimingStatus:
-    return str(obj)
+    return cast(AllowedTimingStatus, str(obj))
 
 
 @_converts(['CurrentRange'])
@@ -104,12 +104,23 @@ def _(obj: PSData.CurrentRange) -> AllowedCurrentRanges:
     return obj.Value.ToString().lstrip('cr')
 
 
-@_converts(['CurrentReadingStatus', 'ForwardCurrentReadingStatus', 'ReverseCurrentReadingStatus'])
+@_converts(
+    ['CurrentReadingStatus', 'ForwardCurrentReadingStatus', 'ReverseCurrentReadingStatus']
+)
 def _(obj: PSDtos.ReadingStatus) -> AllowedReadingStatus:
-    return str(obj)
+    return cast(AllowedReadingStatus, str(obj))
 
 
-@_converts(['AppliedPotential', 'Charge', 'MeasuredCurrent', 'AuxiliaryPotential','ReverseCurrent', 'ForwardCurrent'])
+@_converts(
+    [
+        'AppliedPotential',
+        'Charge',
+        'MeasuredCurrent',
+        'AuxiliaryPotential',
+        'ReverseCurrent',
+        'ForwardCurrent',
+    ]
+)
 def _(obj: float) -> float:
     return obj
 
@@ -124,8 +135,8 @@ class DataArray(Sequence[Any]):
         '_converter',
         '_inner',
     )
-    _inner: PSData.LablinkArray  # pyright: ignore[reportUninitializedInstanceVariable]
-    _converter: Converter  # pyright: ignore[reportUninitializedInstanceVariable]
+    _inner: PSData.LablinkArray
+    _converter: Converter
 
     def __init__(self):
         raise TypeError(
@@ -141,7 +152,7 @@ class DataArray(Sequence[Any]):
     def _wrap(cls, inner: PSData.LablinkArray) -> Self:
         obj = cls.__new__(cls)
         obj._inner = implementation(inner)
-        obj._converter = obj._resolve_converter()
+        obj._converter = _CONVERTERS[obj.type]
         return obj
 
     def __len__(self) -> int:
@@ -213,8 +224,7 @@ class Dataset(Sequence[DataArray]):
                 raise IndexError('list index out of range')
             index = index % len(self)
             return DataArray._wrap(self._inner[index])
-
-        if isinstance(index, slice):
+        else:
             raise NotImplementedError
 
     def array_types(self) -> list[str]:
@@ -228,7 +238,7 @@ class Dataset(Sequence[DataArray]):
 
         data_vars = {}
         coords = {'point': range(len(arrays[0].__implementation__))}
-        attrs = {}
+        attrs: dict[str, Any] = {}
 
         for array in arrays:
             array = array.__implementation__

@@ -5,7 +5,7 @@ from typing import ClassVar, Literal, Self
 from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 
-from pypalmsens._instruments.shared import create_future
+from .._instruments.shared import create_future
 
 
 class InstrumentRef:

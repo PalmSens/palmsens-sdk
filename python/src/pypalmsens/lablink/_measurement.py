@@ -5,16 +5,16 @@ from datetime import datetime
 from typing import TYPE_CHECKING, ClassVar, Self, overload, override
 
 import System
-from data import Dataset
 from PalmSens import Method as PSMethod
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 
-from pypalmsens._data import Method
-from pypalmsens._instruments.shared import create_future
-from pypalmsens.types import AllowedMethods, MethodTypeCompatible
+from .._data import Method
+from .._instruments.shared import create_future
+from .._types import AllowedMethods, MethodTypeCompatible
+from ._data import Dataset
 
 if TYPE_CHECKING:
-    from session import Session
+    from ._session import Session
 
 
 class MeasurementRef:

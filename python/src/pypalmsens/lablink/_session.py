@@ -4,13 +4,14 @@ from collections.abc import Sequence
 from typing import ClassVar, Self, overload, override
 
 import System
-from instrument import InstrumentClaim, InstrumentRef
-from measurement import Measurement, MeasurementJob, MeasurementRef
 from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
+from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 
-from pypalmsens._instruments.shared import create_future
-from pypalmsens.types import MethodTypeCompatible
+from .._instruments.shared import create_future
+from ..types import MethodTypeCompatible
+from ._instrument import InstrumentClaim, InstrumentRef
+from ._measurement import Measurement, MeasurementJob, MeasurementRef
 
 
 class ClaimBatch(Sequence[InstrumentClaim]):
@@ -89,7 +90,9 @@ class Session:
         for instrument in instruments:
             lst.Add(instrument._inner)
 
-        refs = await create_future(self._inner.ConnectInstruments(lst))
+        refs: list[PSLablink.LablinkInstrument] = await create_future(
+            self._inner.ConnectInstruments(lst)
+        )
         return [InstrumentClaim._wrap(ref) for ref in refs]
 
     async def claim(self, instrument: InstrumentRef) -> InstrumentClaim:
@@ -103,12 +106,14 @@ class Session:
         return ClaimBatch(claims)
 
     async def list_measurements(self) -> list[MeasurementRef]:
-        refs = await create_future(self._inner.GetMeasurements())
+        refs: list[PSData.MeasurementInfo] = await create_future(self._inner.GetMeasurements())
         return [MeasurementRef._wrap(ref, self) for ref in refs]
 
     async def fetch_measurement(self, measurement: MeasurementRef) -> Measurement:
         """Fetch measurement data."""
-        ref = await create_future(self._inner.GetMeasurement(measurement._inner.Id))
+        ref: PSData.LablinkMeasurement = await create_future(
+            self._inner.GetMeasurement(measurement._inner.Id)
+        )
         return Measurement._wrap(ref)
 
     async def start(
@@ -125,7 +130,9 @@ class Session:
         for instrument in instruments:
             lst.Add(instrument._inner)
 
-        refs = await create_future(self._inner.StartMeasurements(lst, method._to_psmethod()))
+        refs: list[PSData.LablinkMeasurement] = await create_future(
+            self._inner.StartMeasurements(lst, method._to_psmethod())
+        )
         return [MeasurementJob(ref) for ref in refs]
 
     @property

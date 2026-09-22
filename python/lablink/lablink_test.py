@@ -4,13 +4,11 @@ import asyncio
 
 import nest_asyncio
 
-import pypalmsens as ps
 from pypalmsens._instruments.shared import create_future
 from pypalmsens._methods import BaseTechnique
-from pypalmsens.types import MethodType
 
 nest_asyncio.apply()
-from instance import Instance, discover
+from pypalmsens import lablink
 
 
 def a(f):
@@ -517,17 +515,17 @@ async def main():
         'ACV',  # System.Text.Json.JsonException: The JSON value could not be converted to System.Double.
         'SWV',
         'CP',  # ES4LR20B0008 returned error code 405
-        'SCP', # ES4LR20B0008 returned error code 405
-        'LSP', # ES4LR20B0008 returned error code 405
-        'OCP', # ES4LR20B0008 returned error code 405
+        'SCP',  # ES4LR20B0008 returned error code 405
+        'LSP',  # ES4LR20B0008 returned error code 405
+        'OCP',  # ES4LR20B0008 returned error code 405
         'CA',
         'FAM',
         'DPV',
         'PAD',
-        'MPAD', # ES4LR20B0008 returned error code 405
+        'MPAD',  # ES4LR20B0008 returned error code 405
         'NPV',
         'MA',
-        'MP', # ES4LR20B0008 returned error code 405
+        'MP',  # ES4LR20B0008 returned error code 405
         'CC',
         'EIS',  # ES4LR20B0008 returned error code 405
         'EIS_pot_fixed',  # System.ArgumentNullException: Value cannot be null
@@ -535,7 +533,7 @@ async def main():
         'EIS_time_scan',  # System.ArgumentNullException: Value cannot be null
         'EIS_time_fixed',  # System.ArgumentNullException: Value cannot be null
         'EIS_single_point',  # System.ArgumentNullException: Value cannot be null
-        'FIS', # System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values.
+        'FIS',  # System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values.
         'GIS_cur_fixed',  # System.ArgumentNullException: Value cannot be null
         'GIS_cur_scan',  # System.ArgumentNullException: Value cannot be null
         'GIS_time_scan',  # System.ArgumentNullException: Value cannot be null
@@ -551,14 +549,14 @@ async def main():
     print(method_name)
     print()
 
-    instances = await discover()
+    instances = await lablink.discover()
     print('\n# Lablink instances')
     for instance in instances:
         print(instance)
 
     print('---')
 
-    local = Instance('https://127.0.0.1/')
+    local = lablink.Instance('https://127.0.0.1/')
     await local.fetch_metadata()
     print(local)
     session = await local.login('test', 'test')
@@ -603,6 +601,7 @@ async def main():
     arr = measurement[0].xarray()
     print(arr)
 
+    breakpoint()
 
 
 if __name__ == '__main__':

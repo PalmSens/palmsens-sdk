@@ -9,6 +9,7 @@ from .._instruments.shared import wrap_task
 
 
 class InstrumentRef:
+    """Instrument reerence."""
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSModels.LablinkInstrumentInfo  # pyright: ignore[reportUninitializedInstanceVariable]
 
@@ -86,6 +87,7 @@ class InstrumentRef:
 
 
 class InstrumentClaim:
+    """Claimed instrument."""
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSLablink.LablinkInstrument  # pyright: ignore[reportUninitializedInstanceVariable]
 

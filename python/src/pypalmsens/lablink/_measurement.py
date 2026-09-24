@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 
 
 class MeasurementRef:
+    """Measurement reference."""
     __slots__: ClassVar[tuple[str, ...]] = ('_inner', '_session')
     _inner: PSData.MeasurementInfo  # pyright: ignore[reportUninitializedInstanceVariable]
     _session: Session  # pyright: ignore[reportUninitializedInstanceVariable]
@@ -75,6 +76,7 @@ class MeasurementRef:
 
 
 class MeasurementJob:
+    """Measurement job."""
     def __init__(self, _net_measurement: PSData.LablinkMeasurement):
         self._inner = _net_measurement
 
@@ -94,6 +96,7 @@ class MeasurementJob:
 
 
 class Measurement(Sequence[Dataset]):
+    """Measurement data."""
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSData.LablinkMeasurement  # pyright: ignore[reportUninitializedInstanceVariable]
 

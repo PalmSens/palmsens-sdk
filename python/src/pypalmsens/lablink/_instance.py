@@ -17,11 +17,13 @@ factory = PSLabLinkFactory(
 
 
 async def discover() -> list[Instance]:
+    """Discover lablink instances."""
     devices: list[PSModels.LablinkInfo] = await wrap_task(PSLablink.Lablink.Discover())
     return [Instance._wrap(device) for device in devices]
 
 
 class Instance:
+    """Lablink instance."""
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSModels.LablinkInfo
 

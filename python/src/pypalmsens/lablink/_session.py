@@ -15,6 +15,7 @@ from ._measurement import Measurement, MeasurementJob, MeasurementRef
 
 
 class ClaimBatch(Sequence[InstrumentClaim]):
+    """List of claimed instruments."""
     def __init__(self, claims: list[InstrumentClaim]):
         self.claims: list[InstrumentClaim] = claims
 
@@ -48,6 +49,7 @@ class ClaimBatch(Sequence[InstrumentClaim]):
 
 
 class Session:
+    """Manage connection to lablink instance."""
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSLablink.Lablink  # pyright: ignore[reportUninitializedInstanceVariable]
 

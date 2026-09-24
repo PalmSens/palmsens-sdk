@@ -131,6 +131,7 @@ def _(obj: int) -> int:
 
 
 class DataArray(Sequence[Any]):
+    """Data array class."""
     __slots__: ClassVar[tuple[str, ...]] = (
         '_converter',
         '_inner',
@@ -190,6 +191,7 @@ class DataArray(Sequence[Any]):
 
 
 class Dataset(Sequence[DataArray]):
+    """Class containing all data."""
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSData.LablinkDataSet  # pyright: ignore[reportUninitializedInstanceVariable]
 

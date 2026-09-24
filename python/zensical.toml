@@ -19,6 +19,7 @@ nav = [
   "comm_protocol.md",
   "gpio.md",
   "circuit_fitting.md",
+  "lablink.md",
   "examples.md",
   { "Techniques" = [
     "reference/methods/index.md",
@@ -74,6 +75,7 @@ nav = [
     "reference/comm_protocol.md",
     "reference/gpio.md",
     "reference/fitting.md",
+    "reference/lablink.md",
     "reference/models.md",
     "reference/types.md",
   ]},

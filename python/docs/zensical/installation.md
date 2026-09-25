@@ -81,7 +81,7 @@ sudo ldconfig -v
     The FTDI documentation recommends to install to `/usr/local/lib`, which is [not listed in /etc/ld.so.conf](https://bugzilla.redhat.com/show_bug.cgi?id=144967). If you run Fedora, it is recommended to create a `/etc/ld.so.conf.d/local.conf` specifying this directory before running `ldconfig`:
 
     ```bash
-    sudo echo /usr/local/lib > /etc/ld.so.conf.d/local.conf
+    echo /usr/local/lib | sudo tee /etc/ld.so.conf.d/local.conf
     ```
 
 

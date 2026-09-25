@@ -1,3 +1,10 @@
+"""Submodule for measurement data arrays and datasets.
+
+[DataArray][] holds the values of one measured quantity, and [Dataset][]
+groups the data arrays that make up a measurement.
+
+"""
+
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
@@ -131,7 +138,12 @@ def _(obj: int) -> int:
 
 
 class DataArray(Sequence[Any]):
-    """Data array class."""
+    """
+    A data array holding one measured quantity.
+
+    An indexable sequence of values that all share a common name and unit.
+    """
+
     __slots__: ClassVar[tuple[str, ...]] = (
         '_converter',
         '_inner',
@@ -141,7 +153,7 @@ class DataArray(Sequence[Any]):
 
     def __init__(self):
         raise TypeError(
-            'Dataset cannot be instantiated directly. Obtain instances through other classes.'
+            'DataArray cannot be instantiated directly. Obtain instances through Dataset.arrays().'
         )
 
     def __repr__(self) -> str:
@@ -179,19 +191,28 @@ class DataArray(Sequence[Any]):
 
     @property
     def name(self) -> str:
+        """The name of this data array, same as [type][]."""
         return self.type
 
     @property
     def type(self) -> AllowedDataValueTypes:
+        """The kind of data in this array (e.g. 'Potential')."""
         return str(self._inner.DataValueType)  # type: ignore
 
     @property
     def unit(self) -> str:
+        """The unit of the values in this array (e.g. 'V' or 'A')."""
         return self._inner.Unit
 
 
 class Dataset(Sequence[DataArray]):
-    """Class containing all data."""
+    """
+    A collection of data arrays.
+
+    An indexable sequence of the [DataArray][] objects that make up a
+    measurement.
+    """
+
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSData.LablinkDataSet  # pyright: ignore[reportUninitializedInstanceVariable]
 
@@ -230,12 +251,22 @@ class Dataset(Sequence[DataArray]):
             raise NotImplementedError
 
     def array_types(self) -> list[str]:
+        """The types of the data arrays in this dataset."""
         return [array.type for array in self.arrays()]
 
     def arrays(self) -> list[DataArray]:
+        """The data arrays contained in this dataset."""
         return [DataArray._wrap(obj) for obj in self._inner]
 
-    def xarray(self) -> xr.Datase:
+    def xarray(self) -> xr.Dataset:
+        """
+        Convert this dataset to a xarray Dataset.
+
+        Returns
+        -------
+        xr.Dataset
+            The data of this dataset expressed as an xarray object.
+        """
         arrays = list(self._inner)
 
         data_vars = {}

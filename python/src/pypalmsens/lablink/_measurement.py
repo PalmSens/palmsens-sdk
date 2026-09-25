@@ -1,3 +1,11 @@
+"""Submodule for measurement references and data.
+
+[MeasurementRef][] references a stored measurement, [MeasurementJob][]
+represents an ongoing measurement, and [Measurement][] holds the complete
+data of a finished measurement.
+
+"""
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -18,15 +26,18 @@ if TYPE_CHECKING:
 
 
 class MeasurementRef:
-    """Measurement reference."""
+    """
+    A reference to a measurement.
+    """
+
     __slots__: ClassVar[tuple[str, ...]] = ('_inner', '_session')
     _inner: PSData.MeasurementInfo  # pyright: ignore[reportUninitializedInstanceVariable]
     _session: Session  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
         raise TypeError(
-            'InstrumentInfo cannot be instantiated directly. '
-            'Obtain instances through Lablink class.'
+            'MeasurementRef cannot be instantiated directly. '
+            'Obtain instances through Session.list_measurements(). '
         )
 
     def __repr__(self) -> str:
@@ -43,8 +54,7 @@ class MeasurementRef:
     def timestamp(self) -> datetime:
         """Date and time at which this measurement was created.
 
-        Returns a timezone-naive `datetime` in local time, matching the format
-        used by the SDK (e.g. ``2017-07-12 14:28:58``).
+        Returned as a timezone-naive `datetime` in local time.
         """
         timestamp = self._inner.CreatedOn
         return datetime.fromisoformat(
@@ -53,10 +63,12 @@ class MeasurementRef:
 
     @property
     def guid(self) -> str:
+        """The unique identifier of the measurement."""
         return str(self._inner.Id)
 
     @property
     def name(self) -> str:
+        """The name of the measurement."""
         return self._inner.Name
 
     @property
@@ -64,10 +76,14 @@ class MeasurementRef:
         """Number of points in this measurement."""
         return self._inner.Points
 
+    @property
     def method_id(self) -> AllowedMethods:
+        """The ID of the method used for this measurement."""
         return PSMethod.FromTechniqueNumber(int(self._inner.Technique)).MethodID
 
+    @property
     def user(self) -> str | None:
+        """The username of the user who performed this measurement, if any."""
         return self._inner.User
 
     async def fetch(self) -> Measurement:
@@ -76,7 +92,10 @@ class MeasurementRef:
 
 
 class MeasurementJob:
-    """Measurement job."""
+    """
+    A job representing an ongoing measurement.
+    """
+
     def __init__(self, _net_measurement: PSData.LablinkMeasurement):
         self._inner = _net_measurement
 
@@ -85,9 +104,26 @@ class MeasurementJob:
 
     @property
     def guid(self):
+        """The unique identifier of the measurement being performed."""
         return str(self._inner.Id)
 
+    @property
+    def is_finished(self) -> bool:
+        """True if the measurement is finished."""
+        return self._inner.IsFinished
+
+    async def cancel(self) -> None:
+        """Cancel running measurement."""
+        raise NotImplementedError
+
     async def result(self) -> Measurement:
+        """Wait for the measurement to finish and return the data.
+
+        Returns
+        -------
+        Measurement
+            The completed measurement data.
+        """
         await wrap_task(self._inner.AwaitFinish)
         return Measurement._wrap(self._inner)
 
@@ -96,14 +132,18 @@ class MeasurementJob:
 
 
 class Measurement(Sequence[Dataset]):
-    """Measurement data."""
+    """
+    Measurement data containing multiple datasets.
+
+    """
+
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSData.LablinkMeasurement  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
         raise TypeError(
             'Measurement cannot be instantiated directly. '
-            'Obtain instances through the Session class.'
+            'Obtain instances through Session.fetch_measurement() or MeasurementJob.result().'
         )
 
     def __repr__(self) -> str:
@@ -138,22 +178,27 @@ class Measurement(Sequence[Dataset]):
 
     @property
     def datasets(self) -> list[Dataset]:
+        """The datasets contained in this measurement."""
         return [Dataset._wrap(obj) for obj in self._inner]
 
     @property
     def guid(self) -> str:
+        """The unique identifier of the measurement."""
         return str(self._inner.Id)
 
     @property
     def serial_number(self) -> str:
+        """The serial number of the instrument used for the measurement."""
         return self._inner.InstrumentSerial
 
     @property
     def method(self) -> MethodTypeCompatible:
+        """The method settings used for this measurement."""
         return Method._wrap(self._inner.Method).to_settings()
 
     @property
     def timestamp(self) -> datetime:
+        """The UTC date and time when the measurement was recorded."""
         timestamp = self._inner.UtcDateTime
         return datetime.fromisoformat(
             timestamp.ToString('s', System.Globalization.CultureInfo.InvariantCulture)
@@ -161,8 +206,10 @@ class Measurement(Sequence[Dataset]):
 
     @property
     def is_read_only(self) -> bool:
+        """Whether the measurement data is read-only."""
         return self._inner.IsReadOnly
 
     @property
     def is_finished(self) -> bool:
+        """Whether the measurement has finished."""
         return self._inner.IsFinished

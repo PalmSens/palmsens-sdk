@@ -1,3 +1,11 @@
+"""Submodule for managing sessions on a Lablink instance.
+
+Use [Session][] for an authenticated connection to a Lablink
+instance. Use [ClaimBatch][] to group several instrument claims so
+they can be released together.
+
+"""
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -15,7 +23,18 @@ from ._measurement import Measurement, MeasurementJob, MeasurementRef
 
 
 class ClaimBatch(Sequence[InstrumentClaim]):
-    """List of claimed instruments."""
+    """
+    A batch of instrument claims.
+
+    Use as an async context manager. All claims are released when the
+    context exits.
+
+    Parameters
+    ----------
+    claims : list of InstrumentClaim
+        The list of instrument claims to manage.
+    """
+
     def __init__(self, claims: list[InstrumentClaim]):
         self.claims: list[InstrumentClaim] = claims
 
@@ -43,13 +62,20 @@ class ClaimBatch(Sequence[InstrumentClaim]):
     async def __aexit__(self, *exc_info) -> None:
         await self.release()
 
-    async def release(self):
+    async def release(self) -> None:
+        """Release all instrument claims in this batch."""
         for claim in self.claims:
             await claim.release()
 
 
 class Session:
-    """Manage connection to lablink instance."""
+    """
+    A session managing a connection to a Lablink instance.
+
+    Use [claim][] or [claim_many][] to claim instruments, and
+    [start][] or [start_many][] to run measurements on them.
+    """
+
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSLablink.Lablink  # pyright: ignore[reportUninitializedInstanceVariable]
 
@@ -76,16 +102,22 @@ class Session:
 
     @property
     def instruments(self) -> list[InstrumentRef]:
-        """Instruments seen by the most recent `list_instruments()` call.
+        """The instruments from the most recent [list_instruments][] call.
 
         May be stale or empty.
         """
         return [InstrumentRef._wrap(refs) for refs in self._inner.Instruments]
 
     async def list_instruments(self) -> list[InstrumentRef]:
-        """List currently attached instruments
+        """List currently attached instruments.
 
-        Refreshes `self.instruments`."""
+        Refreshes the [instruments][] list.
+
+        Returns
+        -------
+        list of InstrumentRef
+            A list of currently attached instruments.
+        """
         raise NotImplementedError('Needs PalmSens.Sdk.Lablink update')
         return [
             InstrumentRef._wrap(refs) for refs in await wrap_task(self._inner.ListInstruments())
@@ -103,21 +135,62 @@ class Session:
         return [InstrumentClaim._wrap(ref) for ref in refs]
 
     async def claim(self, instrument: InstrumentRef) -> InstrumentClaim:
-        """Claims instrument."""
+        """Claim an instrument.
+
+        Parameters
+        ----------
+        instrument : InstrumentRef
+            The instrument to claim.
+
+        Returns
+        -------
+        InstrumentClaim
+            A claim on the instrument. Use it as an async context
+            manager. It is released when the context exits.
+        """
         [claim] = await self._claim([instrument])
         return claim
 
     async def claim_many(self, instruments: Sequence[InstrumentRef]) -> ClaimBatch:
-        """Claims list of instruments."""
+        """Claim multiple instruments.
+
+        Parameters
+        ----------
+        instruments : Sequence of InstrumentRef
+            The instruments to claim.
+
+        Returns
+        -------
+        ClaimBatch
+            A batch containing the instrument claims.
+        """
         claims = await self._claim(instruments)
         return ClaimBatch(claims)
 
     async def list_measurements(self) -> list[MeasurementRef]:
+        """List all measurements.
+
+        Returns
+        -------
+        list of MeasurementRef
+            A list of measurement references.
+        """
         refs: list[PSData.MeasurementInfo] = await wrap_task(self._inner.GetMeasurements())
         return [MeasurementRef._wrap(ref, self) for ref in refs]
 
     async def fetch_measurement(self, measurement: MeasurementRef) -> Measurement:
-        """Fetch measurement data."""
+        """Fetch a specific measurement.
+
+        Parameters
+        ----------
+        measurement : MeasurementRef
+            The reference to the measurement to fetch.
+
+        Returns
+        -------
+        Measurement
+            The fetched measurement data.
+        """
         ref: PSData.LablinkMeasurement = await wrap_task(
             self._inner.GetMeasurement(measurement._inner.Id)
         )
@@ -126,12 +199,40 @@ class Session:
     async def start(
         self, instrument: InstrumentClaim, *, method: MethodTypeCompatible
     ) -> MeasurementJob:
+        """Start a measurement on an instrument.
+
+        Parameters
+        ----------
+        instrument : InstrumentClaim
+            The claimed instrument to measure.
+        method : MethodTypeCompatible
+            The measurement method to use.
+
+        Returns
+        -------
+        MeasurementJob
+            A job representing the ongoing measurement.
+        """
         [measurement] = await self.start_many([instrument], method=method)
         return measurement
 
     async def start_many(
         self, instruments: Sequence[InstrumentClaim], *, method: MethodTypeCompatible
     ) -> list[MeasurementJob]:
+        """Start measurements on multiple instruments.
+
+        Parameters
+        ----------
+        instruments : Sequence of InstrumentClaim
+            The claimed instruments to measure.
+        method : MethodTypeCompatible
+            The measurement method to use.
+
+        Returns
+        -------
+        list of MeasurementJob
+            A list of jobs representing the ongoing measurements.
+        """
         lst = System.Collections.Generic.List[PSLablink.LablinkInstrument]()
 
         for instrument in instruments:
@@ -144,17 +245,21 @@ class Session:
 
     @property
     def address(self) -> str:
+        """The address of the Lablink instance."""
         return str(self._inner.Address)
 
     @property
     def name(self) -> str:
+        """The name of the Lablink instance."""
         return self._inner.Name
 
     @property
     def version(self) -> str:
+        """The version of the Lablink instance."""
         raise NotImplementedError
         return self._inner.Version
 
     @property
     def serial_number(self) -> str:
+        """The serial number of the Lablink instance."""
         return self._inner.Serial

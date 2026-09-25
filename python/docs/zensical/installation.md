@@ -156,7 +156,7 @@ See the [VSCode documentation](https://code.visualstudio.com/docs/python/environ
 
 ## Compatible devices and firmware {#compatibility}
 
-The PalmSens SDK is based on PalmSens core version 5.12.
+The PalmSens SDK is based on PalmSens core version 5.13.
 
 The table below lists the minimum supported firmwares versions and required drivers.
 

@@ -70,11 +70,21 @@ sudo chmod 0755 /usr/local/lib/libftd2xx.so.$VERSION
 sudo ln -sf /usr/local/lib/libftd2xx.so.$VERSION /usr/local/lib/libftd2xx.so
 ```
 
-And update the linker cache:
+Update the linker cache:
 
 ```bash
 sudo ldconfig -v
 ```
+
+!!! Note "Fedora"
+
+    The FTDI documentation recommends to install to `/usr/local/lib`, which is [not listed in /etc/ld.so.conf](https://bugzilla.redhat.com/show_bug.cgi?id=144967). If you run Fedora, it is recommended to create a `/etc/ld.so.conf.d/local.conf` specifying this directory before running `ldconfig`:
+
+    ```bash
+    sudo echo /usr/local/lib > /etc/ld.so.conf.d/local.conf
+    ```
+
+
 
 #### 2. Configure udev rules
 

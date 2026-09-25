@@ -16,9 +16,10 @@ if IS_SUPPORTED:
     from ._instance import Instance, discover
     from ._instrument import InstrumentClaim, InstrumentRef
     from ._measurement import Measurement, MeasurementJob, MeasurementRef
-    from ._session import Session
+    from ._session import ClaimBatch, Session
 
     __all__ = [
+        'ClaimBatch',
         'Dataset',
         'Instance',
         'InstrumentClaim',

@@ -70,13 +70,13 @@ sudo chmod 0755 /usr/local/lib/libftd2xx.so.$VERSION
 sudo ln -sf /usr/local/lib/libftd2xx.so.$VERSION /usr/local/lib/libftd2xx.so
 ```
 
-Update the linker cache:
+And update the linker cache:
 
 ```bash
 sudo ldconfig -v
 ```
 
-!!! Note "Fedora"
+!!! Note "Fedora note"
 
     The FTDI documentation recommends to install to `/usr/local/lib`, which is [not listed in /etc/ld.so.conf](https://bugzilla.redhat.com/show_bug.cgi?id=144967). If you run Fedora, it is recommended to create a `/etc/ld.so.conf.d/local.conf` specifying this directory before running `ldconfig`:
 
@@ -85,9 +85,7 @@ sudo ldconfig -v
     ```
 
 
-
 #### 2. Configure udev rules
-
 
 Second, set up [udev rules](https://wiki.archlinux.org/title/Udev).
 `udev` manages permissions of the device to be accessible to non-root users and groups.

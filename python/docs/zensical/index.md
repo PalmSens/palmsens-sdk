@@ -5,6 +5,8 @@
   }
 </style>
 
+[![Webinar](./assets/webinar.webp){ width="100%" }](https://us06web.zoom.us/webinar/register/8317896352659/WN_aTL6nCyeT_6s8fN2GelftA#/registration)
+
 # PyPalmSens Documentation
 
 <br/>

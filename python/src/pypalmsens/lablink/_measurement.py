@@ -16,6 +16,8 @@ import System
 from PalmSens import Method as PSMethod
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 
+from pypalmsens.lablink._model import MeasurementListResult
+
 from .._data import Method
 from .._instruments.shared import wrap_task
 from .._types import AllowedMethods, MethodTypeCompatible
@@ -31,7 +33,7 @@ class MeasurementRef:
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_inner', '_session')
-    _inner: PSData.MeasurementInfo  # pyright: ignore[reportUninitializedInstanceVariable]
+    _inner: MeasurementListResult  # pyright: ignore[reportUninitializedInstanceVariable]
     _session: Session  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
@@ -44,7 +46,7 @@ class MeasurementRef:
         return f'{type(self).__name__}(guid={self.guid!r})'
 
     @classmethod
-    def _wrap(cls, inner: PSData.MeasurementInfo, session: Session) -> Self:
+    def _wrap(cls, inner: MeasurementListResult, session: Session) -> Self:
         obj = cls.__new__(cls)
         obj._inner = inner
         obj._session = session

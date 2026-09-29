@@ -22,7 +22,7 @@ from ._client import HttpClient
 from ._instrument import InstrumentClaim, InstrumentRef
 from ._mapping import _to_info
 from ._measurement import Measurement, MeasurementJob, MeasurementRef
-from ._model import EmptyProperty, SimpleInstrumentsCommand
+from ._model import EmptyProperty, MeasurementListResult, SimpleInstrumentsCommand
 from ._public import LablinkInfo
 
 
@@ -217,7 +217,8 @@ class Session:
         list of MeasurementRef
             A list of measurement references.
         """
-        refs: list[PSData.MeasurementInfo] = await wrap_task(self._inner.GetMeasurements())
+        data = await self._http.get('/Measurements')
+        refs = [MeasurementListResult.model_validate(item) for item in data]
         return [MeasurementRef._wrap(ref, self) for ref in refs]
 
     async def fetch_measurement(self, measurement: MeasurementRef) -> Measurement:

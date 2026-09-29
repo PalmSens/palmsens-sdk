@@ -13,7 +13,8 @@ finally:
 
 if IS_SUPPORTED:
     from ._data import Dataset
-    from ._instance import Instance, discover
+    from ._discover import discover
+    from ._instance import Instance
     from ._instrument import InstrumentClaim, InstrumentRef
     from ._measurement import Measurement, MeasurementJob, MeasurementRef
     from ._session import ClaimBatch, Session

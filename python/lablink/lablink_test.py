@@ -33,6 +33,11 @@ async def main():
     print(instruments)
 
     [instrument] = session.instruments
+
+    ret = r(session.list_measurements())
+    r(ret[0].fetch())
+
+    exit()
     breakpoint()
 
     async with await session.claim(instrument) as claim:

@@ -16,7 +16,7 @@ import System
 from PalmSens import Method as PSMethod
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 
-from pypalmsens.lablink._model import MeasurementListResult
+from pypalmsens.lablink._model import MeasurementListResult, MeasurementResult
 
 from .._data import Method
 from .._instruments.shared import wrap_task
@@ -58,15 +58,12 @@ class MeasurementRef:
 
         Returned as a timezone-naive `datetime` in local time.
         """
-        timestamp = self._inner.CreatedOn
-        return datetime.fromisoformat(
-            timestamp.ToString('s', System.Globalization.CultureInfo.InvariantCulture)
-        )
+        return self._inner.CreatedOn
 
     @property
     def guid(self) -> str:
         """The unique identifier of the measurement."""
-        return str(self._inner.Id)
+        return self._inner.Id
 
     @property
     def name(self) -> str:
@@ -152,7 +149,7 @@ class Measurement(Sequence[Dataset]):
         return f"{type(self).__name__}(name='{self._inner.Method.Name}', timestamp='{self.timestamp}')"
 
     @classmethod
-    def _wrap(cls, inner: PSData.LablinkMeasurement) -> Self:
+    def _wrap(cls, inner: MeasurementResult) -> Self:
         obj = cls.__new__(cls)
         obj._inner = inner
         return obj

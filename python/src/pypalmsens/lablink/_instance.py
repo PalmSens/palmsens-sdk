@@ -69,7 +69,7 @@ class Instance:
         Updates the name, version, and serial number with the latest values.
         """
         data = await self._http.get('/Home/GetInfo')
-        self._info = _to_info(_model.LablinkInfoResult.model_validate(data))
+        self._info = _to_info(_model.LablinkInfoResult.model_validate(data.json()))
         return self._info
 
     async def login(self, name: str, password: str) -> Session:
@@ -90,7 +90,7 @@ class Instance:
         data = await self._http.post(
             '/Auth/ApiKey', json={'UserName': name, 'Password': password}
         )
-        auth = _model.AuthResponseModel.model_validate(data)
+        auth = _model.AuthResponseModel.model_validate(data.json())
         assert auth.Token
         self._http.set_token(auth.Token)
         return Session._from_http(self._http)

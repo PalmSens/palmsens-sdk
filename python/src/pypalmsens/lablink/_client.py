@@ -29,10 +29,7 @@ class HttpClient:
         if r.is_error:
             raise LablinkApiError(r.reason_phrase)
 
-        try:
-            return r.json()
-        except:
-            breakpoint()
+        return r
 
     async def get(self, path: str, **kwargs) -> Any:
         return await self.request('GET', path, **kwargs)

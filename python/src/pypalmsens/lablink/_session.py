@@ -22,7 +22,12 @@ from ._client import HttpClient
 from ._instrument import InstrumentClaim, InstrumentRef
 from ._mapping import _to_info
 from ._measurement import Measurement, MeasurementJob, MeasurementRef
-from ._model import EmptyProperty, MeasurementListResult, SimpleInstrumentsCommand
+from ._model import (
+    EmptyProperty,
+    MeasurementListResult,
+    MeasurementResult,
+    SimpleInstrumentsCommand,
+)
 from ._public import LablinkInfo
 
 
@@ -132,7 +137,7 @@ class Session:
         #     instrument = InstrumentRef(info['Serial'])
         #     instrument._info = info
         #
-        instruments = [InstrumentRef._wrap(instrument) for instrument in data]
+        instruments = [InstrumentRef._wrap(instrument) for instrument in data.json()]
         self._instruments = instruments
         return instruments
 
@@ -218,7 +223,7 @@ class Session:
             A list of measurement references.
         """
         data = await self._http.get('/Measurements')
-        refs = [MeasurementListResult.model_validate(item) for item in data]
+        refs = [MeasurementListResult.model_validate(item) for item in data.json()]
         return [MeasurementRef._wrap(ref, self) for ref in refs]
 
     async def fetch_measurement(self, measurement: MeasurementRef) -> Measurement:
@@ -234,10 +239,68 @@ class Session:
         Measurement
             The fetched measurement data.
         """
-        ref: PSData.LablinkMeasurement = await wrap_task(
-            self._inner.GetMeasurement(measurement._inner.Id)
-        )
-        return Measurement._wrap(ref)
+        import numpy as np
+
+        resp = await self._http.get(f'/Measurements/{measurement.guid}')
+        parsed = MeasurementResult.model_validate(resp.json())
+
+        assert parsed.RawDataSets
+
+        dataset, *_ = parsed.RawDataSets
+        dataset_id = dataset.DataSetId
+
+        print()
+
+        assert dataset.DataArrays
+
+        for array in dataset.DataArrays:
+            array_type = array.DataValueType.name
+            print(array_type)
+            array_id = array.DataArrayId
+            values_id = array.DataValuesId
+
+            resp = await self._http.get(f'DataSets/{dataset_id}/{values_id}')
+            raw = resp.content
+
+            if array_type == 'CurrentRange':
+                pairs = np.frombuffer(raw, dtype=np.int32).reshape(-1, 2)
+                data = pairs[:, 0]
+                other = pairs[:, 0]  # ?? factor? exponent?
+
+            elif array_type in (
+                'AppliedPotential',
+                'Charge',
+                'MeasuredCurrent',
+                'AuxiliaryPotential',
+                'ReverseCurrent',
+                'ForwardCurrent',
+            ):
+                data = np.frombuffer(raw, dtype=np.float64)  # little-endian float64
+
+            elif array_type in (
+                'TimingStatus',
+                'CurrentReadingStatus',
+                'ForwardCurrentReadingStatus',
+                'ReverseCurrentReadingStatus',
+            ):
+                data = np.frombuffer(raw, dtype=np.int8)  # int enum (8-bit signed integer)
+
+            elif array_type in ('Index', 'CycleIndex', 'LevelIndex'):
+                data = np.frombuffer(raw, dtype=np.int32)  # int enum (32 bit signed)
+
+            elif array_type == 'Timestamp':
+                ticks = np.frombuffer(raw, dtype=np.int64)  # 100-ns ticks
+                data = ticks * 1e-7  # seconds
+
+            else:
+                print(len(resp.content))
+                print(resp.content[:32].hex())
+                data = '???'
+
+            print(data, len(data))
+            print()
+
+        return Measurement._wrap(data)
 
     async def start(
         self, instrument: InstrumentClaim, *, method: MethodTypeCompatible
@@ -300,5 +363,5 @@ class Session:
         Updates the name, version, and serial number with the latest values.
         """
         data = await self._http.get('/Home/GetInfo')
-        self._info = _to_info(_model.LablinkInfoResult.model_validate(data))
+        self._info = _to_info(_model.LablinkInfoResult.model_validate(data.json()))
         return self._info

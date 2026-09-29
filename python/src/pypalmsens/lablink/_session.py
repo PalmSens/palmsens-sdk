@@ -9,17 +9,21 @@ they can be released together.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import ClassVar, Self, overload, override
+from typing import Self, overload, override
 
 import System
 from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
-from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 
 from .._instruments.shared import wrap_task
 from ..types import MethodTypeCompatible
+from . import _model
+from ._client import HttpClient
 from ._instrument import InstrumentClaim, InstrumentRef
+from ._mapping import _to_info
 from ._measurement import Measurement, MeasurementJob, MeasurementRef
+from ._model import EmptyProperty, SimpleInstrumentsCommand
+from ._public import LablinkInfo
 
 
 class ClaimBatch(Sequence[InstrumentClaim]):
@@ -76,29 +80,32 @@ class Session:
     [start][] or [start_many][] to run measurements on them.
     """
 
-    __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
-    _inner: PSLablink.Lablink  # pyright: ignore[reportUninitializedInstanceVariable]
+    def __init__(
+        self,
+        address: str,
+        token: str,
+        port: int = 5000,
+    ):
+        self._http = HttpClient(f'{self._address}:{port}/api/v1', token=token)
+        self._instruments = []
+        self._info = None
 
-    def __init__(self):
-        raise TypeError(
-            'Lablink instance cannot be instantiated directly. '
-            'Obtain instances through `Instance.login()`.'
-        )
+    @classmethod
+    def _from_http(cls, http: HttpClient) -> Self:
+        obj = object.__new__(cls)
+        obj._http = http
+        obj._instruments = []
+        obj._info = None
+        return obj
 
     def __repr__(self) -> str:
         s = []
 
-        if name := self.name:
-            s.append(f'name={name!r}')
-        s.append(f'address={self.address!r}')
+        # if name := self.name:
+        #     s.append(f'name={name!r}')
+        # s.append(f'address={self.address!r}')
 
         return f'{type(self).__name__}({", ".join(s)})'
-
-    @classmethod
-    def _wrap(cls, inner: PSLablink.Lablink) -> Self:
-        obj = cls.__new__(cls)
-        obj._inner = inner
-        return obj
 
     @property
     def instruments(self) -> list[InstrumentRef]:
@@ -106,7 +113,7 @@ class Session:
 
         May be stale or empty.
         """
-        return [InstrumentRef._wrap(refs) for refs in self._inner.Instruments]
+        return self._instruments
 
     async def list_instruments(self) -> list[InstrumentRef]:
         """List currently attached instruments.
@@ -118,21 +125,28 @@ class Session:
         list of InstrumentRef
             A list of currently attached instruments.
         """
-        raise NotImplementedError('Needs PalmSens.Sdk.Lablink update')
-        return [
-            InstrumentRef._wrap(refs) for refs in await wrap_task(self._inner.ListInstruments())
-        ]
+        data = await self._http.get('/Instruments')
+        # TODO: Just pass the instrument serial + metadata
+        # InstrumentRef should be responsible for managing its metadata
+        # for info in data:
+        #     instrument = InstrumentRef(info['Serial'])
+        #     instrument._info = info
+        #
+        instruments = [InstrumentRef._wrap(instrument) for instrument in data]
+        self._instruments = instruments
+        return instruments
 
     async def _claim(self, instruments: Sequence[InstrumentRef]) -> list[InstrumentClaim]:
-        lst = System.Collections.Generic.List[PSModels.LablinkInstrumentInfo]()
-
-        for instrument in instruments:
-            lst.Add(instrument._inner)
-
-        refs: list[PSLablink.LablinkInstrument] = await wrap_task(
-            self._inner.ConnectInstruments(lst)
+        props = {instrument.serial_number: EmptyProperty() for instrument in instruments}
+        payload = SimpleInstrumentsCommand(
+            InstrumentProperties=props, AllInstrumentsMustSucceed=True
         )
-        return [InstrumentClaim._wrap(ref) for ref in refs]
+
+        await self._http.post('/Instruments/Claim', json=payload.model_dump())
+
+        return [
+            InstrumentClaim._wrap(instrument.serial_number, self) for instrument in instruments
+        ]
 
     async def claim(self, instrument: InstrumentRef) -> InstrumentClaim:
         """Claim an instrument.
@@ -166,6 +180,34 @@ class Session:
         """
         claims = await self._claim(instruments)
         return ClaimBatch(claims)
+
+    async def _release(self, instruments: Sequence[InstrumentRef]) -> None:
+        props = {instrument.serial_number: EmptyProperty() for instrument in instruments}
+        payload = SimpleInstrumentsCommand(
+            InstrumentProperties=props, AllInstrumentsMustSucceed=True
+        )
+
+        await self._http.post('/Instruments/UnClaim', json=payload.model_dump())
+
+    async def release(self, instrument: InstrumentRef) -> None:
+        """Releaes an instrument.
+
+        Parameters
+        ----------
+        instrument : InstrumentRef
+            The instrument to release.
+        """
+        await self._release([instrument])
+
+    async def release_many(self, instruments: Sequence[InstrumentRef]) -> None:
+        """Release multiple instruments.
+
+        Parameters
+        ----------
+        instruments : Sequence of InstrumentRef
+            The instruments to release.
+        """
+        await self._release(instruments)
 
     async def list_measurements(self) -> list[MeasurementRef]:
         """List all measurements.
@@ -244,22 +286,18 @@ class Session:
         return [MeasurementJob(ref) for ref in refs]
 
     @property
-    def address(self) -> str:
-        """The address of the Lablink instance."""
-        return str(self._inner.Address)
+    def info(self) -> LablinkInfo | None:
+        """Last fetched metadata, or `None` if not yet fetched.
 
-    @property
-    def name(self) -> str:
-        """The name of the Lablink instance."""
-        return self._inner.Name
+        See [fetch_metadata][] to (re)populate this.
+        """
+        return self._info
 
-    @property
-    def version(self) -> str:
-        """The version of the Lablink instance."""
-        raise NotImplementedError
-        return self._inner.Version
+    async def fetch_metadata(self) -> LablinkInfo:
+        """Fetch metadata for this instance.
 
-    @property
-    def serial_number(self) -> str:
-        """The serial number of the Lablink instance."""
-        return self._inner.Serial
+        Updates the name, version, and serial number with the latest values.
+        """
+        data = await self._http.get('/Home/GetInfo')
+        self._info = _to_info(_model.LablinkInfoResult.model_validate(data))
+        return self._info

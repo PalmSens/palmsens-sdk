@@ -8,33 +8,18 @@ Use [discover][] to find Lablink instances on the network.
 
 from __future__ import annotations
 
-from typing import ClassVar, Self
-
-import System
-from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
-from PalmSens.Sdk.Lablink.Example.Lablink import Models as PSModels
 from PalmSens.Sdk.Lablink.Example.Lablink.Services import Client as PSClient
 from PalmSens.Sdk.Lablink.Example.Lablink.Services import LablinkFactory as PSLabLinkFactory
 
-from .._instruments.shared import wrap_task
+from . import _model
+from ._client import HttpClient
+from ._mapping import _to_info
+from ._public import LablinkInfo
 from ._session import Session
 
 factory = PSLabLinkFactory(
     PSClient.LablinkHttpClientFactory(), PSClient.LablinkSignalRHubFactory()
 )
-
-
-async def discover() -> list[Instance]:
-    """
-    Discover Lablink instances.
-
-    Returns
-    -------
-    list[Instance]
-        A list of discovered Lablink instances.
-    """
-    devices: list[PSModels.LablinkInfo] = await wrap_task(PSLablink.Lablink.Discover())
-    return [Instance._wrap(device) for device in devices]
 
 
 class Instance:
@@ -51,54 +36,41 @@ class Instance:
         The address of the instance (default is 'https://127.0.0.1/').
     """
 
-    __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
-    _inner: PSModels.LablinkInfo
-
-    def __init__(self, address: str = 'https://127.0.0.1/'):
-        uri = System.Uri(address)
-        self._inner = PSModels.LablinkInfo(uri)
-
-    @classmethod
-    def _wrap(cls, inner: PSModels.LablinkInfo) -> Self:
-        obj = cls.__new__(cls)
-        obj._inner = inner
-        return obj
+    def __init__(self, address: str = 'https://127.0.0.1', port: int = 5000):
+        self._address = address.rstrip('/')
+        self._http = HttpClient(f'{self._address}:{port}/api/v1')
+        self._info: LablinkInfo | None = None
 
     def __repr__(self) -> str:
         s = []
 
-        if name := self.name:
-            s.append(f'name={name!r}')
+        if self._info:
+            s.append(f'name={self._info.name!r}')
         s.append(f'address={self.address!r}')
 
-        return f'{type(self).__name__}({", ".join(s)}'
+        return f'{type(self).__name__}({", ".join(s)})'
 
     @property
     def address(self) -> str:
         """The address of the instance."""
-        return str(self._inner.AddressUri)
+        return str(self._address)
 
     @property
-    def name(self) -> str:
-        """The name of the instance."""
-        return self._inner.Name
+    def info(self) -> LablinkInfo | None:
+        """Last fetched metadata, or `None` if not yet fetched.
 
-    @property
-    def version(self) -> str:
-        """The version of the instance."""
-        return self._inner.Version
+        See [fetch_metadata][] to (re)populate this.
+        """
+        return self._info
 
-    @property
-    def serial_number(self) -> str:
-        """The serial number of the instance."""
-        return self._inner.Serial
-
-    async def fetch_metadata(self):
+    async def fetch_metadata(self) -> LablinkInfo:
         """Fetch metadata for this instance.
 
         Updates the name, version, and serial number with the latest values.
         """
-        self._inner = await wrap_task(factory.GetLablinkInfo(self._inner.AddressUri))
+        data = await self._http.get('/Home/GetInfo')
+        self._info = _to_info(_model.LablinkInfoResult.model_validate(data))
+        return self._info
 
     async def login(self, name: str, password: str) -> Session:
         """Log in to the Lablink instance.
@@ -115,5 +87,10 @@ class Instance:
         Session
             A new session object for this instance.
         """
-        ref: PSLablink.Lablink = await wrap_task(factory.Login(self._inner, name, password))
-        return Session._wrap(ref)
+        data = await self._http.post(
+            '/Auth/ApiKey', json={'UserName': name, 'Password': password}
+        )
+        auth = _model.AuthResponseModel.model_validate(data)
+        assert auth.Token
+        self._http.set_token(auth.Token)
+        return Session._from_http(self._http)

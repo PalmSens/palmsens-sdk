@@ -23,12 +23,17 @@ def r(f):
 async def main():
     method = ps.CyclicVoltammetry()
 
-    local = lablink.Instance('https://127.0.0.1/')
-    await local.fetch_metadata()
-    print(local)
+    local = lablink.Instance('http://127.0.0.1/')
+    info = await local.fetch_metadata()
+    print(info)
     session = await local.login('test', 'test')
+    print(session)
+
+    instruments = await session.list_instruments()
+    print(instruments)
 
     [instrument] = session.instruments
+    breakpoint()
 
     async with await session.claim(instrument) as claim:
         job = await session.start(claim, method=method)

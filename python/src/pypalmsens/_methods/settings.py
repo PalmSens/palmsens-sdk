@@ -458,7 +458,7 @@ class EquilibrationTriggers(BaseSettings):
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        if any(self):
+        if any(self.to_list()):
             psmethod.UseTriggerOnEquil = True
             psmethod.TriggerValueOnEquil = convert_bools_to_int(self.to_list())
         else:
@@ -512,7 +512,7 @@ class MeasurementTriggers(BaseSettings):
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        if any(self):
+        if any(self.to_list()):
             psmethod.UseTriggerOnStart = True
             psmethod.TriggerValueOnStart = convert_bools_to_int(self.to_list())
         else:
@@ -574,7 +574,7 @@ class DelayTriggers(BaseSettings):
     def _export(self, psmethod: PalmSens.Method, /):
         psmethod.TriggerDelayPeriod = self.delay
 
-        if any(self):
+        if any(self.to_list()):
             psmethod.UseTriggerOnDelay = True
             psmethod.TriggerValueOnDelay = convert_bools_to_int(self.to_list())
         else:

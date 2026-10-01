@@ -369,21 +369,43 @@ def test_TriggerAtDelaySettings():
     assert not any(params.to_list())
 
 
-@pytest.mark.parametrize(
-    'cls,technique,use_attr',
-    (
-        (ps.settings.EquilibrationTriggers, 'CyclicVoltammetry', 'UseTriggerOnEquil'),
-        (ps.settings.MeasurementTriggers, 'CyclicVoltammetry', 'UseTriggerOnStart'),
-        (ps.settings.DelayTriggers, 'PulsedAmpDetection', 'UseTriggerOnDelay'),
-    ),
-)
-def test_triggers_disabled_when_all_false(cls, technique, use_attr):
-    obj = getattr(Techniques, technique)()
-    setattr(obj, use_attr, True)
+def test_TriggerAtEquilibrationSettings_all_false():
+    obj = Techniques.CyclicVoltammetry()
+    params = ps.settings.EquilibrationTriggers(
+        d0=False,
+        d1=False,
+        d2=False,
+        d3=False,
+    )
+    params._export(obj)
+    assert obj.UseTriggerOnEquil is False
+    assert obj.TriggerValueOnEquil == 0
 
-    cls()._export(obj)
 
-    assert getattr(obj, use_attr) is False
+def test_TriggerAtMeasurementSettings_all_false():
+    obj = Techniques.CyclicVoltammetry()
+    params = ps.settings.MeasurementTriggers(
+        d0=False,
+        d1=False,
+        d2=False,
+        d3=False,
+    )
+    params._export(obj)
+    assert obj.UseTriggerOnStart is False
+    assert obj.TriggerValueOnStart == 0
+
+
+def test_TriggerAtDelaySettings_all_false():
+    obj = Techniques.PulsedAmpDetection()
+    params = ps.settings.DelayTriggers(
+        d0=False,
+        d1=False,
+        d2=False,
+        d3=False,
+    )
+    params._export(obj)
+    assert obj.UseTriggerOnDelay is False
+    assert obj.TriggerValueOnDelay == 0
 
 
 def test_MultiplexerSettings():

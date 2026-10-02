@@ -35,6 +35,7 @@ classifiers = [
 ]
 dependencies = [
     'antlr4-python3-runtime>=4.13.1',
+    'httpx2',
     'jinja2',
     'pydantic',
     'numpy',

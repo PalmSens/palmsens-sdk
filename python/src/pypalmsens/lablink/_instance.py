@@ -38,7 +38,7 @@ class Instance:
 
     def __init__(self, address: str = 'https://127.0.0.1', port: int = 5000):
         self._address = address.rstrip('/')
-        self._http = HttpClient(f'{self._address}:{port}/api/v1')
+        self._http = HttpClient(f'{self._address}/api/v1')
         self._info: LablinkInfo | None = None
 
     def __repr__(self) -> str:

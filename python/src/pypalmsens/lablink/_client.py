@@ -23,8 +23,13 @@ class HttpClient:
     SNI: str = 'lablink.local'
 
     def __init__(self, base_url: str, token: str | None = None):
+        # Server uses PalmSens' internal lablink CA (bundled, public)
+        # and its certs only cover 'lablink.local', no IPs which is
+        # what we connect to. So: verify against the lablink root,
+        # dial the IP, but present 'lablink.local' as the TLS name.
+        # VERIFY_X509_STRICT is off because the lablink root CA lacks keyUsage
+        # (rejected by Python 3.13+ strict mode).
         ctx = ssl.create_default_context(cafile=str(LABLINK_ROOT_CERT))
-        # lablink CA lacks keyUsage (Python 3.13+)
         ctx.verify_flags &= ~ssl.VERIFY_X509_STRICT
 
         self._client = httpx2.Client(base_url=base_url, timeout=10.0, verify=ctx)

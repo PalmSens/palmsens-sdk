@@ -18,6 +18,26 @@ DATA_EIS_3CH_4SCAN_5FREQ = DATA_DIR / 'eis_3ch_4scan_5freq.pssession'
 DATA_EIS_5FREQ = DATA_DIR / 'eis_5freq.pssession'
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        '--lablink',
+        action='store_true',
+        dest='lablink',
+        default=False,
+        help='Enable lablink tests',
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption('--lablink'):
+        # --lablink given in cli: do not skip slow tests
+        return
+    skip_lablink = pytest.mark.skip(reason='need --lablink option to run')
+    for item in items:
+        if item.get_closest_marker('lablink'):
+            item.add_marker(skip_lablink)
+
+
 @pytest.fixture(scope='module')
 def measurement_dpv():
     return ps.load_measurement(DATA_DPV)

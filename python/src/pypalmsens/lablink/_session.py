@@ -5,22 +5,25 @@ instance. Use [ClaimBatch][] to group several instrument claims so
 they can be released together.
 
 """
-
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Self, overload, override
+import xarray as xr
 
+
+from collections.abc import Sequence
+from typing import Any, Self, overload, override
+import pandas as pd
 import System
 from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 
+from ._mapping import _to_measurement_info
 from .._instruments.shared import wrap_task
 from ..types import MethodTypeCompatible
 from . import _model
 from ._client import HttpClient
 from ._instrument import InstrumentClaim, InstrumentRef
-from ._mapping import _to_info
+from ._mapping import _to_lablink_info
 from ._measurement import Measurement, MeasurementJob, MeasurementRef
 from ._model import (
     EmptyProperty,
@@ -29,6 +32,7 @@ from ._model import (
     SimpleInstrumentsCommand,
 )
 from ._public import LablinkInfo
+from PalmSens.Sdk.Lablink.Example.Lablink.Mappers import MethodMappers
 
 
 class ClaimBatch(Sequence[InstrumentClaim]):
@@ -131,13 +135,13 @@ class Session:
             A list of currently attached instruments.
         """
         data = await self._http.get('/Instruments')
-        # TODO: Just pass the instrument serial + metadata
-        # InstrumentRef should be responsible for managing its metadata
-        # for info in data:
-        #     instrument = InstrumentRef(info['Serial'])
-        #     instrument._info = info
-        #
-        instruments = [InstrumentRef._wrap(instrument) for instrument in data.json()]
+        instruments = []
+
+        for info in data.json():
+            instrument = InstrumentRef(serial=info['Serial']['Serial'])
+            instrument._info = info
+            instruments.append(instrument)
+
         self._instruments = instruments
         return instruments
 
@@ -150,7 +154,7 @@ class Session:
         await self._http.post('/Instruments/Claim', json=payload.model_dump())
 
         return [
-            InstrumentClaim._wrap(instrument.serial_number, self) for instrument in instruments
+            InstrumentClaim(instrument.serial_number, self) for instrument in instruments
         ]
 
     async def claim(self, instrument: InstrumentRef) -> InstrumentClaim:
@@ -194,7 +198,7 @@ class Session:
 
         await self._http.post('/Instruments/UnClaim', json=payload.model_dump())
 
-    async def release(self, instrument: InstrumentRef) -> None:
+    async def release(self, instrument: InstrumentRef | InstrumentClaim) -> None:
         """Releaes an instrument.
 
         Parameters
@@ -226,7 +230,7 @@ class Session:
         refs = [MeasurementListResult.model_validate(item) for item in data.json()]
         return [MeasurementRef._wrap(ref, self) for ref in refs]
 
-    async def fetch_measurement(self, measurement: MeasurementRef) -> Measurement:
+    async def fetch_measurement(self, measurement: MeasurementRef) -> xr.Dataset | xr.DataTree:
         """Fetch a specific measurement.
 
         Parameters
@@ -241,66 +245,84 @@ class Session:
         """
         import numpy as np
 
-        resp = await self._http.get(f'/Measurements/{measurement.guid}')
-        parsed = MeasurementResult.model_validate(resp.json())
+        response = await self._http.get(f'/Measurements/{measurement.guid}')
+        parsed = MeasurementResult.model_validate(response.json())
+
+        metadata = _to_measurement_metadata(parsed)
+
+
+        datasets = []
 
         assert parsed.RawDataSets
 
-        dataset, *_ = parsed.RawDataSets
-        dataset_id = dataset.DataSetId
+        for dataset in parsed.RawDataSets:
+            data_vars = {}
+            attrs: dict[str, Any] = {}
 
-        print()
+            dataset, *_ = parsed.RawDataSets
+            dataset_id = dataset.DataSetId
 
-        assert dataset.DataArrays
+            assert dataset.DataArrays
 
-        for array in dataset.DataArrays:
-            array_type = array.DataValueType.name
-            print(array_type)
-            array_id = array.DataArrayId
-            values_id = array.DataValuesId
+            for array in dataset.DataArrays:
+                array_type = array.DataValueType.name
+                array_id = array.DataArrayId
+                values_id = array.DataValuesId
 
-            resp = await self._http.get(f'DataSets/{dataset_id}/{values_id}')
-            raw = resp.content
+                response = await self._http.get(f'DataSets/{dataset_id}/{values_id}')
+                raw = response.content
 
-            if array_type == 'CurrentRange':
-                pairs = np.frombuffer(raw, dtype=np.int32).reshape(-1, 2)
-                data = pairs[:, 0]
-                other = pairs[:, 0]  # ?? factor? exponent?
+                if array_type == 'CurrentRange':
+                    pairs = np.frombuffer(raw, dtype=np.int32).reshape(-1, 2)
+                    data = pairs[:, 0]
+                    other = pairs[:, 0]  # ?? factor? exponent?
 
-            elif array_type in (
-                'AppliedPotential',
-                'Charge',
-                'MeasuredCurrent',
-                'AuxiliaryPotential',
-                'ReverseCurrent',
-                'ForwardCurrent',
-            ):
-                data = np.frombuffer(raw, dtype=np.float64)  # little-endian float64
+                elif array_type in (
+                    'AppliedPotential',
+                    'Charge',
+                    'MeasuredCurrent',
+                    'AuxiliaryPotential',
+                    'ReverseCurrent',
+                    'ForwardCurrent',
+                ):
+                    data = np.frombuffer(raw, dtype=np.float64)  # little-endian float64
 
-            elif array_type in (
-                'TimingStatus',
-                'CurrentReadingStatus',
-                'ForwardCurrentReadingStatus',
-                'ReverseCurrentReadingStatus',
-            ):
-                data = np.frombuffer(raw, dtype=np.int8)  # int enum (8-bit signed integer)
+                elif array_type in (
+                    'TimingStatus',
+                    'CurrentReadingStatus',
+                    'ForwardCurrentReadingStatus',
+                    'ReverseCurrentReadingStatus',
+                ):
+                    data = np.frombuffer(raw, dtype=np.int8)  # int enum (8-bit signed integer)
 
-            elif array_type in ('Index', 'CycleIndex', 'LevelIndex'):
-                data = np.frombuffer(raw, dtype=np.int32)  # int enum (32 bit signed)
+                elif array_type in ('Index', 'CycleIndex', 'LevelIndex'):
+                    data = np.frombuffer(raw, dtype=np.int32)  # int enum (32 bit signed)
 
-            elif array_type == 'Timestamp':
-                ticks = np.frombuffer(raw, dtype=np.int64)  # 100-ns ticks
-                data = ticks * 1e-7  # seconds
+                elif array_type == 'Timestamp':
+                    ticks = np.frombuffer(raw, dtype=np.int64)  # 100-ns ticks
+                    data = ticks * 1e-7  # seconds
 
-            else:
-                print(len(resp.content))
-                print(resp.content[:32].hex())
-                data = '???'
+                else:
+                    print(f'Unknown data type: {array_type=}')
+                    print('  len:', len(response.content))
+                    print('  hex:', response.content[:32].hex())
+                    continue
 
-            print(data, len(data))
-            print()
+                data_vars[array_type] = ('point', data, {'unit': '...'})
 
-        return Measurement._wrap(data)
+            coords = {'point': range(len(data))}
+
+            ds = xr.Dataset(data_vars=data_vars, coords=coords, attrs=attrs)
+            datasets.append(ds)
+
+        if len(datasets) > 1:
+            data = xr.concat(datasets, pd.Index(len(datasets), name='new_dim'))
+        else:
+            data = datasets[0]
+
+        data.
+
+        return data
 
     async def start(
         self, instrument: InstrumentClaim, *, method: MethodTypeCompatible
@@ -339,15 +361,18 @@ class Session:
         list of MeasurementJob
             A list of jobs representing the ongoing measurements.
         """
-        lst = System.Collections.Generic.List[PSLablink.LablinkInstrument]()
+        dto = MethodMappers.ToDto(method._to_psmethod())
 
-        for instrument in instruments:
-            lst.Add(instrument._inner)
+        payload = {
+            'Technique': dto.Technique,
+            'MethodParameters': dict(dto.Parameters),
+            'AllInstrumentsMUstSucceed': True,
+            'InstrumentProperties': {instrument.serial_number:{} for instrument in instruments},
+        }
 
-        refs: list[PSData.LablinkMeasurement] = await wrap_task(
-            self._inner.StartMeasurements(lst, method._to_psmethod())
-        )
-        return [MeasurementJob(ref) for ref in refs]
+        response = await self._http.post('/Instruments/StartMeasurement', json=payload)
+
+        return [MeasurementJob.from_response(r) for r in response.json()]
 
     @property
     def info(self) -> LablinkInfo | None:
@@ -363,5 +388,5 @@ class Session:
         Updates the name, version, and serial number with the latest values.
         """
         data = await self._http.get('/Home/GetInfo')
-        self._info = _to_info(_model.LablinkInfoResult.model_validate(data.json()))
+        self._info = _to_lablink_info(_model.LablinkInfoResult.model_validate(data.json()))
         return self._info

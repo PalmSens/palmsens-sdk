@@ -10,17 +10,15 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from datetime import datetime
-from typing import TYPE_CHECKING, ClassVar, Self, overload, override
+from typing import TYPE_CHECKING, Any, ClassVar, Self, overload, override
 
 import System
-from PalmSens import Method as PSMethod
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 
 from pypalmsens.lablink._model import MeasurementListResult, MeasurementResult
 
 from .._data import Method
-from .._instruments.shared import wrap_task
-from .._types import AllowedMethods, MethodTypeCompatible
+from .._types import MethodTypeCompatible
 from ._data import Dataset
 
 if TYPE_CHECKING:
@@ -32,8 +30,9 @@ class MeasurementRef:
     A reference to a measurement.
     """
 
-    __slots__: ClassVar[tuple[str, ...]] = ('_inner', '_session')
-    _inner: MeasurementListResult  # pyright: ignore[reportUninitializedInstanceVariable]
+    __slots__: ClassVar[tuple[str, ...]] = ('_guid', '_metadata', '_session')
+    _guid: str  # pyright: ignore[reportUninitializedInstanceVariable]
+    _metadata: MeasurementListResult  # pyright: ignore[reportUninitializedInstanceVariable]
     _session: Session  # pyright: ignore[reportUninitializedInstanceVariable]
 
     def __init__(self):
@@ -46,44 +45,20 @@ class MeasurementRef:
         return f'{type(self).__name__}(guid={self.guid!r})'
 
     @classmethod
-    def _wrap(cls, inner: MeasurementListResult, session: Session) -> Self:
-        obj = cls.__new__(cls)
-        obj._inner = inner
+    def _wrap(cls, metadata: MeasurementListResult, session: Session) -> Self:
+        obj = object.__new__(cls)
+        obj._guid = str(metadata.Id)
+        obj._metadata = metadata
         obj._session = session
         return obj
 
     @property
-    def timestamp(self) -> datetime:
-        """Date and time at which this measurement was created.
-
-        Returned as a timezone-naive `datetime` in local time.
-        """
-        return self._inner.CreatedOn
-
-    @property
     def guid(self) -> str:
         """The unique identifier of the measurement."""
-        return self._inner.Id
+        return self._guid
 
-    @property
-    def name(self) -> str:
-        """The name of the measurement."""
-        return self._inner.Name
-
-    @property
-    def n_points(self) -> int:
-        """Number of points in this measurement."""
-        return self._inner.Points
-
-    @property
-    def method_id(self) -> AllowedMethods:
-        """The ID of the method used for this measurement."""
-        return PSMethod.FromTechniqueNumber(int(self._inner.Technique)).MethodID
-
-    @property
-    def user(self) -> str | None:
-        """The username of the user who performed this measurement, if any."""
-        return self._inner.User
+    async def fetch_metadata(self) -> MeasurementListResult:
+        await self._session.fetch_measurement_metadata()
 
     async def fetch(self) -> Measurement:
         """Fetch data for this measurement."""
@@ -95,36 +70,48 @@ class MeasurementJob:
     A job representing an ongoing measurement.
     """
 
-    def __init__(self, _net_measurement: PSData.LablinkMeasurement):
-        self._inner = _net_measurement
+    def __init__(self, guid: str, serial: str):
+        self._guid: str = guid
+        self._serial: str = serial
 
     def __repr__(self):
-        return f'{type(self).__name__}(guid={self.guid!r})'
+        return f'{type(self).__name__}(guid={self.guid!r}, serial={self.serial_number!r})'
 
     @property
     def guid(self):
         """The unique identifier of the measurement being performed."""
-        return str(self._inner.Id)
+        return self._guid
+
+    @property
+    def serial_number(self):
+        """Serial number of the instrument carrying out the measurement."""
+        return self._serial
+
+    @classmethod
+    def from_response(cls, response: dict[str, Any]):
+        if error := response.get('exceptionMessage'):
+            raise ConnectionError(error['resourceKey'])
+
+        return cls(guid=response['result'], serial=response['serial'])
 
     @property
     def is_finished(self) -> bool:
         """True if the measurement is finished."""
-        return self._inner.IsFinished
+        raise NotImplementedError
 
     async def cancel(self) -> None:
         """Cancel running measurement."""
         raise NotImplementedError
 
-    async def result(self) -> Measurement:
-        """Wait for the measurement to finish and return the data.
+    async def result(self) -> MeasurementRef:
+        """Wait for the measurement to finish and return measurement reference.
 
         Returns
         -------
-        Measurement
-            The completed measurement data.
+        MeasurementRef
+            Reference to the measurement data.
         """
-        await wrap_task(self._inner.AwaitFinish)
-        return Measurement._wrap(self._inner)
+        return MeasurementRef(self.guid)
 
     def __await__(self):
         return self.result().__await__()

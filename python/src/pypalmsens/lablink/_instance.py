@@ -13,7 +13,7 @@ from PalmSens.Sdk.Lablink.Example.Lablink.Services import LablinkFactory as PSLa
 
 from . import _model
 from ._client import HttpClient
-from ._mapping import _to_info
+from ._mapping import _to_lablink_info
 from ._public import LablinkInfo
 from ._session import Session
 
@@ -69,7 +69,7 @@ class Instance:
         Updates the name, version, and serial number with the latest values.
         """
         data = await self._http.get('/Home/GetInfo')
-        self._info = _to_info(_model.LablinkInfoResult.model_validate(data.json()))
+        self._info = _to_lablink_info(_model.LablinkInfoResult.model_validate(data.json()))
         return self._info
 
     async def login(self, name: str, password: str) -> Session:

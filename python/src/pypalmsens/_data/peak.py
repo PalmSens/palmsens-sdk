@@ -32,8 +32,10 @@ class Peak:
 
     @override
     def __repr__(self):
-        x_unit = self.x_unit
-        y_unit = self.y_unit
+        pscurve = self._inner.Curve
+
+        x_unit = pscurve.XUnit.ToString()
+        y_unit = pscurve.YUnit.ToString()
 
         return (
             f'{type(self).__name__}('

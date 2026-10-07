@@ -1818,6 +1818,18 @@ class ChronoCoulometry(
     Chronoamperometry (CA) and Chronocoulometry (CC) have the same potential waveform but
     in CC, the charge is monitored as a function of time (instead of the current).
     The charge is determined by integrating the current.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.ChronoCoulometry(
+    ...     equilibration_time=0.0,
+    ...     interval_time=0.1,
+    ...     step1_potential=0.5,
+    ...     step1_run_time=5.0,
+    ...     step2_potential=0.5,
+    ...     step2_run_time=5.0,
+    ... )
     """
 
     id: Literal['cc'] = 'cc'
@@ -1941,6 +1953,49 @@ class ElectrochemicalImpedanceSpectroscopy(
 
     EIS can also be used to study corrosion and the effects of coatings.
     For example, anodized coatings, conversion coatings or organic coatings like paints.
+
+    Examples
+    --------
+    EIS with frequency scan:
+
+    >>> import pypalmsens as ps
+    >>> method = ps.ElectrochemicalImpedanceSpectroscopy(
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='fixed',
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
+
+    EIS with frequency scans repeated over a range of DC potential values:
+
+    >>> method = ps.ElectrochemicalImpedanceSpectroscopy(
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='potential',
+    ...     begin_potential=-0.5,
+    ...     end_potential=0.5,
+    ...     step_potential=0.1,
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
+
+    EIS with frequency scans repeated for 10 seconds (`run_time`):
+
+    >>> method = ps.ElectrochemicalImpedanceSpectroscopy(
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='time',
+    ...     run_time=10,
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
     """
 
     id: Literal['eis'] = 'eis'
@@ -2214,6 +2269,58 @@ class GalvanostaticImpedanceSpectroscopy(
     - frequency scans at specified time intervals (time scan)
     - a single frequency applied at each current in a current scan
     - a single frequency at specified time intervals
+
+    Examples
+    --------
+    GEIS with frequency scan:
+
+    >>> import pypalmsens as ps
+    >>> method = ps.GalvanostaticImpedanceSpectroscopy(
+    ...     applied_current_range='10uA',
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='fixed',
+    ...     dc_current=0.0,
+    ...     ac_current=0.01,
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
+
+    GEIS with frequency scans repeated over a range of current values:
+
+    >>> method = ps.GalvanostaticImpedanceSpectroscopy(
+    ...     applied_current_range='10uA',
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='current',
+    ...     begin_current=0.0,
+    ...     step_current=0.01,
+    ...     end_current=1.0,
+    ...     ac_current=0.01,
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
+
+    GEIS with frequency scans repeated for 10 seconds (`run_time`):
+
+    >>> method = ps.GalvanostaticImpedanceSpectroscopy(
+    ...     applied_current_range='10uA',
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='time',
+    ...     run_time=10.0,
+    ...     interval_time=0.1,
+    ...     dc_current=0.0,
+    ...     ac_current=0.01,
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
     """
 
     id: Literal['gis'] = 'gis'

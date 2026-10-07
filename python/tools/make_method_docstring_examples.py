@@ -10,6 +10,7 @@ from pypalmsens._methods.base import BaseSettings, BaseTechnique
 ids = (
     'acv',
     'ad',
+    'cc',
     'cp',
     'cpot',
     'cv',
@@ -45,7 +46,7 @@ def get_class_example(id: str):
     cls = BaseTechnique._registry[id]
 
     method = cls()
-    fields = cls.model_fields
+    fields = cls.model_fields  # type: ignore
 
     s = []
 

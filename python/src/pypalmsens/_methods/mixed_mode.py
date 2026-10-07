@@ -335,6 +335,21 @@ class MixedMode(
     Furthermore, each stage can end because a fixed period has elapsed, or certain criteria are
     met. Available criteria include reaching a maximum current, minimum current, maximum
     potential, and minimum potential.
+
+    Examples
+    --------
+    Loop through all stages 3 times:
+
+    >>> import pypalmsens as ps
+    >>> method = ps.MixedMode(
+    ...     interval_time=0.1,
+    ...     cycles=3,
+    ...     stages=[
+    ...         ps.stages.ConstantI(run_time=5, current=1.0),
+    ...         ps.stages.ConstantE(run_time=5, potential=0.5),
+    ...         ps.stages.OpenCircuit(run_time=30),
+    ...     ],
+    ... )
     """
 
     id: Literal['mm'] = 'mm'

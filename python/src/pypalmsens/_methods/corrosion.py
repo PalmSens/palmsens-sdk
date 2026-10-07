@@ -9,7 +9,7 @@ from .mixins import MaterialMixin
 class CorrosionPotential(techniques.BaseOpenCircuitPotentiometry, MaterialMixin):
     """Create corrosion potential method parameters.
 
-    The method is equivalent to Open Circuit Potentiometry.
+    The method is equivalent to [Open Circuit Potentiometry][pypalmsens.OpenCircuitPotentiometry].
 
     Examples
     --------
@@ -29,7 +29,7 @@ class CorrosionPotential(techniques.BaseOpenCircuitPotentiometry, MaterialMixin)
 class CyclicPolarization(techniques.BaseCyclicVoltammetry, MaterialMixin):
     """Create cyclic polarization method parameters.
 
-    The method is equivalent to Cyclic Voltammetry.
+    The method is equivalent to [Cyclic Voltammetry][pypalmsens.CyclicVoltammetry].
 
     Examples
     --------
@@ -52,7 +52,7 @@ class CyclicPolarization(techniques.BaseCyclicVoltammetry, MaterialMixin):
 class Galvanostatic(techniques.BaseChronoPotentiometry, MaterialMixin):
     """Create galvanostatic method parameters.
 
-    The method is equivalent to Chronopotentiometry.
+    The method is equivalent to [Chronopotentiometry][pypalmsens.ChronoPotentiometry].
 
     Examples
     --------
@@ -74,7 +74,7 @@ class LinearPolarization(techniques.BaseLinearSweepVoltammetry, MaterialMixin):
     """Create linear polarization method parameters.
 
     Linear polarization is typically used to study the corrosion response of metallic coatings.
-    The method is equivalent to Linear Sweep Voltammetry.
+    The method is equivalent to [Linear Sweep Voltammetry][pypalmsens.LinearSweepVoltammetry].
 
     Examples
     --------
@@ -95,7 +95,7 @@ class LinearPolarization(techniques.BaseLinearSweepVoltammetry, MaterialMixin):
 class Potentiostatic(techniques.BaseChronoAmperometry, MaterialMixin):
     """Create potentiostatic method parameters.
 
-    The method is equivalent to Chronoamperometry.
+    The method is equivalent to [Chronoamperometry][pypalmsens.ChronoAmperometry].
 
     Examples
     --------

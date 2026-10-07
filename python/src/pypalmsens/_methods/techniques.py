@@ -138,7 +138,20 @@ class CyclicVoltammetry(BaseCyclicVoltammetry):
     and `vertex2_potential` going back the number of times determined by the `n_scans`.
     The scan starts at the `begin_potential` which can be at one of these vertex potentials
     or anywhere in between. The experiment will always terminate at the same potential set as the
-    'begin_potential'.
+    `begin_potential`.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.CyclicVoltammetry(
+    ...     equilibration_time=0.0,
+    ...     begin_potential=-0.5,
+    ...     vertex1_potential=0.5,
+    ...     vertex2_potential=-0.5,
+    ...     step_potential=0.1,
+    ...     scanrate=1.0,
+    ...     n_scans=1,
+    ... )
     """
 
     id: Literal['cv'] = 'cv'
@@ -162,6 +175,22 @@ class FastCyclicVoltammetry(
 
     A CV becomes a Fast CV if the scan rate in combination with `step_potential` results in a rate of over 2500
     points / second (`scan_rate` / `step_potential` > 2500).
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.FastCyclicVoltammetry:
+    ...     current_range='1uA',
+    ...     equilibration_time=0.0,
+    ...     begin_potential=-0.5,
+    ...     vertex1_potential=0.5,
+    ...     vertex2_potential=-0.5,
+    ...     step_potential=0.1,
+    ...     scanrate=1.0,
+    ...     n_scans=1,
+    ...     n_avg_scans=1,
+    ...     n_equil_scans=1,
+    ... )
     """
 
     id: Literal['fcv'] = 'fcv'
@@ -254,6 +283,20 @@ class ACVoltammetry(
 
     The AC signal superimposed on the DC-potential results in an AC response (i ac rms). The
     resulting AC response is plotted against the potential.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.ACVoltammetry:
+    ...     equilibration_time=0.0,
+    ...     begin_potential=-0.5,
+    ...     end_potential=0.5,
+    ...     step_potential=0.1,
+    ...     ac_potential=0.01,
+    ...     frequency=100.0,
+    ...     scanrate=1.0,
+    ...     measure_dc_current=False,
+    ... )
     """
 
     id: Literal['acv'] = 'acv'
@@ -412,6 +455,17 @@ class LinearSweepVoltammetry(BaseLinearSweepVoltammetry):
 
     The scan rate is specified in V/s, which determines the time between two steps and thus the
     sampling time. The interval time is equal to `potential_step` / `scan_rate`.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.LinearSweepVoltammetry(
+    ...     equilibration_time=0.0,
+    ...     begin_potential=-0.5,
+    ...     end_potential=0.5,
+    ...     step_potential=0.1,
+    ...     scanrate=1.0,
+    ... )
     """
 
     id: Literal['lsv'] = 'lsv'
@@ -438,6 +492,18 @@ class SquareWaveVoltammetry(
 
     DPV is SWV when the pulse time is equal to the interval / 2. The interval time is the inverse of the
     frequency (1 / `frequency`). Like DPV, the pulse amplitude is also normally in the range of 5 - 25 or 50 mV.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.SquareWaveVoltammetry(
+    ...     equilibration_time=0.0,
+    ...     begin_potential=-0.5,
+    ...     end_potential=0.5,
+    ...     step_potential=0.1,
+    ...     frequency=10.0,
+    ...     amplitude=0.05,
+    ... )
     """
 
     id: Literal['swv'] = 'swv'
@@ -541,6 +607,19 @@ class DifferentialPulseVoltammetry(
     In Differential Pulse Voltammetry a potential scan is made using pulses with a constant
     amplitude of `pulse_potential` superimposed on the dc-potential. The amplitude is mostly in the range
     of 5 – 50 mV.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.DifferentialPulseVoltammetry(
+    ...     equilibration_time=0.0,
+    ...     begin_potential=-0.5,
+    ...     end_potential=0.5,
+    ...     step_potential=0.1,
+    ...     pulse_potential=0.05,
+    ...     pulse_time=0.01,
+    ...     scan_rate=1.0,
+    ... )
     """
 
     id: Literal['dpv'] = 'dpv'
@@ -650,6 +729,18 @@ class NormalPulseVoltammetry(
     increasing the pulse amplitude. The influence of diffusion
     limitation on your i-E curve (Cottrel behavior) is removed. NPV is normally more sensitive than
     LSV, since the diffusion layer thickness will be smaller, resulting in a higher faradaic current.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.NormalPulseVoltammetry(
+    ...     equilibration_time=0.0,
+    ...     begin_potential=-0.5,
+    ...     end_potential=0.5,
+    ...     step_potential=0.1,
+    ...     pulse_time=0.01,
+    ...     scan_rate=1.0,
+    ... )
     """
 
     id: Literal['npv'] = 'npv'
@@ -818,6 +909,16 @@ class ChronoAmperometry(BaseChronoAmperometry):
 
     The instrument applies a constant DC-potential (E dc) and the current is measured
     with constant interval times.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.ChronoAmperometry:
+    ...     equilibration_time: 0.0,
+    ...     interval_time: 0.1,
+    ...     potential: 0.0,
+    ...     run_time: 1.0,
+    ... )
     """
 
     id: Literal['ad'] = 'ad'
@@ -843,6 +944,18 @@ class FastAmperometry(
 
     Fast amperometry is a form of Amperometric Detection (Chronoamperometry) but with very
     high sampling rates or very short interval times.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.FastAmperometry(
+    ...     current_range='100nA',
+    ...     equilibration_time=0.0,
+    ...     equilibration_potential=1.0,
+    ...     interval_time=0.1,
+    ...     potential=0.5,
+    ...     run_time=1.0,
+    ... )
     """
 
     id: Literal['fam'] = 'fam'
@@ -914,7 +1027,20 @@ class MultiStepAmperometry(
     Chronoamperometry step. The current is continuously sampled with the specified interval
     time. A whole cycle of steps can be repeated several times.
 
-    Levels can be specified using `pypalmsens.settings.ELevel`.
+    Levels can be specified using [pypalmsens.settings.ELevel][].
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import ELevel
+    >>> method = ps.MultiStepAmperometry(
+    ...     equilibration_time=0.0,
+    ...     interval_time=0.1,
+    ...     n_cycles=1,
+    ...     levels=[
+    ...         ELevel(level=0.0, duration=1.0, record=True),
+    ...     ],
+    ... )
     """
 
     id: Literal['ma'] = 'ma'
@@ -1015,6 +1141,19 @@ class PulsedAmperometricDetection(
     instead of constant potential might result in higher faradaic currents. PAD is also used when the
     electrode surface has to be regenerated continuously, for instance, to remove adsorbents from
     the electrode surface.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.PulsedAmperometricDetection(
+    ...     equilibration_time=0.0,
+    ...     potential=0.5,
+    ...     pulse_potential=0.05,
+    ...     pulse_time=0.01,
+    ...     mode='dc',
+    ...     interval_time=0.1,
+    ...     run_time=10.0,
+    ... )
     """
 
     id: Literal['pad'] = 'pad'
@@ -1092,6 +1231,20 @@ class MultiplePulseAmperometry(
     The Multiple Pulse Amperometry (MPAD) technique involves applying a series of voltage pulses
     to an electrode immersed in a sample solution, and the resulting current of one of the pulses is
     measured.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.MultiplePulseAmperometry(
+    ...     equilibration_time=0.0,
+    ...     run_time=10.0,
+    ...     duration_1=0.1,
+    ...     duration_2=0.1,
+    ...     duration_3=0.1,
+    ...     potential_1=0.2,
+    ...     potential_2=0.4,
+    ...     potential_3=0.6,
+    ... )
     """
 
     id: Literal['mpad'] = 'mpad'
@@ -1224,6 +1377,18 @@ class OpenCircuitPotentiometry(BaseOpenCircuitPotentiometry):
     environment.
 
     This method is the same as `Chronopotentiometry(current=0)`.
+
+    Examples
+    --------
+    Record OCP including working electrode current:
+
+    >>> import pypalmsens as ps
+    >>> method = ps.OpenCircuitPotentiometry(
+    ...     interval_time=0.1,
+    ...     run_time=1.0,
+    ...     record_we_current=True,
+    ...     record_we_current_range='1uA',
+    ... )
     """
 
     id: Literal['ocp'] = 'ocp'
@@ -1316,6 +1481,16 @@ class ChronoPotentiometry(BaseChronoPotentiometry):
     useful for studying electrochemical reactions, kinetics, and processes under non-steady-state
     conditions, offering valuable insights into how the electrode potential evolves in response to
     the applied current.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.ChronoPotentiometry(
+    ...     current=0.0,
+    ...     applied_current_range='100mA',
+    ...     interval_time=0.1,
+    ...     run_time=1.0,
+    ... )
     """
 
     id: Literal['pot'] = 'pot'
@@ -1344,6 +1519,17 @@ class StrippingChronoPotentiometry(
     4. If the stripping current is set to 0 then the cell is switched off. Otherwise,
     the specified constant current is applied. The measurement with a rate of 40 kHz starts. The measurement
     stops when either the measured potential is below ‘end_potential’ or the `measurement_time` is exceeded.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.StrippingChronoPotentiometry(
+    ...     potential_range='500mV',
+    ...     current=0.0,
+    ...     applied_current_range='100uA',
+    ...     end_potential=0.0,
+    ...     measurement_time=1.0,
+    ... )
     """
 
     id: Literal['scp'] = 'scp'
@@ -1426,7 +1612,20 @@ class LinearSweepPotentiometry(
     mixins.GeneralMixin,
     BaseTechnique,
 ):
-    """Create linear sweep potentiometry method parameters."""
+    """Create linear sweep potentiometry method parameters.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.LinearSweepPotentiometry(
+    ...     applied_current_range='100uA',
+    ...     current_begin=-1.0,
+    ...     current_end=1.0,
+    ...     current_step=0.01,
+    ...     scan_rate=1.0,
+    ...     record_we_current=False,
+    ... )
+    """
 
     id: Literal['lsp'] = 'lsp'
     """Unique method identifier."""
@@ -1518,7 +1717,20 @@ class MultiStepPotentiometry(
 
     A whole cycle of steps can be repeated several times.
 
-    Levels can be specified using `pypalmsens.settings.ILevel()`.
+    Levels can be specified using [pypalmsens.settings.ILevel][].
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import ILevel
+    >>> method = ps.MultiStepPotentiometry(
+    ...     applied_current_range='1uA',
+    ...     interval_time=0.1,
+    ...     n_cycles=1,
+    ...     levels=[
+    ...         ILevel(level=0.0, duration=1.0, record=True)
+    ...     ],
+    ... )
     """
 
     id: Literal['mp'] = 'mp'
@@ -1605,6 +1817,18 @@ class ChronoCoulometry(
     Chronoamperometry (CA) and Chronocoulometry (CC) have the same potential waveform but
     in CC, the charge is monitored as a function of time (instead of the current).
     The charge is determined by integrating the current.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.ChronoCoulometry(
+    ...     equilibration_time=0.0,
+    ...     interval_time=0.1,
+    ...     step1_potential=0.5,
+    ...     step1_run_time=5.0,
+    ...     step2_potential=0.5,
+    ...     step2_run_time=5.0,
+    ... )
     """
 
     id: Literal['cc'] = 'cc'
@@ -1728,6 +1952,49 @@ class ElectrochemicalImpedanceSpectroscopy(
 
     EIS can also be used to study corrosion and the effects of coatings.
     For example, anodized coatings, conversion coatings or organic coatings like paints.
+
+    Examples
+    --------
+    EIS with frequency scan:
+
+    >>> import pypalmsens as ps
+    >>> method = ps.ElectrochemicalImpedanceSpectroscopy(
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='fixed',
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
+
+    EIS with frequency scans repeated over a range of DC potential values:
+
+    >>> method = ps.ElectrochemicalImpedanceSpectroscopy(
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='potential',
+    ...     begin_potential=-0.5,
+    ...     end_potential=0.5,
+    ...     step_potential=0.1,
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
+
+    EIS with frequency scans repeated for 10 seconds (`run_time`):
+
+    >>> method = ps.ElectrochemicalImpedanceSpectroscopy(
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='time',
+    ...     run_time=10,
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
     """
 
     id: Literal['eis'] = 'eis'
@@ -1925,7 +2192,20 @@ class FastImpedanceSpectroscopy(
     mixins.GeneralMixin,
     BaseTechnique,
 ):
-    """Create fast impedance spectroscopy method parameters."""
+    """Create fast impedance spectroscopy method parameters.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.FastImpedanceSpectroscopy(
+    ...     equilibration_time=0.0,
+    ...     interval_time=0.1,
+    ...     run_time=10.0,
+    ...     dc_potential=0.0,
+    ...     ac_potential=0.01,
+    ...     frequency=50000.0,
+    ... )
+    """
 
     id: Literal['fis'] = 'fis'
     """Unique method identifier."""
@@ -1988,6 +2268,58 @@ class GalvanostaticImpedanceSpectroscopy(
     - frequency scans at specified time intervals (time scan)
     - a single frequency applied at each current in a current scan
     - a single frequency at specified time intervals
+
+    Examples
+    --------
+    GEIS with frequency scan:
+
+    >>> import pypalmsens as ps
+    >>> method = ps.GalvanostaticImpedanceSpectroscopy(
+    ...     applied_current_range='10uA',
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='fixed',
+    ...     dc_current=0.0,
+    ...     ac_current=0.01,
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
+
+    GEIS with frequency scans repeated over a range of current values:
+
+    >>> method = ps.GalvanostaticImpedanceSpectroscopy(
+    ...     applied_current_range='10uA',
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='current',
+    ...     begin_current=0.0,
+    ...     step_current=0.01,
+    ...     end_current=1.0,
+    ...     ac_current=0.01,
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
+
+    GEIS with frequency scans repeated for 10 seconds (`run_time`):
+
+    >>> method = ps.GalvanostaticImpedanceSpectroscopy(
+    ...     applied_current_range='10uA',
+    ...     frequency_type='scan',
+    ...     min_frequency=5.0,
+    ...     max_frequency=10000,
+    ...     n_frequencies=11,
+    ...     scan_type='time',
+    ...     run_time=10.0,
+    ...     interval_time=0.1,
+    ...     dc_current=0.0,
+    ...     ac_current=0.01,
+    ...     min_sampling_time=0.5,
+    ...     max_equilibration_time=5.0,
+    ... )
     """
 
     id: Literal['gis'] = 'gis'
@@ -2180,7 +2512,20 @@ class FastGalvanostaticImpedanceSpectroscopy(
     mixins.GeneralMixin,
     BaseTechnique,
 ):
-    """Create fast galvanostatic impededance spectroscopy method parameters."""
+    """Create fast galvanostatic impededance spectroscopy method parameters.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.FastGalvanostaticImpedanceSpectroscopy(
+    ...     applied_current_range='100uA',
+    ...     run_time=10.0,
+    ...     interval_time=0.1,
+    ...     ac_current=0.01,
+    ...     dc_current=0.0,
+    ...     frequency=50000.0,
+    ... )
+    """
 
     id: Literal['fgis'] = 'fgis'
     """Unique method identifier."""
@@ -2230,17 +2575,50 @@ class FastGalvanostaticImpedanceSpectroscopy(
 
 
 class MethodScript(BaseTechnique):
-    """Create a method script sandbox object.
+    """Create a MethodSCRIPT method.
 
-    The MethodSCRIPT Sandbox allows you to write your own MethodSCRIPT and run them
-    on your instrument.
+    With the MethodSCRIPT scripting language, you can write code that runs on-device. This
+    enables custom measurements and makes it possible to combine different measurements
+    and other tasks.
 
-    The MethodSCRIPT language allows for programming a human-readable script directly into the
-    potentiostat. The simple script language makes it easy to combine different measurements and
-    other tasks.
+    This class uses the PyPalmSens machinery to send your MethodSCRIPT script directly
+    to the potentiostat.
 
-    For more information see:
-        https://www.palmsens.com/methodscript/
+    See [the MethodSCRIPT documentation](https://www.palmsens.com/methodscript/) for more
+    information and script examples.
+
+    Examples
+    --------
+    Return hello world:
+
+    >>> import pypalmsens as ps
+    >>> from textwrap import dedent
+    >>> method = ps.MethodScript(
+    ...     script=dedent('''\\
+    ...        wait 100m
+    ...        if 1 < 2
+    ...            send_string "Hello world"
+    ...        endif
+    ...     ''')
+    ... )
+
+    Chronoamperometry measurement loop example:
+
+    >>> method = ps.MethodScript(
+    ...     script=dedent('''\\
+    ...         var potential
+    ...         var current
+    ...         set_pgstat_chan 0
+    ...         set_pgstat_mode 2
+    ...         cell_on
+    ...         meas_loop_ca potential current 100m 200m 1000m
+    ...             pck_start
+    ...             pck_add potential
+    ...             pck_add current
+    ...             pck_end
+    ...         endloop
+    ...     ''')
+    ... )
     """
 
     id: Literal['ms'] = 'ms'

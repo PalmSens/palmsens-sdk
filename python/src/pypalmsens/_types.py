@@ -69,6 +69,7 @@ for supported current ranges."""
 AllowedMethods = Literal[
     'acv',
     'ad',
+    'cc',
     'cp',
     'cpot',
     'cv',

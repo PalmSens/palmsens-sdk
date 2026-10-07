@@ -4,7 +4,7 @@ This page documents the Cyclic Polarization (`CP`) method.
 
 !!! Note "Short name"
 
-    Cyclic Polarization has the same short name `CP` as Chrono Potentiometry.
+    Cyclic Polarization has the same short name `CP` as [Chrono Potentiometry][pypalmsens.ChronoPotentiometry].
 
 ::: pypalmsens.corrosion.CyclicPolarization
     options:

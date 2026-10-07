@@ -1380,7 +1380,7 @@ class OpenCircuitPotentiometry(BaseOpenCircuitPotentiometry):
 
     Examples
     --------
-    Record OCP including working electrode current.
+    Record OCP including working electrode current:
 
     >>> import pypalmsens as ps
     >>> method = ps.OpenCircuitPotentiometry(
@@ -1730,7 +1730,6 @@ class MultiStepPotentiometry(
     ...     levels=[
     ...         ILevel(level=0.0, duration=1.0, record=True)
     ...     ],
-    ...     record_we_current=False,
     ... )
     """
 

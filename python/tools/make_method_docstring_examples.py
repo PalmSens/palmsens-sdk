@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from textwrap import indent
 
-import pypalmsens as ps
 from pypalmsens._methods.base import BaseSettings, BaseTechnique
 
 ids = (
@@ -74,14 +73,6 @@ def get_class_example(id: str):
 
     return '\n'.join(s)
 
-
-method = ps.MethodScript(
-    version='1.10',
-    script="""wait 100m
-    if 1 < 2
-        send_string "Hello world"
-    endif""",
-)
 
 if __name__ == '__main__':
     prefix = ' ' * 4

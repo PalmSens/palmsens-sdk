@@ -29,15 +29,47 @@ from .levels import (
 
 
 class CurrentRange(BaseSettings):
-    """Set the autoranging current."""
+    """Set the autoranging current.
 
-    max: AllowedCurrentRanges = '10mA'
-    """Maximum current range.
+    Examples
+    --------
+    As a `CurrentRange` instance:
 
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import CurrentRange
+    >>> method = ps.CyclicVoltammetry(
+    ...     current_range=CurrentRange(
+    ...         min='1uA',
+    ...         max='10mA',
+    ...         start='100uA',
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `CurrentRange` by Pydantic):
+
+    >>> method = ps.CyclicVoltammetry(
+    ...     current_range={
+    ...         'min': '1uA',
+    ...         'max': '10mA',
+    ...         'start': '100uA',
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.CyclicVoltammetry()
+    >>> method.current_range.min = '1uA'
+    >>> method.current_range.max = '10mA'
+    >>> method.current_range.start = '100uA'
+    """
 
     min: AllowedCurrentRanges = '1uA'
     """Minimum current range.
+
+    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+
+    max: AllowedCurrentRanges = '10mA'
+    """Maximum current range.
 
     See [pypalmsens.types.AllowedCurrentRanges][] for options."""
 
@@ -64,15 +96,47 @@ class CurrentRange(BaseSettings):
 
 
 class PotentialRange(BaseSettings):
-    """Set the autoranging potential."""
+    """Set the autoranging potential.
 
-    max: AllowedPotentialRanges = '1V'
-    """Maximum potential range.
+    Examples
+    --------
+    As a `PotentialRange` instance:
 
-    See `pypalmsens.settings.AllowedPotentialRanges` for options."""
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import PotentialRange
+    >>> method = ps.ChronoPotentiometry(
+    ...     potential_range=PotentialRange(
+    ...         min='1mV',
+    ...         max='1V',
+    ...         start='1V',
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `PotentialRange` by Pydantic):
+
+    >>> method = ps.ChronoPotentiometry(
+    ...     potential_range={
+    ...         'min': '1mV',
+    ...         'max': '1V',
+    ...         'start': '1V',
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.ChronoPotentiometry()
+    >>> method.potential_range.min = '1mV'
+    >>> method.potential_range.max = '1V'
+    >>> method.potential_range.start = '1V'
+    """
 
     min: AllowedPotentialRanges = '1mV'
     """Minimum potential range.
+
+    See `pypalmsens.settings.AllowedPotentialRanges` for options."""
+
+    max: AllowedPotentialRanges = '1V'
+    """Maximum potential range.
 
     See `pypalmsens.settings.AllowedPotentialRanges` for options."""
 
@@ -95,7 +159,42 @@ class PotentialRange(BaseSettings):
 
 
 class Pretreatment(BaseSettings):
-    """Set the measurement pretreatment settings."""
+    """Set the measurement pretreatment settings.
+
+    Examples
+    --------
+    As a `Pretreatment` instance:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import Pretreatment
+    >>> method = ps.CyclicVoltammetry(
+    ...     pretreatment=Pretreatment(
+    ...         deposition_potential=1.0,
+    ...         deposition_time=5.0,
+    ...         conditioning_potential=1.0,
+    ...         conditioning_time=5.0,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `Pretreatment` by Pydantic):
+
+    >>> method = ps.CyclicVoltammetry(
+    ...     pretreatment={
+    ...         'deposition_potential': 1.0,
+    ...         'deposition_time': 5.0,
+    ...         'conditioning_potential': 1.0,
+    ...         'conditioning_time': 5.0,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.CyclicVoltammetry()
+    >>> method.pretreatment.deposition_potential = 1.0
+    >>> method.pretreatment.deposition_time = 5.0
+    >>> method.pretreatment.conditioning_potential = 1.0
+    >>> method.pretreatment.conditioning_time = 5.0
+    """
 
     deposition_potential: float = 0.0
     """Deposition potential in V."""
@@ -142,6 +241,37 @@ class VersusOCP(BaseSettings):
     - `'begin'`: Potential applied at the beginning of a measurement
     - `'end'`: Potential applied at the end of a measurement
     - `'potential'`: Potential applied during measurement
+
+    Examples
+    --------
+    As a `VersusOCP` instance:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import VersusOCP
+    >>> method = ps.CyclicVoltammetry(
+    ...     versus_ocp=VersusOCP(
+    ...         potentials=['begin', 'end'],
+    ...         timeout=20.0,
+    ...         stability_criterion=0.0,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `VersusOCP` by Pydantic):
+
+    >>> method = ps.CyclicVoltammetry(
+    ...     versus_ocp={
+    ...         'potentials': ['begin', 'end'],
+    ...         'timeout': 20.0,
+    ...         'stability_criterion': 0.0,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.CyclicVoltammetry()
+    >>> method.versus_ocp.potentials = ['begin', 'end']
+    >>> method.versus_ocp.timeout = 20.0
+    >>> method.versus_ocp.stability_criterion = 0.0
     """
 
     potentials: list[OCPFlag] = Field(default_factory=list, strict=False)
@@ -218,7 +348,36 @@ class VersusOCP(BaseSettings):
 
 
 class BiPot(BaseSettings):
-    """Set the bipot settings."""
+    """Set the bipot settings.
+
+    Examples
+    --------
+    As a `BiPot` instance:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import BiPot
+    >>> method = ps.CyclicVoltammetry(
+    ...     bipot=BiPot(
+    ...         mode='constant',
+    ...         potential=1.0,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `BiPot` by Pydantic):
+
+    >>> method = ps.CyclicVoltammetry(
+    ...     bipot={
+    ...         'mode': 'constant',
+    ...         'potential': 1.0,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.CyclicVoltammetry()
+    >>> method.bipot.mode = 'constant'
+    >>> method.bipot.potential = 1.0
+    """
 
     _MODES: tuple[Literal['constant', 'offset'], ...] = ('constant', 'offset')
 
@@ -262,7 +421,38 @@ class BiPot(BaseSettings):
 
 
 class PostMeasurement(BaseSettings):
-    """Set the post measurement settings."""
+    """Set the post measurement settings.
+    Examples
+    --------
+    As a `PostMeasurement` instance:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import PostMeasurement
+    >>> method = ps.CyclicVoltammetry(
+    ...     post_measurement=PostMeasurement(
+    ...         cell_on_after_measurement=True,
+    ...         standby_potential=1.0,
+    ...         standby_time=5.0,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `PostMeasurement` by Pydantic):
+
+    >>> method = ps.CyclicVoltammetry(
+    ...     post_measurement={
+    ...         'cell_on_after_measurement': True,
+    ...         'standby_potential': 1.0,
+    ...         'standby_time': 5.0,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.CyclicVoltammetry()
+    >>> method.post_measurement.cell_on_after_measurement = True
+    >>> method.post_measurement.standby_potential = 1.0
+    >>> method.post_measurement.standby_time = 5.0
+    """
 
     cell_on_after_measurement: bool = False
     """Enable/disable cell after measurement."""
@@ -287,19 +477,52 @@ class PostMeasurement(BaseSettings):
 
 
 class CurrentLimits(BaseSettings):
-    """Set the limit settings.
+    """Adjust the current limits.
 
     Depending on the method, this will:
+
     - Abort the measurement
     - Reverse the scan instead (CV)
     - Proceed to the next stage (Mixed Mode)
+
+    Examples
+    --------
+    As a `CurrentLimits` instance:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import CurrentLimits
+    >>> method = ps.CyclicVoltammetry(
+    ...     current_limits=CurrentLimits(
+    ...         max=0.10,
+    ...         min=0.01,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `CurrentLimits` by Pydantic):
+
+    >>> method = ps.CyclicVoltammetry(
+    ...     current_limits={
+    ...         'max': 0.10,
+    ...         'min': 0.01,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.CyclicVoltammetry()
+    >>> method.current_limits.max = 0.10
+    >>> method.current_limits.min = 0.01
     """
 
-    max: None | float = None
-    """Set limit current max in µA."""
-
     min: None | float = None
-    """Set limit current min in µA."""
+    """Set current limit min in µA.
+
+    `None` disables the limit."""
+
+    max: None | float = None
+    """Set current limit max in µA.
+
+    `None` disables the limit."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -329,18 +552,51 @@ class CurrentLimits(BaseSettings):
 
 
 class PotentialLimits(BaseSettings):
-    """Set the limit settings.
+    """Adjust the potential limits.
 
     Depending on the method, this will:
+
     - Abort the measurement
     - Proceed to the next stage (Mixed Mode)
+
+    Examples
+    --------
+    As a `PotentialLimits` instance:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import PotentialLimits
+    >>> method = ps.ChronoPotentiometry(
+    ...     potential_limits=PotentialLimits(
+    ...         min=-0.5,
+    ...         max=0.5,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `PotentialLimits` by Pydantic):
+
+    >>> method = ps.ChronoPotentiometry(
+    ...     potential_limits={
+    ...         'min': -0.5,
+    ...         'max': 0.5,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.ChronoPotentiometry()
+    >>> method.potential_limits.min = -0.5
+    >>> method.potential_limits.max = 0.5
     """
 
-    max: None | float = None
-    """Set limit potential max in V."""
-
     min: None | float = None
-    """Set limit potential min in V."""
+    """Set potential limit min in V.
+
+    `None` disables the limit."""
+
+    max: None | float = None
+    """Set potential limit max in V.
+
+    `None` disables the limit."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -370,13 +626,46 @@ class PotentialLimits(BaseSettings):
 
 
 class ChargeLimits(BaseSettings):
-    """Set the charge limit settings."""
+    """Adjust the charge limits.
 
-    max: None | float = None
-    """Set limit charge max in µC."""
+    Examples
+    --------
+    As a `ChargeLimits` instance:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import ChargeLimits
+    >>> method = ps.ChronoAmperometry(
+    ...     charge_limits=ChargeLimits(
+    ...         min=5,
+    ...         max=200,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `ChargeLimits` by Pydantic):
+
+    >>> method = ps.ChronoAmperometry(
+    ...     charge_limits={
+    ...         'min': 5,
+    ...         'max': 200,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.ChronoAmperometry()
+    >>> method.charge_limits.min = 5
+    >>> method.charge_limits.max = 200
+    """
 
     min: None | float = None
-    """Set limit charge min in µC."""
+    """Set charge limit min in µC.
+
+    `None` disables the limit."""
+
+    max: None | float = None
+    """Set charge limit max in µC.
+
+    `None` disables the limit."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -406,7 +695,33 @@ class ChargeLimits(BaseSettings):
 
 
 class IrDropCompensation(BaseSettings):
-    """Set the iR drop compensation settings."""
+    """Set the iR drop compensation settings.
+
+    Examples
+    --------
+    As a `IrDropCompensation` instance:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import IrDropCompensation
+    >>> method = ps.CyclicVoltammetry(
+    ...     ir_drop_compensation=IrDropCompensation(
+    ...         resistance=50,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `IrDropCompensation` by Pydantic):
+
+    >>> method = ps.CyclicVoltammetry(
+    ...     ir_drop_compensation={
+    ...         'resistance': 50,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.CyclicVoltammetry()
+    >>> method.ir_drop_compensation.resistance = 50
+    """
 
     resistance: None | float = None
     """Set the iR compensation resistance in Ω"""
@@ -438,6 +753,40 @@ class EquilibrationTriggers(BaseSettings):
 
     See the instrument-specific documentation for more information about
     the position of the digital pins on your instrument’s auxiliary port.
+
+    Examples
+    --------
+    As a `EquilibrationTriggers` instance, trigger on d0 and d1:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import EquilibrationTriggers
+    >>> method = ps.CyclicVoltammetry(
+    ...     equilibrion_triggers=EquilibrationTriggers(
+    ...         d0=True,
+    ...         d1=True,
+    ...         d2=False,
+    ...         d3=False,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `EquilibrationTriggers` by Pydantic):
+
+    >>> method = ps.CyclicVoltammetry(
+    ...     equilibrion_triggers={
+    ...         'd0': True,
+    ...         'd1': True,
+    ...         'd2': False,
+    ...         'd3': False,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.CyclicVoltammetry()
+    >>> method.equilibrion_triggers.d0 = True
+    >>> method.equilibrion_triggers.d1 = True
+    >>> method.equilibrion_triggers.d2 = False
+    >>> method.equilibrion_triggers.d3 = False
     """
 
     d0: bool = False
@@ -492,6 +841,40 @@ class MeasurementTriggers(BaseSettings):
 
     See the instrument-specific documentation for more information about
     the position of the digital pins on your instrument’s auxiliary port.
+
+    Examples
+    --------
+    As a `MeasurementTriggers` instance, trigger on d0 and d1:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import MeasurementTriggers
+    >>> method = ps.CyclicVoltammetry(
+    ...     measurement_triggers=MeasurementTriggers(
+    ...         d0=True,
+    ...         d1=True,
+    ...         d2=False,
+    ...         d3=False,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `MeasurementTriggers` by Pydantic):
+
+    >>> method = ps.CyclicVoltammetry(
+    ...     measurement_triggers={
+    ...         'd0': True,
+    ...         'd1': True,
+    ...         'd2': False,
+    ...         'd3': False,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.CyclicVoltammetry()
+    >>> method.measurement_triggers.d0 = True
+    >>> method.measurement_triggers.d1 = True
+    >>> method.measurement_triggers.d2 = False
+    >>> method.measurement_triggers.d3 = False
     """
 
     d0: bool = False
@@ -546,6 +929,43 @@ class DelayTriggers(BaseSettings):
 
     See the instrument-specific documentation for more information about
     the position of the digital pins on your instrument’s auxiliary port.
+
+    Examples
+    --------
+    As a `DelayTriggers` instance, trigger on d0 and d1:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import DelayTriggers
+    >>> method = ps.LinearSweepPotentiometry(
+    ...     delay_triggers=DelayTriggers(
+    ...         delay=0.5,
+    ...         d0=True,
+    ...         d1=True,
+    ...         d2=False,
+    ...         d3=False,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `DelayTriggers` by Pydantic):
+
+    >>> method = ps.LinearSweepPotentiometry(
+    ...     delay_triggers={
+    ...         'delay': 0.5,
+    ...         'd0': True,
+    ...         'd1': True,
+    ...         'd2': False,
+    ...         'd3': False,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.LinearSweepPotentiometry()
+    >>> method.delay_triggers.delay = 0.5
+    >>> method.delay_triggers.d0 = True
+    >>> method.delay_triggers.d1 = True
+    >>> method.delay_triggers.d2 = False
+    >>> method.delay_triggers.d3 = False
     """
 
     delay: float = 0.5
@@ -600,7 +1020,48 @@ class DelayTriggers(BaseSettings):
 
 
 class Multiplexer(BaseSettings):
-    """Set the multiplexer settings."""
+    """Set the multiplexer settings.
+
+    Examples
+    --------
+    As a `Multiplexer` instance, consecutive on the first 3 channels:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import Multiplexer
+    >>> method = ps.LinearSweepPotentiometry(
+    ...     multiplexer=Multiplexer(
+    ...         mode='consecutive',
+    ...         channels=[0,1,2],
+    ...         connect_se_we=False,
+    ...         combine_re_ce=False,
+    ...         common_re_ce=False,
+    ...         unused_we='float',
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `Multiplexer` by Pydantic):
+
+    >>> method = ps.LinearSweepPotentiometry(
+    ...     multiplexer={
+    ...         'mode': 'consecutive',
+    ...         'channels': [0,1,2],
+    ...         'connect_se_we': False,
+    ...         'combine_re_ce': False,
+    ...         'common_re_ce': False,
+    ...         'unused_we': 'float',
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.LinearSweepPotentiometry()
+    >>> method.multiplexer.mode = 'consecutive'
+    >>> method.multiplexer.channels = [0,1,2]
+    >>> method.multiplexer.connect_se_we = False
+    >>> method.multiplexer.combine_re_ce = False
+    >>> method.multiplexer.common_re_ce = False
+    >>> method.multiplexer.unused_we = 'float'
+    """
 
     _MODES: tuple[Literal['none', 'consecutive', 'alternate'], ...] = (
         'none',
@@ -617,22 +1078,25 @@ class Multiplexer(BaseSettings):
     mode: Literal['none', 'consecutive', 'alternate'] = 'none'
     """Set multiplexer mode.
 
-    Possible values:
-
-    - `none`: No multiplexer (disable)
-    - `consecutive`
-    - `alternate`
+    - `none`: No multiplexer (disabled).
+    - `consecutive`: Channels are measured one at a time, in sequence.
+       Any subset of channels may be selected.
+    - `alternate`: All selected channels are measured simultaneously by
+       rapidly switching between them within each measurement interval.
+       Channels must be consecutive starting from 0 (e.g. [0,1,2,3]).
+       Only supported by CA, CP, OCP, and (G)EIS.
     """
 
     channels: list[int] = Field(default_factory=list)
-    """Set multiplexer channels
+    """Set multiplexer channels.
 
     This is defined as a list of indexes for which channels to enable (max 128).
     For example, [0,3,7]. In consecutive mode all selections are valid.
 
     In alternating mode the first channel must be selected and all other
-    channels should be consecutive i.e. (channel 1, channel 2, channel 3 and so on).
+    channels should be consecutive (e.g [0,1,2,3]).
     """
+
     connect_se_we: bool = False
     """Connect the sense electrode to the working electrode. Default is False."""
 
@@ -690,7 +1154,39 @@ class Multiplexer(BaseSettings):
 
 
 class DataProcessing(BaseSettings):
-    """Set the data processing settings."""
+    """Set the data processing settings.
+
+    Examples
+    --------
+    As a `DataProcessing` instance:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import DataProcessing
+    >>> method = ps.CyclicVoltammetry(
+    ...     data_processing=DataProcessing(
+    ...         smooth_level=0,
+    ...         min_height=0.0,
+    ...         min_width=0.1,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `DataProcessing` by Pydantic):
+
+    >>> method = ps.CyclicVoltammetry(
+    ...     data_processing={
+    ...         'smooth_level': 0,
+    ...         'min_height': 0.0,
+    ...         'min_width': 0.1,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.CyclicVoltammetry()
+    >>> method.data_processing.smooth_level = 0
+    >>> method.data_processing.min_height = 0.0
+    >>> method.data_processing.min_width = 0.1
+    """
 
     smooth_level: int = 0
     """Set the default curve post processing filter.
@@ -730,7 +1226,42 @@ class DataProcessing(BaseSettings):
 
 
 class General(BaseSettings):
-    """Sets general/other settings."""
+    """Sets general/other settings.
+
+    Examples
+    --------
+    As a `General` instance:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import General
+    >>> method = ps.CyclicVoltammetry(
+    ...     general=General(
+    ...         save_on_internal_storage=False,
+    ...         use_hardware_sync=False,
+    ...         notes='They asked me if I had a degree in theoretical physics.',
+    ...         power_frequency=50,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `General` by Pydantic):
+
+    >>> method = ps.CyclicVoltammetry(
+    ...     general={
+    ...         'save_on_internal_storage': False,
+    ...         'use_hardware_sync': False,
+    ...         'notes': 'I told them I had a theoretical degree in physics.',
+    ...         'power_frequency': 50,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.CyclicVoltammetry()
+    >>> method.general.save_on_internal_storage = False
+    >>> method.general.use_hardware_sync = False
+    >>> method.general.notes = 'They said welcome aboard.'
+    >>> method.general.power_frequency = 50
+    """
 
     save_on_internal_storage: bool = False
     """Save on internal storage."""
@@ -763,7 +1294,45 @@ class General(BaseSettings):
 
 
 class Material(BaseSettings):
-    """Stores material settings for corrosion measurements."""
+    """Stores material settings for corrosion measurements.
+
+    Examples
+    --------
+    As a `Material` instance:
+
+    >>> import pypalmsens as ps
+    >>> from pypalmsens.settings import Material
+    >>> method = ps.corrosion.CyclicPolarization(
+    ...     material=Material(
+    ...         surface_area=0.0,
+    ...         weight=0.0,
+    ...         density=0.0,
+    ...         b_anodic=0.0,
+    ...         b_cathodic=0.0,
+    ...     ),
+    ... )
+
+    From a dict (coerced to a `Material` by Pydantic):
+
+    >>> method = ps.corrosion.CyclicPolarization(
+    ...     material={
+    ...         'surface_area': 0.0,
+    ...         'weight': 0.0,
+    ...         'density': 0.0,
+    ...         'b_anodic': 0.0,
+    ...         'b_cathodic': 0.0,
+    ...     },
+    ... )
+
+    By setting attributes directly:
+
+    >>> method = ps.corrosion.CyclicPolarization()
+    >>> method.material.surface_area = 0.0
+    >>> method.material.weight = 0.0
+    >>> method.material.density = 0.0
+    >>> method.material.b_anodic = 0.0
+    >>> method.material.b_cathodic = 0.0
+    """
 
     surface_area: float = 0.0
     """Surface area of the sample in cm2."""
@@ -802,7 +1371,9 @@ class CustomUnits(BaseModel):
 
     quantity: str | None = None
     """The full name to assign to the variable."""
+
     symbol: str | None = None
     """Abbreviation of the quantity."""
+
     unit: str | None = None
     """Abbreviation of the unit of the quantity."""

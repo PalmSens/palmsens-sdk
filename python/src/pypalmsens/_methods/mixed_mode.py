@@ -82,7 +82,32 @@ class ConstantE(
 ):
     """Amperometric detection stage.
 
-    Apply constant potential during this stage."""
+    Apply constant potential during this stage.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.MixedMode(
+    ...     stages=[
+    ...         ps.stages.ConstantE(
+    ...             potential=1.0,
+    ...             run_time=5.0,
+    ...         )
+    ...     ],
+    ... )
+
+    From a dict (coerced to a `ConstantE` stage by Pydantic):
+
+    >>> method = ps.MixedMode(
+    ...     stages=[
+    ...         {
+    ...             'stage_type': 'ConstantE',
+    ...             'potential': 0.5,
+    ...             'run_time': 0.1,
+    ...         },
+    ...     ],
+    ... )
+    """
 
     stage_type: Literal['ConstantE'] = 'ConstantE'
     """Stage type identifier."""
@@ -111,7 +136,34 @@ class ConstantI(
 ):
     """Potentiometry stage.
 
-    Apply constant fixed current during this stage."""
+    Apply constant fixed current during this stage.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.MixedMode(
+    ...     stages=[
+    ...         ps.stages.ConstantI(
+    ...             current=0.5,
+    ...             applied_current_range='100uA',
+    ...             run_time=5.0,
+    ...         )
+    ...     ],
+    ... )
+
+    From a dict (coerced to a `ConstantI` stage by Pydantic):
+
+    >>> method = ps.MixedMode(
+    ...     stages=[
+    ...         {
+    ...             'stage_type': 'ConstantI',
+    ...             'current': 0.5,
+    ...             'applied_current_range': '100uA',
+    ...             'run_time': 5.0,
+    ...         },
+    ...     ],
+    ... )
+    """
 
     stage_type: Literal['ConstantI'] = 'ConstantI'
     """Stage type identifier."""
@@ -152,7 +204,36 @@ class SweepE(
 ):
     """Linear sweep detection stage.
 
-    Ramp the voltage from `begin_potential` to `end_potential` during this stage."""
+    Ramp the voltage from `begin_potential` to `end_potential` during this stage.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.MixedMode(
+    ...     stages=[
+    ...         ps.stages.SweepE(
+    ...             begin_potential=-0.5,
+    ...             end_potential=0.5,
+    ...             step_potential=0.1,
+    ...             scanrate=1.0,
+    ...         )
+    ...     ],
+    ... )
+
+    From a dict (coerced to a `SweepE` stage by Pydantic):
+
+    >>> method = ps.MixedMode(
+    ...     stages=[
+    ...         {
+    ...             'stage_type': 'SweepE',
+    ...             'begin_potential': -0.5,
+    ...             'end_potential': 0.5,
+    ...             'step_potential': 0.1,
+    ...             'scanrate': 1.0,
+    ...         },
+    ...     ],
+    ... )
+    """
 
     stage_type: Literal['SweepE'] = 'SweepE'
     """Stage type identifier."""
@@ -196,7 +277,30 @@ class OpenCircuit(
 ):
     """Open Circuit stage.
 
-    Measure the open circuit potential during this stage."""
+    Measure the open circuit potential during this stage.
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.MixedMode(
+    ...     stages=[
+    ...         ps.stages.OpenCircuit(
+    ...             run_time=10.0,
+    ...         )
+    ...     ],
+    ... )
+
+    From a dict (coerced to a `OpenCircuit` stage by Pydantic):
+
+    >>> method = ps.MixedMode(
+    ...     stages=[
+    ...         {
+    ...             'stage_type': 'OpenCircuit',
+    ...             'run_time': 10.0,
+    ...         },
+    ...     ],
+    ... )
+    """
 
     stage_type: Literal['OpenCircuit'] = 'OpenCircuit'
     """Stage type identifier."""
@@ -220,6 +324,39 @@ class Impedance(
 
     This is like EIS with a single frequency step
     (`scan_type = 'fixed'`, `freq_type = 'fixed'`).
+
+    Examples
+    --------
+    >>> import pypalmsens as ps
+    >>> method = ps.MixedMode(
+    ...     stages=[
+    ...         ps.stages.Impedance(
+    ...             run_time=10.0,
+    ...             dc_potential=0.0,
+    ...             ac_potential=0.01,
+    ...             frequency=50000.0,
+    ...             min_sampling_time=0.5,
+    ...             max_equilibration_time=5.0,
+    ...         )
+    ...     ],
+    ... )
+
+    From a dict (coerced to a `Impedance` stage by Pydantic):
+
+    >>> method = ps.MixedMode(
+    ...     stages=[
+    ...         {
+    ...             'stage_type': 'Impedance',
+    ...             'run_time': 10.0,
+    ...             'dc_potential': 0.0,
+    ...             'ac_potential': 0.01,
+    ...             'frequency': 50000.0,
+    ...             'min_sampling_time': 0.5,
+    ...             'max_equilibration_time': 5.0,
+    ...         },
+    ...     ],
+    ... )
+
     """
 
     stage_type: Literal['Impedance'] = 'Impedance'

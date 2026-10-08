@@ -1371,7 +1371,9 @@ class CustomUnits(BaseModel):
 
     quantity: str | None = None
     """The full name to assign to the variable."""
+
     symbol: str | None = None
     """Abbreviation of the quantity."""
+
     unit: str | None = None
     """Abbreviation of the unit of the quantity."""

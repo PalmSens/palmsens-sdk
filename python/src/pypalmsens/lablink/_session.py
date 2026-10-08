@@ -5,34 +5,27 @@ instance. Use [ClaimBatch][] to group several instrument claims so
 they can be released together.
 
 """
+
 from __future__ import annotations
-
-import xarray as xr
-
 
 from collections.abc import Sequence
 from typing import Any, Self, overload, override
-import pandas as pd
-import System
-from PalmSens.Sdk.Lablink.Example import Lablink as PSLablink
-from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 
-from ._mapping import _to_measurement_info
-from .._instruments.shared import wrap_task
+import pandas as pd
+import xarray as xr
+from PalmSens.Sdk.Lablink.Example.Lablink.Mappers import MethodMappers
+
 from ..types import MethodTypeCompatible
-from . import _model
 from ._client import HttpClient
 from ._instrument import InstrumentClaim, InstrumentRef
-from ._mapping import _to_lablink_info
-from ._measurement import Measurement, MeasurementJob, MeasurementRef
-from ._model import (
+from ._measurement import MeasurementJob, MeasurementRef
+from .models import LablinkInfo
+from .models._wire import (
     EmptyProperty,
     MeasurementListResult,
     MeasurementResult,
     SimpleInstrumentsCommand,
 )
-from ._public import LablinkInfo
-from PalmSens.Sdk.Lablink.Example.Lablink.Mappers import MethodMappers
 
 
 class ClaimBatch(Sequence[InstrumentClaim]):
@@ -153,9 +146,7 @@ class Session:
 
         await self._http.post('/Instruments/Claim', json=payload.model_dump())
 
-        return [
-            InstrumentClaim(instrument.serial_number, self) for instrument in instruments
-        ]
+        return [InstrumentClaim(instrument.serial_number, self) for instrument in instruments]
 
     async def claim(self, instrument: InstrumentRef) -> InstrumentClaim:
         """Claim an instrument.
@@ -248,8 +239,7 @@ class Session:
         response = await self._http.get(f'/Measurements/{measurement.guid}')
         parsed = MeasurementResult.model_validate(response.json())
 
-        metadata = _to_measurement_metadata(parsed)
-
+        # metadata = _to_measurement_metadata(parsed)
 
         datasets = []
 
@@ -320,8 +310,6 @@ class Session:
         else:
             data = datasets[0]
 
-        data.
-
         return data
 
     async def start(
@@ -367,7 +355,9 @@ class Session:
             'Technique': dto.Technique,
             'MethodParameters': dict(dto.Parameters),
             'AllInstrumentsMUstSucceed': True,
-            'InstrumentProperties': {instrument.serial_number:{} for instrument in instruments},
+            'InstrumentProperties': {
+                instrument.serial_number: {} for instrument in instruments
+            },
         }
 
         response = await self._http.post('/Instruments/StartMeasurement', json=payload)
@@ -388,5 +378,5 @@ class Session:
         Updates the name, version, and serial number with the latest values.
         """
         data = await self._http.get('/Home/GetInfo')
-        self._info = _to_lablink_info(_model.LablinkInfoResult.model_validate(data.json()))
+        self._info = LablinkInfo.from_wire(data.json())
         return self._info

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
+
+from . import _wire
 
 
 class LablinkInfo(BaseModel):
@@ -30,6 +32,12 @@ class LablinkInfo(BaseModel):
 
     is_measuring: bool = False
     """Whether a measurement is currently running."""
+
+    @staticmethod
+    def from_wire(data: dict[str, Any]) -> LablinkInfo:
+        from ._mapping import _to_lablink_info
+
+        return _to_lablink_info(_wire.LablinkInfoResult.model_validate(data))
 
 
 class InstrumentInfo(BaseModel):
@@ -62,6 +70,12 @@ class InstrumentInfo(BaseModel):
             return 'Measuring'
         else:
             return 'Idle'
+
+    @staticmethod
+    def from_wire(data: dict[str, Any]) -> InstrumentInfo:
+        from ._mapping import _to_instrument_info
+
+        return _to_instrument_info(data)
 
 
 class MeasurementInfo(BaseModel):

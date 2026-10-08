@@ -39,7 +39,7 @@ def unblock(path: Path):
 
 
 def load_lablink(dll_path: Path, *, clr):
-    assert PLATFORM == 'win'
+    # assert PLATFORM == 'win'
     assert dll_path.exists()
 
     sdk_data = dll_path / 'PalmSens.Sdk.Data.dll'

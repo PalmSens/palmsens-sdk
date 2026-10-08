@@ -13,13 +13,11 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, ClassVar, Self, overload, override
 
 import System
-from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
-
-from pypalmsens.lablink._model import MeasurementListResult, MeasurementResult
 
 from .._data import Method
 from .._types import MethodTypeCompatible
 from ._data import Dataset
+from .models._wire import MeasurementListResult, MeasurementResult
 
 if TYPE_CHECKING:
     from ._session import Session

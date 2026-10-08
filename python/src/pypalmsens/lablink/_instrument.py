@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Self
 
-from ._public import InstrumentInfo
+from .models import InstrumentInfo
 
 if TYPE_CHECKING:
     from ._session import Session

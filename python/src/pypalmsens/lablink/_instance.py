@@ -8,18 +8,10 @@ Use [discover][] to find Lablink instances on the network.
 
 from __future__ import annotations
 
-from PalmSens.Sdk.Lablink.Example.Lablink.Services import Client as PSClient
-from PalmSens.Sdk.Lablink.Example.Lablink.Services import LablinkFactory as PSLabLinkFactory
-
-from . import _model
 from ._client import HttpClient
-from ._mapping import _to_lablink_info
-from ._public import LablinkInfo
 from ._session import Session
-
-factory = PSLabLinkFactory(
-    PSClient.LablinkHttpClientFactory(), PSClient.LablinkSignalRHubFactory()
-)
+from .models import LablinkInfo
+from .models._wire import AuthResponseModel
 
 
 class Instance:
@@ -69,7 +61,7 @@ class Instance:
         Updates the name, version, and serial number with the latest values.
         """
         data = await self._http.get('/Home/GetInfo')
-        self._info = _to_lablink_info(_model.LablinkInfoResult.model_validate(data.json()))
+        self._info = LablinkInfo.from_wire(data.json())
         return self._info
 
     async def login(self, name: str, password: str) -> Session:
@@ -90,7 +82,7 @@ class Instance:
         data = await self._http.post(
             '/Auth/ApiKey', json={'UserName': name, 'Password': password}
         )
-        auth = _model.AuthResponseModel.model_validate(data.json())
+        auth = AuthResponseModel.model_validate(data.json())
         assert auth.Token
         self._http.set_token(auth.Token)
         return Session._from_http(self._http)

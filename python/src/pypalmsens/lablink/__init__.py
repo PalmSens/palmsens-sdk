@@ -12,20 +12,18 @@ finally:
     IS_SUPPORTED = _supported
 
 if IS_SUPPORTED:
-    from ._data import Dataset
+    # from ._data import Dataset
     from ._discover import discover
     from ._instance import Instance
     from ._instrument import InstrumentClaim, InstrumentRef
-    from ._measurement import Measurement, MeasurementJob, MeasurementRef
+    from ._measurement import MeasurementJob, MeasurementRef
     from ._session import ClaimBatch, Session
 
     __all__ = [
         'ClaimBatch',
-        'Dataset',
         'Instance',
         'InstrumentClaim',
         'InstrumentRef',
-        'Measurement',
         'MeasurementJob',
         'MeasurementRef',
         'Session',

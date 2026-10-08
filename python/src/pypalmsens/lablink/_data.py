@@ -8,6 +8,7 @@ groups the data arrays that make up a measurement.
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
+from datetime import datetime
 from typing import Any, ClassVar, Literal, Self, cast, overload, override
 
 import System
@@ -15,8 +16,15 @@ import xarray as xr
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Dtos as PSDtos
 
+from .._data import Method
 from .._data.data_array import implementation
-from .._types import AllowedCurrentRanges, AllowedReadingStatus, AllowedTimingStatus
+from .._types import (
+    AllowedCurrentRanges,
+    AllowedReadingStatus,
+    AllowedTimingStatus,
+    MethodTypeCompatible,
+)
+from .models._wire import MeasurementResult
 
 AllowedDataValueTypes = Literal[
     'Index',
@@ -287,3 +295,87 @@ class Dataset(Sequence[DataArray]):
             data_vars[key] = ('point', [converter(val) for val in array], {'unit': array.Unit})
 
         return xr.Dataset(data_vars=data_vars, coords=coords, attrs=attrs)
+
+
+class Measurement(Sequence[Dataset]):
+    """
+    Measurement data containing multiple datasets.
+
+    """
+
+    __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
+    _inner: PSData.LablinkMeasurement  # pyright: ignore[reportUninitializedInstanceVariable]
+
+    def __init__(self):
+        raise TypeError(
+            'Measurement cannot be instantiated directly. '
+            'Obtain instances through Session.fetch_measurement() or MeasurementJob.result().'
+        )
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(name='{self._inner.Method.Name}', timestamp='{self.timestamp}')"
+
+    @classmethod
+    def _wrap(cls, inner: MeasurementResult) -> Self:
+        obj = cls.__new__(cls)
+        obj._inner = inner
+        return obj
+
+    @override
+    def __len__(self):
+        return self._inner.Count
+
+    @overload
+    def __getitem__(self, index: int) -> Dataset: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> Sequence[Dataset]: ...
+
+    @override
+    def __getitem__(self, index):
+        if isinstance(index, int):
+            if index >= len(self) or index < -len(self):
+                raise IndexError('list index out of range')
+            index = index % len(self)
+            return Dataset._wrap(self._inner[index])
+
+        if isinstance(index, slice):
+            raise NotImplementedError
+
+    @property
+    def datasets(self) -> list[Dataset]:
+        """The datasets contained in this measurement."""
+        return [Dataset._wrap(obj) for obj in self._inner]
+
+    @property
+    def guid(self) -> str:
+        """The unique identifier of the measurement."""
+        return str(self._inner.Id)
+
+    @property
+    def serial_number(self) -> str:
+        """The serial number of the instrument used for the measurement."""
+        return self._inner.InstrumentSerial
+
+    @property
+    def method(self) -> MethodTypeCompatible:
+        """The method settings used for this measurement."""
+        return Method._wrap(self._inner.Method).to_settings()
+
+    @property
+    def timestamp(self) -> datetime:
+        """The UTC date and time when the measurement was recorded."""
+        timestamp = self._inner.UtcDateTime
+        return datetime.fromisoformat(
+            timestamp.ToString('s', System.Globalization.CultureInfo.InvariantCulture)
+        )
+
+    @property
+    def is_read_only(self) -> bool:
+        """Whether the measurement data is read-only."""
+        return self._inner.IsReadOnly
+
+    @property
+    def is_finished(self) -> bool:
+        """Whether the measurement has finished."""
+        return self._inner.IsFinished

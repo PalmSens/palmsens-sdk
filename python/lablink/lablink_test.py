@@ -36,14 +36,17 @@ async def main():
     [instrument] = session.instruments
 
     ret = r(session.list_measurements())
-    r(ret[0].fetch())
-
-    return
-    breakpoint()
+    data = r(ret[0].fetch())
 
     async with await session.claim(instrument) as claim:
         job = await session.start(claim, method=method)
+
+        print(job)
+
         measurement = await job
+
+    breakpoint()
+    return
 
     print(job)
     print(measurement)

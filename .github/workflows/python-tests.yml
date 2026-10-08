@@ -30,7 +30,7 @@ jobs:
           # 'macos-latest',
           'ubuntu-latest',
         ]
-        python-version: ['3.11', '3.14']
+        python-version: ['3.11', '3.15']
     defaults:
       run:
         working-directory: ./python

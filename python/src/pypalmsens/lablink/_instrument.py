@@ -12,11 +12,11 @@ from typing import TYPE_CHECKING, ClassVar, Literal, Self
 
 from PalmSens.Sdk.Lablink.Example.Lablink.Mappers import MethodMappers
 
-from pypalmsens._types import AllowedCurrentRanges, AllowedPotentialRanges, MethodTypeCompatible
-from pypalmsens.lablink._measurement import MeasurementJob, MeasurementRef
-from pypalmsens.lablink.models._wire import ConfigureInstrumentsProperties, MeasuringRange, Volt
-
+from .._converters import cr_string_to_sig_exp, pr_string_to_sig_exp
+from .._types import AllowedCurrentRanges, AllowedPotentialRanges, MethodTypeCompatible
+from ._measurement import MeasurementJob, MeasurementRef
 from .models import InstrumentInfo
+from .models._wire import ConfigureInstrumentsProperties, MeasuringRange, Volt
 
 if TYPE_CHECKING:
     from ._session import Session
@@ -129,7 +129,9 @@ class InstrumentClaim:
             f'/Instrument/{self._serial}/StartMeasurement', json=payload
         )
 
-        return MeasurementJob(guid=response['result'], serial=response['serial'])
+        data = response.json()
+
+        return MeasurementJob(guid=data['result'], serial=data['serial'])
 
     async def skip_pre_measurement_stage(self) -> None:
         """Skips the pre-measurement stage."""
@@ -180,7 +182,10 @@ class InstrumentClaim:
                 'MultiChannelRole': multichannel_role,
             }
         )
-        payload = config.model_dump_json()
+        # TODO: How does the endpoint handle null?
+        # If the endpoint treats this as a patch,
+        # nulls may clear settings or be rejected
+        payload = config.model_dump_json(exclude_none=True)
 
         await self._session._http.post(
             f'/Instrument/{self._serial}/ConfigureInstrument', json=payload
@@ -205,8 +210,9 @@ class InstrumentClaim:
             Set the current range as a string.
             See [pypalmsens.types.AllowedCurrentRanges][] for options.
         """
-        # TODO
-        config = MeasuringRange(Significant=None, Exponent=None)
+        # TODO: investigate intention behind MeasuringRange
+        sig, exp = cr_string_to_sig_exp(current_range)
+        config = MeasuringRange(Significant=sig, Exponent=exp)
         payload = config.model_dump_json()
         await self._session._http.post(
             f'/Instrument/{self._serial}/SetCurrentRange',
@@ -218,12 +224,13 @@ class InstrumentClaim:
 
         Parameters
         ----------
-        current_range: AllowedPotentialRanges
-            Set the current range as a string.
+        potential_range: AllowedPotentialRanges
+            Set the potential range as a string.
             See [pypalmsens.types.AllowedPotentialRanges][] for options.
         """
-        # TODO
-        config = MeasuringRange(Significant=None, Exponent=None)
+        # TODO: investigate intention behind MeasuringRange
+        sig, exp = pr_string_to_sig_exp(potential_range)
+        config = MeasuringRange(Significant=sig, Exponent=exp)
         payload = config.model_dump_json()
         await self._session._http.post(
             f'/Instrument/{self._serial}/SetPotentialRange', json=payload
@@ -260,7 +267,7 @@ class InstrumentClaim:
 
         Parameters
         ----------
-        state : str
+        state : bool
             The desired bipot state.
             True = on, False = off.
         """
@@ -271,11 +278,13 @@ class InstrumentClaim:
 
         Parameters
         ----------
-        current_range: AllowedPotentialRanges
+        current_range: AllowedCurrentRanges
             Set the current range as a string.
             See [pypalmsens.types.AllowedPotentialRanges][] for options.
         """
-        config = MeasuringRange(Significant=None, Exponent=None)
+        # TODO: investigate intention behind MeasuringRange
+        sig, exp = cr_string_to_sig_exp(current_range)
+        config = MeasuringRange(Significant=sig, Exponent=exp)
         payload = config.model_dump_json()
 
         await self._session._http.post(

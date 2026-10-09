@@ -106,3 +106,15 @@ class MeasurementJob:
 
     def __await__(self):
         return self.result().__await__()
+
+    async def abort(self) -> None:
+        raise NotImplementedError
+        InstrumentClaim.abort_measurement
+
+    async def pause(self) -> None:
+        raise NotImplementedError
+        InstrumentClaim.pause_measurement
+
+    async def resume(self) -> None:
+        raise NotImplementedError
+        InstrumentClaim.resume_measurement

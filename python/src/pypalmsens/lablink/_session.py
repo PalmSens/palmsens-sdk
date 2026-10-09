@@ -88,7 +88,7 @@ class Session:
         token: str,
         port: int = 5000,
     ):
-        self._http = HttpClient(f'{self._address}:{port}/api/v1', token=token)
+        self._http = HttpClient(f'{address}:{port}/api/v1', token=token)
         self._instruments = []
         self._info = None
 
@@ -190,7 +190,7 @@ class Session:
         await self._http.post('/Instruments/UnClaim', json=payload.model_dump())
 
     async def release(self, instrument: InstrumentRef | InstrumentClaim) -> None:
-        """Releaes an instrument.
+        """Release an instrument.
 
         Parameters
         ----------
@@ -354,7 +354,7 @@ class Session:
         payload = {
             'Technique': dto.Technique,
             'MethodParameters': dict(dto.Parameters),
-            'AllInstrumentsMUstSucceed': True,
+            'AllInstrumentsMustSucceed': True,
             'InstrumentProperties': {
                 instrument.serial_number: {} for instrument in instruments
             },

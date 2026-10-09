@@ -1,6 +1,72 @@
 # Changelog
 
 <!-- Latest-->
+## PyPalmSens 2.2.0
+
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-2.2.0">python-2.2.0</a>
+| :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/2.2.0">pypalmsens-2.2.0</a>
+| :fontawesome-solid-calendar: 2026-10-09
+
+This release adds methods for array and curve manipulation.
+
+### DataArray manipulation
+
+The `DataArray` wrapper now supports in-place mutation via Python slice assignment, so you can overwrite values without creating a new array. Assign a sequence to a slice to replace that range. You can also assign a scalar to broadcast it across the slice.
+
+Alternatively, use [DataArray.update][pypalmsens.data.DataArray.update] to replace all values at once. Both methods raise `ValueError` if the supplied data length does not match the DataArray.
+
+```python
+>>> import pypalmsens as ps
+>>> arr = ps.data.DataArray([0, 0, 0, 0])
+
+# Replace the whole array in-place
+>>> arr[:] = [1, 2, 3, 4]
+>>> arr
+[1.0, 2.0, 3.0, 4.0]
+
+# Broadcast a scalar into a sub-range
+>>> arr[1:3] = 99
+>>> arr
+[1.0, 99.0, 99.0, 4.0]
+
+# Replace all values
+>>> arr.update([5, 6, 7, 8])
+>>> arr
+[5.0, 6.0, 7.0, 8.0]
+```
+
+Note if you got the data from a DataSet or Curve, the changes will propegate to the parent class as well.
+
+### DataArray arithmetic operations
+
+- `curve_a + curve_b` and `curve_a - curve_b` now return new `Curve` objects
+- `array_a + array_b` and `array_a - array_b` now return new `DataArray` objects.
+- `array * value` now multiplies by that scalar value and returns new `DataArray` objects.
+
+### New methods
+
+- [DataArray.normalize][pypalmsens.data.DataArray.normalize]: return a new `DataArray` with values scaled to the `0–1` range.
+- [Curve.concat][pypalmsens.data.Curve.concat]: append another curve's x/y `DataArray` values onto this curve and returns a new `Curve`.
+
+### Exceptions submodule
+
+PyPalmSens specific exceptions can now be accessed via [pypalmsens.exceptions][] submodule.
+
+
+### What's changed
+
+- Add curve/array arithmetic operators (`+`, `-`, `*`) ([#483](https://github.com/palmsens/palmsens-sdk/pull/483))
+- Add `DataArray.normalize` and `Curve.concat` methods ([#484](https://github.com/palmsens/palmsens-sdk/pull/484))
+- Add constructors for `DataArray`, `Curve`, `DataSet` and `Measurement` objects ([#485](https://github.com/palmsens/palmsens-sdk/pull/485), [#486](https://github.com/palmsens/palmsens-sdk/pull/486), [#489](https://github.com/palmsens/palmsens-sdk/pull/489), [#490](https://github.com/palmsens/palmsens-sdk/pull/490))
+- Add array value replace function ([#488](https://github.com/palmsens/palmsens-sdk/pull/488))
+- Expose exceptions to public api ([#491](https://github.com/palmsens/palmsens-sdk/pull/491))
+- Wrap C# Tasks to asyncio futures ([#494](https://github.com/palmsens/palmsens-sdk/pull/494), [#495](https://github.com/palmsens/palmsens-sdk/pull/495))
+- Add note for fedora users for ftdi ([#498](https://github.com/palmsens/palmsens-sdk/pull/498))
+- Fix trigger flags always enabled on export ([#500](https://github.com/palmsens/palmsens-sdk/pull/500), [#501](https://github.com/palmsens/palmsens-sdk/pull/501))
+- Fix peak repr ([#502](https://github.com/palmsens/palmsens-sdk/pull/502))
+- Add examples to method and settings docstrings ([#504](https://github.com/palmsens/palmsens-sdk/pull/504), [#506](https://github.com/palmsens/palmsens-sdk/pull/506))
+
+
 ## PyPalmSens 2.1.0
 
 > :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-2.1.0">python-2.1.0</a>

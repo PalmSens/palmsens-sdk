@@ -17,7 +17,7 @@ from PalmSens.Sdk.Lablink.Example.Lablink.Mappers import MethodMappers
 
 from ..types import MethodTypeCompatible
 from ._client import HttpClient
-from ._instrument import InstrumentClaim, InstrumentRef
+from ._instrument import Instrument, InstrumentClaim, Releasable
 from ._measurement import MeasurementJob, MeasurementRef
 from .models import LablinkInfo
 from .models._wire import (
@@ -28,9 +28,9 @@ from .models._wire import (
 )
 
 
-class ClaimBatch(Sequence[InstrumentClaim]):
+class InstrumentClaimBatch(Sequence[InstrumentClaim]):
     """
-    A batch of instrument claims.
+    A batch of claimed instruments.
 
     Use as an async context manager. All claims are released when the
     context exits.
@@ -84,11 +84,11 @@ class Session:
 
     def __init__(
         self,
-        address: str,
+        host: str,
         token: str,
         port: int = 5000,
     ):
-        self._http = HttpClient(f'{address}:{port}/api/v1', token=token)
+        self._http = HttpClient(f'{host}:{port}/api/v1', token=token)
         self._instruments = []
         self._info = None
 
@@ -101,23 +101,17 @@ class Session:
         return obj
 
     def __repr__(self) -> str:
-        s = []
-
-        # if name := self.name:
-        #     s.append(f'name={name!r}')
-        # s.append(f'address={self.address!r}')
-
-        return f'{type(self).__name__}({", ".join(s)})'
+        return f'{type(self).__name__}(host={self._http._client.base_url.host!r}, port={self._http._client.base_url.port})'
 
     @property
-    def instruments(self) -> list[InstrumentRef]:
+    def instruments(self) -> list[Instrument]:
         """The instruments from the most recent [list_instruments][] call.
 
         May be stale or empty.
         """
         return self._instruments
 
-    async def list_instruments(self) -> list[InstrumentRef]:
+    async def list_instruments(self) -> list[Instrument]:
         """List currently attached instruments.
 
         Refreshes the [instruments][] list.
@@ -131,14 +125,14 @@ class Session:
         instruments = []
 
         for info in data.json():
-            instrument = InstrumentRef(serial=info['Serial']['Serial'])
+            instrument = Instrument(serial=info['Serial']['Serial'], session=self)
             instrument._info = info
             instruments.append(instrument)
 
         self._instruments = instruments
         return instruments
 
-    async def _claim(self, instruments: Sequence[InstrumentRef]) -> list[InstrumentClaim]:
+    async def _claim(self, instruments: Sequence[Instrument]) -> list[InstrumentClaim]:
         props = {instrument.serial_number: EmptyProperty() for instrument in instruments}
         payload = SimpleInstrumentsCommand(
             InstrumentProperties=props, AllInstrumentsMustSucceed=True
@@ -148,7 +142,7 @@ class Session:
 
         return [InstrumentClaim(instrument.serial_number, self) for instrument in instruments]
 
-    async def claim(self, instrument: InstrumentRef) -> InstrumentClaim:
+    async def claim(self, instrument: Instrument) -> InstrumentClaim:
         """Claim an instrument.
 
         Parameters
@@ -165,7 +159,7 @@ class Session:
         [claim] = await self._claim([instrument])
         return claim
 
-    async def claim_many(self, instruments: Sequence[InstrumentRef]) -> ClaimBatch:
+    async def claim_many(self, instruments: Sequence[Instrument]) -> InstrumentClaimBatch:
         """Claim multiple instruments.
 
         Parameters
@@ -179,9 +173,9 @@ class Session:
             A batch containing the instrument claims.
         """
         claims = await self._claim(instruments)
-        return ClaimBatch(claims)
+        return InstrumentClaimBatch(claims)
 
-    async def _release(self, instruments: Sequence[InstrumentRef]) -> None:
+    async def _release(self, instruments: Sequence[Releasable]) -> None:
         props = {instrument.serial_number: EmptyProperty() for instrument in instruments}
         payload = SimpleInstrumentsCommand(
             InstrumentProperties=props, AllInstrumentsMustSucceed=True
@@ -189,7 +183,7 @@ class Session:
 
         await self._http.post('/Instruments/UnClaim', json=payload.model_dump())
 
-    async def release(self, instrument: InstrumentRef | InstrumentClaim) -> None:
+    async def release(self, instrument: Releasable) -> None:
         """Release an instrument.
 
         Parameters
@@ -199,7 +193,7 @@ class Session:
         """
         await self._release([instrument])
 
-    async def release_many(self, instruments: Sequence[InstrumentRef]) -> None:
+    async def release_many(self, instruments: Sequence[Instrument]) -> None:
         """Release multiple instruments.
 
         Parameters

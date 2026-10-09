@@ -8,7 +8,7 @@ instrument. The claim is released when the context exits.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, Protocol, Self, runtime_checkable
 
 from PalmSens.Sdk.Lablink.Example.Lablink.Mappers import MethodMappers
 
@@ -28,60 +28,98 @@ if TYPE_CHECKING:
     from ._session import Session
 
 
-class InstrumentRef:
+@runtime_checkable
+class Releasable(Protocol):
+    async def release(self) -> None: ...
+
+    @property
+    def serial_number(self) -> str: ...
+
+
+class InstrumentReadsMixin:
+    _serial: str
+    _session: Session
+
+    async def signalr_url(self) -> str:
+        response = await self._session._http.get(f'/Instrument/{self._serial}/GetSignalRUrl')
+        data = response.json()
+        return data['result']
+
+    async def configuration(self) -> dict[str, Any]:
+        response = await self._session._http.get(f'/Instrument/{self._serial}/Configuration')
+        data = response.json()
+        return data['result']
+
+    async def capabilities(self) -> dict[str, Any]:
+        response = await self._session._http.get(f'/Instrument/{self._serial}/Capabilities')
+        data = response.json()
+        return data['result']
+
+    async def active_measurement(self) -> MeasurementRef:
+        """Return the active measurement, if any."""
+        response = await self._session._http.get(
+            f'/Instrument/{self._serial}/CurrentMeasurement'
+        )
+        data = response.json()
+        return data['result']
+
+    async def state(self) -> dict[str, Any]:
+        response = await self._session._http.get(f'/Instrument/{self._serial}/State')
+        data = response.json()
+        return data['result']
+
+
+class Instrument(InstrumentReadsMixin):
     """
     A reference to an instrument.
     """
 
-    __slots__: ClassVar[tuple[str, ...]] = (
-        '_info',
-        '_serial',
-    )
-    _serial: str
-    _info: InstrumentInfo
+    __slots__: ClassVar[tuple[str, ...]] = ('_serial', '_session')
 
-    def __init__(self, serial: str):
+    def __init__(self, serial: str, session: Session):
         self._serial: str = serial
+        self._session: Session = session
 
     def __repr__(self) -> str:
         return f'{type(self).__name__}(serial={self.serial_number!r})'
 
-    def metadata(self) -> InstrumentInfo:
-        return self._info
+    def __eq__(self, other: object) -> bool:  # value semantics: serial only
+        return isinstance(other, Instrument) and self._serial == other._serial
+
+    def __hash__(self) -> int:
+        return hash(self._serial)
+
+    def metadata(self) -> InstrumentInfo: ...
 
     @property
     def serial_number(self) -> str:
         """The serial number of the instrument."""
         return self._serial
 
-    async def claim(self) -> InstrumentClaim: ...
-
-    async def signalr_url(self) -> str: ...
-
-    async def configuration(self) -> dict: ...
-
-    async def capabilities(self) -> dict: ...
-
-    async def current_measurement(self) -> MeasurementRef: ...
-
-    async def state(self) -> dict: ...
+    async def claim(self) -> InstrumentClaim:
+        """Claim this instrument."""
+        return await self._session.claim(self)
 
 
-class InstrumentClaim:
+class InstrumentClaim(InstrumentReadsMixin):
     """
     A context manager for claiming an instrument.
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_serial', '_session')
-    _serial: str
-    _session: Session
 
     def __init__(self, serial: str, session: Session):
-        self._serial = serial
-        self._session = session
+        self._serial: str = serial
+        self._session: Session = session
 
     def __repr__(self) -> str:
         return f'{type(self).__name__}(serial_number={self.serial_number!r})'
+
+    def __eq__(self, other: object) -> bool:  # value semantics: serial only
+        return isinstance(other, InstrumentClaim) and self._serial == other._serial
+
+    def __hash__(self) -> int:
+        return hash(self._serial)
 
     async def __aenter__(self) -> Self:
         return self

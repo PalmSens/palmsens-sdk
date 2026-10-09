@@ -15,15 +15,15 @@ if IS_SUPPORTED:
     # from ._data import Dataset
     from ._discover import discover
     from ._instance import Instance
-    from ._instrument import InstrumentClaim, InstrumentRef
+    from ._instrument import Instrument, InstrumentClaim
     from ._measurement import MeasurementJob, MeasurementRef
-    from ._session import ClaimBatch, Session
+    from ._session import InstrumentClaimBatch, Session
 
     __all__ = [
-        'ClaimBatch',
         'Instance',
+        'Instrument',
         'InstrumentClaim',
-        'InstrumentRef',
+        'InstrumentClaimBatch',
         'MeasurementJob',
         'MeasurementRef',
         'Session',

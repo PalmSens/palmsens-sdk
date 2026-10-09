@@ -16,7 +16,13 @@ from .._converters import cr_string_to_sig_exp, pr_string_to_sig_exp
 from .._types import AllowedCurrentRanges, AllowedPotentialRanges, MethodTypeCompatible
 from ._measurement import MeasurementJob, MeasurementRef
 from .models import InstrumentInfo
-from .models._wire import ConfigureInstrumentsProperties, MeasuringRange, Volt
+from .models._wire import (
+    CellMode,
+    CellState,
+    ConfigureInstrumentsProperties,
+    MeasuringRange,
+    Volt,
+)
 
 if TYPE_CHECKING:
     from ._session import Session
@@ -102,7 +108,7 @@ class InstrumentClaim:
         mode : str
             The desired cell mode.
         """
-        payload = mode.capitalize()
+        payload = CellMode[mode.capitalize()].value
         await self._session._http.post(f'/Instrument/{self._serial}/SetCellMode', json=payload)
 
     async def set_cell_state(self, state: Literal['unknown', 'off', 'on']) -> None:
@@ -113,7 +119,7 @@ class InstrumentClaim:
         state : str
             The desired cell state.
         """
-        payload = state.capitalize()
+        payload = CellState[state.capitalize()].value
         await self._session._http.post(f'/Instrument/{self._serial}/SetCellState', json=payload)
 
     async def start_measurement(self, method: MethodTypeCompatible) -> MeasurementJob:
@@ -300,7 +306,7 @@ class InstrumentClaim:
         mode : str
             The desired bipot mode.
         """
-        payload = mode.capitalize()
+        payload = CellMode[mode.capitalize()].value
 
         await self._session._http.post(f'/Instrument/{self._serial}/SetBiPotMode', json=payload)
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+
 import numpy as np
 import PalmSens
 
@@ -28,6 +30,14 @@ def cr_string_to_enum(s: AllowedCurrentRanges) -> PalmSens.CurrentRange:
     return PalmSens.CurrentRange(cr)
 
 
+def cr_string_to_sig_exp(s: AllowedCurrentRanges) -> tuple[int, int]:
+    """Convert literal string to significant and exponent."""
+    attr = f'cr{s}'
+    cr = getattr(PalmSens.CurrentRanges, attr)
+
+    return frexp10(PalmSens.CurrentRange(cr).Factor)
+
+
 def cr_enum_to_string(enum: PalmSens.CurrentRange) -> AllowedCurrentRanges:
     """Convert CurrentRange enum to literal string."""
     cr = enum.Range
@@ -42,7 +52,33 @@ def pr_string_to_enum(s: AllowedPotentialRanges) -> PalmSens.PotentialRange:
     return PalmSens.PotentialRange(pr)
 
 
+def pr_string_to_sig_exp(s: AllowedPotentialRanges) -> tuple[int, int]:
+    """Convert literal string to significant and exponent."""
+    attr = f'pr{s}'
+    pr = getattr(PalmSens.PotentialRanges, attr)
+
+    return frexp10(PalmSens.CurrentRange(pr).Factor)
+
+
 def pr_enum_to_string(enum: PalmSens.PotentialRange) -> AllowedPotentialRanges:
     """Convert PotentialRange enum to literal string."""
     pr = enum.PR
     return pr.ToString().lstrip('pr')
+
+
+def frexp10(value: float) -> tuple[int, int]:
+    """Return mantissa and exponent for value."""
+    if value == 0:
+        return 0, 0
+
+    x = abs(value)
+    exp = math.floor(math.log10(x))
+
+    mantissa: int = round(x / 10**exp)
+
+    # Fix cases where rounding pushes the mantissa to 10
+    if mantissa == 10:
+        mantissa = 1
+        exp += 1
+
+    return mantissa, exp

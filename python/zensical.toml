@@ -19,6 +19,7 @@ nav = [
   "comm_protocol.md",
   "gpio.md",
   "circuit_fitting.md",
+  "lablink.md",
   "examples.md",
   { "Techniques" = [
     "reference/methods/index.md",
@@ -74,6 +75,7 @@ nav = [
     "reference/comm_protocol.md",
     "reference/gpio.md",
     "reference/fitting.md",
+    "reference/lablink.md",
     "reference/models.md",
     "reference/types.md",
   ]},
@@ -156,6 +158,8 @@ accent = "custom"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to system preference"
 
+
+
 [project.markdown_extensions.abbr]
 [project.markdown_extensions.admonition]
 [project.markdown_extensions.attr_list]
@@ -170,6 +174,9 @@ emoji_generator = "zensical.extensions.emoji.to_svg"
 [project.markdown_extensions.pymdownx.snippets]
 check_paths = true
 [project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
 
 [project.plugins.mkdocstrings.handlers.python]
 # https://mkdocstrings.github.io/usage/

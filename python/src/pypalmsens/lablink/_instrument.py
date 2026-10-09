@@ -229,7 +229,7 @@ class InstrumentClaim(InstrumentReadsMixin):
         # TODO: How does the endpoint handle null?
         # If the endpoint treats this as a patch,
         # nulls may clear settings or be rejected
-        payload = config.model_dump_json(exclude_none=True)
+        payload = config.model_dump(exclude_none=True)
 
         await self._session._http.post(
             f'/Instrument/{self._serial}/ConfigureInstrument', json=payload
@@ -257,7 +257,7 @@ class InstrumentClaim(InstrumentReadsMixin):
         # TODO: investigate intention behind MeasuringRange
         sig, exp = cr_string_to_sig_exp(current_range)
         config = MeasuringRange(Significant=sig, Exponent=exp)
-        payload = config.model_dump_json()
+        payload = config.model_dump()
         await self._session._http.post(
             f'/Instrument/{self._serial}/SetCurrentRange',
             json=payload,
@@ -275,7 +275,7 @@ class InstrumentClaim(InstrumentReadsMixin):
         # TODO: investigate intention behind MeasuringRange
         sig, exp = pr_string_to_sig_exp(potential_range)
         config = MeasuringRange(Significant=sig, Exponent=exp)
-        payload = config.model_dump_json()
+        payload = config.model_dump()
         await self._session._http.post(
             f'/Instrument/{self._serial}/SetPotentialRange', json=payload
         )
@@ -329,7 +329,7 @@ class InstrumentClaim(InstrumentReadsMixin):
         # TODO: investigate intention behind MeasuringRange
         sig, exp = cr_string_to_sig_exp(current_range)
         config = MeasuringRange(Significant=sig, Exponent=exp)
-        payload = config.model_dump_json()
+        payload = config.model_dump()
 
         await self._session._http.post(
             f'/Instrument/{self._serial}/SetBiPotCurrentRange',
@@ -357,7 +357,7 @@ class InstrumentClaim(InstrumentReadsMixin):
             The potential to apply in bipot mode.
         """
         config = Volt(Value=potential)
-        payload = config.model_dump_json()
+        payload = config.model_dump()
 
         await self._session._http.post(
             f'/Instrument/{self._serial}/SetBiPotPotential',

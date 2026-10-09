@@ -11,7 +11,7 @@ from __future__ import annotations
 from ._client import HttpClient
 from ._session import Session
 from .models import LablinkInfo
-from .models._wire import AuthResponseModel
+from .models._wire import AuthRequestModel, AuthResponseModel
 
 
 class Instance:
@@ -64,6 +64,12 @@ class Instance:
         self._info = LablinkInfo.from_wire(data.json())
         return self._info
 
+    async def register_new_user(self, name: str, password: str):
+        """Only admin can register new users."""
+        payload = AuthRequestModel(UserName=name, Password=password).model_dump()
+
+        await self._http.post('/Auth/Register', json=payload)
+
     async def login(self, name: str, password: str) -> Session:
         """Log in to the Lablink instance.
 
@@ -79,9 +85,9 @@ class Instance:
         Session
             A new session object for this instance.
         """
-        data = await self._http.post(
-            '/Auth/ApiKey', json={'UserName': name, 'Password': password}
-        )
+        payload = AuthRequestModel(UserName=name, Password=password).model_dump()
+
+        data = await self._http.post('/Auth/ApiKey', json=payload)
         auth = AuthResponseModel.model_validate(data.json())
         assert auth.Token
         self._http.set_token(auth.Token)

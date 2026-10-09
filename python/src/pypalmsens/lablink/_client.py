@@ -76,14 +76,23 @@ class HttpClient:
 
     def raise_from_response(self, response: httpx2.Response) -> None:
         """Generates error from response."""
-        try:
-            exc = response.json()['exceptionMessage']
+        data = response.json()
+
+        if 'exceptionMessage' in data:
+            exc = data['exceptionMessage']
             key = exc['resourceKey']
             *_, resource = exc['resourceDictionaryName'].rsplit('.')
             message = getattr(getattr(PSResources, resource), key)
             if parameters := exc.get('parameters'):
                 message += f'({parameters})'
-        except (KeyError, AttributeError):
-            raise LablinkApiError(response.reason_phrase)
-        else:
             raise LablinkApiError(message)
+        elif isinstance(data, dict) and all(
+            isinstance(messages, list) for messages in data.values()
+        ):
+            message = '\n'.join(
+                f'{field}: {msg}' for field, messages in data.items() for msg in messages
+            )
+            raise LablinkApiError(message)
+
+        else:
+            raise LablinkApiError(response.reason_phrase)

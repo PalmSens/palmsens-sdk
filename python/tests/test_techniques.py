@@ -53,15 +53,20 @@ def test_read_current(manager):
 
     manager.set_current_range('1uA')
     val1 = manager.read_current()
+    manager.set_current(0.1)
     cr1 = manager.get_current_range()
     assert val1 is not None
     assert cr1 == '1uA'
 
     manager.set_current_range('10uA')
     val2 = manager.read_current()
+    manager.set_current(0.1)
     cr2 = manager.get_current_range()
     assert val2 is not None
     assert cr2 == '10uA'
+
+    assert manager.get_mode() == 'galvanostatic'
+    manager.set_mode('potentiostatic')
 
     manager.set_cell(False)
     assert not manager.is_cell_on()
@@ -85,7 +90,18 @@ def test_read_potential(manager):
     assert val2 is not None
     assert pr2 == '1V'
 
+    assert manager.get_mode() == 'potentiostatic'
+
     manager.set_cell(False)
+
+
+@pytest.mark.instrument
+def test_set_mode(manager):
+    for mode in ['galvanostatic', 'potentiostatic', 'galvanostatic']:
+        manager.set_mode(mode)
+        assert manager.get_mode() == mode
+
+    manager.set_mode('potentiostatic')
 
 
 def test_forbid_extra_keys():

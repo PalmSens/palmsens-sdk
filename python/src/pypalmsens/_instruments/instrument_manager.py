@@ -9,7 +9,7 @@ from typing import Literal
 
 import clr
 import PalmSens
-from PalmSens.Comm import CommManager, MuxType
+from PalmSens import Comm as PSComm
 from typing_extensions import override
 
 from .._converters import (
@@ -130,7 +130,7 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         self.gpio: GPIO = GPIO(self)
         """High-level GPIO interface."""
 
-        self._comm: CommManager
+        self._comm: PSComm.CommManager
 
     @override
     def __repr__(self):
@@ -146,10 +146,10 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
 
     def is_measuring(self) -> bool:
         """Return True if device is measuring."""
-        return int(self._comm.State) == CommManager.DeviceState.Measurement
+        return int(self._comm.State) == PSComm.CommManager.DeviceState.Measurement
 
     @contextmanager
-    def _lock(self) -> Generator[CommManager]:
+    def _lock(self) -> Generator[PSComm.CommManager]:
         self.ensure_connection()
 
         self._comm.ClientConnection.Semaphore.Wait()
@@ -208,6 +208,39 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
             device_state=str(self._comm.get_State()),  # type:ignore
         )
 
+    def get_mode(self) -> Literal['galvanostatic', 'potentiostatic', 'undefined']:
+        """Get active measurement mode of the instrument.
+
+        Returns
+        -------
+        mode : str
+            One of 'potentiostatic', 'galvanostatic', or 'undefined'
+        """
+        mode = self._comm.Mode
+        if mode == PSComm.EnumMode.Potentiostatic:
+            return 'potentiostatic'
+        elif mode == PSComm.EnumMode.Galvanostatic:
+            return 'galvanostatic'
+        else:
+            return 'undefined'
+
+    def set_mode(self, mode: Literal['galvanostatic', 'potentiostatic']):
+        """Set active measurement mode of the instrument.
+
+        Parameters
+        -------
+        mode : str
+            One of 'potentiostatic' or 'galvanostatic'
+        """
+        if mode == 'galvanostatic':
+            _mode = PSComm.EnumMode.Galvanostatic
+        elif mode == 'potentiostatic':
+            _mode = PSComm.EnumMode.Potentiostatic
+        else:
+            raise ValueError("Must be one of 'galvanostatic', 'potentiostatic'")
+
+        self._comm.Mode = _mode
+
     def set_cell(self, cell_on: bool):
         """Turn the cell on or off.
 
@@ -242,6 +275,20 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
             current = self._comm.Current
 
         return single_to_double(current)
+
+    def set_current(self, current: float):
+        """Set the current in µA.
+
+        The instrument will be switched to 'galvanostatic' mode,
+        if this is not the active measurement mode.
+
+        Parameters
+        ----------
+        current : float
+            Current in µA.
+        """
+        with self._lock():
+            self._comm.Current = current
 
     def get_current_range(self) -> AllowedCurrentRanges:
         """Get the current range for the cell.
@@ -281,6 +328,9 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
 
     def set_potential(self, potential: float):
         """Set the potential of the cell.
+
+        The instrument will be switched to 'potentiostatic' mode,
+        if this is not the active measurement mode.
 
         Parameters
         ----------
@@ -526,7 +576,7 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         mux_settings.UnselWE = unused_we_setting
 
         with self._lock():
-            self._comm.ClientConnection.SetMuxSettings(MuxType(1), mux_settings)
+            self._comm.ClientConnection.SetMuxSettings(PSComm.MuxType(1), mux_settings)
 
     def set_multiplexer_channel(self, channel: int):
         """Sets the multiplexer channel.

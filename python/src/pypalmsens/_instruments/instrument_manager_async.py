@@ -10,7 +10,7 @@ from typing import Any, Literal
 
 import clr
 import PalmSens
-from PalmSens.Comm import CommManager, MuxType
+from PalmSens import Comm as PSComm
 from typing_extensions import override
 
 from .._converters import (
@@ -89,8 +89,8 @@ async def measure_async(
     ----------
     instrument : Instrument, optional
         Connect to and meassure on a specific instrument.
-        Use `pypalmsens.discover_async()` to discover instruments.
-    callback: Callback, optional
+        Use [pypalmsens.discover_async][] to discover instruments.
+    callback: Callback | CallbackEIS, optional
         If specified, call this function on every new set of data points.
         New data points are batched, and contain all points since the last
         time it was called. Each point is an instance of `ps.data.CallbackData`
@@ -128,7 +128,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
         self.gpio: GPIOAsync = GPIOAsync(self)
         """High-level GPIO interface."""
 
-        self._comm: CommManager
+        self._comm: PSComm.CommManager
         self._status_callback: CallbackStatus
         self._loop: asyncio.AbstractEventLoop
 
@@ -146,10 +146,10 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
     def is_measuring(self) -> bool:
         """Return True if device is measuring."""
-        return int(self._comm.State) == CommManager.DeviceState.Measurement
+        return int(self._comm.State) == PSComm.CommManager.DeviceState.Measurement
 
     @asynccontextmanager
-    async def _lock(self) -> AsyncGenerator[CommManager]:
+    async def _lock(self) -> AsyncGenerator[PSComm.CommManager]:
         self.ensure_connection()
 
         await wrap_task(self._comm.ClientConnection.Semaphore.WaitAsync())
@@ -203,6 +203,42 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             device_state=str(self._comm.get_State()),  # type:ignore
         )
 
+    async def get_mode(self) -> Literal['galvanostatic', 'potentiostatic', 'undefined']:
+        """Get active measurement mode of the instrument.
+
+        Returns
+        -------
+        mode : str
+            One of 'potentiostatic', 'galvanostatic', or 'undefined'
+        """
+        async with self._lock():
+            mode: PSComm.EnumMode = await wrap_task(self._comm.GetModeAsync())
+
+        if mode == PSComm.EnumMode.Potentiostatic:
+            return 'potentiostatic'
+        elif mode == PSComm.EnumMode.Galvanostatic:
+            return 'galvanostatic'
+        else:
+            return 'undefined'
+
+    async def set_mode(self, mode: Literal['galvanostatic', 'potentiostatic']):
+        """Set active measurement mode of the instrument.
+
+        Parameters
+        -------
+        mode : str
+            One of 'potentiostatic' or 'galvanostatic'
+        """
+        if mode == 'galvanostatic':
+            _mode = PSComm.EnumMode.Galvanostatic
+        elif mode == 'potentiostatic':
+            _mode = PSComm.EnumMode.Potentiostatic
+        else:
+            raise ValueError("Must be one of 'galvanostatic', 'potentiostatic'")
+
+        async with self._lock():
+            mode = await wrap_task(self._comm.SetModeAsync(_mode))
+
     async def set_cell(self, cell_on: bool) -> None:
         """Turn the cell on or off.
 
@@ -239,6 +275,20 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
             current: float = await wrap_task(self._comm.GetCurrentAsync())
 
         return single_to_double(current)
+
+    async def set_current(self, current: float):
+        """Set the current in µA.
+
+        The instrument will be switched to 'galvanostatic' mode,
+        if this is not the active measurement mode.
+
+        Parameters
+        ----------
+        current : float
+            Current in µA.
+        """
+        async with self._lock():
+            await wrap_task(self._comm.SetCurrentAsync(current))
 
     async def get_current_range(self) -> AllowedCurrentRanges:
         """Get the current range for the cell.
@@ -280,6 +330,9 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
     async def set_potential(self, potential: float) -> None:
         """Set the potential of the cell.
+
+        The instrument will be switched to 'potentiostatic' mode,
+        if this is not the active measurement mode.
 
         Parameters
         ----------
@@ -577,7 +630,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
         async with self._lock():
             await wrap_task(
-                self._comm.ClientConnection.SetMuxSettingsAsync(MuxType(1), mux_settings)
+                self._comm.ClientConnection.SetMuxSettingsAsync(PSComm.MuxType(1), mux_settings)
             )
 
     async def set_multiplexer_channel(self, channel: int):

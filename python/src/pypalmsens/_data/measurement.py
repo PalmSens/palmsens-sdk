@@ -108,6 +108,10 @@ class Measurement:
         """Title for the measurement."""
         return self._inner.Title
 
+    @title.setter
+    def title(self, value: str):
+        self._inner.Title = value
+
     @property
     def timestamp(self) -> datetime:
         """Date and time of the start of this measurement.

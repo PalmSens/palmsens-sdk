@@ -394,7 +394,7 @@ manager.set_cell(False)
 
 ```
 
-You can switch current ranges, and read the current:
+You can switch current ranges, and set/read the current:
 
 ```pycon
 >>> manager.supported_current_ranges()
@@ -406,6 +406,19 @@ You can switch current ranges, and read the current:
 
 >>> manager.read_current()
 -0.0187
+
+>>> manager.set_current(0.1)
+```
+
+Note that setting the current will switch the active measurement mode to 'galvanostatic'.
+You can switch back to 'galvanostatic' mode using [set_mode][pypalmsens.InstrumentManager.set_mode]:
+
+```pycon
+>>> manager.get_mode()
+'galvanostatic'
+
+>>> manager.set_mode('potentiostatic')
+
 ```
 
 Likewise you can switch potential ranges, and set/read the potential:

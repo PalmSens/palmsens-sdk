@@ -264,7 +264,7 @@ class MeasurementManagerAsync:
                 self.callbacks[name].extend(cbs)
 
         if callback:
-            if method.id in ('eis', 'geis', 'fis', 'fgis'):
+            if method.id in ('eis', 'gis', 'fis', 'fgis'):
                 self.callbacks['eis_new_data'].append(callback)
             else:
                 self.callbacks['curve_new_data'].append(callback)

@@ -52,7 +52,6 @@ Note if you got the data from a DataSet or Curve, the changes will propegate to 
 
 PyPalmSens specific exceptions can now be accessed via [pypalmsens.exceptions][] submodule.
 
-
 ### What's changed
 
 - Add curve/array arithmetic operators (`+`, `-`, `*`) ([#483](https://github.com/palmsens/palmsens-sdk/pull/483))

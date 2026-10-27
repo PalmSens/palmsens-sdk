@@ -20,7 +20,6 @@ nav = [
       "comm_protocol.md",
       "gpio.md",
       "circuit_fitting.md",
-      "lablink.md",
       "examples.md",
       { "Source code ↗" = "https://github.com/palmsens/palmsens-sdk" },
       { "Issues ↗" = "https://github.com/palmsens/palmsens-sdk/issues" },
@@ -72,6 +71,10 @@ nav = [
       "reference/energy/constant_resistance.md",
     ]},
   ]},
+  { "Lablink" = [{ "Lablink" = [
+      "lablink/index.md",
+    ]},
+  ]},
   { "Reference" = [{ "Reference" = [
     "reference/index.md",
     "reference/data.md",
@@ -90,7 +93,6 @@ nav = [
   { "Changelog" = [{ "Changelog" = [
       "releases/index.md",
       # Latest
-      { "PyPalmSens 2.2.0" = "releases/#pypalmsens-220"},
       { "PyPalmSens 2.2.0" = "releases/#pypalmsens-220"},
       { "PyPalmSens 2.1.0" = "releases/#pypalmsens-210"},
       { "PyPalmSens 1.11.0" = "releases/#pypalmsens-1110"},

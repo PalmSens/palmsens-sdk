@@ -900,16 +900,29 @@ class BaseChronoAmperometry(
     mixins.GeneralMixin,
 ):
     equilibration_time: float = 0.0
-    """Equilibration time in s."""
+    """Equilibration time in s.
+
+    If not zero, the potential is applied and held for this long before the
+    measurement starts. No data are recorded during the equilibration step."""
 
     interval_time: float = 0.1
-    """Time between two current samples in s."""
+    """Time between two current samples in s.
+
+    The minimum interval time is instrument dependent: 1 ms for PalmSens 1 and
+    2, EmStat 1, 2, 3(+) and EmStat Pico, 0.2 ms for PalmSens 3, and 0.4 ms for
+    PalmSens 4, Nexus and EmStat4."""
 
     potential: float = 0.0
-    """The potential applied during the measurement in V."""
+    """The potential applied during the measurement in V.
+
+    Must be within the applicable potential range of the instrument. It is
+    irrelevant in a zero resistance amperometry setup, where the reference and
+    counter electrodes are not part of the measured circuit."""
 
     run_time: float = 1.0
-    """Total run time of the measurement in s."""
+    """Total run time of the measurement in s.
+
+    Between 5 * `interval_time` and 1,000,000 seconds (ca. 278 hours)."""
 
     enable_bipot_current: bool = False
     """Enable bipot current."""
@@ -964,17 +977,31 @@ class BaseChronoAmperometry(
 class ChronoAmperometry(BaseChronoAmperometry):
     """Create chrono amperometry method parameters.
 
-    The instrument applies a constant DC-potential (E dc) and the current is measured
-    with constant interval times.
+    Also known as Amperometric Detection or Potentiostatic Step.
+    The instrument applies a constant DC potential (`potential`) and
+    the current is measured at constant `interval_time` intervals.
+    If `equilibration_time` is not zero, the potential is applied
+    first and held without recording data.
+
+    Chronoamperometry is also the way to record zero resistance amperometry
+    (ZRA) and electrochemical noise: the potentiostat then works as an ammeter,
+    `potential` is irrelevant, and `record_we_potential` adds the working
+    electrode versus reference electrode potential to the record. Such a setup
+    needs a floating (galvanically isolated) instrument and the cell cannot be
+    disconnected on overload, so keep the current within the specifications of
+    the instrument.
+
+    If you need to run faster steps, use
+    [FastAmperometry][pypalmsens.FastAmperometry] instead.
 
     Examples
     --------
     >>> import pypalmsens as ps
-    >>> method = ps.ChronoAmperometry:
-    ...     equilibration_time: 0.0,
-    ...     interval_time: 0.1,
-    ...     potential: 0.0,
-    ...     run_time: 1.0,
+    >>> method = ps.ChronoAmperometry(
+    ...     equilibration_time=0.0,
+    ...     interval_time=0.1,
+    ...     potential=0.0,
+    ...     run_time=1.0,
     ... )
     """
 
@@ -999,8 +1026,13 @@ class FastAmperometry(
 ):
     """Create fast amperometry method parameters.
 
-    Fast amperometry is a form of Amperometric Detection (Chronoamperometry) but with very
-    high sampling rates or very short interval times.
+    Use Fast amperometry if you need Amperometric Detection (Chronoamperometry)
+    with very high sampling rates or very short interval times.
+
+    Only the Nexus, PalmSens and EmStat4 LR/HR series support this technique.
+    The current range is fixed for the whole measurement, and the potential of
+    the pulse (`potential`) is applied after the equilibration step, which runs
+    at its own `equilibration_potential`.
 
     Examples
     --------
@@ -1021,16 +1053,24 @@ class FastAmperometry(
     current_range: AllowedCurrentRanges = '100nA'
     """Fixed current range.
 
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    Unlike most techniques, fast amperometry does not auto-range: the current
+    stays in this range for the entire measurement."""
 
     equilibration_time: float = 0.0
-    """Equilibration time in s."""
+    """Equilibration time in s.
+
+    `equilibration_potential` is applied during this step, without recording
+    data."""
 
     equilibration_potential: float = 1.0
     """Equilibration potential at which the measurement starts in V."""
 
     interval_time: float = 0.1
-    """Time between two current samples in s."""
+    """Time between two current samples in s.
+
+    Much shorter interval times are available than for chrono amperometry: the
+    minimum is 0.25 ms for PalmSens 1 and 2, 0.01 ms for PalmSens 3, 0.02 ms
+    for PalmSens 4 and 0.001 ms for EmStat4."""
 
     potential: float = 0.5
     """Potential during measurement in V.
@@ -1081,10 +1121,17 @@ class MultiStepAmperometry(
 
     With Multistep amperometry you can specify the number of potential steps
     to apply and how long each step should last. Each step works exactly as a
-    Chronoamperometry step. The current is continuously sampled with the specified interval
-    time. A whole cycle of steps can be repeated several times.
+    Chronoamperometry step. The current is continuously sampled with the
+    specified interval time. A whole cycle of steps can be repeated several times.
 
-    Levels can be specified using [pypalmsens.settings.ELevel][].
+    Levels can be specified using [pypalmsens.settings.ELevel][]. Switching
+    between levels adds overhead time, which is set out in
+    [pypalmsens.settings.ELevel][] per instrument.
+
+    Amperometric results are commonly analysed with a Cottrell plot, i.e. the
+    current plotted against the inverse square root of time. Methods that need
+    more complex behaviour than a fixed list of levels can be written as
+    [MethodScript][pypalmsens.MethodScript] instead.
 
     Examples
     --------
@@ -1113,9 +1160,9 @@ class MultiStepAmperometry(
     """Number of repetitions."""
 
     levels: list[ELevel] = Field(default_factory=lambda: [ELevel()])
-    """The cto apply within a cycle.
+    """The potentials to apply within a cycle.
 
-    Use `ELevel()` to create levels.
+    The levels are applied one after another. Use `ELevel()` to create levels.
     """
 
     enable_bipot_current: bool = False
@@ -1193,11 +1240,15 @@ class PulsedAmperometricDetection(
 ):
     """Create pulsed amperometric detection method parameters.
 
-    With Pulsed Amperometric Detection a series of pulses (pulse profile) is periodically repeated.
-    Pulsed Amperometric Detection can be used when higher sensitivity is required. Using pulses
-    instead of constant potential might result in higher faradaic currents. PAD is also used when the
-    electrode surface has to be regenerated continuously, for instance, to remove adsorbents from
-    the electrode surface.
+    In Pulsed Amperometric Detection, a pulse profile is periodically repeated.
+
+    Each pulse applies `pulse_potential` for `pulse_time` on top of the base
+    potential `potential`, which is held between pulses.
+
+    Pulsed Amperometric Detection can be used when higher sensitivity is required. Applying
+    pulses instead of a constant potential may produce higher faradaic currents. PAD is also
+    used when the electrode surface must be regenerated continuously, for example to remove
+    adsorbents from the electrode surface.
 
     Examples
     --------
@@ -1222,15 +1273,23 @@ class PulsedAmperometricDetection(
     """Equilibration time in s."""
 
     potential: float = 0.5
-    """DC or base potential in V."""
+    """DC or base potential in V.
+
+    Must be within the applicable potential range of the instrument."""
 
     pulse_potential: float = 0.05
     """Pulse potential in V.
 
-    Note that this value is not relative to `potential` given above."""
+    Note that this value is not relative to `potential` given above. It must be
+    within the applicable pulse potential range of the instrument."""
 
     pulse_time: float = 0.01
-    """Pulse time in s."""
+    """Pulse time in s.
+
+    The applicable pulse time range is instrument dependent: 10 ms to 1 s for
+    PalmSens 1 and 2, 0.2 ms to 1 s for PalmSens 3, 0.4 ms to 1 s for PalmSens
+    4 and Nexus, 5 ms to 1 s for EmStat 1, 2 and 3(+), 0.4 ms to 0.3 s for
+    EmStat4, and 2 ms to 0.3 s for EmStat Pico."""
 
     mode: Literal['dc', 'pulse', 'differential'] = 'dc'
     """Measurement mode.
@@ -1285,9 +1344,22 @@ class MultiplePulseAmperometry(
 ):
     """Create multiple pulse amperometry method parameters.
 
-    The Multiple Pulse Amperometry (MPAD) technique involves applying a series of voltage pulses
-    to an electrode immersed in a sample solution, and the resulting current of one of the pulses is
-    measured.
+    Multiple Pulse Amperometry (MPAD) applies a series of voltage pulses to an
+    electrode immersed in a sample solution, and the current is measured during
+    one of the pulses: `potential_1` is the level at which the current is
+    recorded, while `potential_2` and `potential_3` shape the rest of the pulse
+    profile.
+
+    MPAD is used when higher sensitivity is required. Using pulses instead of a
+    constant potential can produce higher faradaic currents, and because the
+    electrode surface is regenerated with every pulse, adsorbents are removed
+    continuously. This also reduces background noise and interference, making
+    it useful for trace-level analytes in complex sample matrices. The
+    potential levels and pulse durations can be optimised for each analyte,
+    which is why MPAD is a common detector in liquid chromatography (HPLC),
+    capillary electrophoresis, and flow injection analysis.
+
+    Only the PalmSens series and EmStat 1, 2, and 3(+) support this technique.
 
     Examples
     --------
@@ -1313,21 +1385,25 @@ class MultiplePulseAmperometry(
     run_time: float = 10.0
     """Total run time of the measurement in s.
 
-    The minimum and maximum duration of a measurement:
-    5 * `interval_time` to 1,000,000 seconds (~278 hours).
+    At least 5 times the sampling interval and at most 1,000,000 seconds
+    (~278 hours). One pulse cycle takes
+    `duration_1` + `duration_2` + `duration_3` seconds.
     """
 
     duration_1: float = 0.1
-    """Duration of the first applied potential in s."""
+    """Duration of the first applied potential in s. Between 0.1 and 2 s."""
 
     duration_2: float = 0.1
-    """Duration of the first applied potential in s."""
+    """Duration of the second applied potential in s. Between 0.1 and 2 s."""
 
     duration_3: float = 0.1
-    """Duration of the first applied potential in s."""
+    """Duration of the third applied potential in s. Between 0.1 and 2 s."""
 
     potential_1: float = 0.0
-    """First applied potential level at which the current is recorded in V."""
+    """First applied potential level at which the current is recorded in V.
+
+    Must be within the applicable potential range of the instrument.
+    """
 
     potential_2: float = 0.0
     """Second applied potential level at which the current is recorded in V."""
@@ -1337,7 +1413,7 @@ class MultiplePulseAmperometry(
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        """Update method with multistep amperometry settings."""
+        """Update method with multiple pulse amperometry settings."""
         psmethod.EquilibrationTime = self.equilibration_time
         psmethod.RunTime = self.run_time
 

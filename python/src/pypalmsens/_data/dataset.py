@@ -66,10 +66,10 @@ class DataSet(Mapping[str, DataArray]):
         self._mapping = _dataset_to_mapping_with_unique_keys(inner)
 
     @classmethod
-    def _wrap(cls, psdataset: PSDataSet) -> Self:
+    def _wrap(cls, inner: PSDataSet) -> Self:
         obj = cls.__new__(cls)
-        obj._inner = psdataset
-        obj._mapping = _dataset_to_mapping_with_unique_keys(psdataset)
+        obj._inner = inner
+        obj._mapping = _dataset_to_mapping_with_unique_keys(inner)
         return obj
 
     @override

@@ -41,8 +41,10 @@ A newly created instance only knows its address. Call [get_info][pypalmsens.labl
 ```python
 await local.get_info()
 # LablinkInfo(name='My Lablink', version='2.1.0', special_version='Standard', os_version='Fedora Linux 43 (WSL)', model='WSL', serial_number='SERIAL_NUMBER', is_measuring=False)
-```
+
 print(local.name, local.version, local.serial_number)
+# My Lablink, 2.1.0, SERIAL_NUMBER
+
 ```
 
 ## Logging in
@@ -76,6 +78,8 @@ An [Instrument][pypalmsens.lablink.Instrument] references an instrument by its s
 
 ```python
 print(instrument.serial_number)
+# SERIAL_NUMBER
+
 ```
 
 ### Claiming instruments
@@ -88,6 +92,7 @@ Use [Instrument.claim][pypalmsens.lablink.Instrument.claim] and the returned [In
 async with await instrument.claim() as claim:
     # only this session can use the instrument here
     ...
+
 ```
 
 To claim several instruments at once, use [claim][pypalmsens.lablink.Session.claim]:
@@ -95,6 +100,7 @@ To claim several instruments at once, use [claim][pypalmsens.lablink.Session.cla
 ```python
 async with await session.claim(instruments) as claims:
     ...
+
 ```
 
 The returned [InstrumentClaimBatch][pypalmsens.lablink.InstrumentClaimBatch] releases every claim when the block exits.
@@ -173,4 +179,5 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.run(main())
+
 ```

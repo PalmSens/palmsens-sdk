@@ -64,12 +64,13 @@ def test_frexp10(value: float, expected: tuple[int, int]) -> None:
 
 
 def test_current_range_sig_exp():
-    cr = '1A'
-    sig, exp = cr_string_to_sig_exp(cr)
-    assert (sig, exp) == (1, 0)
+    # internal default unit is uA
+    assert cr_string_to_sig_exp('1uA') == (1, 0)
+    assert cr_string_to_sig_exp('5mA') == (5, 3)
+    assert cr_string_to_sig_exp('1A') == (1, 6)
 
 
 def test_potential_ranges_sig_exp():
-    pr = '1V'
-    sig, exp = pr_string_to_sig_exp(pr)
-    assert (sig, exp) == (1, 0)
+    assert pr_string_to_sig_exp('1mV') == (1, -3)
+    assert pr_string_to_sig_exp('20mV') == (2, -2)
+    assert pr_string_to_sig_exp('1V') == (1, 0)

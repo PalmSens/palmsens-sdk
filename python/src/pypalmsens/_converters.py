@@ -57,7 +57,7 @@ def pr_string_to_sig_exp(s: AllowedPotentialRanges) -> tuple[int, int]:
     attr = f'pr{s}'
     pr = getattr(PalmSens.PotentialRanges, attr)
 
-    return frexp10(PalmSens.CurrentRange(pr).Factor)
+    return frexp10(PalmSens.PotentialRange(pr).Factor)
 
 
 def pr_enum_to_string(enum: PalmSens.PotentialRange) -> AllowedPotentialRanges:

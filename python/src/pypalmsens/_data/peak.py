@@ -14,7 +14,13 @@ if TYPE_CHECKING:
 
 @final
 class Peak:
-    """Contains the peak data of one peak in a curve."""
+    """Contains the peak data of one peak in a curve.
+
+    A peak is either found automatically, with
+    [find_peaks()][pypalmsens.data.Curve.find_peaks] or
+    [find_peaks_semiderivative()][pypalmsens.data.Curve.find_peaks_semiderivative],
+    or marked manually in PSTrace.
+    """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
     _inner: PSPeak  # pyright: ignore[reportUninitializedInstanceVariable]
@@ -65,7 +71,12 @@ class Peak:
 
     @property
     def area(self) -> float:
-        """Area of the peak."""
+        """Area of the peak between the curve and its baseline.
+
+        In units of the parent curve multiplied together:
+        For example, V * µA for a voltammogram plotted as
+        current against potential.
+        """
         return single_to_double(self._inner.Area)
 
     @property
@@ -90,12 +101,18 @@ class Peak:
 
     @property
     def maximum_of_derivative_neg(self) -> float:
-        """Maximum derivative of the negative slope of the peak."""
+        """Maximum derivative of the negative slope of the peak.
+
+        In units of the parent curve: y units per x unit.
+        """
         return single_to_double(self._inner.MaximumOfDerivativeNeg)
 
     @property
     def maximum_of_derivative_pos(self) -> float:
-        """Maximum derivative of the positive slope of the peak."""
+        """Maximum derivative of the positive slope of the peak.
+
+        In units of the parent curve: y units per x unit.
+        """
         return single_to_double(self._inner.MaximumOfDerivativePos)
 
     @property
@@ -105,43 +122,66 @@ class Peak:
 
     @property
     def notes(self) -> str:
-        """User notes stored on this peak."""
+        """User notes stored on this peak.
+
+        Notes added in PSTrace when a peak or feature of the curve is annotated
+        are returned here.
+        """
         return self._inner.Notes
 
     @property
     def y_offset(self) -> float:
-        """Offset of Y."""
+        """Y value of the peak baseline at the position of the peak.
+
+        In units of the parent curve. The peak height `value` is `y - y_offset`.
+        """
         return single_to_double(self._inner.OffsetY)
 
     @property
     def index(self) -> int:
-        """Location of the peak as index number of the curve."""
+        """Location of the peak as index number of the curve's data points."""
         return self._inner.PeakIndex
 
     @property
     def type(self) -> str:
-        """Used to determine if a peak is auto found."""
+        """Peak type: how the peak was determined.
+
+        `AutoPeak` for peaks found by the peak finder, `ManualPeak` for peaks
+        marked manually against a baseline on or near the curve, and
+        `NonLinearBaselinePeak` for peaks marked against a fitted polynomial
+        baseline.
+        """
         return str(self._inner.PeakType)
 
     @property
     def value(self) -> float:
         """Value of the peak in units of the curve.
-        This is the value of the peak height relative to the baseline of the peak."""
+
+        This is the value of the peak height relative to the baseline of the
+        peak, i.e. `y - y_offset`.
+        """
         return single_to_double(self._inner.PeakValue)
 
     @property
     def x(self) -> float:
-        """X value of the peak."""
+        """X value of the peak in units of the parent curve.
+
+        For a voltammogram this is the potential of the peak in V.
+        """
         return single_to_double(self._inner.PeakX)
 
     @property
     def y(self) -> float:
-        """Y value of the peak."""
+        """Y value of the peak in units of the parent curve.
+
+        For a voltammogram this is the current of the peak in µA, including the
+        baseline offset `y_offset`.
+        """
         return single_to_double(self._inner.PeakY)
 
     @property
     def right_index(self) -> int:
-        """Left side of the peaks baseline as index number of the curve."""
+        """Right side of the peaks baseline as index number of the curve."""
         return self._inner.RightIndex
 
     @property
@@ -151,10 +191,15 @@ class Peak:
 
     @property
     def right_y(self) -> float:
-        """Returns the Y of the right side of the peak baseline."""
+        """Y of the right side of the peak baseline."""
         return single_to_double(self._inner.RightY)
 
     @property
     def width(self) -> float:
-        """Full width at half-height of the peak."""
+        """Full-width at half maximum (FWHM) of the peak.
+
+        In units of the parent curve. Peaks with a lower width than
+        `min_peak_width` are not detected by
+        [find_peaks()][pypalmsens.data.Curve.find_peaks].
+        """
         return single_to_double(self._inner.Width)

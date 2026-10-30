@@ -31,6 +31,19 @@ from .levels import (
 class CurrentRange(BaseSettings):
     """Set the autoranging current.
 
+    The three fields define the window of current ranges the instrument may use:
+    `min` and `max` bound the window and `start` is the range the measurement
+    begins in. Setting all three to the same value fixes a single range.
+
+    When the window is wider than one range the instrument auto-ranges: it picks
+    a suitable range during equilibration, steps up when the measured current
+    reaches 80% of the selected range, and steps down when it repeatedly falls to
+    4% of the range (2% on EmStat Pico). Switching ranges takes milliseconds, so
+    auto-ranging is unavailable at very high scan rates, and each switch can
+    introduce a spike or jump in the curve. Prefer a single range when you do not
+    need auto-ranging. When the expected current is unknown, start at the highest
+    range and work down.
+
     Examples
     --------
     As a `CurrentRange` instance:
@@ -64,19 +77,13 @@ class CurrentRange(BaseSettings):
     """
 
     min: AllowedCurrentRanges = '1uA'
-    """Minimum current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Minimum current range: the lowest range auto-ranging may step down to."""
 
     max: AllowedCurrentRanges = '10mA'
-    """Maximum current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Maximum current range: the highest range auto-ranging may step up to."""
 
     start: AllowedCurrentRanges = '100uA'
-    """Start current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Current range the measurement starts in, within `min` and `max`."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /, bipot: bool = False):
@@ -97,6 +104,19 @@ class CurrentRange(BaseSettings):
 
 class PotentialRange(BaseSettings):
     """Set the autoranging potential.
+
+    Only galvanostatic techniques use a potential range. `min` and `max` define the
+    lowest and highest ranges that may be used, while `start` defines the range
+    used at the beginning of the measurement.
+
+    If `min` and `max` span multiple ranges, the instrument auto-ranges during the
+    measurement to keep the potential in a measurable window. It steps up when the
+    measured potential reaches 80% of the selected range and steps down when it
+    repeatedly falls to 4%, just like current auto-ranging.
+
+    Instruments with multiple potential ranges also differ in how far above a
+    selected range they can measure: PalmSens4 and Nexus can measure up to 10x the
+    range, EmStat4 HR up to 6x, and EmStat4 LR up to 3x.
 
     Examples
     --------
@@ -131,19 +151,13 @@ class PotentialRange(BaseSettings):
     """
 
     min: AllowedPotentialRanges = '1mV'
-    """Minimum potential range.
-
-    See `pypalmsens.settings.AllowedPotentialRanges` for options."""
+    """Minimum potential range: the lowest range auto-ranging may step down to."""
 
     max: AllowedPotentialRanges = '1V'
-    """Maximum potential range.
-
-    See `pypalmsens.settings.AllowedPotentialRanges` for options."""
+    """Maximum potential range: the highest range auto-ranging may step up to."""
 
     start: AllowedPotentialRanges = '1V'
-    """Start potential range.
-
-    See `pypalmsens.settings.AllowedPotentialRanges` for options."""
+    """Potential range the measurement starts in, within `min` and `max`."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -226,14 +240,15 @@ class Pretreatment(BaseSettings):
 class VersusOCP(BaseSettings):
     """Define which potentials to measure versus Open Circuit Potential (OCP).
 
-    Usually, potentials refer to the Working Electrode (WE) relative
-    to the Reference Electrode (RE).
-    Use this class to define which potentials (`potentials`) are relative
-    to the OCP.
+    Potentials normally refer to the Working Electrode (WE) relative to the
+    Reference Electrode (RE). In corrosion and many energy applications it is
+    more useful to specify them relative to the Open Circuit Potential (OCP).
+    Use this class to say which potentials (`potentials`) are relative to the
+    OCP.
 
-    To do so, the technique determines the stable OCP value first.
-    This requires measuring the OCP drift until it settles (`stability_criterion`)
-    or times out (`timeout`) before starting with the measurement.
+    To do so, the technique determines a stable OCP value first: it measures the
+    OCP drift until the drift falls below `stability_criterion` or `timeout`
+    elapses, whichever comes first, and only then starts the measurement.
 
     The following potentials can be defined relative to OCP:
 
@@ -282,7 +297,7 @@ class VersusOCP(BaseSettings):
     - CV, FCV, CP: `'vertex1'`, `'vertex2'`, `'begin'`
     - EIS, FIS: `'begin'`, `'end'`
     - EIS (potential scan): `'potential'`
-    - AD, PS, FAM: `'potential`'
+    - AD, PS, FAM: `'potential'`
     - LSV, ACV, LP, SWV, DPV, NPV: `'begin'`, `'end'`
 
     Leave blank to disable versus OCP measurements.
@@ -350,6 +365,16 @@ class VersusOCP(BaseSettings):
 class BiPot(BaseSettings):
     """Set the bipot settings.
 
+    Configure a second working electrode (WE2) alongside the main one. WE2 shares the
+    reference and counter electrodes of WE1, so both electrodes see the same cell
+    solution. Only instruments with a BiPot module support this.
+
+    Autoranging for WE2 is only available on PalmSens Nexus.
+    On other bipotentiostat instruments fix a single `current_range`.
+
+    `mode` selects how WE2 is held: at a fixed `potential`, or at an offset
+    versus the potential of WE1.
+
     Examples
     --------
     As a `BiPot` instance:
@@ -384,18 +409,23 @@ class BiPot(BaseSettings):
     mode: Literal['constant', 'offset'] = 'constant'
     """Set the bipotential mode.
 
-    Possible values: `constant` or `offset`"""
+    Possible values: `constant` (hold WE2 at a fixed potential) or `offset`
+    (hold WE2 at an offset versus WE1)."""
 
     potential: float = 0.0
-    """Set the bipotential in V."""
+    """Set the bipotential in V.
+
+    An absolute potential of WE2 in `constant` mode, or the offset versus WE1 in
+    `offset` mode."""
 
     current_range: CurrentRange = Field(default_factory=CurrentRange)
     """Set the bipotential current range.
 
-    Can be a fixed current range or a ranging current. See the specifications for your instrument.
-    Internally, a fixed current range is represented by an autoranging current with equal min/max ranges.
+    Can be a fixed current range or a ranging current. Only the Nexus supports
+    autoranging for WE2. Other instruments require a single range, so check the
+    specifications of your instrument.
 
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    Internally, a fixed current range is represented by an autoranging current with equal min/max ranges."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -422,6 +452,11 @@ class BiPot(BaseSettings):
 
 class PostMeasurement(BaseSettings):
     """Set the post measurement settings.
+
+    After a measurement ends, the cell can remain on and be held at
+    `standby_potential` for `standby_time` seconds. This is useful for
+    maintaining a conditioning potential between measurements.
+
     Examples
     --------
     As a `PostMeasurement` instance:
@@ -478,6 +513,9 @@ class PostMeasurement(BaseSettings):
 
 class CurrentLimits(BaseSettings):
     """Adjust the current limits.
+
+    Also called the “cut-off”. The limits apply to the whole measurement,
+    excluding pretreatment stages, and are not available on every instrument.
 
     Depending on the method, this will:
 
@@ -554,6 +592,9 @@ class CurrentLimits(BaseSettings):
 class PotentialLimits(BaseSettings):
     """Adjust the potential limits.
 
+    Also called the “cut-off”. The limits apply to the whole measurement,
+    excluding pretreatment stages, and are not available on every instrument.
+
     Depending on the method, this will:
 
     - Abort the measurement
@@ -628,6 +669,11 @@ class PotentialLimits(BaseSettings):
 class ChargeLimits(BaseSettings):
     """Adjust the charge limits.
 
+    Limits on the cumulative charge passed since the start of the measurement,
+    in µC. They are available on the amperometry and coulometry techniques, and
+    act like the current and potential cut-off: the measurement stops, or moves
+    to the next stage, once the limit is reached.
+
     Examples
     --------
     As a `ChargeLimits` instance:
@@ -695,7 +741,25 @@ class ChargeLimits(BaseSettings):
 
 
 class IrDropCompensation(BaseSettings):
-    """Set the iR drop compensation settings.
+    """Set the iR (ohmic) drop compensation settings.
+
+    The resistance between the reference electrode and the double layer of the
+    working electrode causes a potential drop (`E(ohm) = i * R`), the ohmic drop,
+    which reduces the potential applied where it is actually needed. The
+    compensation module adds a positive feedback voltage proportional to the
+    cell current, counteracting that drop.
+
+    This requires the optional hardware module of PalmSens4 or EmStat4X, and
+    limits the measurement bandwidth while enabled (10 kHz on PalmSens4, 160 kHz
+    on EmStat4X).
+
+    PalmSens recommends measuring `resistance` with an impedance measurement and
+    compensating at most 95% of it: if the compensated potential error approaches
+    the applied potential, the system can become unstable.
+
+    Autoranging is not always allowed for a given combination of compensation and
+    current ranges. Select a single current range in that case. Each current range
+    has a maximum compensable resistance.
 
     Examples
     --------
@@ -724,11 +788,14 @@ class IrDropCompensation(BaseSettings):
     """
 
     resistance: None | float = None
-    """Set the iR compensation resistance in Ω"""
+    """Set the iR compensation resistance in Ω.
+
+    The electrolyte resistance to compensate for, normally determined with an
+    impedance measurement. `None` disables compensation."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        if self.resistance:
+        if self.resistance is None:
             psmethod.UseIRDropComp = True
             psmethod.IRDropCompRes = self.resistance
         else:
@@ -1022,6 +1089,13 @@ class DelayTriggers(BaseSettings):
 class Multiplexer(BaseSettings):
     """Set the multiplexer settings.
 
+    A multiplexer switches one instrument over several cells. It is not a
+    multi-channel potentiostat, so only one cell is polarized at a time. In
+    `consecutive` mode each channel runs the complete measurement in turn. In
+    `alternate` mode all selected channels are sampled within every interval,
+    which looks like a simultaneous measurement but is not: only a single
+    channel is polarized at the time.
+
     Examples
     --------
     As a `Multiplexer` instance, consecutive on the first 3 channels:
@@ -1098,22 +1172,46 @@ class Multiplexer(BaseSettings):
     """
 
     connect_se_we: bool = False
-    """Connect the sense electrode to the working electrode. Default is False."""
+    """Connect the sense electrode to the working electrode.
+
+    Internally connects Sense and WE per channel, so the leads do not have to be
+    stacked physically. Only available on systems with a sense lead. For currents
+    around 10 mA, stacking the leads physically is still recommended.
+
+    Default is False."""
 
     combine_re_ce: bool = False
-    """Combine the reference and counter electrodes. Default is False."""
+    """Combine the reference and counter electrodes.
+
+    Internally connects RE and CE per channel, which is what a two-electrode
+    system needs, so the leads do not have to be stacked physically.
+
+    Default is False."""
 
     common_re_ce: bool = False
-    """Use channel 1 reference and counter electrodes for all working electrodes. Default is False."""
+    """Use channel 1 reference and counter electrodes for all working electrodes.
+
+    Internally combines the RE leads of all channels, and likewise the CE leads.
+    Intended for cell arrays whose working electrodes share one reference and/or
+    counter electrode: only channel 1 needs its RE and CE wired.
+
+    Default is False."""
 
     unused_we: Literal['float', 'ground', 'standby'] = 'float'
-    """State of the unused channel working electrodes:
+    """State of the unused channel working electrodes.
 
     - `float`: Disconnected / floating
     - `ground`: Ground
     - `standby`: Standby potential
 
-    Default is `'float'`."""
+    `ground` keeps idle channels polarized, but only behaves as expected when the
+    electrodes share one solution with a combined RE/CE (a two-electrode setup).
+    Because the multiplexer is only a switch behind a single potentiostat, idle
+    channels then follow the cell potential (WE vs CE) of the active channel,
+    which equals the polarization potential only in two-electrode systems.
+
+    Default is `'float'`.
+    """
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -1156,6 +1254,10 @@ class Multiplexer(BaseSettings):
 class DataProcessing(BaseSettings):
     """Set the data processing settings.
 
+    Post-processing applied to the measured curve: `smooth_level` filters noise,
+    and `min_height` / `min_width` are the thresholds that a peak must pass to be
+    reported.
+
     Examples
     --------
     As a `DataProcessing` instance:
@@ -1191,6 +1293,9 @@ class DataProcessing(BaseSettings):
     smooth_level: int = 0
     """Set the default curve post processing filter.
 
+    Smoothing uses the Savitzky-Golay method with the listed window size.
+    A window that is too wide starts to flatten the real shape of the curve.
+
     Possible values:
 
     - -1: no filter
@@ -1209,8 +1314,9 @@ class DataProcessing(BaseSettings):
     min_width: float = 0.1
     """The minimum peak width for peak finding.
 
-    The value is in the unit of the curves X axis (V).
-    Peaks narrower than this value are rejected (default: 0.1 V)."""
+    The peak width is the full-width at half maximum (FWHM), in the unit of the
+    curves X axis (V). Peaks narrower than this value are rejected
+    (default: 0.1 V)."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -1264,7 +1370,15 @@ class General(BaseSettings):
     """
 
     save_on_internal_storage: bool = False
-    """Save on internal storage."""
+    """Save on internal storage.
+
+    The Nexus, PalmSens4, EmStat4-series and Sensit BT are equipped with
+    on-board data storage. The measurement is stored on the instrument in
+    a folder named after the date.
+
+    Download it later through the device file system,
+    [pypalmsens.DeviceFileSystem][]. On PalmSens4, EIS,
+    MultiStep and MixedMode techniques cannot be stored on-board."""
 
     use_hardware_sync: bool = False
     """Use hardware synchronization with other channels/instruments."""
@@ -1275,8 +1389,9 @@ class General(BaseSettings):
     power_frequency: Literal[50, 60] = 50
     """Set the DC mains filter in Hz.
 
-    Adjusts sampling on instrument to account for mains frequency.
-    Set to 50 Hz or 60 Hz depending on your region (default: 50)."""
+    The mains frequency of the power grid couples into the measured current.
+    The instrument filters sampling at that frequency. Set to 50 Hz or 60 Hz
+    depending on your region (default: 50)."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):

@@ -2,7 +2,11 @@
 
 !!! warning "Work in progress"
 
-    The lablink API not final. Although the examples here should mostly hold up, method names and signatures may change in future versions. Keep an eye on the [changelog](../releases).
+    Lablink support is currently being developed. More details coming soon!
+
+!!! note "Lablink API not final"
+
+    Although the examples here should mostly hold up, method names and signatures may change in future versions. Keep an eye on the [changelog](../releases).
 
 The [pypalmsens.lablink][] module lets you connect to a Lablink server and control the instruments attached to it.
 You can use it to list instruments, claim them, start measurements, and retrieve previously recorded data.

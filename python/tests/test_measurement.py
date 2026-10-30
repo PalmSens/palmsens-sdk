@@ -41,6 +41,9 @@ def test_measurement_properties(measurement):
     assert isinstance(measurement.timestamp, datetime)
     assert measurement.metadata().timestamp == measurement.timestamp
 
+    measurement.title = 'New Title'
+    assert measurement.title == 'New Title'
+
     peaks = measurement.peaks
     assert len(peaks) == 0
 

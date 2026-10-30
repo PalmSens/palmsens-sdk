@@ -51,16 +51,21 @@ async def test_read_current(manager):
     await manager.set_cell(True)
 
     await manager.set_current_range('1uA')
+    await manager.set_current(1)
     val1 = await manager.read_current()
     cr1 = await manager.get_current_range()
     assert val1 is not None
     assert cr1 == '1uA'
 
     await manager.set_current_range('10uA')
+    await manager.set_current(0)
     val2 = await manager.read_current()
     cr2 = await manager.get_current_range()
     assert val2 is not None
     assert cr2 == '10uA'
+
+    assert await manager.get_mode() == 'galvanostatic'
+    await manager.set_mode('potentiostatic')
 
     await manager.set_cell(False)
 
@@ -84,7 +89,19 @@ async def test_read_potential(manager):
     assert val2 is not None
     assert pr2 == '1V'
 
+    assert await manager.get_mode() == 'potentiostatic'
+
     await manager.set_cell(False)
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_set_mode(manager):
+    for mode in ['galvanostatic', 'potentiostatic', 'galvanostatic']:
+        await manager.set_mode(mode)
+        assert await manager.get_mode() == mode
+
+    await manager.set_mode('potentiostatic')
 
 
 @pytest.mark.asyncio

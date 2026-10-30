@@ -52,6 +52,8 @@ class BaseCyclicVoltammetry(
     mixins.GeneralMixin,
     BaseTechnique,
 ):
+    """Cyclic voltammetry parameters shared by the CV techniques."""
+
     equilibration_time: float = 0.0
     """Equilibration time in s."""
 
@@ -134,11 +136,20 @@ class BaseCyclicVoltammetry(
 class CyclicVoltammetry(BaseCyclicVoltammetry):
     """Create cyclic voltammetry method parameters.
 
-    In Cyclic Voltammetry, recurrent potential scans are performed between the potentials `vertex1_potential`
-    and `vertex2_potential` going back the number of times determined by the `n_scans`.
-    The scan starts at the `begin_potential` which can be at one of these vertex potentials
-    or anywhere in between. The experiment will always terminate at the same potential set as the
-    `begin_potential`.
+    In Cyclic Voltammetry, repeated potential scans are performed between
+    `vertex1_potential` and `vertex2_potential`, with the number of scans
+    determined by `n_scans`. The scan starts at `begin_potential`, which can be
+    one of these vertex potentials or any value in between, and the experiment
+    always terminates at the same potential as `begin_potential`.
+
+    The scan is not linear but a staircase of `step_potential` steps, and the
+    current is sampled during the last quarter of each step. This gives an
+    interval time of `step_potential / scanrate` between two points, and each
+    scan covers the potential window twice.
+
+    A `current_limits` value reverses the scan direction before the next vertex
+    is reached, protecting the working electrode when the potential that causes
+    an excessive current is not known in advance.
 
     Examples
     --------
@@ -169,17 +180,23 @@ class FastCyclicVoltammetry(
 ):
     """Create fast cyclic voltammetry method parameters.
 
-    In Cyclic Voltammetry a cyclic potential scan is performed between two vertex potentials
-    `vertex1_potential` and `vertex2_potential`.
-    The scan can start (`begin_potential`) at one of these vertex potentials or anywhere in between.
+    In Cyclic Voltammetry, a cyclic potential scan is performed between the two
+    vertex potentials `vertex1_potential` and `vertex2_potential`. The scan can
+    start at `begin_potential`, which may be either vertex or any value in
+    between.
 
-    A CV becomes a Fast CV if the scan rate in combination with `step_potential` results in a rate of over 2500
-    points / second (`scan_rate` / `step_potential` > 2500).
+    Use Fast CV when `scanrate` and `step_potential` imply a sampling
+    rate above 2500 points/s (`scanrate / step_potential > 2500`).
+
+    Auto-ranging is impossible at these speeds, so `current_range` is a single
+    fixed range. Averaging scans with `n_avg_scans` and discarding
+    `n_equil_scans` scans before recording can reduce noise, but removing the
+    noise at its source is preferable.
 
     Examples
     --------
     >>> import pypalmsens as ps
-    >>> method = ps.FastCyclicVoltammetry:
+    >>> method = ps.FastCyclicVoltammetry(
     ...     current_range='1uA',
     ...     equilibration_time=0.0,
     ...     begin_potential=-0.5,
@@ -287,7 +304,7 @@ class ACVoltammetry(
     Examples
     --------
     >>> import pypalmsens as ps
-    >>> method = ps.ACVoltammetry:
+    >>> method = ps.ACVoltammetry(
     ...     equilibration_time=0.0,
     ...     begin_potential=-0.5,
     ...     end_potential=0.5,
@@ -315,10 +332,12 @@ class ACVoltammetry(
     """Potential step size in V."""
 
     ac_potential: float = 0.01
-    """RMS amplitude of the applied sine wave in V."""
+    """RMS amplitude of the applied sine wave in V.
+
+    Normally 5-10 mV."""
 
     frequency: float = 100.0
-    """Frequency of the applied AC signal in HZ."""
+    """Frequency of the applied AC signal in Hz."""
 
     scanrate: float = 1.0
     """The applied scan rate in V/s
@@ -326,7 +345,7 @@ class ACVoltammetry(
     The applicable range depends on the value of `step_potential`."""
 
     measure_dc_current: bool = False
-    """Measure the DC current seperately.
+    """Measure the DC current separately.
 
     If True, the direct current (DC) will be measured separately
     and added to the measurement as an additional curve."""
@@ -370,6 +389,8 @@ class BaseLinearSweepVoltammetry(
     mixins.GeneralMixin,
     BaseTechnique,
 ):
+    """Linear sweep parameters shared by the scan-based voltammetry techniques."""
+
     equilibration_time: float = 0.0
     """Equilibration time in s.
 
@@ -445,16 +466,24 @@ class BaseLinearSweepVoltammetry(
 class LinearSweepVoltammetry(BaseLinearSweepVoltammetry):
     """Create linear sweep method parameters.
 
-    In Linear Sweep Voltammetry a potential scan is performed from `begin_potential`,
-    to `end_potential`. The scan is not exactly linear, but small potential steps (`potential_step`)
-    are made.
+    In Linear Sweep Voltammetry, a potential scan is performed from
+    `begin_potential` to `end_potential`. The scan is a staircase of
+    `step_potential` steps rather than a true ramp.
 
-    The current is sampled during the last 25% interval period of each step.
-    The number of points in a curve showing the current versus potential is
-    (`begin_potential` – `end_potential`) / (`step_potential` + 1).
+    The current is sampled during the last quarter of each step, so the
+    interval time is `step_potential / scanrate`. The number of points in a
+    curve showing the current versus potential is
+    (`end_potential` - `begin_potential`) / `step_potential` + 1.
 
-    The scan rate is specified in V/s, which determines the time between two steps and thus the
-    sampling time. The interval time is equal to `potential_step` / `scan_rate`.
+    The scan rate is specified in V/s and determines the time between two steps,
+    and therefore the sampling time. A larger `step_potential` collects data
+    faster and can improve the signal-to-noise ratio; a smaller one gives better
+    resolution and sensitivity. For scan rates of 0.01 to 0.1 V/s, steps of 3 to
+    10 mV are a sensible starting point.
+
+    A `current_limits` value stops the scan before `end_potential` is reached,
+    which protects the working electrode when the potential that causes an
+    excessively high current is not known in advance.
 
     Examples
     --------
@@ -488,10 +517,13 @@ class SquareWaveVoltammetry(
 ):
     """Create square wave method parameters.
 
-    Square wave Voltammetry (SWV) is in fact a special version of DPV.
+    Square wave voltammetry (SWV) is closely related to differential pulse voltammetry (DPV).
+    DPV becomes SWV when the pulse time is half the interval time. The interval time is the inverse of the
+    frequency (1 / `frequency`). As in DPV, the pulse amplitude is normally 5 - 25 or 50 mV.
 
-    DPV is SWV when the pulse time is equal to the interval / 2. The interval time is the inverse of the
-    frequency (1 / `frequency`). Like DPV, the pulse amplitude is also normally in the range of 5 - 25 or 50 mV.
+    Plotting the forward and reverse currents side by side
+    (`record_forward_and_reverse_currents`) shows how reversible, i.e. how fast,
+    the electrode reaction is.
 
     Examples
     --------
@@ -546,7 +578,10 @@ class SquareWaveVoltammetry(
     Reference electrode vs ground."""
 
     record_forward_and_reverse_currents: bool = False
-    """Record forward and reverse currents."""
+    """Record forward and reverse currents.
+
+    Adds a separate curve for the current measured during the positive and the
+    negative pulse. Not supported by PalmSens1 and PalmSens2."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -604,9 +639,22 @@ class DifferentialPulseVoltammetry(
 ):
     """Create differential pulse voltammetry method parameters.
 
-    In Differential Pulse Voltammetry a potential scan is made using pulses with a constant
-    amplitude of `pulse_potential` superimposed on the dc-potential. The amplitude is mostly in the range
-    of 5 – 50 mV.
+    In Differential Pulse Voltammetry, a potential scan is made using pulses of constant
+    amplitude (`pulse_potential`) superimposed on the DC potential. The amplitude is typically
+    5–50 mV.
+
+    The current is sampled twice per step: just before the pulse is applied and at
+    the end of it. The difference between these two samples is plotted against the
+    potential, producing a peak-shaped curve proportional to the derivative of an LSV
+    or NPV curve. Its peak height is normally proportional to the concentration.
+
+    Note that the peak potential is not the redox potential:
+    `E_peak = E_1/2 - pulse_potential / 2`.
+
+    As in NPV, a longer `pulse_time` expands the diffusion layer and lowers the
+    current, while a shorter `pulse_time` increases the capacitive current and therefore
+    the (non-linear) baseline. For trace analysis, the optimal pulse time is found
+    empirically by varying `pulse_time`.
 
     Examples
     --------
@@ -644,14 +692,14 @@ class DifferentialPulseVoltammetry(
     """Pulse time in s.
 
     This duration needs to be set shorter than 0.5 * interval time
-    where the interval time is equal to `potential_step` / `scan_rate`.
+    where the interval time is equal to `step_potential` / `scan_rate`.
     """
 
     scan_rate: float = 1.0
     """Scan rate (potential/time) in V/s.
 
-    The maximum scan rate depends on the value of `step_potential` step and `pulse_time`.
-    The scan rate must be < (`step_potential` / `pulse_time`)."""
+    The maximum scan rate depends on the value of `step_potential` and `pulse_time`.
+    The scan rate must be < (`step_potential` / 2 * `pulse_time`)."""
 
     enable_bipot_current: bool = False
     """Enable bipot current."""
@@ -730,6 +778,15 @@ class NormalPulseVoltammetry(
     limitation on your i-E curve (Cottrel behavior) is removed. NPV is normally more sensitive than
     LSV, since the diffusion layer thickness will be smaller, resulting in a higher faradaic current.
 
+    The pulse grows with the scan: it equals `step_potential` at the first step,
+    twice that at the next, and so on until `begin_potential` + n * `step_potential`
+    reaches `end_potential`, with n = (`end_potential` - `begin_potential`) /
+    `step_potential`.
+
+    A longer `pulse_time` grows the diffusion layer and lowers the sampled
+    current; a short pulse increases the capacitive current and therefore the
+    (non-linear) baseline.
+
     Examples
     --------
     >>> import pypalmsens as ps
@@ -763,14 +820,14 @@ class NormalPulseVoltammetry(
 
     This duration needs to be set
     shorter than `0.5 * interval_time` where the interval time is equal to
-    `potential_step` / `scan_rate`.
+    `step_potential` / `scan_rate`.
     """
 
     scan_rate: float = 1.0
     """The applied scan rate (potential/time) in V/s.
 
-    The maximum scan rate depends on the value of `step_potential` step and `pulse_time`.
-    The scan rate must be < (`step_potential` / `pulse_time`)."""
+    The maximum scan rate depends on the value of `step_potential` and `pulse_time`.
+    The scan rate must be < (`step_potential` / 2 * `pulse_time`)."""
 
     enable_bipot_current: bool = False
     """Enable bipot current."""
@@ -843,16 +900,29 @@ class BaseChronoAmperometry(
     mixins.GeneralMixin,
 ):
     equilibration_time: float = 0.0
-    """Equilibration time in s."""
+    """Equilibration time in s.
+
+    If not zero, the potential is applied and held for this long before the
+    measurement starts. No data are recorded during the equilibration step."""
 
     interval_time: float = 0.1
-    """Time between two current samples in s."""
+    """Time between two current samples in s.
+
+    The minimum interval time is instrument dependent: 1 ms for PalmSens 1 and
+    2, EmStat 1, 2, 3(+) and EmStat Pico, 0.2 ms for PalmSens 3, and 0.4 ms for
+    PalmSens 4, Nexus and EmStat4."""
 
     potential: float = 0.0
-    """The potential applied during the measurement in V."""
+    """The potential applied during the measurement in V.
+
+    Must be within the applicable potential range of the instrument. It is
+    irrelevant in a zero resistance amperometry setup, where the reference and
+    counter electrodes are not part of the measured circuit."""
 
     run_time: float = 1.0
-    """Total run time of the measurement in s."""
+    """Total run time of the measurement in s.
+
+    Between 5 * `interval_time` and 1,000,000 seconds (ca. 278 hours)."""
 
     enable_bipot_current: bool = False
     """Enable bipot current."""
@@ -907,17 +977,31 @@ class BaseChronoAmperometry(
 class ChronoAmperometry(BaseChronoAmperometry):
     """Create chrono amperometry method parameters.
 
-    The instrument applies a constant DC-potential (E dc) and the current is measured
-    with constant interval times.
+    Also known as Amperometric Detection or Potentiostatic Step.
+    The instrument applies a constant DC potential (`potential`) and
+    the current is measured at constant `interval_time` intervals.
+    If `equilibration_time` is not zero, the potential is applied
+    first and held without recording data.
+
+    Chronoamperometry is also the way to record zero resistance amperometry
+    (ZRA) and electrochemical noise: the potentiostat then works as an ammeter,
+    `potential` is irrelevant, and `record_we_potential` adds the working
+    electrode versus reference electrode potential to the record. Such a setup
+    needs a floating (galvanically isolated) instrument and the cell cannot be
+    disconnected on overload, so keep the current within the specifications of
+    the instrument.
+
+    If you need to run faster steps, use
+    [FastAmperometry][pypalmsens.FastAmperometry] instead.
 
     Examples
     --------
     >>> import pypalmsens as ps
-    >>> method = ps.ChronoAmperometry:
-    ...     equilibration_time: 0.0,
-    ...     interval_time: 0.1,
-    ...     potential: 0.0,
-    ...     run_time: 1.0,
+    >>> method = ps.ChronoAmperometry(
+    ...     equilibration_time=0.0,
+    ...     interval_time=0.1,
+    ...     potential=0.0,
+    ...     run_time=1.0,
     ... )
     """
 
@@ -942,8 +1026,13 @@ class FastAmperometry(
 ):
     """Create fast amperometry method parameters.
 
-    Fast amperometry is a form of Amperometric Detection (Chronoamperometry) but with very
-    high sampling rates or very short interval times.
+    Use Fast amperometry if you need Amperometric Detection (Chronoamperometry)
+    with very high sampling rates or very short interval times.
+
+    Only the Nexus, PalmSens and EmStat4 LR/HR series support this technique.
+    The current range is fixed for the whole measurement, and the potential of
+    the pulse (`potential`) is applied after the equilibration step, which runs
+    at its own `equilibration_potential`.
 
     Examples
     --------
@@ -964,16 +1053,24 @@ class FastAmperometry(
     current_range: AllowedCurrentRanges = '100nA'
     """Fixed current range.
 
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    Unlike most techniques, fast amperometry does not auto-range: the current
+    stays in this range for the entire measurement."""
 
     equilibration_time: float = 0.0
-    """Equilibration time in s."""
+    """Equilibration time in s.
+
+    `equilibration_potential` is applied during this step, without recording
+    data."""
 
     equilibration_potential: float = 1.0
     """Equilibration potential at which the measurement starts in V."""
 
     interval_time: float = 0.1
-    """Time between two current samples in s."""
+    """Time between two current samples in s.
+
+    Much shorter interval times are available than for chrono amperometry: the
+    minimum is 0.25 ms for PalmSens 1 and 2, 0.01 ms for PalmSens 3, 0.02 ms
+    for PalmSens 4 and 0.001 ms for EmStat4."""
 
     potential: float = 0.5
     """Potential during measurement in V.
@@ -1024,10 +1121,17 @@ class MultiStepAmperometry(
 
     With Multistep amperometry you can specify the number of potential steps
     to apply and how long each step should last. Each step works exactly as a
-    Chronoamperometry step. The current is continuously sampled with the specified interval
-    time. A whole cycle of steps can be repeated several times.
+    Chronoamperometry step. The current is continuously sampled with the
+    specified interval time. A whole cycle of steps can be repeated several times.
 
-    Levels can be specified using [pypalmsens.settings.ELevel][].
+    Levels can be specified using [pypalmsens.settings.ELevel][]. Switching
+    between levels adds overhead time, which is set out in
+    [pypalmsens.settings.ELevel][] per instrument.
+
+    Amperometric results are commonly analysed with a Cottrell plot, i.e. the
+    current plotted against the inverse square root of time. Methods that need
+    more complex behaviour than a fixed list of levels can be written as
+    [MethodScript][pypalmsens.MethodScript] instead.
 
     Examples
     --------
@@ -1056,9 +1160,9 @@ class MultiStepAmperometry(
     """Number of repetitions."""
 
     levels: list[ELevel] = Field(default_factory=lambda: [ELevel()])
-    """The cto apply within a cycle.
+    """The potentials to apply within a cycle.
 
-    Use `ELevel()` to create levels.
+    The levels are applied one after another. Use `ELevel()` to create levels.
     """
 
     enable_bipot_current: bool = False
@@ -1136,11 +1240,15 @@ class PulsedAmperometricDetection(
 ):
     """Create pulsed amperometric detection method parameters.
 
-    With Pulsed Amperometric Detection a series of pulses (pulse profile) is periodically repeated.
-    Pulsed Amperometric Detection can be used when higher sensitivity is required. Using pulses
-    instead of constant potential might result in higher faradaic currents. PAD is also used when the
-    electrode surface has to be regenerated continuously, for instance, to remove adsorbents from
-    the electrode surface.
+    In Pulsed Amperometric Detection, a pulse profile is periodically repeated.
+
+    Each pulse applies `pulse_potential` for `pulse_time` on top of the base
+    potential `potential`, which is held between pulses.
+
+    Pulsed Amperometric Detection can be used when higher sensitivity is required. Applying
+    pulses instead of a constant potential may produce higher faradaic currents. PAD is also
+    used when the electrode surface must be regenerated continuously, for example to remove
+    adsorbents from the electrode surface.
 
     Examples
     --------
@@ -1165,15 +1273,23 @@ class PulsedAmperometricDetection(
     """Equilibration time in s."""
 
     potential: float = 0.5
-    """DC or base potential in V."""
+    """DC or base potential in V.
+
+    Must be within the applicable potential range of the instrument."""
 
     pulse_potential: float = 0.05
     """Pulse potential in V.
 
-    Note that this value is not relative to `potential` given above."""
+    Note that this value is not relative to `potential` given above. It must be
+    within the applicable pulse potential range of the instrument."""
 
     pulse_time: float = 0.01
-    """Pulse time in s."""
+    """Pulse time in s.
+
+    The applicable pulse time range is instrument dependent: 10 ms to 1 s for
+    PalmSens 1 and 2, 0.2 ms to 1 s for PalmSens 3, 0.4 ms to 1 s for PalmSens
+    4 and Nexus, 5 ms to 1 s for EmStat 1, 2 and 3(+), 0.4 ms to 0.3 s for
+    EmStat4, and 2 ms to 0.3 s for EmStat Pico."""
 
     mode: Literal['dc', 'pulse', 'differential'] = 'dc'
     """Measurement mode.
@@ -1228,9 +1344,22 @@ class MultiplePulseAmperometry(
 ):
     """Create multiple pulse amperometry method parameters.
 
-    The Multiple Pulse Amperometry (MPAD) technique involves applying a series of voltage pulses
-    to an electrode immersed in a sample solution, and the resulting current of one of the pulses is
-    measured.
+    Multiple Pulse Amperometry (MPAD) applies a series of voltage pulses to an
+    electrode immersed in a sample solution, and the current is measured during
+    one of the pulses: `potential_1` is the level at which the current is
+    recorded, while `potential_2` and `potential_3` shape the rest of the pulse
+    profile.
+
+    MPAD is used when higher sensitivity is required. Using pulses instead of a
+    constant potential can produce higher faradaic currents, and because the
+    electrode surface is regenerated with every pulse, adsorbents are removed
+    continuously. This also reduces background noise and interference, making
+    it useful for trace-level analytes in complex sample matrices. The
+    potential levels and pulse durations can be optimised for each analyte,
+    which is why MPAD is a common detector in liquid chromatography (HPLC),
+    capillary electrophoresis, and flow injection analysis.
+
+    Only the PalmSens series and EmStat 1, 2, and 3(+) support this technique.
 
     Examples
     --------
@@ -1256,21 +1385,25 @@ class MultiplePulseAmperometry(
     run_time: float = 10.0
     """Total run time of the measurement in s.
 
-    The minimum and maximum duration of a measurement:
-    5 * `interval_time` to 1,000,000 seconds (~278 hours).
+    At least 5 times the sampling interval and at most 1,000,000 seconds
+    (~278 hours). One pulse cycle takes
+    `duration_1` + `duration_2` + `duration_3` seconds.
     """
 
     duration_1: float = 0.1
-    """Duration of the first applied potential in s."""
+    """Duration of the first applied potential in s. Between 0.1 and 2 s."""
 
     duration_2: float = 0.1
-    """Duration of the first applied potential in s."""
+    """Duration of the second applied potential in s. Between 0.1 and 2 s."""
 
     duration_3: float = 0.1
-    """Duration of the first applied potential in s."""
+    """Duration of the third applied potential in s. Between 0.1 and 2 s."""
 
     potential_1: float = 0.0
-    """First applied potential level at which the current is recorded in V."""
+    """First applied potential level at which the current is recorded in V.
+
+    Must be within the applicable potential range of the instrument.
+    """
 
     potential_2: float = 0.0
     """Second applied potential level at which the current is recorded in V."""
@@ -1280,7 +1413,7 @@ class MultiplePulseAmperometry(
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        """Update method with multistep amperometry settings."""
+        """Update method with multiple pulse amperometry settings."""
         psmethod.EquilibrationTime = self.equilibration_time
         psmethod.RunTime = self.run_time
 

@@ -73,6 +73,16 @@ nav = [
   ]},
   { "Lablink" = [{ "Lablink" = [
       "lablink/index.md",
+      "lablink/concept.md",
+    ]},
+    { "Reference" = [
+      "lablink/reference/index.md",
+      "lablink/reference/instance.md",
+      "lablink/reference/instrument.md",
+      "lablink/reference/measurement.md",
+      "lablink/reference/session.md",
+      "lablink/reference/exceptions.md",
+      "lablink/reference/models.md",
     ]},
   ]},
   { "Reference" = [{ "Reference" = [
@@ -117,8 +127,6 @@ nav = [
     ]},
   ]},
 ]
-
-
 
 extra_css = [
     # Include a copy of mkdocstrings.css
@@ -196,6 +204,8 @@ accent = "custom"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to system preference"
 
+
+
 [project.markdown_extensions.abbr]
 [project.markdown_extensions.admonition]
 [project.markdown_extensions.attr_list]
@@ -210,6 +220,9 @@ emoji_generator = "zensical.extensions.emoji.to_svg"
 [project.markdown_extensions.pymdownx.snippets]
 check_paths = true
 [project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
 
 [project.plugins.blog]
 
@@ -219,6 +232,7 @@ inventories = [
     "https://docs.python.org/3/objects.inv",
     "https://numpy.org/doc/stable/objects.inv",
     "https://matplotlib.org/stable/objects.inv",
+    "https://docs.xarray.dev/en/stable/objects.inv",
 ]
 paths = ["src"]
 

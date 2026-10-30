@@ -1,3 +1,4 @@
 # https://setuptools.pypa.io/en/latest/userguide/miscellaneous.html
 graft src/pypalmsens/_libpalmsens/
 graft src/pypalmsens/templates/
+graft src/pypalmsens/lablink/certs/

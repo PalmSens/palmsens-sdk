@@ -124,6 +124,8 @@ def load_measurement(
         raise ValueError(
             f'File contains {n} measurements. Use `load_session_file()` to access all of them.'
         )
+    if not measurements:
+        raise ValueError('Session file contains no data.')
 
     return measurements[0]
 

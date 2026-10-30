@@ -795,7 +795,7 @@ class IrDropCompensation(BaseSettings):
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        if self.resistance is None:
+        if self.resistance is not None:
             psmethod.UseIRDropComp = True
             psmethod.IRDropCompRes = self.resistance
         else:

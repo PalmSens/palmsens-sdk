@@ -2187,14 +2187,24 @@ class ElectrochemicalImpedanceSpectroscopy(
     mixins.GeneralMixin,
     BaseTechnique,
 ):
-    """Create potentiometry method parameters.
+    """Create electrochemical impedance spectroscopy method parameters.
 
     Electrochemical Impedance Spectroscopy (EIS) is an electrochemical technique to measure
-    the impedance of a system in dependence of the AC potentials frequency.
+    the impedance of a system in dependence of the frequency of the applied AC signal.
 
     Although "spectroscopy" implies a frequency sweep, which is the most common
-    measurement, this class provide the flexibility to set the frequency and vary
+    measurement, this class provides the flexibility to set the frequency and vary
     other parameters, such as DC potential and time.
+
+    Every measurement point yields the impedance `Z = E_ac / I_ac` at the applied
+    frequency. The impedance is a complex number `Z = Z' − jZ''`, with the real part
+    `Z'` and the imaginary part `Z''`, at the angular frequency `ω = 2πf`. The phase
+    shift follows `tan(φ) = −Z'' / Z'` and the magnitude `|Z|² = Z'² + Z''²`.
+
+    A spectrum is usually presented as a Nyquist plot of `Z''` against `Z'`, or as a
+    Bode plot of `log|Z|` and the phase shift against `log f`. The admittance, the
+    inverse of the impedance `Y = 1 / Z = Y' + jY''`, is plotted instead as `Y`
+    against `log f` or `Y''` against `Y'`.
 
     Available modes of EIS measurements:
 
@@ -2207,9 +2217,31 @@ class ElectrochemicalImpedanceSpectroscopy(
     EIS can also be used to study corrosion and the effects of coatings.
     For example, anodized coatings, conversion coatings or organic coatings like paints.
 
-    The frequency must be within the EIS frequency range of the instrument, see
-    [pypalmsens.InstrumentManager.capabilities][]
+    The applied frequencies must stay within the EIS frequency range of the
+    instrument, see [pypalmsens.InstrumentManager.capabilities][]
     (`eis_min_frequency` / `eis_max_frequency`).
+
+    During EIS the instrument selects the current range automatically, so it is
+    generally best to enable all ranges in
+    [pypalmsens.settings.CurrentRange][]: the highest usable range follows from
+    the lowest impedance to be measured (`1 / Z`) together with the highest
+    dc-current, and the lowest usable range from the highest impedance and the
+    lowest dc-current. Some ranges can still be unavailable because of
+    `max_frequency` or `ac_potential`. The measurement starts in the highest
+    enabled range and searches for a suitable range from the top down, which is
+    quick when the scan starts above 1 kHz; starting below 1 Hz makes each point
+    much longer and may need extra time on the first point, so a single fixed
+    range can be simpler for a low-frequency time scan.
+
+    Leave the higher ranges enabled when you measure at high frequencies. The
+    auto-ranging routine determines the gain from the maximum bandwidth, which
+    combines switching to the optimal range with a gain of 10 or 100 on the
+    active range, so excluding a range can leave too little bandwidth to sample
+    the high frequencies accurately.
+
+    Pretreatment always runs in potentiostatic mode, also for
+    [pypalmsens.GalvanostaticImpedanceSpectroscopy][], and `equilibration_time`
+    elapses before the impedance measurement at each newly applied dc-potential.
 
     Examples
     --------
@@ -2266,7 +2298,10 @@ class ElectrochemicalImpedanceSpectroscopy(
     _FREQ_TYPES: tuple[AllowedFrequencyTypes, ...] = ('fixed', 'scan')
 
     equilibration_time: float = 0.0
-    """Equilibration time in s."""
+    """Equilibration time in s.
+
+    Each time a new dc-potential is applied, this time elapses before the
+    impedance measurements for that potential start."""
 
     dc_potential: float = 0.0
     """DC-potential applied during the EIS scan in V.
@@ -2287,8 +2322,8 @@ class ElectrochemicalImpedanceSpectroscopy(
 
     The maximum amplitude of your instrument is available as
     `max_eis_amplitude_erms` on
-    [pypalmsens.InstrumentManager.capabilities][].
-    """
+    [pypalmsens.InstrumentManager.capabilities][]. Together with `max_frequency`
+    this amplitude can make some current ranges unavailable."""
 
     frequency_type: AllowedFrequencyTypes = 'scan'
     """Whether to measure a single frequency or scan over a range of frequencies.
@@ -2296,26 +2331,46 @@ class ElectrochemicalImpedanceSpectroscopy(
     Possible values: 'scan', 'fixed'.
 
     - Scan: a frequency scan is performed starting at the given `max_frequency`
-        to the `min_frequency`.
-    - Fixed: a single frequency given by 'fixed_frequency is applied for
-        the given duration or at each potential step or time interval.
+        down to `min_frequency`. This is the setting for a regular EIS experiment.
+    - Fixed: a single frequency given by `fixed_frequency` is applied for
+        the given duration or at each dc-potential step or time interval.
     """
 
     fixed_frequency: float = 1_000
-    """Fixed frequency in Hz (fixed frequency only)."""
+    """Fixed frequency in Hz (`frequency_type='fixed'`).
+
+    Applied at each dc-potential step or time interval when `scan_type` is
+    `'potential'` or `'time'`. Must be within the EIS frequency range of the
+    instrument, see [pypalmsens.InstrumentManager.capabilities][]
+    (`eis_min_frequency` / `eis_max_frequency`)."""
 
     min_frequency: float = 5.0
-    """Minimum frequency in Hz (frequency scan only)."""
+    """Frequency the frequency scan ends on in Hz (frequency scan only).
+
+    Must stay within the EIS frequency range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][] (`eis_min_frequency`)."""
 
     max_frequency: float = 10_000
-    """Maximum frequency in Hz (frequency scan only)."""
+    """Frequency the frequency scan starts on in Hz (frequency scan only).
+
+    The scan runs from here down to `min_frequency`. Above 1 kHz a point is
+    measured in a few seconds; below 1 Hz each point takes much longer and the
+    first point may need extra time to select a current range. Must stay within
+    the EIS frequency range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][] (`eis_max_frequency`)."""
 
     n_frequencies: int = 11
-    """Number of frequencies (frequency scan only).
+    """Number of frequencies to apply in the frequency scan (frequency scan only).
 
-    Defines the range of frequencies to apply between the `max_frequency` and
+    Defines the frequencies to apply between the `max_frequency` and
     `min_frequency`. For example, a value of 11 will measure at 11 frequencies,
     including both end points.
+
+    EIS experiments usually span kilohertz to millihertz, so a logarithmic
+    spacing is common: 10 frequencies per decade makes a scan from 10 kHz down
+    to 100 Hz 2 decades times 10 + 1 frequencies, i.e. 21 frequencies.
+
+    This is the total number of applied frequencies, not the number per decade.
     """
 
     scan_type: AllowedScanTypes = 'fixed'
@@ -2323,23 +2378,28 @@ class ElectrochemicalImpedanceSpectroscopy(
 
     Possible values: 'potential', 'time', 'fixed'.
 
-    - Fixed scan: perform a single scan (default).
+    - Fixed scan: perform a single scan (default). `dc_potential` stays fixed
+        during the scan.
     - Time scan: scans are repeated for a specific amount of time at a specific interval.
-    - Potential scan: scans are repeated over a range of DC potential values.
-      A potential scan should not be performed versus the OCP.
+    - Potential scan: scans are repeated over a range of DC potential values,
+        starting at `begin_potential` and ending at `end_potential` in steps of
+        `step_potential`. At each dc-potential level a single fixed frequency or a
+        full frequency scan is applied, according to `frequency_type`.
+        A potential scan should not be performed versus the OCP.
     """
 
     run_time: float = 10.0
     """Minimal run time in seconds in s (time scan only).
 
-    For example, if a frequency scan takes 18 seconds and is measured
-    at an interval of 19 seconds for a `run_time` of 40 seconds, then
-    three iterations will be performed."""
+    Scans are repeated until this much time has elapsed, within the run time the
+    instrument allows: less than 1 s up to 1,000,000 s. For example, if a
+    frequency scan takes 10 seconds and is measured at an interval of 1 second
+    for a `run_time` of 25 seconds, then three iterations will be performed."""
 
     interval_time: float = 0.1
     """The interval at which a measurement iteration should be performed in s (time scan only).
 
-    The minimum interval time between each data point (`frequency_type='fixed') or
+    The minimum interval time between each data point (`frequency_type='fixed'`) or
     between each frequency scan (`frequency_type='scan').
     We recommend a time higher than the required time to measure the data point or perform the
     frequency scan + overhead time. While it's possible to use a shorter time, doing so may
@@ -2353,18 +2413,24 @@ class ElectrochemicalImpedanceSpectroscopy(
     """The dc-potential at which the measurement starts in V (potential scan only).
 
     I.e. the DC potential of the applied sine wave to start the series of iterative measurements at.
+    Must stay within the potential range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][] (`min_potential` / `max_potential`).
     """
 
     end_potential: float = 0.0
-    """The dc-potential at which the scan ends in  V (potential scan only).
+    """The dc-potential at which the scan ends in V (potential scan only).
 
     I.e. the DC potential of the applied sine wave at which the series of iterative measurements ends.
+    The applicable range is the same as for `begin_potential`.
     """
 
     step_potential: float = 0.01
     """Potential step size in V (potential scan only).
 
     This sets the increment to be used between `begin_potential` and `end_potential`.
+    The largest step is 250 mV; the smallest step your instrument allows is
+    `min_potential_step` in mV on
+    [pypalmsens.InstrumentManager.capabilities][].
     """
 
     min_sampling_time: float = Field(default=0.5, gt=0)
@@ -2395,6 +2461,10 @@ class ElectrochemicalImpedanceSpectroscopy(
     value of this parameter. A reasonable value might be 5 seconds.
     In this case this parameter is only relevant when the lowest frequency
     is less than 1/5 s so 0.2 Hz.
+
+    Increasing this parameter can be beneficial when measuring unstable or
+    noisy samples at low frequencies, although it extends the overall
+    measurement time.
     """
 
     @override

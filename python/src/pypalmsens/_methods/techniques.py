@@ -214,9 +214,7 @@ class FastCyclicVoltammetry(
     """Unique method identifier."""
 
     current_range: AllowedCurrentRanges = '1uA'
-    """Fixed current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Fixed current range."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -906,11 +904,7 @@ class BaseChronoAmperometry(
     measurement starts. No data are recorded during the equilibration step."""
 
     interval_time: float = 0.1
-    """Time between two current samples in s.
-
-    The minimum interval time is instrument dependent: 1 ms for PalmSens 1 and
-    2, EmStat 1, 2, 3(+) and EmStat Pico, 0.2 ms for PalmSens 3, and 0.4 ms for
-    PalmSens 4, Nexus and EmStat4."""
+    """Time between two current samples in s."""
 
     potential: float = 0.0
     """The potential applied during the measurement in V.
@@ -1463,12 +1457,17 @@ class BaseOpenCircuitPotentiometry(
     """Record auxiliary input."""
 
     record_we_current: bool = False
-    """Record working electrode current."""
+    """Record the working electrode current.
+
+    The current is measured in `record_we_current_range`. Recording the WE
+    current is supported by PalmSens4 and EmStat4."""
 
     record_we_current_range: AllowedCurrentRanges = '1uA'
-    """Record working electrode current range.
+    """Current range used to record the working electrode current.
 
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    OCP polarizes the cell with neither potential nor current, so the recording
+    range is set here rather than through an applied current range.
+    """
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -1501,6 +1500,8 @@ class BaseOpenCircuitPotentiometry(
 class OpenCircuitPotentiometry(BaseOpenCircuitPotentiometry):
     """Create open circuit potentiometry method parameters.
 
+    Supported by all instruments.
+
     For Open Circuit Potentiometry there is no polarization, and the so-called Open Circuit
     Potential (OCP) is measured and recorded with constant interval times. The result is a curve of
     Potential vs. Time. The OCP is also called Open Circuit Voltage (OCV).
@@ -1509,7 +1510,8 @@ class OpenCircuitPotentiometry(BaseOpenCircuitPotentiometry):
     specifically denotes the potential of a metal or electrode when exposed to a corrosive
     environment.
 
-    This method is the same as `Chronopotentiometry(current=0)`.
+    This method is the same as [ChronoPotentiometry][pypalmsens.ChronoPotentiometry] with
+    `current=0`.
 
     Examples
     --------
@@ -1545,19 +1547,25 @@ class BaseChronoPotentiometry(
 
     Note that this value acts as a multiplier in the `applied_current_range`.
 
-    So if 10 uA is the `applied_current_range` and 1.5 is given as current value,
-    the applied current will be 15 uA."""
+    So if 10 µA is the `applied_current_range` and 1.5 is given as current value,
+    the applied current will be 15 µA.
+
+    The largest usable multiplier is instrument dependent: ±2 times the range for
+    PalmSens2, ±3 for PalmSens3, ±6 for PalmSens4, -3 to +3 for EmStat4 LR and HR,
+    and on Nexus ±5 below 10 mA, ±4.5 for the 10 and 100 mA ranges and ±1 for the
+    1 A range. The multiplier your instrument allows is available as `min_current`
+    and `max_current` on [pypalmsens.InstrumentManager.capabilities][]."""
 
     applied_current_range: AllowedCurrentRanges = '100mA'
-    """Applied current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Applied current range."""
 
     interval_time: float = 0.1
     """Time between two potential samples in s."""
 
     run_time: float = 1.0
-    """Total run time of the measurement in s."""
+    """Total run time of the measurement in s.
+
+    Between 5 * `interval_time` and 1,000,000 seconds (ca. 278 hours)."""
 
     record_auxiliary_input: bool = False
     """Record auxiliary input."""
@@ -1607,6 +1615,9 @@ class BaseChronoPotentiometry(
 class ChronoPotentiometry(BaseChronoPotentiometry):
     """Create potentiometry method parameters.
 
+    Also known as Galvanostatic Step. Supported by the Nexus series, the PalmSens
+    series and EmStat4 LR and HR.
+
     Chronopotentiometry (CP) is an electrochemical technique
     that requires a galvanostat instead of a potentiostat.
     In this method, a constant current is applied, and the resulting potential (voltage)
@@ -1614,6 +1625,12 @@ class ChronoPotentiometry(BaseChronoPotentiometry):
     useful for studying electrochemical reactions, kinetics, and processes under non-steady-state
     conditions, offering valuable insights into how the electrode potential evolves in response to
     the applied current.
+
+    CP is valuable when no reference electrode is available: the applied current
+    stays constant even as the cell resistance changes.
+    Combined with a known electrode surface area it gives a
+    reproducible basis for quantitative work, such as determining reaction rate
+    constants and charge transfer coefficients.
 
     Examples
     --------
@@ -1642,16 +1659,29 @@ class StrippingChronoPotentiometry(
 ):
     """Create stripping potentiometry method parameters.
 
+    Also known as Potentiometric Stripping Analysis (PSA).
+
     Chronopotentiometric Stripping or Stripping chronopotentiometry is a sensitive analytical
-    technique.
-    The sequence of a stripping chronopotentiometry measurement:
+    technique. The sequence of a stripping chronopotentiometry measurement:
 
     1. Apply conditioning potential, if conditioning time > 0.
     2. Apply deposition potential, if deposition time > 0.
     3. Apply deposition potential and wait for equilibration time.
     4. If the stripping current is set to 0 then the cell is switched off. Otherwise,
     the specified constant current is applied. The measurement with a rate of 40 kHz starts. The measurement
-    stops when either the measured potential is below ‘end_potential’ or the `measurement_time` is exceeded.
+    stops when either the measured potential is below `end_potential` or the `measurement_time` is exceeded.
+
+    The conditioning and deposition potentials of steps 1 and 2, with their times,
+    come from [pypalmsens.settings.Pretreatment][]. During step 3 the deposition
+    potential is held while the cell equilibrates.
+
+    The measurement runs in one of two modes: chemical stripping, where a chemical
+    oxidant or reductant strips the deposit, or galvanostatic stripping, where
+    `current` is applied. Both record the potential versus time, and the result is
+    conventionally re-plotted as the inverse derivative dt/dE in s/V against the
+    potential. Stripping a deposit takes charge, so the more of a component was
+    deposited, the longer it takes for the potential to move and the larger the
+    peak in dt/dE at the potential where that component is oxidised or reduced.
 
     Examples
     --------
@@ -1669,28 +1699,35 @@ class StrippingChronoPotentiometry(
     """Unique method identifier."""
 
     potential_range: AllowedPotentialRanges = '500mV'
-    """Fixed potential range.
+    """Potential range used for the whole measurement.
 
-    See `pypalmsens.settings.AllowedPotentialRanges` for options."""
+    Unlike other techniques, this range is fixed: it is not re-selected while the
+    measurement runs."""
 
     current: float = 0.0
     """The stripping current to apply.
 
     Note that this value acts as a multiplier in the applied current range.
-    So if 10 uA is the applied current range and 1.5 is given as current value,
-    the applied current will be 15 uA.
+    So if 10 µA is the applied current range and 1.5 is given as current value,
+    the applied current will be 15 µA.
 
-    If the stripping current is set to 0, then chemical stripping is performed,
-    otherwise it is chemical constant current stripping.
+    If the stripping current is set to 0, chemical stripping is performed with a
+    chemical oxidant or reductant. Otherwise the instrument acts as a galvanostat
+    and applies a constant stripping current.
+
+    The direction of the stripping current follows the sign of `end_potential`
+    minus the deposition potential, or the sign of `end_potential` alone when no
+    deposition time is used.
     """
 
     applied_current_range: AllowedCurrentRanges = '100uA'
-    """Applied current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Applied current range."""
 
     end_potential: float = 0.0
-    """Potential where the measurement at stops in V ."""
+    """Potential where the measurement stops in V.
+
+    The measurement ends as soon as the measured potential drops below this value,
+    even if `measurement_time` has not elapsed."""
 
     measurement_time: float = 1.0
     """The maximum measurement time in s.
@@ -1701,7 +1738,11 @@ class StrippingChronoPotentiometry(
     the measurement is aborted."""
 
     bandwidth: None | float = None
-    """Override the bandwidth filter cutoff frequency (in Hz)."""
+    """Override bandwidth on MethodSCRIPT devices if set.
+
+    Normally the instrument sets its filters optimally for the required bandwidth.
+    When this is set, the bandwidth is overridden with the value in Hz. Only
+    supported by MethodSCRIPT devices: e.g. Nexus, EmStat Pico and EmStat4 Series."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -1747,6 +1788,31 @@ class LinearSweepPotentiometry(
 ):
     """Create linear sweep potentiometry method parameters.
 
+    Also known as Galvanodynamic Step. Supported by the Nexus series, PalmSens4 and
+    EmStat4 LR and HR.
+
+    LSP is the galvanostatic counterpart of
+    [LinearSweepVoltammetry][pypalmsens.LinearSweepVoltammetry]: the current is
+    swept from `current_begin` to `current_end` instead of the potential. The
+    sweep is not truly linear but a series of `current_step` steps, and the
+    potential is sampled during the last 25% of each step, so the current versus
+    potential curve holds
+    `(current_end - current_begin) / current_step + 1` points. The interval time
+    between two points follows from `current_step / scan_rate`: with a
+    `current_step` of 0.005 mA and a `scan_rate` of 0.1 mA/s the interval time is
+    0.05 s.
+
+    As with other galvanostatic techniques, LSP suits systems without a reference
+    electrode whose electrochemical surface area is well known: the controlled
+    current keeps the reaction rate stable, which helps for complex or multi-step
+    reactions. Such sweeps are less prone to double-layer charging artefacts
+    and potential drift than potentiodynamic ones.
+
+    If an unknown current might drive the potential high enough to damage the
+    working electrode, specify a maximum potential limit: the scan then stops
+    early and `current_end` may not be reached. See
+    [pypalmsens.settings.PotentialLimits][].
+
     Examples
     --------
     >>> import pypalmsens as ps
@@ -1764,32 +1830,40 @@ class LinearSweepPotentiometry(
     """Unique method identifier."""
 
     applied_current_range: AllowedCurrentRanges = '100uA'
-    """Applied current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Applied current range."""
 
     current_begin: float = -1.0
     """Current applied at beginning of measurement.
 
-    This value is multiplied by the defined current range."""
+    This value is multiplied by the defined current range and must stay within
+    the applied current limits of the instrument, available as `min_current` and
+    `max_current` on [pypalmsens.InstrumentManager.capabilities][]."""
 
     current_end: float = 1.0
     """Current applied at end of measurement.
 
-    This value is multiplied by the defined current range."""
+    This value is multiplied by the defined current range and must stay within
+    the applied current limits of the instrument. The scan stops early if a
+    potential limit is reached before this current is applied."""
 
     current_step: float = 0.01
     """Current step.
 
-    This value is multiplied by the defined current range."""
+    This value is multiplied by the defined current range.
+
+    The minimum step is instrument dependent: 0.001 times the current range for
+    PalmSens1 and 2, 0.00015 for PalmSens3, 0.000075 for PalmSens4, 0.000038 for
+    Nexus, 0.0001 for EmStat4 LR and 0.000183 for EmStat4 HR."""
 
     scan_rate: float = 1.0
-    """Scan rate (current/time) in V/s.
+    """Scan rate in current per time.
+
+    This value is multiplied by the defined current range, so with a `100uA`
+    range a `scan_rate` of 1.0 sweeps 100 µA per second. The interval time of the
+    recorded points is `current_step / scan_rate`.
 
     The applicable range depends on the value of `current_step` since the data
-    acquisition rate is limited by the connected instrument.
-
-    This value is multiplied by the defined current range."""
+    acquisition rate is limited by the connected instrument."""
 
     record_auxiliary_input: bool = False
     """Record auxiliary input."""
@@ -1844,13 +1918,22 @@ class MultiStepPotentiometry(
 ):
     """Create multi-step potentiometry method parameters.
 
-    MultiStep Potentiometry you can specify the number of current steps
-    to apply and how long each step should last. The current is continuously
-    sampled with the specified interval.
+    Supported by the Nexus series, the PalmSens series and EmStat4 LR and HR.
+
+    MultiStep Potentiometry lets you specify the number of current steps
+    to apply and how long each step should last. The potential response is
+    continuously sampled with the specified interval.
 
     A whole cycle of steps can be repeated several times.
 
-    Levels can be specified using [pypalmsens.settings.ILevel][].
+    Levels can be specified using [pypalmsens.settings.ILevel][]. Each level can
+    skip recording (`record`), move on to the next level once
+    `limit_potential_max` or `limit_potential_min` is reached, and set digital
+    trigger lines at its start.
+
+    With a single level this is identical to
+    [ChronoPotentiometry][pypalmsens.ChronoPotentiometry], which offers a larger
+    range of measurement rates.
 
     Examples
     --------
@@ -1870,29 +1953,30 @@ class MultiStepPotentiometry(
     """Unique method identifier."""
 
     applied_current_range: AllowedCurrentRanges = '1uA'
-    """Applied current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Applied current range."""
 
     interval_time: float = 0.1
     """The time between two samples in s."""
 
     n_cycles: int = 1
-    """Number of repetitions."""
+    """Number of times the whole cycle of levels is repeated."""
 
     levels: list[ILevel] = Field(default_factory=lambda: [ILevel()])
-    """The currents to apply within a cycle.
+    """The current levels to apply within a cycle, in order.
 
-    Use `ILevel()` to create levels.
+    Use [pypalmsens.settings.ILevel][] to create levels. Each level applies its
+    current for its `duration` while the potential is sampled at `interval_time`.
+    Switching between levels adds instrument overhead.
     """
 
     record_auxiliary_input: bool = False
     """Record auxiliary input."""
 
     record_we_current: bool = False
-    """Record applied working electrode potential.
+    """Record the working electrode current.
 
-    Reference electrode vs ground."""
+    The applied current between the working and the reference electrode, measured
+    in `applied_current_range`."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -1947,9 +2031,32 @@ class ChronoCoulometry(
 ):
     """Create chrono coulometry method parameters.
 
-    Chronoamperometry (CA) and Chronocoulometry (CC) have the same potential waveform but
+    Supported by the Nexus series, PalmSens3 and PalmSens4, the EmStat series and
+    the Sensit series.
+
+    Chronocoulometry (CC) and Chronoamperometry (CA) have the same potential waveform but
     in CC, the charge is monitored as a function of time (instead of the current).
     The charge is determined by integrating the current.
+
+    While the current recorded in CA relates linearly to the reaction rate, the
+    charge recorded in CC relates linearly to the number of converted reactants,
+    as described by Faraday's law. This makes CC useful during deposition or
+    electrochemical synthesis, and for characterising batteries and capacitors.
+
+    The measurement is conducted in two steps: `step1_potential` at a potential
+    where no reaction occurs, followed by `step2_potential` where the reaction is
+    initiated, just like the classic Cottrell experiment. This ensures the charge
+    step at the beginning is recorded.
+
+    CC is also used to determine the number of adsorbed active species in a
+    solution of freely diffusing species. Multiplying the Cottrell equation by t
+    shows that the charge of the diffusing species is proportional to the square
+    root of time, while the charge stored in the double layer and the charge of
+    adsorbed species respond much faster. Plotting charge against the square root
+    of time (an Anson plot) therefore ideally shows a jump in charge followed by a
+    linear increase. Extrapolating the linear part back to the charge axis gives
+    the combined double layer and adsorbed contribution, and a blank measurement
+    separates the double layer contribution from the adsorbed one.
 
     Examples
     --------
@@ -1974,7 +2081,14 @@ class ChronoCoulometry(
     """The time between two samples in s."""
 
     step1_potential: float = 0.5
-    """Potential applied during first step in V."""
+    """Potential applied during first step in V.
+
+    Use a potential at which no reaction occurs, so that the charge step at the
+    start of the second step is recorded.
+
+    Must stay within the potential limits of the instrument.
+    See `min_potential` and `max_potential` on
+    [pypalmsens.InstrumentManager.capabilities][]"""
 
     step1_run_time: float = 5.0
     """Run time for the first step.
@@ -1984,7 +2098,10 @@ class ChronoCoulometry(
     """
 
     step2_potential: float = 0.5
-    """Potential applied during second step in V."""
+    """Potential applied during second step in V.
+
+    The potential at which the reaction is initiated. Subject to the same
+    instrument potential limits as `step1_potential`."""
 
     step2_run_time: float = 5.0
     """Run time for the second step.
@@ -1994,7 +2111,11 @@ class ChronoCoulometry(
     """
 
     bandwidth: None | float = None
-    """Override bandwidth on MethodSCRIPT devices if set."""
+    """Override bandwidth on MethodSCRIPT devices if set.
+
+    Normally the instrument sets its filters optimally for the required bandwidth.
+    When this is set, the bandwidth is overridden with the value in Hz. Only
+    supported by MethodSCRIPT devices: e.g. Nexus, EmStat Pico and (Multi)EmStat4."""
 
     record_auxiliary_input: bool = False
     """Record auxiliary input."""
@@ -2482,9 +2603,7 @@ class GalvanostaticImpedanceSpectroscopy(
     """Applied current range.
 
     This is the range in which the specified current values (such as `ac_current`,
-    `begin_current`, or `step_current) will be applied.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    `begin_current`, or `step_current) will be applied."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -2677,9 +2796,7 @@ class FastGalvanostaticImpedanceSpectroscopy(
     """Unique method identifier."""
 
     applied_current_range: AllowedCurrentRanges = '100uA'
-    """Applied current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Applied current range."""
 
     run_time: float = 10.0
     """Total run time of the measurement in s."""

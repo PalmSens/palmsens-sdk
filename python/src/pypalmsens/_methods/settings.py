@@ -175,6 +175,15 @@ class PotentialRange(BaseSettings):
 class Pretreatment(BaseSettings):
     """Set the measurement pretreatment settings.
 
+    Two optional stages run before equilibration, in this order: the conditioning
+    potential for `conditioning_time` seconds, then the deposition potential for
+    `deposition_time` seconds. A stage is skipped when its time is `0.0`, so the
+    defaults apply no pretreatment at all.
+
+    Each stage polarizes the cell at a fixed potential. No data is recorded during
+    conditioning, deposition, or the equilibration that follows them. The
+    current, potential and charge limits exclude the pretreatment stages.
+
     Examples
     --------
     As a `Pretreatment` instance:
@@ -210,17 +219,17 @@ class Pretreatment(BaseSettings):
     >>> method.pretreatment.conditioning_time = 5.0
     """
 
-    deposition_potential: float = 0.0
-    """Deposition potential in V."""
-
-    deposition_time: float = 0.0
-    """Deposition time in s."""
-
     conditioning_potential: float = 0.0
-    """Conditioning potential in V."""
+    """Conditioning potential in V, applied first."""
 
     conditioning_time: float = 0.0
-    """Conditioning time in s."""
+    """Conditioning time in s. If `0.0`, the conditioning stage is skipped."""
+
+    deposition_potential: float = 0.0
+    """Deposition potential in V, applied after the conditioning stage."""
+
+    deposition_time: float = 0.0
+    """Deposition time in s. If `0.0`, the deposition stage is skipped."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -1332,7 +1341,15 @@ class DataProcessing(BaseSettings):
 
 
 class General(BaseSettings):
-    """Sets general/other settings.
+    """Set the method-wide options.
+
+    These apply to nearly every technique instead of being parameters of one
+    technique in particular:
+
+    - on-board storage
+    - hardware sync
+    - notes
+    - mains filter
 
     Examples
     --------
@@ -1381,10 +1398,15 @@ class General(BaseSettings):
     MultiStep and MixedMode techniques cannot be stored on-board."""
 
     use_hardware_sync: bool = False
-    """Use hardware synchronization with other channels/instruments."""
+    """Use hardware synchronization with other channels/instruments.
+
+    Start this measurement simultaneously with the other channels of a multichannel
+    instrument. See [InstrumentPool][pypalmsens.InstrumentPool]."""
 
     notes: str = ''
-    """Add some user notes for use with this technique."""
+    """Add some user notes to this method.
+
+    `notes` is stored with the method, and meant to describe the sensor or sample."""
 
     power_frequency: Literal[50, 60] = 50
     """Set the DC mains filter in Hz.
@@ -1410,6 +1432,25 @@ class General(BaseSettings):
 
 class Material(BaseSettings):
     """Stores material settings for corrosion measurements.
+
+    These parameters are not used while measuring. They are stored with the method so
+    that the corrosion-rate analysis can be done afterwards, by PSTrace rather than by
+    this SDK.
+
+    The corrosion rate in mm/year follows the ASTM standard practice G102:
+
+        corrosion rate = I_corrosion * K * EW / (d * A)
+
+    with `K` = 3272 mm/(A·cm·year), `EW` = `weight`, `d` = `density` and
+    `A` = `surface_area`, and `I_corrosion` estimated from the measurement by a
+    Tafel or Butler-Volmer fit.
+
+    Linear polarization analysis needs `surface_area`, `weight` and `density`, see
+    [Linear Polarization][pypalmsens.corrosion.LinearPolarization]. Corrosion analysis
+    of impedance data also needs the Tafel slopes `b_anodic` and `b_cathodic`, see
+    [Impedance Spectroscopy][pypalmsens.corrosion.ImpedanceSpectroscopy]. The Tafel
+    slopes can be determined from a linear polarization measurement or taken from
+    literature.
 
     Examples
     --------
@@ -1450,19 +1491,19 @@ class Material(BaseSettings):
     """
 
     surface_area: float = 0.0
-    """Surface area of the sample in cm2."""
+    """Area of the sample exposed to the corrosion reaction in cm2."""
 
     weight: float = 0.0
-    """Equivalent mass of one mole of the sample material in g/mol."""
+    """Equivalent weight: the equivalent mass of one mole of the sample material in g/mol."""
 
     density: float = 0.0
-    """Density of the sample in g/cm3."""
+    """Density of the sample material in g/cm3."""
 
     b_anodic: float = 0.0
-    """B anodic in V/dec."""
+    """Anodic Tafel slope in V per decade of current."""
 
     b_cathodic: float = 0.0
-    """B cathodic in V/dec."""
+    """Cathodic Tafel slope in V per decade of current."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):

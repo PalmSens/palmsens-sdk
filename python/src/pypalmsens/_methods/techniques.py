@@ -2323,7 +2323,12 @@ class ElectrochemicalImpedanceSpectroscopy(
     The maximum amplitude of your instrument is available as
     `max_eis_amplitude_erms` on
     [pypalmsens.InstrumentManager.capabilities][]. Together with `max_frequency`
-    this amplitude can make some current ranges unavailable."""
+    this amplitude can make some current ranges unavailable.
+
+    Keep the amplitude small: an amplitude that leaves the linear region of the
+    system produces higher harmonics of the applied frequency and can start redox
+    reactions. Raise it only for very high impedances, in the megaohm range and
+    above, where the resulting current stays small enough to remain linear."""
 
     frequency_type: AllowedFrequencyTypes = 'scan'
     """Whether to measure a single frequency or scan over a range of frequencies.
@@ -2428,7 +2433,7 @@ class ElectrochemicalImpedanceSpectroscopy(
     """Potential step size in V (potential scan only).
 
     This sets the increment to be used between `begin_potential` and `end_potential`.
-    The largest step is 250 mV; the smallest step your instrument allows is
+    The largest step is 250 mV, the smallest step your instrument allows is
     `min_potential_step` in mV on
     [pypalmsens.InstrumentManager.capabilities][].
     """
@@ -2531,6 +2536,20 @@ class FastImpedanceSpectroscopy(
 ):
     """Create fast impedance spectroscopy method parameters.
 
+    Fast EIS applies a single frequency at `dc_potential` and repeats it every
+    `interval_time`, following rapid impedance changes of a cell instead of
+    sweeping a spectrum. The latency between data points is reduced to a minimum
+    of 1 ms, and the instrument buffers the points in its internal memory: no
+    points are shown while the measurement runs, the full dataset is transferred
+    and plotted once it completes.
+
+    Because a lower frequency needs a longer wave period, the shortest interval
+    depends on the applied frequency: the 1 ms minimum requires 10 kHz or higher,
+    and the relation is not linear, as a 10 ms interval allows frequencies down
+    to 250 Hz.
+
+    Only the EmStat4 series and the Nexus series support this technique.
+
     Examples
     --------
     >>> import pypalmsens as ps
@@ -2548,26 +2567,44 @@ class FastImpedanceSpectroscopy(
     """Unique method identifier."""
 
     equilibration_time: float = 0.0
-    """Equilibration time in s."""
+    """Equilibration time in s.
+
+    `dc_potential` is applied and held for this long before the first sample."""
 
     interval_time: float = 0.1
-    """The time between two samples in s."""
+    """The time between two samples in s.
+
+    The minimum depends on the applied frequency: 1 ms requires 10 kHz or higher,
+    and the relation is not linear, as a 10 ms interval allows frequencies down
+    to 250 Hz."""
 
     run_time: float = 10.0
     """Total run time of the measurement in s."""
 
     dc_potential: float = 0.0
-    """Potential applied during measurement in V."""
+    """Potential applied during the measurement in V.
+
+    Must stay within the potential range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][]
+    (`min_potential` / `max_potential`)."""
 
     ac_potential: float = 0.01
-    """Potential amplitude in V (rms)."""
+    """Potential amplitude in V (RMS).
+
+    The range is 0.001 V to 0.25 V (RMS), commonly 0.010 V. The maximum of your
+    instrument is `max_eis_amplitude_erms` on
+    [pypalmsens.InstrumentManager.capabilities][]."""
 
     frequency: float = 50000.0
-    """Fixed frequency in Hz."""
+    """Fixed frequency in Hz, applied at every `interval_time`.
+
+    Must stay within the EIS frequency range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][] (`eis_min_frequency` /
+    `eis_max_frequency`)."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        """Update method with fas impedance spectroscopy settings."""
+        """Update method with fast impedance spectroscopy settings."""
         psmethod.Eac = self.ac_potential
         psmethod.EquilibrationTime = self.equilibration_time
         psmethod.FixedFrequency = self.frequency
@@ -2598,13 +2635,28 @@ class GalvanostaticImpedanceSpectroscopy(
 ):
     """Create galvanostatic impedance spectroscopy method parameters.
 
-    For Galvanostatic EIS (GEIS) the modes are:
+    In Galvanostatic EIS (GEIS) the current through the cell is controlled rather
+    than the potential across it, which is preferred for low-impedance cells. To
+    keep currents small on a low impedance a potentiostatic measurement uses a
+    small amplitude, but a cell whose impedance changes during the measurement
+    then produces unexpected currents. In galvanostatic mode the amplitude of the
+    AC current is controlled and set by the user.
+
+    The current follower is part of the controlled loop, so current ranges cannot
+    be switched while measuring: auto current ranging is not supported in
+    galvanostatic mode and `applied_current_range` must cover the whole
+    measurement. Pretreatment is still applied in potentiostatic mode.
+
+    For GEIS the modes are:
 
     - a frequency scan at a fixed dc-current
     - frequency scans at each current in a current scan
     - frequency scans at specified time intervals (time scan)
     - a single frequency applied at each current in a current scan
     - a single frequency at specified time intervals
+
+    Because the bandwidth of the current follower affects the stability of the
+    system, the maximum frequency is limited to 100 kHz on PalmSens4.
 
     Examples
     --------
@@ -2672,17 +2724,26 @@ class GalvanostaticImpedanceSpectroscopy(
     applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
 
-    This is the range in which the specified current values (such as `ac_current`,
-    `begin_current`, or `step_current) will be applied."""
+    Current values (such as `ac_current`, `begin_current` or `step_current`) are
+    expressed as a factor of this range.
+
+    Auto current ranging is not possible in galvanostatic mode, so this range has
+    to cover all currents of the measurement."""
 
     equilibration_time: float = 0.0
-    """Equilibration time in s."""
+    """Equilibration time in s.
+
+    Each time a new dc-current is applied, this time elapses before the impedance
+    measurements for that current start."""
 
     ac_current: float = 0.01
-    """AC current expressed in the applied current range RMS."""
+    """AC current amplitude as a factor of `applied_current_range`, in RMS.
+
+    On PalmSens4 the maximum factor is 0.4 per current range, except for the
+    10 mA range where it is 0.2."""
 
     dc_current: float = 0.0
-    """DC current expressed in the applied current range."""
+    """DC current applied during the GEIS scan as a factor of `applied_current_range`."""
 
     frequency_type: AllowedFrequencyTypes = 'scan'
     """Whether to measure a single frequency or scan over a range of frequencies.
@@ -2690,26 +2751,37 @@ class GalvanostaticImpedanceSpectroscopy(
     Possible values: 'scan', 'fixed'.
 
     - Scan: a frequency scan is performed starting at the given `max_frequency`
-        to the `min_frequency`.
+        down to `min_frequency`. This is the setting for a regular GEIS experiment.
     - Fixed: a single frequency given by `fixed_frequency` is applied for
-        the given duration or at each potential step or time interval.
+        the given duration or at each current step or time interval.
     """
 
     fixed_frequency: float = 1_000
-    """Fixed frequency in Hz (fixed frequency only)."""
+    """Fixed frequency in Hz (`frequency_type='fixed'`).
+
+    Applied at each current step or time interval when `scan_type` is `'current'`
+    or `'time'`. Must be within the impedance frequency range of the instrument,
+    see [pypalmsens.InstrumentManager.capabilities][]."""
 
     min_frequency: float = 5.0
-    """Minimum frequency in Hz (frequency scan only)."""
+    """Frequency the frequency scan ends on in Hz (frequency scan only)."""
 
     max_frequency: float = 10_000
-    """Maximum frequency in Hz (frequency scan only)."""
+    """Frequency the frequency scan starts on in Hz (frequency scan only).
+
+    The scan runs from here down to `min_frequency`. In galvanostatic mode the
+    bandwidth of the current follower limits the stability.
+    The limit of your instrument is `geis_max_frequency` on
+    [pypalmsens.InstrumentManager.capabilities][]."""
 
     n_frequencies: int = 11
-    """Number of frequencies (frequency scan only).
+    """Number of frequencies to apply in the frequency scan (frequency scan only).
 
-    Defines the range of frequencies to apply between the `max_frequency` and
+    Defines the frequencies to apply between the `max_frequency` and
     `min_frequency`. For example, a value of 11 will measure at 11 frequencies,
     including both end points.
+
+    This is the total number of applied frequencies, not the number per decade.
     """
 
     scan_type: AllowedScanTypes = 'fixed'
@@ -2717,28 +2789,30 @@ class GalvanostaticImpedanceSpectroscopy(
 
     Possible values: 'current', 'time', 'fixed'.
 
-    - Fixed scan: perform a single scan (default).
+    - Fixed scan: perform a single scan (default). `dc_current` stays fixed
+        during the scan.
     - Time scan: scans are repeated for a specific amount of time at a specific interval.
     - Current scan: scans are repeated over a range of current values, starting at
-        `begin_current` and ending at `end_current` with step size `step_current`.
-        At each DC current level, a single fixed frequency or frequency scan is applied.
+        `begin_current` and ending at `end_current` in steps of `step_current`.
+        At each dc-current level a single fixed frequency or a full frequency scan
+        is applied, according to `frequency_type`.
     """
 
     run_time: float = 10.0
     """Minimal run time in seconds in s (time scan only).
 
-    For example, if a frequency scan takes 18 seconds and is measured
-    at an interval of 19 seconds for a `run_time` of 40 seconds, then
-    three iterations will be performed."""
+    Scans are repeated until this much time has elapsed, within the run time the
+    instrument allows: less than 1 s up to 1,000,000 s. For example, if a
+    frequency scan takes 10 seconds and is measured at an interval of 1 seconds
+    for a `run_time` of 25 seconds, then three iterations will be performed."""
 
     interval_time: float = 0.1
     """The interval at which a measurement iteration should be performed in s (time scan only).
 
-    The minimum interval time between each data point (`frequency_type='fixed') or
-    between each frequency scan (`frequency_type='scan').
-    We recommend a time higher than the required time to measure the data point or perform the
-    frequency scan + overhead time. While it's possible to use a shorter time, doing so may
-    lead to incorrect impedance calculations.
+    The minimum interval time between each data point (`frequency_type='fixed'`) or
+    between each frequency scan (`frequency_type='scan'). In galvanostatic mode the
+    interval cannot be lower than the time needed to measure the data point or to
+    perform the frequency scan, plus the overhead time.
 
     If a measurement iteration takes longer than the interval time the next measurement
     will not be triggered until after it has been completed.
@@ -2748,13 +2822,16 @@ class GalvanostaticImpedanceSpectroscopy(
     """Current at which the scan starts expressed in the applied current range (current scan only)."""
 
     end_current: float = 0.0
-    """Current at which the scan ends expressed in the applied current range (current scan only)."""
+    """Current at which the scan ends expressed in the applied current range (current scan only).
+
+    The applicable range is the same as for `begin_current`."""
 
     step_current: float = 0.01
     """Current step size expressed in the applied current range (current scan only).
 
     This sets the increment to be used between `begin_current` and `end_current`.
-    """
+    The smallest step is instrument-specific: from 0.000038 times the applied
+    current range on Nexus to 0.000183 times on EmStat4 HR."""
 
     min_sampling_time: float = Field(0.5, gt=0)
     """Minimum sampling time in s.
@@ -2766,7 +2843,10 @@ class GalvanostaticImpedanceSpectroscopy(
     If this value is less than 1 sine wave, the sampling is extended to `1 / frequency`.
 
     So for a measurement at a `frequency`, at least one complete sine wave is measured.
-    Reasonable values for the sampling are in the range of 0.1 to 1 s."""
+    Reasonable values for the sampling are in the range of 0.1 to 1 s.
+
+    Increasing it can stabilise inconsistent points in the high-frequency
+    region."""
 
     max_equilibration_time: float = 5.0
     """Max equilibration time in s.
@@ -2784,6 +2864,10 @@ class GalvanostaticImpedanceSpectroscopy(
     value of this parameter. A reasonable value might be 5 seconds.
     In this case this parameter is only relevant when the lowest frequency
     is less than 1/5 s so 0.2 Hz.
+
+    Increasing this parameter can be beneficial when measuring unstable or
+    noisy samples at low frequencies, although it extends the overall
+    measurement time.
     """
 
     @override
@@ -2847,7 +2931,20 @@ class FastGalvanostaticImpedanceSpectroscopy(
     mixins.GeneralMixin,
     BaseTechnique,
 ):
-    """Create fast galvanostatic impededance spectroscopy method parameters.
+    """Create fast galvanostatic impedance spectroscopy method parameters.
+
+    Fast GEIS applies a single frequency and repeats it every `interval_time`
+    while the current through the cell is controlled rather than the potential.
+    As in [pypalmsens.GalvanostaticImpedanceSpectroscopy][] the currents are
+    factors of `applied_current_range`, and auto current ranging is unavailable.
+
+    As in [pypalmsens.FastImpedanceSpectroscopy][] the latency between points is
+    reduced to a minimum of 1 ms and the instrument buffers the points in its
+    internal memory, so nothing is shown during the measurement. The shortest
+    interval depends on the frequency: 10 kHz or higher for 1 ms, while a 10 ms
+    interval allows frequencies down to 250 Hz.
+
+    Only the EmStat4 series and the Nexus series support this technique.
 
     Examples
     --------
@@ -2866,26 +2963,35 @@ class FastGalvanostaticImpedanceSpectroscopy(
     """Unique method identifier."""
 
     applied_current_range: AllowedCurrentRanges = '100uA'
-    """Applied current range."""
+    """Applied current range.
+
+    The current values below are expressed as a factor of this range. The ranges
+    your instrument can apply are `supported_applied_current_ranges` on
+    [pypalmsens.InstrumentManager.capabilities][]. Auto current ranging is not
+    possible in galvanostatic mode, so this range has to cover all currents of
+    the measurement."""
 
     run_time: float = 10.0
     """Total run time of the measurement in s."""
 
     interval_time: float = 0.1
-    """The time between two samples in s."""
+    """The time between two samples in s.
+
+    The minimum depends on the applied frequency: 1 ms requires 10 kHz or higher,
+    and the relation is not linear, as a 10 ms interval allows frequencies down
+    to 250 Hz."""
 
     ac_current: float = 0.01
-    """AC current in applied current range RMS.
-
-    This value is multiplied by the applied current range."""
+    """AC current amplitude as a factor of `applied_current_range`, in RMS."""
 
     dc_current: float = 0.0
-    """DC current in applied current range.
-
-    This value is multiplied by the applied current range."""
+    """DC current applied during the measurement as a factor of `applied_current_range`."""
 
     frequency: float = 50000.0
-    """Fixed frequency in Hz."""
+    """Fixed frequency in Hz, applied at every `interval_time`.
+
+    Must stay within the impedance frequency range of your instrument, limited by
+    `geis_max_frequency` on [pypalmsens.InstrumentManager.capabilities][]."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):

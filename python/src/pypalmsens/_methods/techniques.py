@@ -2086,6 +2086,10 @@ class ElectrochemicalImpedanceSpectroscopy(
     EIS can also be used to study corrosion and the effects of coatings.
     For example, anodized coatings, conversion coatings or organic coatings like paints.
 
+    The frequency must be within the EIS frequency range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][]
+    (`eis_min_frequency` / `eis_max_frequency`).
+
     Examples
     --------
     EIS with frequency scan:
@@ -2147,13 +2151,22 @@ class ElectrochemicalImpedanceSpectroscopy(
     """DC-potential applied during the EIS scan in V.
 
     Also called _DC Bias_ or _level_.
-    The most common setting for this parameter is 0 V vs. OCP."""
+    The most common setting for this parameter is 0 V vs. OCP.
+
+    Must stay within the potential range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][]
+    (`min_potential` / `max_potential`).
+    """
 
     ac_potential: float = 0.01
     """AC potential in V RMS.
 
     The amplitude of the ac potential signal has a range of 0.001 V to 0.25 V
     (RMS). In many applications, a value of 0.010 V (RMS) is used.
+
+    The maximum amplitude of your instrument is available as
+    `max_eis_amplitude_erms` on
+    [pypalmsens.InstrumentManager.capabilities][].
     """
 
     frequency_type: AllowedFrequencyTypes = 'scan'
@@ -2712,10 +2725,14 @@ class MethodScript(BaseTechnique):
 
     With the MethodSCRIPT scripting language, you can write code that runs on-device. This
     enables custom measurements and makes it possible to combine different measurements
-    and other tasks.
+    and other tasks. The script is programmed directly into the potentiostat,
+    so the measurement sequence itself runs on the instrument.
 
     This class uses the PyPalmSens machinery to send your MethodSCRIPT script directly
     to the potentiostat.
+
+    Running a script requires an instrument that supports MethodSCRIPT: Nexus, EmStat4,
+    EmStat Pico, and the Sensit series.
 
     See [the MethodSCRIPT documentation](https://www.palmsens.com/methodscript/) for more
     information and script examples.
@@ -2772,14 +2789,17 @@ endif
 """
     """Script to run.
 
-    For more info on MethodSCRIPT, see:
-        https://www.palmsens.com/methodscript/ for more information."""
+    A leading `e` line and trailing whitespace are removed, and the result is
+    validated against the parser selected by `version`.
+
+    For more info on MethodSCRIPT, see
+    [the MethodSCRIPT documentation](https://www.palmsens.com/methodscript/)."""
 
     custom_units: dict[Literal['as', 'at', 'au'], CustomUnits] = Field(default_factory=dict)
     """Define custom quantities and units for 'as', 'at', 'au' variable types.
 
     Use this to override the quantities for analog inputs (0, 1, and 2).
-    These default to Voltage / V. Defining custum units is purely cosmetic.
+    These default to Voltage / V. Defining custom units is purely cosmetic.
     The values are used for labeling curves and axes."""
 
     @override
@@ -2831,12 +2851,12 @@ endif
 
     @classmethod
     def from_file(cls, path: str | Path = 'methodscript.mscr') -> MethodScript:
-        """Load methodscript from file.
+        """Load a MethodSCRIPT from a file.
 
         Parameters
         ----------
         path: str | Path
-            Path to methodscript file.
+            Path to a MethodSCRIPT file, normally with the `.mscr` extension.
 
         Returns
         -------
@@ -2848,24 +2868,25 @@ endif
         return cls(script=script)
 
     def to_file(self, path: str | Path = 'methodscript.mscr') -> None:
-        """Save script to file.
+        """Save the script to a file.
 
         Parameters
         ----------
         path: str | Path
-            Path to methodscript file.
+            Path to write the MethodSCRIPT to, normally with the `.mscr`
+            extension.
         """
         with Path(path).open('w') as f:
             _ = f.write(self.script)
 
     @classmethod
     def from_url(cls, url: str) -> MethodScript:
-        """Download script over http.
+        """Download a script over http(s).
 
         Parameters
         ----------
         url : url
-            URL to download methodscript file from.
+            URL to download the MethodSCRIPT file from.
 
         Returns
         -------

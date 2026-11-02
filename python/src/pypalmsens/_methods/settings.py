@@ -1434,8 +1434,7 @@ class Material(BaseSettings):
     """Stores material settings for corrosion measurements.
 
     These parameters are not used while measuring. They are stored with the method so
-    that the corrosion-rate analysis can be done afterwards, by PSTrace rather than by
-    this SDK.
+    that the corrosion-rate analysis can be done afterwards, e.g. by PSTrace.
 
     The corrosion rate in mm/year follows the ASTM standard practice G102:
 

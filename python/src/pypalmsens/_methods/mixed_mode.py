@@ -83,6 +83,11 @@ class ConstantE(
     """Amperometric detection stage.
 
     Apply constant potential during this stage.
+    The stage ends when `run_time` has elapsed, or when a limit set in
+    `current_limits` is reached.
+
+    Typical uses are amperometric detection and holding a cell at a fixed
+    potential, e.g. the termination potential of a battery after charging.
 
     Examples
     --------
@@ -116,7 +121,10 @@ class ConstantE(
     """Potential during measurement in V."""
 
     run_time: float = 1.0
-    """Run time of the stage in s."""
+    """Run time of the stage in s.
+
+    The minimum and maximum duration of a stage:
+    5 * `interval_time` to 1,000,000 seconds (~278 hours)."""
 
     @override
     def _export_stage(self, psstage: PalmSens.Method, /):
@@ -136,7 +144,12 @@ class ConstantI(
 ):
     """Potentiometry stage.
 
-    Apply constant fixed current during this stage.
+    Apply a constant current during this stage.
+    The stage ends when `run_time` has elapsed, or when a limit set in
+    `potential_limits` is reached.
+
+    Typical uses are the charge and discharge steps of a battery or
+    supercapacitor.
 
     Examples
     --------
@@ -173,16 +186,17 @@ class ConstantI(
 
     Note that this value acts as a multiplier in the applied current range.
 
-    So if 10 uA is the applied current range and 1.5 is given as current value,
-    the applied current will be 15 uA."""
+    So if 10 μA is the applied current range and 1.5 is given as current value,
+    the applied current will be 15 μA."""
 
     applied_current_range: AllowedCurrentRanges = '100uA'
-    """Applied current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Applied current range."""
 
     run_time: float = 1.0
-    """Run time of the stage in s."""
+    """Run time of the stage in s.
+
+    The minimum and maximum duration of a stage:
+    5 * `interval_time` to 1,000,000 seconds (~278 hours)."""
 
     @override
     def _export_stage(self, psstage: PalmSens.Method, /):
@@ -204,7 +218,11 @@ class SweepE(
 ):
     """Linear sweep detection stage.
 
-    Ramp the voltage from `begin_potential` to `end_potential` during this stage.
+    Ramp the potential from `begin_potential` to `end_potential` during this
+    stage, e.g. like a regular LSV.
+
+    The stage ends when the sweep is complete, or when a limit set in
+    `current_limits` is reached.
 
     Examples
     --------
@@ -245,10 +263,13 @@ class SweepE(
     """Potential where the scan stops in V."""
 
     step_potential: float = 0.1
-    """Potential step in V."""
+    """Potential step between two data points in V.
+
+    Smaller steps allow lower scan rates and larger steps higher ones; the
+    allowed step values are instrument dependent."""
 
     scanrate: float = 1.0
-    """The applied scan rate.  in V/s.
+    """The applied scan rate in V/s.
 
     The applicable range depends on the value of `step_potential`
     since the data acquisition rate is limited by the connected
@@ -277,7 +298,12 @@ class OpenCircuit(
 ):
     """Open Circuit stage.
 
-    Measure the open circuit potential during this stage.
+    Measure the open circuit potential during this stage: no current is
+    applied, only the WE potential is recorded.
+
+    Use this stage after a charge or discharge step to let the cell relax and
+    measure its OCP. It ends when `run_time` has elapsed, or earlier if a limit
+    set in `potential_limits` is reached.
 
     Examples
     --------
@@ -306,7 +332,10 @@ class OpenCircuit(
     """Stage type identifier."""
 
     run_time: float = 1.0
-    """Run time of the stage in s."""
+    """Run time of the stage in s.
+
+    The minimum and maximum duration of a stage:
+    5 * `interval_time` to 1,000,000 seconds (~278 hours)."""
 
     @override
     def _export_stage(self, psstage: PalmSens.Method, /):
@@ -320,10 +349,17 @@ class OpenCircuit(
 class Impedance(
     BaseStage,
 ):
-    """Electostatic impedance stage.
+    """Single frequency impedance stage.
 
-    This is like EIS with a single frequency step
+    The impedance is measured by applying a small AC potential superimposed on
+    a DC potential, which corresponds to an EIS single frequency step
     (`scan_type = 'fixed'`, `freq_type = 'fixed'`).
+
+    Unlike the other stages, `Impedance` has neither current nor potential
+    limits, and no measurement triggers.
+
+    For example, insert one of these stages between charge and discharge
+    stages to follow the state of charge and state of health of a battery.
 
     Examples
     --------
@@ -363,7 +399,7 @@ class Impedance(
     """Stage type identifier."""
 
     run_time: float = 10.0
-    """Run time of the scan in s."""
+    """Total run time of the scan in s."""
 
     dc_potential: float = 0.0
     """DC potential applied during the scan in V."""
@@ -450,28 +486,35 @@ class MixedMode(
     """Create mixed mode method parameters.
 
     Mixed mode is a flexible technique that allows for switching between potentiostatic,
-    galvanostatic, and open circuit measurements during a single run.
+    galvanostatic, and open circuit measurements during a single run. Its stages are like
+    the levels of Multistep Amperometry or Potentiometry, but each stage can be
+    galvanostatic or potentiostatic independent of the previous one, and can use the
+    potential reached in the previous stage as its reference point. A multistep technique
+    is fine for a fixed list of levels. Mixed mode takes over once the next stage depends
+    on the measured values.
 
-    The mixed mode uses different stages similar to the levels during Multistep Amperometry or
-    Potentiometry, but each stage can be galvanostatic or potentiostatic independent of the
-    previous stage.
+    The available stage types are:
+    - [ConstantE][pypalmsens.stages.ConstantE]
+    - [ConstantI][pypalmsens.stages.ConstantI]
+    - [SweepE][pypalmsens.stages.SweepE]
+    - [OpenCircuit][pypalmsens.stages.OpenCircuit]
+    - [Impedance][pypalmsens.stages.Impedance]
 
-    The available stage types are `ConstantE`, `ConstantI`, `SweepE`, `OpenCircuit` and `Impedance`.
+    Each stage ends when its `run_time`
+    elapses, or earlier when a maximum or minimum current or potential is reached,
+    i.e. a limit set in that stage's `current_limits` or `potential_limits`.
 
-    - `ConstantE`: Apply constant potential
-    - `ConstantI`: Apply constant current
-    - `SweepE`: potential linear sweep (ramp) similar to a regular LSV step
-    - `OpenCircuit`: Measure the OCP value
-    - `Impedance`: the impedance is measured by applying a small AC potential superimposed with a DC
-    potential. This corresponds to an EIS single frequency step (`scan_type = 'fixed'`, `freq_type = 'fixed'`)
+    Mixed mode is useful for energy conversion and storage research, i.e.
+    battery, solar cell, or supercapacitor research. A classic battery test charges with
+    a constant current until a termination potential is reached, keeps that potential
+    constant until the current drops below a limit, and then discharges with the inverted
+    current, repeated over `cycles`. Inserting `Impedance` stages in between determines
+    the state of charge and state of health.
 
-    Each stage can use the previous stage’s potential as a reference point, for example, a constant
-    current is applied for a fixed period and afterward, the reached potential is kept constant for a
-    fixed period.
-
-    Furthermore, each stage can end because a fixed period has elapsed, or certain criteria are
-    met. Available criteria include reaching a maximum current, minimum current, maximum
-    potential, and minimum potential.
+    Mixed mode is supported on the Nexus, PalmSens series and the EmStat4 series, and
+    with limitations on EmStat 1, 2 and 3(+). Switching stages takes overhead time on top
+    of `interval_time`: around 0.4 ms on Nexus and 1 ms on EmStat4, but roughly 80 ms on
+    the PalmSens and EmStat 1 to 3(+) series.
 
     Examples
     --------
@@ -493,7 +536,11 @@ class MixedMode(
     """Unique method identifier."""
 
     interval_time: float = 0.1
-    """Time between two samples in s."""
+    """Time between two samples in s.
+
+    The minimum interval time is instrument dependent: 1 ms for PalmSens 1 and
+    2, EmStat 1, 2, 3(+) and EmStat Pico, 0.2 ms for PalmSens 3, and 0.4 ms for
+    PalmSens 4, Nexus and EmStat4."""
 
     cycles: int = 1
     """Number of times to go through all stages."""
@@ -501,11 +548,12 @@ class MixedMode(
     stages: list[StageType] = Field(
         default_factory=list,
     )
-    """List of stages to run through."""
+    """List of stages to run through, in order.
+    """
 
     @property
     def use_triggers(self):
-        """True if any of the stages has triggers set."""
+        """True if any of the stages has measurement triggers set."""
         return any(
             any(stage.measurement_triggers)
             for stage in self.stages

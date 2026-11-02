@@ -214,9 +214,7 @@ class FastCyclicVoltammetry(
     """Unique method identifier."""
 
     current_range: AllowedCurrentRanges = '1uA'
-    """Fixed current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Fixed current range."""
 
     equilibration_time: float = 0.0
     """Equilibration time in s."""
@@ -906,11 +904,7 @@ class BaseChronoAmperometry(
     measurement starts. No data are recorded during the equilibration step."""
 
     interval_time: float = 0.1
-    """Time between two current samples in s.
-
-    The minimum interval time is instrument dependent: 1 ms for PalmSens 1 and
-    2, EmStat 1, 2, 3(+) and EmStat Pico, 0.2 ms for PalmSens 3, and 0.4 ms for
-    PalmSens 4, Nexus and EmStat4."""
+    """Time between two current samples in s."""
 
     potential: float = 0.0
     """The potential applied during the measurement in V.
@@ -1463,12 +1457,17 @@ class BaseOpenCircuitPotentiometry(
     """Record auxiliary input."""
 
     record_we_current: bool = False
-    """Record working electrode current."""
+    """Record the working electrode current.
+
+    The current is measured in `record_we_current_range`. Recording the WE
+    current is supported by PalmSens4 and EmStat4."""
 
     record_we_current_range: AllowedCurrentRanges = '1uA'
-    """Record working electrode current range.
+    """Current range used to record the working electrode current.
 
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    OCP polarizes the cell with neither potential nor current, so the recording
+    range is set here rather than through an applied current range.
+    """
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -1501,6 +1500,8 @@ class BaseOpenCircuitPotentiometry(
 class OpenCircuitPotentiometry(BaseOpenCircuitPotentiometry):
     """Create open circuit potentiometry method parameters.
 
+    Supported by all instruments.
+
     For Open Circuit Potentiometry there is no polarization, and the so-called Open Circuit
     Potential (OCP) is measured and recorded with constant interval times. The result is a curve of
     Potential vs. Time. The OCP is also called Open Circuit Voltage (OCV).
@@ -1509,7 +1510,8 @@ class OpenCircuitPotentiometry(BaseOpenCircuitPotentiometry):
     specifically denotes the potential of a metal or electrode when exposed to a corrosive
     environment.
 
-    This method is the same as `Chronopotentiometry(current=0)`.
+    This method is the same as [ChronoPotentiometry][pypalmsens.ChronoPotentiometry] with
+    `current=0`.
 
     Examples
     --------
@@ -1545,19 +1547,25 @@ class BaseChronoPotentiometry(
 
     Note that this value acts as a multiplier in the `applied_current_range`.
 
-    So if 10 uA is the `applied_current_range` and 1.5 is given as current value,
-    the applied current will be 15 uA."""
+    So if 10 µA is the `applied_current_range` and 1.5 is given as current value,
+    the applied current will be 15 µA.
+
+    The largest usable multiplier is instrument dependent: ±2 times the range for
+    PalmSens2, ±3 for PalmSens3, ±6 for PalmSens4, -3 to +3 for EmStat4 LR and HR,
+    and on Nexus ±5 below 10 mA, ±4.5 for the 10 and 100 mA ranges and ±1 for the
+    1 A range. The multiplier your instrument allows is available as `min_current`
+    and `max_current` on [pypalmsens.InstrumentManager.capabilities][]."""
 
     applied_current_range: AllowedCurrentRanges = '100mA'
-    """Applied current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Applied current range."""
 
     interval_time: float = 0.1
     """Time between two potential samples in s."""
 
     run_time: float = 1.0
-    """Total run time of the measurement in s."""
+    """Total run time of the measurement in s.
+
+    Between 5 * `interval_time` and 1,000,000 seconds (ca. 278 hours)."""
 
     record_auxiliary_input: bool = False
     """Record auxiliary input."""
@@ -1607,6 +1615,9 @@ class BaseChronoPotentiometry(
 class ChronoPotentiometry(BaseChronoPotentiometry):
     """Create potentiometry method parameters.
 
+    Also known as Galvanostatic Step. Supported by the Nexus series, the PalmSens
+    series and EmStat4 LR and HR.
+
     Chronopotentiometry (CP) is an electrochemical technique
     that requires a galvanostat instead of a potentiostat.
     In this method, a constant current is applied, and the resulting potential (voltage)
@@ -1614,6 +1625,12 @@ class ChronoPotentiometry(BaseChronoPotentiometry):
     useful for studying electrochemical reactions, kinetics, and processes under non-steady-state
     conditions, offering valuable insights into how the electrode potential evolves in response to
     the applied current.
+
+    CP is valuable when no reference electrode is available: the applied current
+    stays constant even as the cell resistance changes.
+    Combined with a known electrode surface area it gives a
+    reproducible basis for quantitative work, such as determining reaction rate
+    constants and charge transfer coefficients.
 
     Examples
     --------
@@ -1642,16 +1659,29 @@ class StrippingChronoPotentiometry(
 ):
     """Create stripping potentiometry method parameters.
 
+    Also known as Potentiometric Stripping Analysis (PSA).
+
     Chronopotentiometric Stripping or Stripping chronopotentiometry is a sensitive analytical
-    technique.
-    The sequence of a stripping chronopotentiometry measurement:
+    technique. The sequence of a stripping chronopotentiometry measurement:
 
     1. Apply conditioning potential, if conditioning time > 0.
     2. Apply deposition potential, if deposition time > 0.
     3. Apply deposition potential and wait for equilibration time.
     4. If the stripping current is set to 0 then the cell is switched off. Otherwise,
     the specified constant current is applied. The measurement with a rate of 40 kHz starts. The measurement
-    stops when either the measured potential is below ‘end_potential’ or the `measurement_time` is exceeded.
+    stops when either the measured potential is below `end_potential` or the `measurement_time` is exceeded.
+
+    The conditioning and deposition potentials of steps 1 and 2, with their times,
+    come from [pypalmsens.settings.Pretreatment][]. During step 3 the deposition
+    potential is held while the cell equilibrates.
+
+    The measurement runs in one of two modes: chemical stripping, where a chemical
+    oxidant or reductant strips the deposit, or galvanostatic stripping, where
+    `current` is applied. Both record the potential versus time, and the result is
+    conventionally re-plotted as the inverse derivative dt/dE in s/V against the
+    potential. Stripping a deposit takes charge, so the more of a component was
+    deposited, the longer it takes for the potential to move and the larger the
+    peak in dt/dE at the potential where that component is oxidised or reduced.
 
     Examples
     --------
@@ -1669,28 +1699,35 @@ class StrippingChronoPotentiometry(
     """Unique method identifier."""
 
     potential_range: AllowedPotentialRanges = '500mV'
-    """Fixed potential range.
+    """Potential range used for the whole measurement.
 
-    See `pypalmsens.settings.AllowedPotentialRanges` for options."""
+    Unlike other techniques, this range is fixed: it is not re-selected while the
+    measurement runs."""
 
     current: float = 0.0
     """The stripping current to apply.
 
     Note that this value acts as a multiplier in the applied current range.
-    So if 10 uA is the applied current range and 1.5 is given as current value,
-    the applied current will be 15 uA.
+    So if 10 µA is the applied current range and 1.5 is given as current value,
+    the applied current will be 15 µA.
 
-    If the stripping current is set to 0, then chemical stripping is performed,
-    otherwise it is chemical constant current stripping.
+    If the stripping current is set to 0, chemical stripping is performed with a
+    chemical oxidant or reductant. Otherwise the instrument acts as a galvanostat
+    and applies a constant stripping current.
+
+    The direction of the stripping current follows the sign of `end_potential`
+    minus the deposition potential, or the sign of `end_potential` alone when no
+    deposition time is used.
     """
 
     applied_current_range: AllowedCurrentRanges = '100uA'
-    """Applied current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Applied current range."""
 
     end_potential: float = 0.0
-    """Potential where the measurement at stops in V ."""
+    """Potential where the measurement stops in V.
+
+    The measurement ends as soon as the measured potential drops below this value,
+    even if `measurement_time` has not elapsed."""
 
     measurement_time: float = 1.0
     """The maximum measurement time in s.
@@ -1701,7 +1738,11 @@ class StrippingChronoPotentiometry(
     the measurement is aborted."""
 
     bandwidth: None | float = None
-    """Override the bandwidth filter cutoff frequency (in Hz)."""
+    """Override bandwidth on MethodSCRIPT devices if set.
+
+    Normally the instrument sets its filters optimally for the required bandwidth.
+    When this is set, the bandwidth is overridden with the value in Hz. Only
+    supported by MethodSCRIPT devices: e.g. Nexus, EmStat Pico and EmStat4 Series."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -1747,6 +1788,31 @@ class LinearSweepPotentiometry(
 ):
     """Create linear sweep potentiometry method parameters.
 
+    Also known as Galvanodynamic Step. Supported by the Nexus series, PalmSens4 and
+    EmStat4 LR and HR.
+
+    LSP is the galvanostatic counterpart of
+    [LinearSweepVoltammetry][pypalmsens.LinearSweepVoltammetry]: the current is
+    swept from `current_begin` to `current_end` instead of the potential. The
+    sweep is not truly linear but a series of `current_step` steps, and the
+    potential is sampled during the last 25% of each step, so the current versus
+    potential curve holds
+    `(current_end - current_begin) / current_step + 1` points. The interval time
+    between two points follows from `current_step / scan_rate`: with a
+    `current_step` of 0.005 mA and a `scan_rate` of 0.1 mA/s the interval time is
+    0.05 s.
+
+    As with other galvanostatic techniques, LSP suits systems without a reference
+    electrode whose electrochemical surface area is well known: the controlled
+    current keeps the reaction rate stable, which helps for complex or multi-step
+    reactions. Such sweeps are less prone to double-layer charging artefacts
+    and potential drift than potentiodynamic ones.
+
+    If an unknown current might drive the potential high enough to damage the
+    working electrode, specify a maximum potential limit: the scan then stops
+    early and `current_end` may not be reached. See
+    [pypalmsens.settings.PotentialLimits][].
+
     Examples
     --------
     >>> import pypalmsens as ps
@@ -1764,32 +1830,40 @@ class LinearSweepPotentiometry(
     """Unique method identifier."""
 
     applied_current_range: AllowedCurrentRanges = '100uA'
-    """Applied current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Applied current range."""
 
     current_begin: float = -1.0
     """Current applied at beginning of measurement.
 
-    This value is multiplied by the defined current range."""
+    This value is multiplied by the defined current range and must stay within
+    the applied current limits of the instrument, available as `min_current` and
+    `max_current` on [pypalmsens.InstrumentManager.capabilities][]."""
 
     current_end: float = 1.0
     """Current applied at end of measurement.
 
-    This value is multiplied by the defined current range."""
+    This value is multiplied by the defined current range and must stay within
+    the applied current limits of the instrument. The scan stops early if a
+    potential limit is reached before this current is applied."""
 
     current_step: float = 0.01
     """Current step.
 
-    This value is multiplied by the defined current range."""
+    This value is multiplied by the defined current range.
+
+    The minimum step is instrument dependent: 0.001 times the current range for
+    PalmSens1 and 2, 0.00015 for PalmSens3, 0.000075 for PalmSens4, 0.000038 for
+    Nexus, 0.0001 for EmStat4 LR and 0.000183 for EmStat4 HR."""
 
     scan_rate: float = 1.0
-    """Scan rate (current/time) in V/s.
+    """Scan rate in current per time.
+
+    This value is multiplied by the defined current range, so with a `100uA`
+    range a `scan_rate` of 1.0 sweeps 100 µA per second. The interval time of the
+    recorded points is `current_step / scan_rate`.
 
     The applicable range depends on the value of `current_step` since the data
-    acquisition rate is limited by the connected instrument.
-
-    This value is multiplied by the defined current range."""
+    acquisition rate is limited by the connected instrument."""
 
     record_auxiliary_input: bool = False
     """Record auxiliary input."""
@@ -1844,13 +1918,22 @@ class MultiStepPotentiometry(
 ):
     """Create multi-step potentiometry method parameters.
 
-    MultiStep Potentiometry you can specify the number of current steps
-    to apply and how long each step should last. The current is continuously
-    sampled with the specified interval.
+    Supported by the Nexus series, the PalmSens series and EmStat4 LR and HR.
+
+    MultiStep Potentiometry lets you specify the number of current steps
+    to apply and how long each step should last. The potential response is
+    continuously sampled with the specified interval.
 
     A whole cycle of steps can be repeated several times.
 
-    Levels can be specified using [pypalmsens.settings.ILevel][].
+    Levels can be specified using [pypalmsens.settings.ILevel][]. Each level can
+    skip recording (`record`), move on to the next level once
+    `limit_potential_max` or `limit_potential_min` is reached, and set digital
+    trigger lines at its start.
+
+    With a single level this is identical to
+    [ChronoPotentiometry][pypalmsens.ChronoPotentiometry], which offers a larger
+    range of measurement rates.
 
     Examples
     --------
@@ -1870,29 +1953,30 @@ class MultiStepPotentiometry(
     """Unique method identifier."""
 
     applied_current_range: AllowedCurrentRanges = '1uA'
-    """Applied current range.
-
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    """Applied current range."""
 
     interval_time: float = 0.1
     """The time between two samples in s."""
 
     n_cycles: int = 1
-    """Number of repetitions."""
+    """Number of times the whole cycle of levels is repeated."""
 
     levels: list[ILevel] = Field(default_factory=lambda: [ILevel()])
-    """The currents to apply within a cycle.
+    """The current levels to apply within a cycle, in order.
 
-    Use `ILevel()` to create levels.
+    Use [pypalmsens.settings.ILevel][] to create levels. Each level applies its
+    current for its `duration` while the potential is sampled at `interval_time`.
+    Switching between levels adds instrument overhead.
     """
 
     record_auxiliary_input: bool = False
     """Record auxiliary input."""
 
     record_we_current: bool = False
-    """Record applied working electrode potential.
+    """Record the working electrode current.
 
-    Reference electrode vs ground."""
+    The applied current between the working and the reference electrode, measured
+    in `applied_current_range`."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -1947,9 +2031,32 @@ class ChronoCoulometry(
 ):
     """Create chrono coulometry method parameters.
 
-    Chronoamperometry (CA) and Chronocoulometry (CC) have the same potential waveform but
+    Supported by the Nexus series, PalmSens3 and PalmSens4, the EmStat series and
+    the Sensit series.
+
+    Chronocoulometry (CC) and Chronoamperometry (CA) have the same potential waveform but
     in CC, the charge is monitored as a function of time (instead of the current).
     The charge is determined by integrating the current.
+
+    While the current recorded in CA relates linearly to the reaction rate, the
+    charge recorded in CC relates linearly to the number of converted reactants,
+    as described by Faraday's law. This makes CC useful during deposition or
+    electrochemical synthesis, and for characterising batteries and capacitors.
+
+    The measurement is conducted in two steps: `step1_potential` at a potential
+    where no reaction occurs, followed by `step2_potential` where the reaction is
+    initiated, just like the classic Cottrell experiment. This ensures the charge
+    step at the beginning is recorded.
+
+    CC is also used to determine the number of adsorbed active species in a
+    solution of freely diffusing species. Multiplying the Cottrell equation by t
+    shows that the charge of the diffusing species is proportional to the square
+    root of time, while the charge stored in the double layer and the charge of
+    adsorbed species respond much faster. Plotting charge against the square root
+    of time (an Anson plot) therefore ideally shows a jump in charge followed by a
+    linear increase. Extrapolating the linear part back to the charge axis gives
+    the combined double layer and adsorbed contribution, and a blank measurement
+    separates the double layer contribution from the adsorbed one.
 
     Examples
     --------
@@ -1974,7 +2081,14 @@ class ChronoCoulometry(
     """The time between two samples in s."""
 
     step1_potential: float = 0.5
-    """Potential applied during first step in V."""
+    """Potential applied during first step in V.
+
+    Use a potential at which no reaction occurs, so that the charge step at the
+    start of the second step is recorded.
+
+    Must stay within the potential limits of the instrument.
+    See `min_potential` and `max_potential` on
+    [pypalmsens.InstrumentManager.capabilities][]"""
 
     step1_run_time: float = 5.0
     """Run time for the first step.
@@ -1984,7 +2098,10 @@ class ChronoCoulometry(
     """
 
     step2_potential: float = 0.5
-    """Potential applied during second step in V."""
+    """Potential applied during second step in V.
+
+    The potential at which the reaction is initiated. Subject to the same
+    instrument potential limits as `step1_potential`."""
 
     step2_run_time: float = 5.0
     """Run time for the second step.
@@ -1994,7 +2111,11 @@ class ChronoCoulometry(
     """
 
     bandwidth: None | float = None
-    """Override bandwidth on MethodSCRIPT devices if set."""
+    """Override bandwidth on MethodSCRIPT devices if set.
+
+    Normally the instrument sets its filters optimally for the required bandwidth.
+    When this is set, the bandwidth is overridden with the value in Hz. Only
+    supported by MethodSCRIPT devices: e.g. Nexus, EmStat Pico and (Multi)EmStat4."""
 
     record_auxiliary_input: bool = False
     """Record auxiliary input."""
@@ -2066,14 +2187,24 @@ class ElectrochemicalImpedanceSpectroscopy(
     mixins.GeneralMixin,
     BaseTechnique,
 ):
-    """Create potentiometry method parameters.
+    """Create electrochemical impedance spectroscopy method parameters.
 
     Electrochemical Impedance Spectroscopy (EIS) is an electrochemical technique to measure
-    the impedance of a system in dependence of the AC potentials frequency.
+    the impedance of a system in dependence of the frequency of the applied AC signal.
 
     Although "spectroscopy" implies a frequency sweep, which is the most common
-    measurement, this class provide the flexibility to set the frequency and vary
+    measurement, this class provides the flexibility to set the frequency and vary
     other parameters, such as DC potential and time.
+
+    Every measurement point yields the impedance `Z = E_ac / I_ac` at the applied
+    frequency. The impedance is a complex number `Z = Z' − jZ''`, with the real part
+    `Z'` and the imaginary part `Z''`, at the angular frequency `ω = 2πf`. The phase
+    shift follows `tan(φ) = −Z'' / Z'` and the magnitude `|Z|² = Z'² + Z''²`.
+
+    A spectrum is usually presented as a Nyquist plot of `Z''` against `Z'`, or as a
+    Bode plot of `log|Z|` and the phase shift against `log f`. The admittance, the
+    inverse of the impedance `Y = 1 / Z = Y' + jY''`, is plotted instead as `Y`
+    against `log f` or `Y''` against `Y'`.
 
     Available modes of EIS measurements:
 
@@ -2085,6 +2216,32 @@ class ElectrochemicalImpedanceSpectroscopy(
 
     EIS can also be used to study corrosion and the effects of coatings.
     For example, anodized coatings, conversion coatings or organic coatings like paints.
+
+    The applied frequencies must stay within the EIS frequency range of the
+    instrument, see [pypalmsens.InstrumentManager.capabilities][]
+    (`eis_min_frequency` / `eis_max_frequency`).
+
+    During EIS the instrument selects the current range automatically, so it is
+    generally best to enable all ranges in
+    [pypalmsens.settings.CurrentRange][]: the highest usable range follows from
+    the lowest impedance to be measured (`1 / Z`) together with the highest
+    dc-current, and the lowest usable range from the highest impedance and the
+    lowest dc-current. Some ranges can still be unavailable because of
+    `max_frequency` or `ac_potential`. The measurement starts in the highest
+    enabled range and searches for a suitable range from the top down, which is
+    quick when the scan starts above 1 kHz; starting below 1 Hz makes each point
+    much longer and may need extra time on the first point, so a single fixed
+    range can be simpler for a low-frequency time scan.
+
+    Leave the higher ranges enabled when you measure at high frequencies. The
+    auto-ranging routine determines the gain from the maximum bandwidth, which
+    combines switching to the optimal range with a gain of 10 or 100 on the
+    active range, so excluding a range can leave too little bandwidth to sample
+    the high frequencies accurately.
+
+    Pretreatment always runs in potentiostatic mode, also for
+    [pypalmsens.GalvanostaticImpedanceSpectroscopy][], and `equilibration_time`
+    elapses before the impedance measurement at each newly applied dc-potential.
 
     Examples
     --------
@@ -2141,20 +2298,37 @@ class ElectrochemicalImpedanceSpectroscopy(
     _FREQ_TYPES: tuple[AllowedFrequencyTypes, ...] = ('fixed', 'scan')
 
     equilibration_time: float = 0.0
-    """Equilibration time in s."""
+    """Equilibration time in s.
+
+    Each time a new dc-potential is applied, this time elapses before the
+    impedance measurements for that potential start."""
 
     dc_potential: float = 0.0
     """DC-potential applied during the EIS scan in V.
 
     Also called _DC Bias_ or _level_.
-    The most common setting for this parameter is 0 V vs. OCP."""
+    The most common setting for this parameter is 0 V vs. OCP.
+
+    Must stay within the potential range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][]
+    (`min_potential` / `max_potential`).
+    """
 
     ac_potential: float = 0.01
     """AC potential in V RMS.
 
     The amplitude of the ac potential signal has a range of 0.001 V to 0.25 V
     (RMS). In many applications, a value of 0.010 V (RMS) is used.
-    """
+
+    The maximum amplitude of your instrument is available as
+    `max_eis_amplitude_erms` on
+    [pypalmsens.InstrumentManager.capabilities][]. Together with `max_frequency`
+    this amplitude can make some current ranges unavailable.
+
+    Keep the amplitude small: an amplitude that leaves the linear region of the
+    system produces higher harmonics of the applied frequency and can start redox
+    reactions. Raise it only for very high impedances, in the megaohm range and
+    above, where the resulting current stays small enough to remain linear."""
 
     frequency_type: AllowedFrequencyTypes = 'scan'
     """Whether to measure a single frequency or scan over a range of frequencies.
@@ -2162,26 +2336,46 @@ class ElectrochemicalImpedanceSpectroscopy(
     Possible values: 'scan', 'fixed'.
 
     - Scan: a frequency scan is performed starting at the given `max_frequency`
-        to the `min_frequency`.
-    - Fixed: a single frequency given by 'fixed_frequency is applied for
-        the given duration or at each potential step or time interval.
+        down to `min_frequency`. This is the setting for a regular EIS experiment.
+    - Fixed: a single frequency given by `fixed_frequency` is applied for
+        the given duration or at each dc-potential step or time interval.
     """
 
     fixed_frequency: float = 1_000
-    """Fixed frequency in Hz (fixed frequency only)."""
+    """Fixed frequency in Hz (`frequency_type='fixed'`).
+
+    Applied at each dc-potential step or time interval when `scan_type` is
+    `'potential'` or `'time'`. Must be within the EIS frequency range of the
+    instrument, see [pypalmsens.InstrumentManager.capabilities][]
+    (`eis_min_frequency` / `eis_max_frequency`)."""
 
     min_frequency: float = 5.0
-    """Minimum frequency in Hz (frequency scan only)."""
+    """Frequency the frequency scan ends on in Hz (frequency scan only).
+
+    Must stay within the EIS frequency range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][] (`eis_min_frequency`)."""
 
     max_frequency: float = 10_000
-    """Maximum frequency in Hz (frequency scan only)."""
+    """Frequency the frequency scan starts on in Hz (frequency scan only).
+
+    The scan runs from here down to `min_frequency`. Above 1 kHz a point is
+    measured in a few seconds; below 1 Hz each point takes much longer and the
+    first point may need extra time to select a current range. Must stay within
+    the EIS frequency range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][] (`eis_max_frequency`)."""
 
     n_frequencies: int = 11
-    """Number of frequencies (frequency scan only).
+    """Number of frequencies to apply in the frequency scan (frequency scan only).
 
-    Defines the range of frequencies to apply between the `max_frequency` and
+    Defines the frequencies to apply between the `max_frequency` and
     `min_frequency`. For example, a value of 11 will measure at 11 frequencies,
     including both end points.
+
+    EIS experiments usually span kilohertz to millihertz, so a logarithmic
+    spacing is common: 10 frequencies per decade makes a scan from 10 kHz down
+    to 100 Hz 2 decades times 10 + 1 frequencies, i.e. 21 frequencies.
+
+    This is the total number of applied frequencies, not the number per decade.
     """
 
     scan_type: AllowedScanTypes = 'fixed'
@@ -2189,23 +2383,28 @@ class ElectrochemicalImpedanceSpectroscopy(
 
     Possible values: 'potential', 'time', 'fixed'.
 
-    - Fixed scan: perform a single scan (default).
+    - Fixed scan: perform a single scan (default). `dc_potential` stays fixed
+        during the scan.
     - Time scan: scans are repeated for a specific amount of time at a specific interval.
-    - Potential scan: scans are repeated over a range of DC potential values.
-      A potential scan should not be performed versus the OCP.
+    - Potential scan: scans are repeated over a range of DC potential values,
+        starting at `begin_potential` and ending at `end_potential` in steps of
+        `step_potential`. At each dc-potential level a single fixed frequency or a
+        full frequency scan is applied, according to `frequency_type`.
+        A potential scan should not be performed versus the OCP.
     """
 
     run_time: float = 10.0
     """Minimal run time in seconds in s (time scan only).
 
-    For example, if a frequency scan takes 18 seconds and is measured
-    at an interval of 19 seconds for a `run_time` of 40 seconds, then
-    three iterations will be performed."""
+    Scans are repeated until this much time has elapsed, within the run time the
+    instrument allows: less than 1 s up to 1,000,000 s. For example, if a
+    frequency scan takes 10 seconds and is measured at an interval of 1 second
+    for a `run_time` of 25 seconds, then three iterations will be performed."""
 
     interval_time: float = 0.1
     """The interval at which a measurement iteration should be performed in s (time scan only).
 
-    The minimum interval time between each data point (`frequency_type='fixed') or
+    The minimum interval time between each data point (`frequency_type='fixed'`) or
     between each frequency scan (`frequency_type='scan').
     We recommend a time higher than the required time to measure the data point or perform the
     frequency scan + overhead time. While it's possible to use a shorter time, doing so may
@@ -2219,18 +2418,24 @@ class ElectrochemicalImpedanceSpectroscopy(
     """The dc-potential at which the measurement starts in V (potential scan only).
 
     I.e. the DC potential of the applied sine wave to start the series of iterative measurements at.
+    Must stay within the potential range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][] (`min_potential` / `max_potential`).
     """
 
     end_potential: float = 0.0
-    """The dc-potential at which the scan ends in  V (potential scan only).
+    """The dc-potential at which the scan ends in V (potential scan only).
 
     I.e. the DC potential of the applied sine wave at which the series of iterative measurements ends.
+    The applicable range is the same as for `begin_potential`.
     """
 
     step_potential: float = 0.01
     """Potential step size in V (potential scan only).
 
     This sets the increment to be used between `begin_potential` and `end_potential`.
+    The largest step is 250 mV, the smallest step your instrument allows is
+    `min_potential_step` in mV on
+    [pypalmsens.InstrumentManager.capabilities][].
     """
 
     min_sampling_time: float = Field(default=0.5, gt=0)
@@ -2261,6 +2466,10 @@ class ElectrochemicalImpedanceSpectroscopy(
     value of this parameter. A reasonable value might be 5 seconds.
     In this case this parameter is only relevant when the lowest frequency
     is less than 1/5 s so 0.2 Hz.
+
+    Increasing this parameter can be beneficial when measuring unstable or
+    noisy samples at low frequencies, although it extends the overall
+    measurement time.
     """
 
     @override
@@ -2327,6 +2536,20 @@ class FastImpedanceSpectroscopy(
 ):
     """Create fast impedance spectroscopy method parameters.
 
+    Fast EIS applies a single frequency at `dc_potential` and repeats it every
+    `interval_time`, following rapid impedance changes of a cell instead of
+    sweeping a spectrum. The latency between data points is reduced to a minimum
+    of 1 ms, and the instrument buffers the points in its internal memory: no
+    points are shown while the measurement runs, the full dataset is transferred
+    and plotted once it completes.
+
+    Because a lower frequency needs a longer wave period, the shortest interval
+    depends on the applied frequency: the 1 ms minimum requires 10 kHz or higher,
+    and the relation is not linear, as a 10 ms interval allows frequencies down
+    to 250 Hz.
+
+    Only the EmStat4 series and the Nexus series support this technique.
+
     Examples
     --------
     >>> import pypalmsens as ps
@@ -2344,26 +2567,44 @@ class FastImpedanceSpectroscopy(
     """Unique method identifier."""
 
     equilibration_time: float = 0.0
-    """Equilibration time in s."""
+    """Equilibration time in s.
+
+    `dc_potential` is applied and held for this long before the first sample."""
 
     interval_time: float = 0.1
-    """The time between two samples in s."""
+    """The time between two samples in s.
+
+    The minimum depends on the applied frequency: 1 ms requires 10 kHz or higher,
+    and the relation is not linear, as a 10 ms interval allows frequencies down
+    to 250 Hz."""
 
     run_time: float = 10.0
     """Total run time of the measurement in s."""
 
     dc_potential: float = 0.0
-    """Potential applied during measurement in V."""
+    """Potential applied during the measurement in V.
+
+    Must stay within the potential range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][]
+    (`min_potential` / `max_potential`)."""
 
     ac_potential: float = 0.01
-    """Potential amplitude in V (rms)."""
+    """Potential amplitude in V (RMS).
+
+    The range is 0.001 V to 0.25 V (RMS), commonly 0.010 V. The maximum of your
+    instrument is `max_eis_amplitude_erms` on
+    [pypalmsens.InstrumentManager.capabilities][]."""
 
     frequency: float = 50000.0
-    """Fixed frequency in Hz."""
+    """Fixed frequency in Hz, applied at every `interval_time`.
+
+    Must stay within the EIS frequency range of the instrument, see
+    [pypalmsens.InstrumentManager.capabilities][] (`eis_min_frequency` /
+    `eis_max_frequency`)."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
-        """Update method with fas impedance spectroscopy settings."""
+        """Update method with fast impedance spectroscopy settings."""
         psmethod.Eac = self.ac_potential
         psmethod.EquilibrationTime = self.equilibration_time
         psmethod.FixedFrequency = self.frequency
@@ -2394,13 +2635,28 @@ class GalvanostaticImpedanceSpectroscopy(
 ):
     """Create galvanostatic impedance spectroscopy method parameters.
 
-    For Galvanostatic EIS (GEIS) the modes are:
+    In Galvanostatic EIS (GEIS) the current through the cell is controlled rather
+    than the potential across it, which is preferred for low-impedance cells. To
+    keep currents small on a low impedance a potentiostatic measurement uses a
+    small amplitude, but a cell whose impedance changes during the measurement
+    then produces unexpected currents. In galvanostatic mode the amplitude of the
+    AC current is controlled and set by the user.
+
+    The current follower is part of the controlled loop, so current ranges cannot
+    be switched while measuring: auto current ranging is not supported in
+    galvanostatic mode and `applied_current_range` must cover the whole
+    measurement. Pretreatment is still applied in potentiostatic mode.
+
+    For GEIS the modes are:
 
     - a frequency scan at a fixed dc-current
     - frequency scans at each current in a current scan
     - frequency scans at specified time intervals (time scan)
     - a single frequency applied at each current in a current scan
     - a single frequency at specified time intervals
+
+    Because the bandwidth of the current follower affects the stability of the
+    system, the maximum frequency is limited to 100 kHz on PalmSens4.
 
     Examples
     --------
@@ -2468,19 +2724,26 @@ class GalvanostaticImpedanceSpectroscopy(
     applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
 
-    This is the range in which the specified current values (such as `ac_current`,
-    `begin_current`, or `step_current) will be applied.
+    Current values (such as `ac_current`, `begin_current` or `step_current`) are
+    expressed as a factor of this range.
 
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    Auto current ranging is not possible in galvanostatic mode, so this range has
+    to cover all currents of the measurement."""
 
     equilibration_time: float = 0.0
-    """Equilibration time in s."""
+    """Equilibration time in s.
+
+    Each time a new dc-current is applied, this time elapses before the impedance
+    measurements for that current start."""
 
     ac_current: float = 0.01
-    """AC current expressed in the applied current range RMS."""
+    """AC current amplitude as a factor of `applied_current_range`, in RMS.
+
+    On PalmSens4 the maximum factor is 0.4 per current range, except for the
+    10 mA range where it is 0.2."""
 
     dc_current: float = 0.0
-    """DC current expressed in the applied current range."""
+    """DC current applied during the GEIS scan as a factor of `applied_current_range`."""
 
     frequency_type: AllowedFrequencyTypes = 'scan'
     """Whether to measure a single frequency or scan over a range of frequencies.
@@ -2488,26 +2751,37 @@ class GalvanostaticImpedanceSpectroscopy(
     Possible values: 'scan', 'fixed'.
 
     - Scan: a frequency scan is performed starting at the given `max_frequency`
-        to the `min_frequency`.
+        down to `min_frequency`. This is the setting for a regular GEIS experiment.
     - Fixed: a single frequency given by `fixed_frequency` is applied for
-        the given duration or at each potential step or time interval.
+        the given duration or at each current step or time interval.
     """
 
     fixed_frequency: float = 1_000
-    """Fixed frequency in Hz (fixed frequency only)."""
+    """Fixed frequency in Hz (`frequency_type='fixed'`).
+
+    Applied at each current step or time interval when `scan_type` is `'current'`
+    or `'time'`. Must be within the impedance frequency range of the instrument,
+    see [pypalmsens.InstrumentManager.capabilities][]."""
 
     min_frequency: float = 5.0
-    """Minimum frequency in Hz (frequency scan only)."""
+    """Frequency the frequency scan ends on in Hz (frequency scan only)."""
 
     max_frequency: float = 10_000
-    """Maximum frequency in Hz (frequency scan only)."""
+    """Frequency the frequency scan starts on in Hz (frequency scan only).
+
+    The scan runs from here down to `min_frequency`. In galvanostatic mode the
+    bandwidth of the current follower limits the stability.
+    The limit of your instrument is `geis_max_frequency` on
+    [pypalmsens.InstrumentManager.capabilities][]."""
 
     n_frequencies: int = 11
-    """Number of frequencies (frequency scan only).
+    """Number of frequencies to apply in the frequency scan (frequency scan only).
 
-    Defines the range of frequencies to apply between the `max_frequency` and
+    Defines the frequencies to apply between the `max_frequency` and
     `min_frequency`. For example, a value of 11 will measure at 11 frequencies,
     including both end points.
+
+    This is the total number of applied frequencies, not the number per decade.
     """
 
     scan_type: AllowedScanTypes = 'fixed'
@@ -2515,28 +2789,30 @@ class GalvanostaticImpedanceSpectroscopy(
 
     Possible values: 'current', 'time', 'fixed'.
 
-    - Fixed scan: perform a single scan (default).
+    - Fixed scan: perform a single scan (default). `dc_current` stays fixed
+        during the scan.
     - Time scan: scans are repeated for a specific amount of time at a specific interval.
     - Current scan: scans are repeated over a range of current values, starting at
-        `begin_current` and ending at `end_current` with step size `step_current`.
-        At each DC current level, a single fixed frequency or frequency scan is applied.
+        `begin_current` and ending at `end_current` in steps of `step_current`.
+        At each dc-current level a single fixed frequency or a full frequency scan
+        is applied, according to `frequency_type`.
     """
 
     run_time: float = 10.0
     """Minimal run time in seconds in s (time scan only).
 
-    For example, if a frequency scan takes 18 seconds and is measured
-    at an interval of 19 seconds for a `run_time` of 40 seconds, then
-    three iterations will be performed."""
+    Scans are repeated until this much time has elapsed, within the run time the
+    instrument allows: less than 1 s up to 1,000,000 s. For example, if a
+    frequency scan takes 10 seconds and is measured at an interval of 1 seconds
+    for a `run_time` of 25 seconds, then three iterations will be performed."""
 
     interval_time: float = 0.1
     """The interval at which a measurement iteration should be performed in s (time scan only).
 
-    The minimum interval time between each data point (`frequency_type='fixed') or
-    between each frequency scan (`frequency_type='scan').
-    We recommend a time higher than the required time to measure the data point or perform the
-    frequency scan + overhead time. While it's possible to use a shorter time, doing so may
-    lead to incorrect impedance calculations.
+    The minimum interval time between each data point (`frequency_type='fixed'`) or
+    between each frequency scan (`frequency_type='scan'). In galvanostatic mode the
+    interval cannot be lower than the time needed to measure the data point or to
+    perform the frequency scan, plus the overhead time.
 
     If a measurement iteration takes longer than the interval time the next measurement
     will not be triggered until after it has been completed.
@@ -2546,13 +2822,16 @@ class GalvanostaticImpedanceSpectroscopy(
     """Current at which the scan starts expressed in the applied current range (current scan only)."""
 
     end_current: float = 0.0
-    """Current at which the scan ends expressed in the applied current range (current scan only)."""
+    """Current at which the scan ends expressed in the applied current range (current scan only).
+
+    The applicable range is the same as for `begin_current`."""
 
     step_current: float = 0.01
     """Current step size expressed in the applied current range (current scan only).
 
     This sets the increment to be used between `begin_current` and `end_current`.
-    """
+    The smallest step is instrument-specific: from 0.000038 times the applied
+    current range on Nexus to 0.000183 times on EmStat4 HR."""
 
     min_sampling_time: float = Field(0.5, gt=0)
     """Minimum sampling time in s.
@@ -2564,7 +2843,10 @@ class GalvanostaticImpedanceSpectroscopy(
     If this value is less than 1 sine wave, the sampling is extended to `1 / frequency`.
 
     So for a measurement at a `frequency`, at least one complete sine wave is measured.
-    Reasonable values for the sampling are in the range of 0.1 to 1 s."""
+    Reasonable values for the sampling are in the range of 0.1 to 1 s.
+
+    Increasing it can stabilise inconsistent points in the high-frequency
+    region."""
 
     max_equilibration_time: float = 5.0
     """Max equilibration time in s.
@@ -2582,6 +2864,10 @@ class GalvanostaticImpedanceSpectroscopy(
     value of this parameter. A reasonable value might be 5 seconds.
     In this case this parameter is only relevant when the lowest frequency
     is less than 1/5 s so 0.2 Hz.
+
+    Increasing this parameter can be beneficial when measuring unstable or
+    noisy samples at low frequencies, although it extends the overall
+    measurement time.
     """
 
     @override
@@ -2645,7 +2931,20 @@ class FastGalvanostaticImpedanceSpectroscopy(
     mixins.GeneralMixin,
     BaseTechnique,
 ):
-    """Create fast galvanostatic impededance spectroscopy method parameters.
+    """Create fast galvanostatic impedance spectroscopy method parameters.
+
+    Fast GEIS applies a single frequency and repeats it every `interval_time`
+    while the current through the cell is controlled rather than the potential.
+    As in [pypalmsens.GalvanostaticImpedanceSpectroscopy][] the currents are
+    factors of `applied_current_range`, and auto current ranging is unavailable.
+
+    As in [pypalmsens.FastImpedanceSpectroscopy][] the latency between points is
+    reduced to a minimum of 1 ms and the instrument buffers the points in its
+    internal memory, so nothing is shown during the measurement. The shortest
+    interval depends on the frequency: 10 kHz or higher for 1 ms, while a 10 ms
+    interval allows frequencies down to 250 Hz.
+
+    Only the EmStat4 series and the Nexus series support this technique.
 
     Examples
     --------
@@ -2666,26 +2965,33 @@ class FastGalvanostaticImpedanceSpectroscopy(
     applied_current_range: AllowedCurrentRanges = '100uA'
     """Applied current range.
 
-    See [pypalmsens.types.AllowedCurrentRanges][] for options."""
+    The current values below are expressed as a factor of this range. The ranges
+    your instrument can apply are `supported_applied_current_ranges` on
+    [pypalmsens.InstrumentManager.capabilities][]. Auto current ranging is not
+    possible in galvanostatic mode, so this range has to cover all currents of
+    the measurement."""
 
     run_time: float = 10.0
     """Total run time of the measurement in s."""
 
     interval_time: float = 0.1
-    """The time between two samples in s."""
+    """The time between two samples in s.
+
+    The minimum depends on the applied frequency: 1 ms requires 10 kHz or higher,
+    and the relation is not linear, as a 10 ms interval allows frequencies down
+    to 250 Hz."""
 
     ac_current: float = 0.01
-    """AC current in applied current range RMS.
-
-    This value is multiplied by the applied current range."""
+    """AC current amplitude as a factor of `applied_current_range`, in RMS."""
 
     dc_current: float = 0.0
-    """DC current in applied current range.
-
-    This value is multiplied by the applied current range."""
+    """DC current applied during the measurement as a factor of `applied_current_range`."""
 
     frequency: float = 50000.0
-    """Fixed frequency in Hz."""
+    """Fixed frequency in Hz, applied at every `interval_time`.
+
+    Must stay within the impedance frequency range of your instrument, limited by
+    `geis_max_frequency` on [pypalmsens.InstrumentManager.capabilities][]."""
 
     @override
     def _export(self, psmethod: PalmSens.Method, /):
@@ -2712,10 +3018,14 @@ class MethodScript(BaseTechnique):
 
     With the MethodSCRIPT scripting language, you can write code that runs on-device. This
     enables custom measurements and makes it possible to combine different measurements
-    and other tasks.
+    and other tasks. The script is programmed directly into the potentiostat,
+    so the measurement sequence itself runs on the instrument.
 
     This class uses the PyPalmSens machinery to send your MethodSCRIPT script directly
     to the potentiostat.
+
+    Running a script requires an instrument that supports MethodSCRIPT: Nexus, EmStat4,
+    EmStat Pico, and the Sensit series.
 
     See [the MethodSCRIPT documentation](https://www.palmsens.com/methodscript/) for more
     information and script examples.
@@ -2772,14 +3082,17 @@ endif
 """
     """Script to run.
 
-    For more info on MethodSCRIPT, see:
-        https://www.palmsens.com/methodscript/ for more information."""
+    A leading `e` line and trailing whitespace are removed, and the result is
+    validated against the parser selected by `version`.
+
+    For more info on MethodSCRIPT, see
+    [the MethodSCRIPT documentation](https://www.palmsens.com/methodscript/)."""
 
     custom_units: dict[Literal['as', 'at', 'au'], CustomUnits] = Field(default_factory=dict)
     """Define custom quantities and units for 'as', 'at', 'au' variable types.
 
     Use this to override the quantities for analog inputs (0, 1, and 2).
-    These default to Voltage / V. Defining custum units is purely cosmetic.
+    These default to Voltage / V. Defining custom units is purely cosmetic.
     The values are used for labeling curves and axes."""
 
     @override
@@ -2831,12 +3144,12 @@ endif
 
     @classmethod
     def from_file(cls, path: str | Path = 'methodscript.mscr') -> MethodScript:
-        """Load methodscript from file.
+        """Load a MethodSCRIPT from a file.
 
         Parameters
         ----------
         path: str | Path
-            Path to methodscript file.
+            Path to a MethodSCRIPT file, normally with the `.mscr` extension.
 
         Returns
         -------
@@ -2848,24 +3161,25 @@ endif
         return cls(script=script)
 
     def to_file(self, path: str | Path = 'methodscript.mscr') -> None:
-        """Save script to file.
+        """Save the script to a file.
 
         Parameters
         ----------
         path: str | Path
-            Path to methodscript file.
+            Path to write the MethodSCRIPT to, normally with the `.mscr`
+            extension.
         """
         with Path(path).open('w') as f:
             _ = f.write(self.script)
 
     @classmethod
     def from_url(cls, url: str) -> MethodScript:
-        """Download script over http.
+        """Download a script over http(s).
 
         Parameters
         ----------
         url : url
-            URL to download methodscript file from.
+            URL to download the MethodSCRIPT file from.
 
         Returns
         -------

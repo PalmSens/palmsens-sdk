@@ -264,6 +264,7 @@ class FitResult:
 
         _ = calc.plot(ax=ax)
         _ = meas.plot(ax=ax, marker='^', linestyle='None')
+        _ = ax.axis('equal')
 
         return fig
 

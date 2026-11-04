@@ -337,8 +337,7 @@ If you have [pandas](https://pandas.pydata.org/) installed, you can easily conve
 If current recording for the Bipot was enabled, the dictionary will also contain the relevant keys for the Bipot: 
 
 ```pycon
->>> import pandas as pd
->>> df = pd.DataFrame(dataset.to_dict())
+>>> df = dataset.to_dataframe()
 >>> df
         Time  Potential   Current    Charge  BipotCurrent     CR ReadingStatus BipotCR BipotReadingStatus
 0   0.000000  -0.499963 -0.071526  0.000000          6.25    1mA     Underload     1uA          Underload

@@ -20,7 +20,7 @@ from .._types import (
     AllowedPotentialRanges,
     OCPFlag,
 )
-from .base import BaseSettings
+from .base import BaseSettings, LablinkParameters
 from .base_model import BaseModel
 from .levels import (
     convert_bools_to_int,
@@ -92,6 +92,15 @@ class CurrentRange(BaseSettings):
         obj.MaximumCurrentRange = cr_string_to_enum(self.max)
         obj.MinimumCurrentRange = cr_string_to_enum(self.min)
         obj.StartCurrentRange = cr_string_to_enum(self.start)
+
+    @override
+    def _lablink_export(self, parameters: LablinkParameters, /, bipot: bool = False):
+        if bipot:
+            raise NotImplementedError
+
+        parameters['MinimumCurrentRange'] = [cr_string_to_enum(self.min).Factor / 1e6]
+        parameters['MaximumCurrentRange'] = [cr_string_to_enum(self.max).Factor / 1e6]
+        parameters['StartingCurrentRange'] = [cr_string_to_enum(self.start).Factor / 1e6]
 
     @override
     def _import(self, psmethod: PalmSens.Method, /, bipot: bool = False):
@@ -239,6 +248,13 @@ class Pretreatment(BaseSettings):
         psmethod.ConditioningTime = self.conditioning_time
 
     @override
+    def _lablink_export(self, parameters: LablinkParameters, /):
+        parameters['DepositionPotential'] = [self.deposition_potential]
+        parameters['DepositionTime'] = [self.deposition_time]
+        parameters['ConditioningPotential'] = [self.conditioning_potential]
+        parameters['ConditioningTime'] = [self.conditioning_time]
+
+    @override
     def _import(self, psmethod: PalmSens.Method, /):
         self.deposition_potential = single_to_double(psmethod.DepositionPotential)
         self.deposition_time = single_to_double(psmethod.DepositionTime)
@@ -339,6 +355,18 @@ class VersusOCP(BaseSettings):
         psmethod.OCPmode = mode
         psmethod.OCPMaxOCPTime = self.timeout
         psmethod.OCPStabilityCriterion = self.stability_criterion
+
+    @override
+    def _lablink_export(self, parameters: LablinkParameters, /) -> None:
+        parameters['MaximumOCPTime'] = [self.timeout]
+        parameters['OCPStabilityCriterion'] = [self.stability_criterion]
+        parameters['EnableOCP'] = [any(self.potentials)]
+
+        if 'potential' in self.potentials:
+            # 'ad', 'ps', 'fam'
+            parameters['PotentialOCP'] = [True]
+        else:
+            raise NotImplementedError
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):
@@ -514,6 +542,19 @@ class PostMeasurement(BaseSettings):
         psmethod.StandbyTime = self.standby_time
 
     @override
+    def _lablink_export(self, parameters: LablinkParameters, /) -> None:
+        # TODO Handle the other modes:
+        # - CellModeAfterMeasurementGalvanostatic
+        # - CellModeAfterMeasurementPersist
+
+        if not self.cell_on_after_measurement:
+            parameters['CellModeAfterMeasurement'] = ['CellModeAfterMeasurementOff']
+        else:
+            parameters['CellModeAfterMeasurement'] = ['CellModeAfterMeasurementPotentiostatic']
+            parameters['UsePotentialAfterMeasurement'] = [True]
+            parameters['PotentialAfterMeasurement'] = [self.potential]
+
+    @override
     def _import(self, psmethod: PalmSens.Method, /):
         self.cell_on_after_measurement = psmethod.CellOnAfterMeasurement
         self.standby_potential = single_to_double(psmethod.StandbyPotential)
@@ -584,6 +625,20 @@ class CurrentLimits(BaseSettings):
             psmethod.LimitMinValue = self.min
         else:
             psmethod.UseLimitMinValue = False
+
+    @override
+    def _lablink_export(self, parameters: LablinkParameters, /) -> None:
+        if self.max is not None:
+            parameters['UseMaximumCurrentLimit'] = [True]
+            parameters['MaximumCurrentLimit'] = [self.max]
+        else:
+            parameters['UseMaximumCurrentLimit'] = [False]
+
+        if self.min is not None:
+            parameters['UseMinimumCurrentLimit'] = [True]
+            parameters['MinimumCurrentLimit'] = [self.min]
+        else:
+            parameters['UseMinimumCurrentLimit'] = [False]
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):
@@ -737,6 +792,20 @@ class ChargeLimits(BaseSettings):
             psmethod.UseChargeLimitMin = False
 
     @override
+    def _lablink_export(self, parameters: LablinkParameters, /) -> None:
+        if self.max is not None:
+            parameters['UseMaximumChargeLimit'] = [True]
+            parameters['MaximumChargeLimit'] = [self.max]
+        else:
+            parameters['UseMaximumChargeLimit'] = [False]
+
+        if self.min is not None:
+            parameters['UseMinimumChargeLimit'] = [True]
+            parameters['MinimumChargeLimit'] = [self.min]
+        else:
+            parameters['UseMinimumChargeLimit'] = [False]
+
+    @override
     def _import(self, psmethod: PalmSens.Method, /):
         if psmethod.UseChargeLimitMax:
             self.max = single_to_double(psmethod.ChargeLimitMax)
@@ -809,6 +878,14 @@ class IrDropCompensation(BaseSettings):
             psmethod.IRDropCompRes = self.resistance
         else:
             psmethod.UseIRDropComp = False
+
+    @override
+    def _lablink_export(self, parameters: LablinkParameters, /) -> None:
+        if self.resistance is not None:
+            parameters['UseIRCompensation'] = [True]
+            parameters['IRCompensation'] = [self.resistance]
+        else:
+            parameters['UseIRCompensation'] = [False]
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):
@@ -1421,6 +1498,17 @@ class General(BaseSettings):
         psmethod.UseHWSync = self.use_hardware_sync
         psmethod.Notes = self.notes
         psmethod.PowerFreq = self.power_frequency
+
+    @override
+    def _lablink_export(self, parameters: LablinkParameters, /) -> None:
+        parameters['EnableHardwareSync'] = [self.use_hardware_sync]
+
+        if self.power_frequency != 60:
+            raise NotImplementedError
+        if self.notes:
+            raise NotImplementedError
+        if self.save_on_internal_storage:
+            raise NotImplementedError
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):

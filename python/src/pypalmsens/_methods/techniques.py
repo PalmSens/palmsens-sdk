@@ -26,7 +26,7 @@ from .._types import (
     AllowedScanTypes,
 )
 from . import mixins
-from .base import BaseTechnique
+from .base import BaseTechnique, LablinkParameters
 from .levels import (
     ELevel,
     ILevel,
@@ -949,6 +949,22 @@ class BaseChronoAmperometry(
             record_we_potential=self.record_we_potential,
             enable_bipot_current=self.enable_bipot_current,
         )
+
+    @override
+    def _lablink_export(self, parameters: LablinkParameters, /):
+        """Update lablink parameters with chrono amperometry settings."""
+        parameters['EquilibrationTime'] = [self.equilibration_time]
+        parameters['IntervalTime'] = [self.interval_time]
+        parameters['Potential'] = [self.potential]
+        parameters['RunTime'] = [self.run_time]
+
+        parameters['MeasureAuxiliaryInput'] = [self.record_auxiliary_input]
+        parameters['MeasureCellPotential'] = [self.record_cell_potential]
+        parameters['MeasureWEPotential'] = [self.record_we_potential]
+
+        if self.enable_bipot_current:
+            # used in combination with bipot mixin
+            raise NotImplementedError
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):

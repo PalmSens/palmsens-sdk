@@ -15,6 +15,9 @@ if typing.TYPE_CHECKING:
     from .._types import MethodType
 
 
+LablinkParameters = dict[str, list[Any]]
+
+
 @contextmanager
 def string_writer(*args, **kwargs):
     stream = StringWriter(*args, **kwargs)
@@ -32,6 +35,12 @@ class BaseSettings(BaseModel):
         raise NotImplementedError
 
     def _import(self, psmethod: PalmSens.Method, /) -> None:
+        raise NotImplementedError
+
+    def _lablink_export(self, parameters: LablinkParameters, /) -> None:
+        raise NotImplementedError
+
+    def _lablink_import(self, parameters: LablinkParameters, /) -> None:
         raise NotImplementedError
 
 
@@ -103,3 +112,21 @@ class BaseTechnique(BaseSettings):
             attribute = getattr(self, field)
             if isinstance(attribute, BaseSettings):
                 attribute._export(psmethod)
+
+    def _to_lablink_parameters(self) -> LablinkParameters:
+        """Convert parameters to lablink parameters."""
+        parameters = {'Name': [type(self).__name__]}
+
+        self._lablink_export(parameters)
+        self._lablink_export_nested(parameters)
+        return parameters
+
+    def _lablink_export_nested(self, parameters: LablinkParameters, /) -> None:
+        """Convert and set lablink entity parameters."""
+        for field in self.__class__.model_fields:
+            attribute = getattr(self, field)
+            if isinstance(attribute, BaseSettings):
+                try:
+                    attribute._lablink_export(parameters)
+                except NotImplementedError:
+                    print(f'Not supported: {field=}')

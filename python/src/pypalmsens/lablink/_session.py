@@ -13,13 +13,13 @@ from typing import Any, Self, overload, override
 
 import pandas as pd
 import xarray as xr
-from PalmSens.Sdk.Lablink.Example.Lablink.Mappers import MethodMappers
 
 from ..types import MethodTypeCompatible
 from ._client import HttpClient
 from ._instrument import Instrument, InstrumentClaim
 from ._measurement import Measurement, MeasurementJob
 from .models import LablinkInfo
+from .models._method_mapper import to_payload
 from .models._public import UserInfo
 from .models._wire import (
     EmptyProperty,
@@ -360,11 +360,8 @@ class Session:
         list[MeasurementJob]
             One job per instrument, each with an associated MeasurementJob.
         """
-        dto = MethodMappers.ToDto(method._to_psmethod())
-
         payload = {
-            'Technique': dto.Technique,
-            'MethodParameters': dict(dto.Parameters),
+            **to_payload(method),
             'AllInstrumentsMustSucceed': True,
             'InstrumentProperties': {
                 instrument.serial_number: {} for instrument in instruments

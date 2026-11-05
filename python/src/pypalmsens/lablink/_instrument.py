@@ -10,11 +10,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, Protocol, Self, runtime_checkable
 
-from PalmSens.Sdk.Lablink.Example.Lablink.Mappers import MethodMappers
-
 from .._converters import cr_string_to_sig_exp, pr_string_to_sig_exp
 from .._types import AllowedCurrentRanges, AllowedPotentialRanges, MethodTypeCompatible
 from ._measurement import Measurement, MeasurementJob
+from .models._method_mapper import to_payload
 from .models._wire import (
     CellMode,
     CellState,
@@ -207,12 +206,7 @@ class InstrumentClaim(InstrumentReadsMixin):
         method : MethodTypeCompatible
             The measurement technique and parameters to run.
         """
-        dto = MethodMappers.ToDto(method._to_psmethod())
-
-        payload = {
-            'Technique': dto.Technique,
-            'MethodParameters': dict(dto.Parameters),
-        }
+        payload = to_payload(method)
 
         response = await self._session._http.post(
             f'/Instrument/{self._serial}/StartMeasurement', json=payload

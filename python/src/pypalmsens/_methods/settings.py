@@ -552,7 +552,7 @@ class PostMeasurement(BaseSettings):
         else:
             parameters['CellModeAfterMeasurement'] = ['CellModeAfterMeasurementPotentiostatic']
             parameters['UsePotentialAfterMeasurement'] = [True]
-            parameters['PotentialAfterMeasurement'] = [self.potential]
+            parameters['PotentialAfterMeasurement'] = [self.standby_potential]
 
     @override
     def _import(self, psmethod: PalmSens.Method, /):

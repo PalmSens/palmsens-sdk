@@ -8,9 +8,9 @@ To install the package globally using pip, run this command in your terminal:
 pip install pypalmsens
 ```
 
-!!! NOTE "Python 3.15"
+<!--!!! NOTE "Python 3.16"
 
-    Python 3.15 is currently not supported, pending support of the libraries we use. Please refer to [this issue](https://github.com/palmsens/palmsens-sdk/issues/433) for the latest information.
+    Python 3.16 is currently not supported, pending support of the libraries we use. Please refer to [this issue](https://github.com/palmsens/palmsens-sdk/issues/) for the latest information.-->
 
 ## Windows
 
@@ -150,7 +150,7 @@ python -m pip install -e .[develop]
 If you prefer Conda, use these commands:
 
 ```powershell
-conda create -n pypalmsens python=3.14
+conda create -n pypalmsens python=3.15
 conda activate pypalmsens
 pip install pypalmsens
 ```

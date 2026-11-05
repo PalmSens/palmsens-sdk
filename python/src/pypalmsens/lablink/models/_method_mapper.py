@@ -37,7 +37,15 @@ from ..._methods.settings import (
     PotentialRange,
     Pretreatment,
 )
-from ..._methods.techniques import ChronoAmperometry, ChronoPotentiometry
+from ..._methods.techniques import (
+    ChronoAmperometry,
+    ChronoPotentiometry,
+    CyclicVoltammetry,
+    DifferentialPulseVoltammetry,
+    LinearSweepVoltammetry,
+    NormalPulseVoltammetry,
+    SquareWaveVoltammetry,
+)
 from ..._types import AllowedCurrentRanges, AllowedPotentialRanges
 from ._wire import TechniqueId
 
@@ -49,6 +57,11 @@ ParamDict = dict[str, list[float | bool | str]]
 # Technique id -> wire technique name (drives both `Technique` and `Name`).
 ID_TO_TECHNIQUE: dict[str, TechniqueId] = {
     'ad': TechniqueId.Chronoamperometry,
+    'cv': TechniqueId.CyclicVoltammetry,
+    'lsv': TechniqueId.LinearSweepVoltammetry,
+    'swv': TechniqueId.SquareWaveVoltammetry,
+    'dpv': TechniqueId.DifferentialPulseVoltammetry,
+    'npv': TechniqueId.NormalPulseVoltammetry,
     'pot': TechniqueId.Chronopotentiometry,
 }
 
@@ -100,8 +113,9 @@ def _add_limits(p: ParamDict, kind: str, minimum: float | None, maximum: float |
 
 
 def _add_ir_drop_compensation(p: ParamDict, ir: IrDropCompensation) -> None:
-    p['UseIRCompensation'] = [ir.resistance is not None]
+    # The C# mapper omits these keys entirely when no resistance is configured.
     if ir.resistance is not None:
+        p['UseIRCompensation'] = [True]
         p['IRCompensation'] = [ir.resistance]
 
 
@@ -110,6 +124,9 @@ def _add_post_measurement(p: ParamDict, pm: PostMeasurement) -> None:
         p['CellModeAfterMeasurement'] = ['CellModeAfterMeasurementPotentiostatic']
         p['UsePotentialAfterMeasurement'] = [True]
         p['PotentialAfterMeasurement'] = [pm.standby_potential]
+        p['UseCurrentAfterMeasurement'] = [False]
+        p['UseMeasuredCurrentRangeAfterMeasurement'] = [False]
+        p['UseMeasuredPotentialRangeAfterMeasurement'] = [False]
     else:
         p['CellModeAfterMeasurement'] = ['CellModeAfterMeasurementOff']
 
@@ -143,7 +160,7 @@ def _build_chronoamperometry(method: MethodTypeCompatible) -> ParamDict:
     _require_default('multiplexer', m.multiplexer, default.multiplexer)
     _require_default('data_processing', m.data_processing, default.data_processing)
     _require_default(
-        'equilibrion_triggers', m.equilibrion_triggers, default.equilibrion_triggers
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
     )
     _require_default(
         'measurement_triggers', m.measurement_triggers, default.measurement_triggers
@@ -163,12 +180,15 @@ def _build_chronoamperometry(method: MethodTypeCompatible) -> ParamDict:
 
     _add_limits(p, 'Current', m.current_limits.min, m.current_limits.max)
     _add_limits(p, 'Charge', m.charge_limits.min, m.charge_limits.max)
+    _add_limits(p, 'Temperature', None, None)
     _add_ir_drop_compensation(p, m.ir_drop_compensation)
     _add_post_measurement(p, m.post_measurement)
 
     p['MeasureAuxiliaryInput'] = [m.record_auxiliary_input]
     p['MeasureCellPotential'] = [m.record_cell_potential]
     p['MeasureWEPotential'] = [m.record_we_potential]
+
+    p['EnableDropDetection'] = [False]
 
     _add_general(p, m.general)
     return p
@@ -205,8 +225,263 @@ def _build_chronopotentiometry(method: MethodTypeCompatible) -> ParamDict:
     return p
 
 
+def _build_cyclicvoltammetry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(CyclicVoltammetry, method)
+    default = CyclicVoltammetry()
+
+    _require_default(
+        'enable_bipot_current', m.enable_bipot_current, default.enable_bipot_current
+    )
+    _require_default('bipot', m.bipot, default.bipot)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+    _require_default(
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
+    )
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = [m.equilibration_time]
+    p['BeginPotential'] = [m.begin_potential]
+    p['Vertex1Potential'] = [m.vertex1_potential]
+    p['Vertex2Potential'] = [m.vertex2_potential]
+    p['StepPotential'] = [m.step_potential]
+    p['ScanRate'] = [m.scanrate]
+    p['NumberOfScans'] = [m.n_scans]
+
+    # CV OCP is per-potential, not a shared EnableOCP flag.
+    p['BeginPotentialOCP'] = ['begin' in m.versus_ocp.potentials]
+    p['Vertex1PotentialOCP'] = ['vertex1' in m.versus_ocp.potentials]
+    p['Vertex2PotentialOCP'] = ['vertex2' in m.versus_ocp.potentials]
+
+    _add_limits(p, 'Current', m.current_limits.min, m.current_limits.max)
+    # CV has no charge/temperature limit fields; the hub still expects the flags.
+    _add_limits(p, 'Charge', None, None)
+    _add_limits(p, 'Temperature', None, None)
+    _add_ir_drop_compensation(p, m.ir_drop_compensation)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['MeasureAuxiliaryInput'] = [m.record_auxiliary_input]
+    p['MeasureCellPotential'] = [m.record_cell_potential]
+    p['MeasureWEPotential'] = [m.record_we_potential]
+
+    p['EnableDropDetection'] = [False]
+
+    _add_general(p, m.general)
+    return p
+
+
+def _build_linearsweepvoltammetry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(LinearSweepVoltammetry, method)
+    default = LinearSweepVoltammetry()
+
+    _require_default(
+        'enable_bipot_current', m.enable_bipot_current, default.enable_bipot_current
+    )
+    _require_default('bipot', m.bipot, default.bipot)
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+    _require_default(
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
+    )
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = [m.equilibration_time]
+    p['BeginPotential'] = [m.begin_potential]
+    p['EndPotential'] = [m.end_potential]
+    p['StepPotential'] = [m.step_potential]
+    p['ScanRate'] = [m.scanrate]
+
+    # LSV OCP is per-potential (begin/end), not a shared EnableOCP flag.
+    p['BeginPotentialOCP'] = ['begin' in m.versus_ocp.potentials]
+    p['EndPotentialOCP'] = ['end' in m.versus_ocp.potentials]
+
+    _add_limits(p, 'Current', m.current_limits.min, m.current_limits.max)
+    _add_limits(p, 'Charge', None, None)
+    _add_limits(p, 'Temperature', None, None)
+    _add_ir_drop_compensation(p, m.ir_drop_compensation)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['MeasureAuxiliaryInput'] = [m.record_auxiliary_input]
+    p['MeasureCellPotential'] = [m.record_cell_potential]
+    p['MeasureWEPotential'] = [m.record_we_potential]
+
+    p['EnableDropDetection'] = [False]
+
+    _add_general(p, m.general)
+    return p
+
+
+def _build_squarewavevoltammetry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(SquareWaveVoltammetry, method)
+    default = SquareWaveVoltammetry()
+
+    _require_default(
+        'enable_bipot_current', m.enable_bipot_current, default.enable_bipot_current
+    )
+    _require_default('bipot', m.bipot, default.bipot)
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+    _require_default(
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
+    )
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+    # The SWV wire model has no aux/cell/WE-potential keys; the hub records only
+    # forward/reverse currents here. Raise rather than silently drop these.
+    _require_default(
+        'record_auxiliary_input',
+        m.record_auxiliary_input,
+        default.record_auxiliary_input,
+    )
+    _require_default(
+        'record_cell_potential', m.record_cell_potential, default.record_cell_potential
+    )
+    _require_default('record_we_potential', m.record_we_potential, default.record_we_potential)
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = [m.equilibration_time]
+    p['BeginPotential'] = [m.begin_potential]
+    p['EndPotential'] = [m.end_potential]
+    p['StepPotential'] = [m.step_potential]
+    p['Frequency'] = [m.frequency]
+    p['Amplitude'] = [m.amplitude]
+
+    p['BeginPotentialOCP'] = ['begin' in m.versus_ocp.potentials]
+    p['EndPotentialOCP'] = ['end' in m.versus_ocp.potentials]
+
+    _add_ir_drop_compensation(p, m.ir_drop_compensation)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['MeasureCurrentForwardReverse'] = [m.record_forward_and_reverse_currents]
+    p['EnableDropDetection'] = [False]
+
+    _add_general(p, m.general)
+    return p
+
+
+def _build_differentialpulsevoltammetry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(DifferentialPulseVoltammetry, method)
+    default = DifferentialPulseVoltammetry()
+
+    _require_default(
+        'enable_bipot_current', m.enable_bipot_current, default.enable_bipot_current
+    )
+    _require_default('bipot', m.bipot, default.bipot)
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+    _require_default(
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
+    )
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+    # Like SWV, DPV emits no aux/cell/WE-potential keys; guard rather than drop.
+    _require_default(
+        'record_auxiliary_input',
+        m.record_auxiliary_input,
+        default.record_auxiliary_input,
+    )
+    _require_default(
+        'record_cell_potential', m.record_cell_potential, default.record_cell_potential
+    )
+    _require_default('record_we_potential', m.record_we_potential, default.record_we_potential)
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = [m.equilibration_time]
+    p['BeginPotential'] = [m.begin_potential]
+    p['EndPotential'] = [m.end_potential]
+    p['StepPotential'] = [m.step_potential]
+    p['PulsePotential'] = [m.pulse_potential]
+    p['PulseTime'] = [m.pulse_time]
+    p['ScanRate'] = [m.scan_rate]
+
+    p['BeginPotentialOCP'] = ['begin' in m.versus_ocp.potentials]
+    p['EndPotentialOCP'] = ['end' in m.versus_ocp.potentials]
+
+    _add_ir_drop_compensation(p, m.ir_drop_compensation)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['EnableDropDetection'] = [False]
+
+    _add_general(p, m.general)
+    return p
+
+
+def _build_normalpulsevoltammetry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(NormalPulseVoltammetry, method)
+    default = NormalPulseVoltammetry()
+
+    _require_default(
+        'enable_bipot_current', m.enable_bipot_current, default.enable_bipot_current
+    )
+    _require_default('bipot', m.bipot, default.bipot)
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+    _require_default(
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
+    )
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+    # Like SWV/DPV, NPV emits no aux/cell/WE-potential keys; guard rather than drop.
+    _require_default(
+        'record_auxiliary_input',
+        m.record_auxiliary_input,
+        default.record_auxiliary_input,
+    )
+    _require_default(
+        'record_cell_potential', m.record_cell_potential, default.record_cell_potential
+    )
+    _require_default('record_we_potential', m.record_we_potential, default.record_we_potential)
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = [m.equilibration_time]
+    p['BeginPotential'] = [m.begin_potential]
+    p['EndPotential'] = [m.end_potential]
+    p['StepPotential'] = [m.step_potential]
+    p['PulseTime'] = [m.pulse_time]
+    p['ScanRate'] = [m.scan_rate]
+
+    p['BeginPotentialOCP'] = ['begin' in m.versus_ocp.potentials]
+    p['EndPotentialOCP'] = ['end' in m.versus_ocp.potentials]
+
+    _add_ir_drop_compensation(p, m.ir_drop_compensation)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['EnableDropDetection'] = [False]
+
+    _add_general(p, m.general)
+    return p
+
+
 _BUILDERS: dict[str, Callable[[MethodTypeCompatible], ParamDict]] = {
     'ad': _build_chronoamperometry,
+    'cv': _build_cyclicvoltammetry,
+    'lsv': _build_linearsweepvoltammetry,
+    'swv': _build_squarewavevoltammetry,
+    'dpv': _build_differentialpulsevoltammetry,
+    'npv': _build_normalpulsevoltammetry,
     'pot': _build_chronopotentiometry,
 }
 

@@ -81,7 +81,7 @@ class IrDropCompensationMixin(BaseModel):
 
 
 class EquilibrationTriggersMixin(BaseModel):
-    equilibrion_triggers: settings.EquilibrationTriggers = Field(
+    equilibration_triggers: settings.EquilibrationTriggers = Field(
         default_factory=settings.EquilibrationTriggers
     )
     """Set the trigger at equilibration settings."""

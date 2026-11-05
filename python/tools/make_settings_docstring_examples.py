@@ -18,7 +18,7 @@ SETTINGS = {
     'potential_limits': ps.settings.PotentialLimits,
     'charge_limits': ps.settings.ChargeLimits,
     'ir_drop_compensation': ps.settings.IrDropCompensation,
-    'equilibrion_triggers': ps.settings.EquilibrationTriggers,
+    'equilibration_triggers': ps.settings.EquilibrationTriggers,
     'measurement_triggers': ps.settings.MeasurementTriggers,
     'delay_triggers': ps.settings.DelayTriggers,
     'multiplexer': ps.settings.Multiplexer,

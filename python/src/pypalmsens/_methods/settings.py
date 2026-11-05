@@ -837,7 +837,7 @@ class EquilibrationTriggers(BaseSettings):
     >>> import pypalmsens as ps
     >>> from pypalmsens.settings import EquilibrationTriggers
     >>> method = ps.CyclicVoltammetry(
-    ...     equilibrion_triggers=EquilibrationTriggers(
+    ...     equilibration_triggers=EquilibrationTriggers(
     ...         d0=True,
     ...         d1=True,
     ...         d2=False,
@@ -848,7 +848,7 @@ class EquilibrationTriggers(BaseSettings):
     From a dict (coerced to a `EquilibrationTriggers` by Pydantic):
 
     >>> method = ps.CyclicVoltammetry(
-    ...     equilibrion_triggers={
+    ...     equilibration_triggers={
     ...         'd0': True,
     ...         'd1': True,
     ...         'd2': False,
@@ -859,10 +859,10 @@ class EquilibrationTriggers(BaseSettings):
     By setting attributes directly:
 
     >>> method = ps.CyclicVoltammetry()
-    >>> method.equilibrion_triggers.d0 = True
-    >>> method.equilibrion_triggers.d1 = True
-    >>> method.equilibrion_triggers.d2 = False
-    >>> method.equilibrion_triggers.d3 = False
+    >>> method.equilibration_triggers.d0 = True
+    >>> method.equilibration_triggers.d1 = True
+    >>> method.equilibration_triggers.d2 = False
+    >>> method.equilibration_triggers.d3 = False
     """
 
     d0: bool = False

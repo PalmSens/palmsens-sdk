@@ -51,8 +51,9 @@ def load_lablink(dll_path: Path, *, clr):
     assert sdk_data.exists()
     assert sdk_lablink.exists()
 
-    unblock(sdk_data)
-    unblock(sdk_lablink)
+    if PLATFORM == 'win':
+        unblock(sdk_data)
+        unblock(sdk_lablink)
 
     clr.AddReference(str(sdk_data.with_suffix('')))
     clr.AddReference(str(sdk_lablink.with_suffix('')))

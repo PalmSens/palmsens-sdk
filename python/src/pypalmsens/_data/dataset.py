@@ -66,10 +66,10 @@ class DataSet(Mapping[str, DataArray]):
         self._mapping = _dataset_to_mapping_with_unique_keys(inner)
 
     @classmethod
-    def _wrap(cls, psdataset: PSDataSet) -> Self:
+    def _wrap(cls, inner: PSDataSet) -> Self:
         obj = cls.__new__(cls)
-        obj._inner = psdataset
-        obj._mapping = _dataset_to_mapping_with_unique_keys(psdataset)
+        obj._inner = inner
+        obj._mapping = _dataset_to_mapping_with_unique_keys(inner)
         return obj
 
     @override
@@ -200,12 +200,14 @@ class DataSet(Mapping[str, DataArray]):
         """
         dct: dict[str, Any] = {key: arr.to_list() for key, arr in self.items() if len(arr)}
 
-        if 'Current' in self.array_types:
-            *_, current = self.arrays(type='Current')
+        for prefix in ["", "Bipot"]:
+            current_name = prefix + "Current"
+            if current_name in self.array_types:
+                *_, current_array = self.arrays(type=current_name)
 
-            if isinstance(current, CurrentArray):
-                dct['CR'] = current.current_range()
-                dct['ReadingStatus'] = current.reading_status()
+                if isinstance(current_array, CurrentArray):
+                    dct[prefix + 'CR'] = current_array.current_range()
+                    dct[prefix + 'ReadingStatus'] = current_array.reading_status()
 
         return dct
 

@@ -228,6 +228,8 @@ async def discover_async(
             raise
 
         for device in devices:
+            if 'Bootloader' in str(device):
+                continue
             instruments.append(Instrument._from_device(device))
 
     instruments.sort(key=lambda instrument: instrument.id)

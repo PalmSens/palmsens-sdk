@@ -13,9 +13,30 @@ DATA_CV = DATA_DIR / 'CV example.pssession'
 DATA_DIFF_PULSE = DATA_DIR / 'PSDiffPulse.pssession'
 DATA_NOISE_TEST = DATA_DIR / 'PSNoiseTest.pssession'
 DATA_CV_1SCAN = DATA_DIR / 'cv_1scan.pssession'
+DATA_CV_1SCAN_BIPOT = DATA_DIR / 'cv_1scan_bipot.pssession'
 DATA_CV_3SCAN = DATA_DIR / 'cv_3scan.pssession'
 DATA_EIS_3CH_4SCAN_5FREQ = DATA_DIR / 'eis_3ch_4scan_5freq.pssession'
 DATA_EIS_5FREQ = DATA_DIR / 'eis_5freq.pssession'
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        '--lablink',
+        action='store_true',
+        dest='lablink',
+        default=False,
+        help='Enable lablink tests',
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    if config.getoption('--lablink'):
+        # --lablink given in cli: do not skip slow tests
+        return
+    skip_lablink = pytest.mark.skip(reason='need --lablink option to run')
+    for item in items:
+        if item.get_closest_marker('lablink'):
+            item.add_marker(skip_lablink)
 
 
 @pytest.fixture(scope='module')
@@ -41,6 +62,11 @@ def measurement_noise_test():
 @pytest.fixture(scope='module')
 def measurement_cv_1scan():
     return ps.load_measurement(DATA_CV_1SCAN)
+
+
+@pytest.fixture(scope='module')
+def measurement_cv_1scan_bipot():
+    return ps.load_measurement(DATA_CV_1SCAN_BIPOT)
 
 
 @pytest.fixture(scope='module')

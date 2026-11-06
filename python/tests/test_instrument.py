@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+import gc
 import warnings
+import weakref
 from dataclasses import dataclass
 from itertools import groupby
 
@@ -9,6 +11,7 @@ import pytest
 from PalmSens.Comm import enumDeviceType
 
 import pypalmsens as ps
+from pypalmsens._instruments.measurement_manager_async import MeasurementManagerAsync
 from pypalmsens._instruments.shared import firmware_warning
 from pypalmsens.data import Measurement
 
@@ -322,3 +325,28 @@ async def test_query_async():
             assert await manager.query('t')
         except ValueError as e:
             pytest.skip(str(e))
+
+
+@pytest.mark.instrument
+def test_manager_is_collectable_after_construction():
+    # https://github.com/PalmSens/palmsens-sdk/issues/511
+    with ps.connect() as manager:
+        mm = MeasurementManagerAsync(comm=manager._comm)
+        ref = weakref.ref(mm)
+        del mm
+        _ = gc.collect()
+        assert ref() is None, f'manager kept alive by {gc.get_referrers(ref())}'
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_manager_is_collectable_after_measurement():
+    # https://github.com/PalmSens/palmsens-sdk/issues/511
+    async with await ps.connect_async() as manager:
+        mm = MeasurementManagerAsync(comm=manager._comm)
+        ref_mm = weakref.ref(mm)
+        _ = await mm.measure(ps.ChronoAmperometry(run_time=0.1))
+        assert mm.active_measurement is None
+        del mm
+        _ = gc.collect()
+        assert ref_mm() is None

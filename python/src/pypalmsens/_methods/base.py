@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from typing import Any, ClassVar
 
 import PalmSens
+from PalmSens import DataFiles as PSDataFiles
 from System.IO import StringWriter
 
 from .. import __version__
@@ -65,9 +66,7 @@ class BaseTechnique(BaseSettings):
         """Serialize to string that can be written to pssession file."""
         psmethod = self._to_psmethod()
         with string_writer() as stream:
-            PalmSens.DataFiles.MethodFile2.Serialize(
-                psmethod, stream, 'PyPalmSens', __version__
-            )
+            PSDataFiles.MethodFile2.Serialize(psmethod, stream, 'PyPalmSens', __version__)
             return str(stream)
 
     @classmethod

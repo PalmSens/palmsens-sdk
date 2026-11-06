@@ -62,6 +62,7 @@ AllowedCurrentRanges = Literal[
 ]
 """Possible current ranges.
 
+Not every instrument offers every range.
 See the device documentation or query the instrument manager
 for supported current ranges."""
 
@@ -128,6 +129,7 @@ AllowedPotentialRanges = Literal[
 ]
 """Possible potential ranges.
 
+Not every instrument offers every range.
 See the device documentation or query the instrument manager
 for supported potential ranges."""
 

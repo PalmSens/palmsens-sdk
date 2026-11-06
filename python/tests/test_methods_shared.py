@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import pytest
+
 from pypalmsens._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
+    cr_string_to_sig_exp,
+    frexp10,
     pr_enum_to_string,
     pr_string_to_enum,
+    pr_string_to_sig_exp,
 )
 from pypalmsens._methods.levels import (
     convert_bools_to_int,
@@ -38,3 +43,34 @@ def test_potential_ranges_enum():
     enum = pr_string_to_enum(pr)
     pr2 = pr_enum_to_string(enum)
     assert pr2 == pr
+
+
+@pytest.mark.parametrize(
+    ('value', 'expected'),
+    [
+        (0.001, (1, -3)),
+        (0.000005, (5, -6)),
+        (1000, (1, 3)),
+        (5000, (5, 3)),
+        (1, (1, 0)),
+        (10, (1, 1)),
+        (100, (1, 2)),
+        (0.1, (1, -1)),
+        (12345, (1, 4)),
+    ],
+)
+def test_frexp10(value: float, expected: tuple[int, int]) -> None:
+    assert frexp10(value) == expected
+
+
+def test_current_range_sig_exp():
+    # internal default unit is uA
+    assert cr_string_to_sig_exp('1uA') == (1, 0)
+    assert cr_string_to_sig_exp('5mA') == (5, 3)
+    assert cr_string_to_sig_exp('1A') == (1, 6)
+
+
+def test_potential_ranges_sig_exp():
+    assert pr_string_to_sig_exp('1mV') == (1, -3)
+    assert pr_string_to_sig_exp('20mV') == (2, -2)
+    assert pr_string_to_sig_exp('1V') == (1, 0)

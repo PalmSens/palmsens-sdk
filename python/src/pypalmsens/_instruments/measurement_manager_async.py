@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import weakref
 from collections import defaultdict
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
@@ -108,7 +109,7 @@ class MeasurementManagerAsync:
         self.callback: Callback | CallbackEIS | None = None
 
         self.is_measuring: bool = False
-        self.last_measurement: Measurement | None = None
+        self.active_measurement: Measurement | None = None
 
         self.loop: asyncio.AbstractEventLoop
 
@@ -120,23 +121,51 @@ class MeasurementManagerAsync:
 
         self.eis_last_data_index: int = 0
 
-    def setup_handlers(self) -> dict[AllowedEvents, Any]:
+    def setup_handlers(self) -> dict:
+        """Create delegates that do not keep a strong reference to this instance.
+
+        The delegates are stored in `self.event_handlers`, and the .NET
+        CommManager / Plottables objects hold on to some of them. A bound method
+        would therefore create a reference cycle that crosses the Python/CLR
+        boundary, which neither garbage collector can traverse.
+        """
+
+        def bind(name: str, fallback: Any = None) -> Callable[..., Any]:
+            ref = weakref.WeakMethod(getattr(self, name))
+
+            def dispatch(*args: Any) -> Any:
+                fn = ref()
+                # manager already collected: ignore late events
+                if fn is None:
+                    return fallback
+                return fn(*args)
+
+            dispatch.__name__ = f'weak_{name}'
+            dispatch.__qualname__ = f'MeasurementManagerAsync.{name}'
+            return dispatch
+
+        def bind_async(name: str) -> Callable[..., Any]:
+            # the CLR awaits these, so they must always return a Task
+            return bind(name, fallback=Task.CompletedTask)
+
         return {
             'measurement_begin': AsyncEventHandler[CommManager.BeginMeasurementEventArgsAsync](
-                self.on_measurement_begin_event
+                bind_async('on_measurement_begin_event')
             ),
             'measurement_end': AsyncEventHandler[CommManager.EndMeasurementAsyncEventArgs](
-                self.on_measurement_end_event
+                bind_async('on_measurement_end_event')
             ),
-            'curve_begin': Plottables.CurveEventHandler(self.on_curve_begin_event),
+            'curve_begin': Plottables.CurveEventHandler(bind('on_curve_begin_event')),
             'curve_new_data': Plottables.Curve.NewDataAddedEventHandler(
-                self.on_curve_new_data_event
+                bind('on_curve_new_data_event')
             ),
-            'curve_end': EventHandler(self.on_curve_end_event),
-            'eis_data_begin': Plottables.EISDataEventHandler(self.on_eis_data_begin_event),
-            'eis_new_data': Plottables.EISData.NewDataEventHandler(self.on_eis_new_data_event),
-            'eis_data_end': EventHandler(self.on_eis_data_end_event),
-            'error': EventHandler(self.on_error_event),
+            'curve_end': EventHandler(bind('on_curve_end_event')),
+            'eis_data_begin': Plottables.EISDataEventHandler(bind('on_eis_data_begin_event')),
+            'eis_new_data': Plottables.EISData.NewDataEventHandler(
+                bind('on_eis_new_data_event')
+            ),
+            'eis_data_end': EventHandler(bind('on_eis_data_end_event')),
+            'error': EventHandler(bind('on_error_event')),
         }
 
     def setup(self):
@@ -272,12 +301,17 @@ class MeasurementManagerAsync:
         with self._measurement_context():
             await self.await_measurement(method=psmethod, sync_event=sync_event)
 
-        assert self.last_measurement
+        assert self.active_measurement
 
         if isinstance(method, BaseMethodScriptTechnique):
-            self.last_measurement._inner.Title = method._name  # type: ignore
+            self.active_measurement._inner.Title = method._name  # type: ignore
 
-        return self.last_measurement
+        try:
+            return self.active_measurement
+        finally:
+            # clear circular reference
+            self.active_measurement = None
+            self.event_handlers.clear()
 
     def on_measurement_begin_event(
         self, sender: PalmSens.Comm.CommManager, args
@@ -285,7 +319,7 @@ class MeasurementManagerAsync:
         """Called when the measurement begins."""
         measurement = Measurement._wrap(args.NewMeasurement)
 
-        self.last_measurement = measurement
+        self.active_measurement = measurement
 
         _ = self.loop.call_soon_threadsafe(self.begin_measurement_event.set)
 
@@ -300,7 +334,7 @@ class MeasurementManagerAsync:
         """Called when the measurement ends."""
 
         for callback in self.callbacks['measurement_end']:
-            _ = self.loop.call_soon_threadsafe(callback, self.last_measurement)
+            _ = self.loop.call_soon_threadsafe(callback, self.active_measurement)
 
         _ = self.loop.call_soon_threadsafe(self.end_measurement_event.set)
 

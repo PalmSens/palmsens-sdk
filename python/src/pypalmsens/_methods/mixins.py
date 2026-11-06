@@ -81,7 +81,7 @@ class IrDropCompensationMixin(BaseModel):
 
 
 class EquilibrationTriggersMixin(BaseModel):
-    equilibrion_triggers: settings.EquilibrationTriggers = Field(
+    equilibration_triggers: settings.EquilibrationTriggers = Field(
         default_factory=settings.EquilibrationTriggers
     )
     """Set the trigger at equilibration settings."""
@@ -111,7 +111,7 @@ class DataProcessingMixin(BaseModel):
 
 class GeneralMixin(BaseModel):
     general: settings.General = Field(default_factory=settings.General)
-    """Sets general/other settings."""
+    """Set the general, method-wide settings."""
 
     @property
     def _use_hardware_sync(self):

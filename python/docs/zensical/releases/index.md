@@ -1,6 +1,82 @@
 # Changelog
 
 <!-- Latest-->
+## PyPalmSens 2.3.0
+
+> :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-2.3.0">python-2.3.0</a>
+| :fontawesome-brands-python: <a href="https://pypi.org/project/pypalmsens/2.3.0">pypalmsens-2.3.0</a>
+| :fontawesome-solid-calendar: 2026-11-06
+
+Next to substantial documentation updates and several small bug fixes, notable features for this release include:
+
+### Support for Python 3.15
+
+This release of PyPalmSens is tested and working on Python 3.15. Note that PyYAML does not yet ship wheels for 3.15, so installs may fail. See [this PyYAML issue](https://github.com/yaml/pyyaml/issues/951) for work-arounds until upstream releases them.
+
+### Simulating impedance spectra
+
+This release adds `CircuitModel.simulate()` to simulate a circuit's impedance spectrum (Ω) from a CDC with known parameters. See [the documentation](https://dev.palmsens.com/python/latest/_attachments/circuit_fitting/#simulating-impedance) for more information.
+
+```python
+>>> import pypalmsens as ps
+>>> cdc = 'R(RC)'
+>>> parameters = [560, 10_000, 33e-9]
+
+>>> model = ps.fitting.CircuitModel(cdc=cdc)
+>>> result = model.simulate(parameters=parameters)
+
+>>> result.z_imag
+array([ -207.25601164,  -250.06598938,  -301.69164849, ...]
+>>> result.z_real
+array([10555.70264784, 10553.74278482, 10550.88991556, ...]
+>>> result.z_phase
+array([ -1.12482982,  -1.35734266,  -1.63786653, ...]
+
+>>> fig = result.plot_nyquist()
+>>> fig = result.plot_bode()
+```
+
+### Manually setting current ranges and modes
+
+With this release you can manually set the current and change modes. To set the current:
+
+```python
+import pypalmsens as ps
+
+manager = ps.connect()
+manager.set_current(0.1)
+```
+
+Setting the current or potential will automatically switch the active measurement mode to 'galvanostatic' or 'potentiostatic', respectively.
+
+Retrieve the mode using `get_mode`:
+
+```python
+manager.get_mode()
+# 'galvanostatic'
+```
+
+You can switch modes using `set_mode`:
+
+```python
+manager.set_mode('potentiostatic')
+# or
+manager.set_mode('galvanostatic')
+```
+
+### What's changed
+
+- Add settable titles for `Measurement` ([#510](https://github.com/palmsens/palmsens-sdk/pull/510))
+- Add set_current / get_mode / set_mode to InstrumentManager ([#513](https://github.com/palmsens/palmsens-sdk/pull/513))
+- Fix geis callback ([#515](https://github.com/palmsens/palmsens-sdk/pull/515))
+- Update documentation ([#509](https://github.com/palmsens/palmsens-sdk/pull/509), [#517](https://github.com/palmsens/palmsens-sdk/pull/517), [#518](https://github.com/palmsens/palmsens-sdk/pull/518), [#520](https://github.com/palmsens/palmsens-sdk/pull/520), [#527](https://github.com/palmsens/palmsens-sdk/pull/527))
+- Fix memory leak ([#519](https://github.com/palmsens/palmsens-sdk/pull/519))
+- Small fixes for PyPalmSens (webinar) ([#521](https://github.com/palmsens/palmsens-sdk/pull/521))
+- Include support for python 3.15 ([#507](https://github.com/palmsens/palmsens-sdk/pull/507))
+- Add function to simulate impedance to circuit fit model ([#528](https://github.com/palmsens/palmsens-sdk/pull/528))
+- Add BipotCR and BipotReadingStatus to dict export ([#524](https://github.com/palmsens/palmsens-sdk/pull/524))
+
+
 ## PyPalmSens 2.2.0
 
 > :fontawesome-brands-github: <a href="https://github.com/palmsens/palmsens-sdk/releases/tag/python-2.2.0">python-2.2.0</a>

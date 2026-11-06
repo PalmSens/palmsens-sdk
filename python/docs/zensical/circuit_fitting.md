@@ -105,25 +105,25 @@ generate the plots from the result:
 
 ## Simulating impedance spectra
 
-You can use [CircuitModel.simulate][pypalsens.fitting.CircuitModel.simulate] to simulate the impedance response at a given set of frequencies. `simulate` takes in the parameters and CDC defined on the model.
+You can use [CircuitModel.simulate][pypalmsens.fitting.CircuitModel.simulate] to simulate the impedance response at a given set of frequencies. `simulate` takes in the parameters and CDC defined on the model.
 
 For example, to simulate the impedance for the PalmSens Dummy Circuit:
 
 ```python
 >>> cdc = 'R(RC)'
->>> parameters = [560, 10_000, 33e-8]
+>>> parameters = [560, 10_000, 33e-9]
 
 >>> model = CircuitModel(cdc=cdc)
 >>> result = model.simulate(parameters=parameters)
 
 >>> result.z_imag
-array([-1.98798376e+03, -2.35478911e+03, -2.76733133e+03, ...]
+array([ -207.25601164,  -250.06598938,  -301.69164849, ...]
 
 >>> result.z_real
-array([10147.8012784 ,  9970.77864191,  9724.35797322, ...]
+array([10555.70264784, 10553.74278482, 10550.88991556, ...]
 
 >>> result.z_phase
-array([-11.08403817, -13.28800969, -15.88514877, ...]
+array([ -1.12482982,  -1.35734266,  -1.63786653, ...]
 
 >>> fig = result.plot_nyquist()
 <Figure size 640x480 with 1 Axes>
@@ -132,6 +132,9 @@ array([-11.08403817, -13.28800969, -15.88514877, ...]
 <Figure size 640x480 with 2 Axes>
 
 ```
+
+![Nyquist plot in PyPalmSens](assets/circuit_fit_simulate_nyquist.png){ width="49%" }
+![Bode plot in PyPalmSens](assets/circuit_fit_simulate_bode.png){ width="49%" }
 
 ## Default values
 

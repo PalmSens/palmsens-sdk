@@ -103,7 +103,7 @@ generate the plots from the result:
 ![Bode plot in PyPalmSens](assets/circuit_fit_bode.png){ width="49%" }
 
 
-## Simulating impedance spectra
+## Simulating impedance
 
 You can use [CircuitModel.simulate][pypalmsens.fitting.CircuitModel.simulate] to simulate the impedance response at a given set of frequencies. `simulate` takes in the parameters and CDC defined on the model.
 

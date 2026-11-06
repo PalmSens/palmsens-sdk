@@ -103,6 +103,36 @@ generate the plots from the result:
 ![Bode plot in PyPalmSens](assets/circuit_fit_bode.png){ width="49%" }
 
 
+## Simulating impedance spectra
+
+You can use [CircuitModel.simulate][pypalsens.fitting.CircuitModel.simulate] to simulate the impedance response at a given set of frequencies. `simulate` takes in the parameters and CDC defined on the model.
+
+For example, to simulate the impedance for the PalmSens Dummy Circuit:
+
+```python
+>>> cdc = 'R(RC)'
+>>> parameters = [560, 10_000, 33e-8]
+
+>>> model = CircuitModel(cdc=cdc)
+>>> result = model.simulate(parameters=parameters)
+
+>>> result.z_imag
+array([-1.98798376e+03, -2.35478911e+03, -2.76733133e+03, ...]
+
+>>> result.z_real
+array([10147.8012784 ,  9970.77864191,  9724.35797322, ...]
+
+>>> result.z_phase
+array([-11.08403817, -13.28800969, -15.88514877, ...]
+
+>>> fig = result.plot_nyquist()
+<Figure size 640x480 with 1 Axes>
+
+>>> fig = result.plot_bode()
+<Figure size 640x480 with 2 Axes>
+
+```
+
 ## Default values
 
 This table shows the default values, the element types used in the system. Note that some element types have multiple values.

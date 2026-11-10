@@ -1,34 +1,10 @@
-"""Convert new-style technique settings into Lablink measurement parameters.
-
-This module avoids the Lablink SDK mapper DLL: it reads technique settings and
-builds the wire ``MethodParameters`` without going through ``MethodMappers``.
-It uses the core ``PalmSens`` converters (e.g. ``cr_string_to_enum``), which the
-rest of the SDK needs anyway.
-
-Design shape:
-
-- ``ID_TO_TECHNIQUE`` maps the technique ``id`` to the wire ``TechniqueId``.
-- Shared ``_add_*`` helpers emit the settings groups that are common across
-  techniques (ranges, pretreatment, limits, iR, post-measurement, general).
-- Each ``_build_*`` function casts the ``MethodTypeCompatible`` protocol to the
-  concrete pydantic technique, raises on still-unsupported settings, and emits
-  the technique-specific keys by composing the shared helpers.
-- ``to_payload`` JSON-encodes the values into the ``StartMeasurementCommand``
-  body sent to the hub.
-
-Reading typed attributes (rather than ``to_dict()``) keeps field access
-compile-checked: a renamed or missing field fails type-checking instead of
-silently dropping a wire key. The dependency stays ``lablink -> _methods``;
-``_methods`` never imports ``lablink``.
-"""
-
 from __future__ import annotations
 
 import json
 from collections.abc import Callable
 from typing import TYPE_CHECKING, cast
 
-from ..._converters import cr_string_to_enum, pr_string_to_enum
+from ..._converters import cr_string_to_enum, pr_string_to_enum, single_to_double
 from ..._methods.settings import (
     CurrentRange,
     General,
@@ -69,7 +45,7 @@ ID_TO_TECHNIQUE: dict[str, TechniqueId] = {
 
 def _current_amp(value: AllowedCurrentRanges) -> float:
     """Convert a current-range literal such as ``'100uA'`` to amperes."""
-    return cr_string_to_enum(value).Factor / 1e6
+    return single_to_double(cr_string_to_enum(value).Factor) / 1e6
 
 
 def _potential_volts(value: AllowedPotentialRanges) -> float:
@@ -78,10 +54,7 @@ def _potential_volts(value: AllowedPotentialRanges) -> float:
     NOTE: the mV divisor and the wire key names below assume the hub mirrors the
     current-range keys; confirm both against the C# models.
     """
-    return pr_string_to_enum(value).Factor / 1e3
-
-
-# --- shared setting groups -------------------------------------------------
+    return single_to_double(pr_string_to_enum(value).Factor) / 1e3
 
 
 def _add_current_range(p: ParamDict, rng: CurrentRange) -> None:
@@ -145,9 +118,6 @@ def _require_default(name: str, value: object, default: object) -> None:
     """Raise if a still-unsupported setting differs from its default."""
     if value != default:
         raise NotImplementedError(f'Lablink does not yet support {name!r}')
-
-
-# --- technique builders ----------------------------------------------------
 
 
 def _build_chronoamperometry(method: MethodTypeCompatible) -> ParamDict:

@@ -47,6 +47,7 @@ from ..._methods.techniques import (
     SquareWaveVoltammetry,
 )
 from ..._types import AllowedCurrentRanges, AllowedPotentialRanges
+from ._encoders import PlainFloatEncoder
 from ._wire import TechniqueId
 
 if TYPE_CHECKING:
@@ -502,9 +503,17 @@ def to_payload(method: MethodTypeCompatible) -> dict[str, object]:
 
     Values are JSON-encoded so the result is the wire ``dict[str, str]`` the hub
     expects (``MethodParameters``); ``Technique`` carries the technique name.
+
+    Notes:
+
+    - Lablink does not accept scientific notation. Floats must be formatted
+        as 0.000001 instead of 1e-6 (json default)
+
     """
     params = _to_parameters(method)
     return {
         'Technique': ID_TO_TECHNIQUE[method.id].value,
-        'MethodParameters': {key: json.dumps(value) for key, value in params.items()},
+        'MethodParameters': {
+            key: json.dumps(value, cls=PlainFloatEncoder) for key, value in params.items()
+        },
     }

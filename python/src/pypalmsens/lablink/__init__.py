@@ -19,9 +19,9 @@ from ._errors import (
     NoActiveMeasurementError,
 )
 from ._instance import Instance
-from ._instrument import Instrument, InstrumentClaim
+from ._instrument import Instrument, InstrumentClaim, InstrumentClaimBatch
 from ._measurement import Measurement, MeasurementJob
-from ._session import InstrumentClaimBatch, Session
+from ._session import Session
 
 __all__ = [
     'Instance',

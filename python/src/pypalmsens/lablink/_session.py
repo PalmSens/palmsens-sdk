@@ -1,7 +1,7 @@
 """Submodule for managing sessions on a Lablink instance.
 
 Use [Session][] for an authenticated connection to a Lablink
-instance. Use [ClaimBatch][] to group several instrument claims so
+instance. Use [InstrumentClaimBatch][] to group several instrument claims so
 they can be released together.
 
 """
@@ -9,14 +9,14 @@ they can be released together.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Any, Self, overload, override
+from typing import Any, Self
 
 import pandas as pd
 import xarray as xr
 
 from ..types import MethodTypeCompatible
 from ._client import HttpClient
-from ._instrument import Instrument, InstrumentClaim
+from ._instrument import Instrument, InstrumentClaim, InstrumentClaimBatch
 from ._measurement import Measurement, MeasurementJob
 from .models import LablinkInfo
 from .models._method_mapper import to_payload
@@ -30,58 +30,13 @@ from .models._wire import (
 )
 
 
-class InstrumentClaimBatch(Sequence[InstrumentClaim]):
-    """
-    A batch of claimed instruments.
-
-    Use as an async context manager. All claims are released when the
-    context exits.
-
-    Parameters
-    ----------
-    claims : list of InstrumentClaim
-        The list of instrument claims to manage.
-    """
-
-    def __init__(self, claims: list[InstrumentClaim]):
-        self.claims: list[InstrumentClaim] = claims
-
-    @override
-    def __repr__(self):
-        return f'{type(self).__name__}({self.claims})'
-
-    @overload
-    def __getitem__(self, index: int) -> InstrumentClaim: ...
-
-    @overload
-    def __getitem__(self, index: slice) -> list[InstrumentClaim]: ...
-
-    @override
-    def __getitem__(self, index) -> InstrumentClaim | list[InstrumentClaim]:
-        return self.claims[index]
-
-    @override
-    def __len__(self):
-        return len(self.claims)
-
-    async def __aenter__(self) -> list[InstrumentClaim]:
-        return self.claims
-
-    async def __aexit__(self, *exc_info) -> None:
-        await self.release()
-
-    async def release(self) -> None:
-        """Release all instrument claims in this batch."""
-        for claim in self.claims:
-            await claim.release()
-
-
 class Session:
     """
     A session managing a connection to a Lablink instance.
 
-    Use [Session.claim][] to claim instruments, and
-    [Session.start_measurement][] to run measurements on them.
+    Use [Session.list_instruments][] to list instruments,
+    [Session.claim][] to claim them, and
+    [Session.start_measurement][] to run measurements.
 
     Parameters
     ----------
@@ -90,7 +45,7 @@ class Session:
     token : str
         Token used to authenticate API calls.
     port : int, optional
-        Port for the API server; defaults to 5000.
+        Port for the API server, defaults to 5000.
     """
 
     def __init__(
@@ -120,15 +75,12 @@ class Session:
     def info(self) -> LablinkInfo | None:
         """Last fetched metadata, or `None` if not yet fetched.
 
-        See [get_info][] to (re)populate this.
+        Use [get_info][] to (re)populate this.
         """
         return self._info
 
     async def get_info(self) -> LablinkInfo:
-        """Fetch metadata for this instance.
-
-        Updates the name, version, and serial number with the latest values.
-        """
+        """Fetch metadata for this instance."""
         data = await self._http.get('/Home/GetInfo')
         self._info = LablinkInfo.from_wire(data.json())
         return self._info
@@ -137,7 +89,8 @@ class Session:
     def instrument_info(self) -> dict[str, dict[str, Any]]:
         """The instrument info from the most recent [get_instrument_info][] call.
 
-        May be stale or empty.
+        May be stale or empty. Use [list_instruments][] or
+        [get_instrument_info][] to update the cache.
         """
         return self._instrument_info
 
@@ -145,9 +98,18 @@ class Session:
     def instruments(self) -> list[Instrument]:
         """The instruments from the most recent [list_instruments][] call.
 
-        May be stale or empty.
+        May be stale or empty. Use [list_instruments][] or
+        [get_instrument_info][] update the cache.
         """
         return self._instruments
+
+    async def _get_instruments(self):
+        """Helper function to get instrument data and populate caches."""
+        data = await self._http.get('/Instruments')
+        self._instrument_info = {info['Serial']['Serial']: info for info in data.json()}
+        self._instruments = [
+            Instrument(serial=serial, session=self) for serial in self._instrument_info
+        ]
 
     async def get_instrument_info(self) -> dict[str, dict[str, Any]]:
         """Get info dictionary for currently attached instruments.
@@ -157,12 +119,10 @@ class Session:
         Returns
         -------
         dict[str, dict[str, Any]]
-            A mapping from serial number to instrument info for each attached instrument.
+            A mapping from serial number to instrument info for each currently
+            attached instrument.
         """
-
-        data = await self._http.get('/Instruments')
-        self._instrument_info = {info['Serial']['Serial']: info for info in data.json()}
-
+        await self._get_instruments()
         return self._instrument_info
 
     async def list_instruments(self) -> list[Instrument]:
@@ -175,15 +135,8 @@ class Session:
         list of Instrument
             A list of currently attached instruments.
         """
-        instruments = []
-        instrument_info = await self.get_instrument_info()
-
-        for serial in instrument_info:
-            instrument = Instrument(serial=serial, session=self)
-            instruments.append(instrument)
-
-        self._instruments = instruments
-        return instruments
+        await self._get_instruments()
+        return self._instruments
 
     async def claim(
         self, instruments: Sequence[Instrument], *, auto_release: bool = False
@@ -197,12 +150,12 @@ class Session:
         ----------
         instruments : Sequence[Instrument]
             The instruments to claim.
-        auto_release: bool, optional
+        auto_release : bool, optional
             If True, the server releases the claims after measurement ends.
 
         Returns
         -------
-        ClaimBatch
+        claims : ClaimBatch
             A batch containing the instrument claims.
         """
         method = 'Claim' if auto_release else 'ManualClaim'
@@ -242,6 +195,7 @@ class Session:
         """
         data = await self._http.get('/Measurements')
         refs = [MeasurementListResult.model_validate(item) for item in data.json()]
+        # TODO: Expose `MeasurementListResult` data via Measurement.info()
         return [Measurement(str(ref.Id), session=self) for ref in refs]
 
     async def get_measurement(self, measurement: Measurement | str) -> xr.Dataset | xr.DataTree:
@@ -463,12 +417,29 @@ class Session:
         await self._http.post('/Instrument/SendScript', json=payload)
 
     async def list_users(self) -> list[UserInfo]:
-        """Get list of users."""
+        """Get list of users.
+
+        Returns
+        -------
+        users : list[UserInfo]
+            List of user info
+        """
         data = await self._http.get('/Users')
         return [UserInfo.from_wire(item) for item in data.json()]
 
     async def delete_user(self, user: UserInfo | str) -> None:
-        """Delete user."""
+        """Delete a user by their identifier.
+
+        Users are deleted using their unique identifier (GUID),
+        either using the `guid` attribute from the `UserInfo` instance or
+        directly as a string.
+
+        Parameters
+        ----------
+        user: UserInfo | str
+            The identifier for the user to delete. This can be either an instance
+            of UserInfo, or a GUID string.
+        """
         if isinstance(user, UserInfo):
             guid = user.guid
         else:
@@ -477,7 +448,18 @@ class Session:
         await self._http.delete(f'/Users/{guid}')
 
     async def delete_measurements(self, measurements: list[Measurement | str]) -> None:
-        """Delete measurements in batch."""
+        """Delete measurement data from Lablink.
+
+        Measurements are deleted by their unique identifier (GUID),
+        either using the `guid` attribute from the `Measurement` instance or
+        directly as a string.
+
+        Parameters
+        ----------
+        measurements : list[Measurement | str]
+            A list of measurements to delete. Each item in the list can be
+            either an instance of `Measurement` or a GUID string.
+        """
         payload = [
             item.guid if isinstance(item, Measurement) else item for item in measurements
         ]

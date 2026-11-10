@@ -8,7 +8,19 @@ instrument. The claim is released when the context exits.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, Protocol, Self, runtime_checkable
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Literal,
+    Protocol,
+    Self,
+    overload,
+    override,
+    runtime_checkable,
+)
+
+from pandas.io.formats.style_render import Sequence
 
 from .._converters import cr_string_to_sig_exp, pr_string_to_sig_exp
 from .._types import AllowedCurrentRanges, AllowedPotentialRanges, MethodTypeCompatible
@@ -421,3 +433,49 @@ class InstrumentClaim(InstrumentReadsMixin):
             f'/Instrument/{self._serial}/SetBiPotPotential',
             json=payload,
         )
+
+
+class InstrumentClaimBatch(Sequence[InstrumentClaim]):
+    """
+    A batch of claimed instruments.
+
+    Use as an async context manager. All claims are released when the
+    context exits.
+
+    Parameters
+    ----------
+    claims : list of InstrumentClaim
+        The list of instrument claims to manage.
+    """
+
+    def __init__(self, claims: list[InstrumentClaim]):
+        self.claims: list[InstrumentClaim] = claims
+
+    @override
+    def __repr__(self):
+        return f'{type(self).__name__}({self.claims})'
+
+    @overload
+    def __getitem__(self, index: int) -> InstrumentClaim: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> list[InstrumentClaim]: ...
+
+    @override
+    def __getitem__(self, index) -> InstrumentClaim | list[InstrumentClaim]:
+        return self.claims[index]
+
+    @override
+    def __len__(self):
+        return len(self.claims)
+
+    async def __aenter__(self) -> list[InstrumentClaim]:
+        return self.claims
+
+    async def __aexit__(self, *exc_info) -> None:
+        await self.release()
+
+    async def release(self) -> None:
+        """Release all instrument claims in this batch."""
+        for claim in self.claims:
+            await claim.release()

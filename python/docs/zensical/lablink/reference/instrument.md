@@ -10,11 +10,16 @@ Use the claim as an async context manager; the instrument is released when the b
 async with await instrument.claim() as claim:
     await claim.set_current_range('1 mA')
     job = await claim.start_measurement(method=method)
-    measurement = await job
-# claim released here
+    measurement = await job  # claim released here
 ```
 
 To claim several instruments at once, `session.claim(instruments)` returns an [InstrumentClaimBatch][pypalmsens.lablink.InstrumentClaimBatch] that releases every claim when its block exits.
+
+**Classes:**
+
+- [`Instrument`][pypalmsens.lablink.Instrument]
+- [`InstrumentClaim`][pypalmsens.lablink.InstrumentClaim]
+- [`InstrumentClaimBatch`][pypalmsens.lablink.InstrumentClaimBatch]
 
 ::: pypalmsens.lablink.Instrument
 ::: pypalmsens.lablink.InstrumentClaim

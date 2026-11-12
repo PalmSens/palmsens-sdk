@@ -2,78 +2,30 @@
   "ad": {
     "default": {
       "expected": {
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementOff"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          0.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          0.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationTime": [
-          0.0
-        ],
-        "IntervalTime": [
-          0.1
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureAuxiliaryInput": [
-          false
-        ],
-        "MeasureCellPotential": [
-          false
-        ],
-        "MeasureWEPotential": [
-          false
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "Potential": [
-          0.7
-        ],
-        "PotentialOCP": [
-          false
-        ],
-        "RunTime": [
-          1.5
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "UseMaximumChargeLimit": [
-          false
-        ],
-        "UseMaximumCurrentLimit": [
-          false
-        ],
-        "UseMaximumTemperatureLimit": [
-          false
-        ],
-        "UseMinimumChargeLimit": [
-          false
-        ],
-        "UseMinimumCurrentLimit": [
-          false
-        ],
-        "UseMinimumTemperatureLimit": [
-          false
-        ]
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementOff"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [0.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [0.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationTime": [0.0],
+        "IntervalTime": [0.1],
+        "MaximumCurrentRange": [0.01],
+        "MeasureAuxiliaryInput": [false],
+        "MeasureCellPotential": [false],
+        "MeasureWEPotential": [false],
+        "MinimumCurrentRange": [1e-6],
+        "Potential": [0.7],
+        "PotentialOCP": [false],
+        "RunTime": [1.5],
+        "StartingCurrentRange": [0.0001],
+        "UseMaximumChargeLimit": [false],
+        "UseMaximumCurrentLimit": [false],
+        "UseMaximumTemperatureLimit": [false],
+        "UseMinimumChargeLimit": [false],
+        "UseMinimumCurrentLimit": [false],
+        "UseMinimumTemperatureLimit": [false]
       },
       "spec": {
         "bipot": {
@@ -161,111 +113,41 @@
     },
     "extended": {
       "expected": {
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementPotentiostatic"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          1.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          2.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationTime": [
-          0.0
-        ],
-        "IRCompensation": [
-          10.0
-        ],
-        "IntervalTime": [
-          0.1
-        ],
-        "MaximumChargeLimit": [
-          0.001
-        ],
-        "MaximumCurrentLimit": [
-          0.001
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureAuxiliaryInput": [
-          false
-        ],
-        "MeasureCellPotential": [
-          false
-        ],
-        "MeasureWEPotential": [
-          false
-        ],
-        "MinimumChargeLimit": [
-          1e-06
-        ],
-        "MinimumCurrentLimit": [
-          -1e-06
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "Potential": [
-          0.7
-        ],
-        "PotentialAfterMeasurement": [
-          0.0
-        ],
-        "PotentialOCP": [
-          false
-        ],
-        "RunTime": [
-          1.5
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "UseCurrentAfterMeasurement": [
-          false
-        ],
-        "UseIRCompensation": [
-          true
-        ],
-        "UseMaximumChargeLimit": [
-          true
-        ],
-        "UseMaximumCurrentLimit": [
-          true
-        ],
-        "UseMaximumTemperatureLimit": [
-          false
-        ],
-        "UseMeasuredCurrentRangeAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredPotentialRangeAfterMeasurement": [
-          false
-        ],
-        "UseMinimumChargeLimit": [
-          true
-        ],
-        "UseMinimumCurrentLimit": [
-          true
-        ],
-        "UseMinimumTemperatureLimit": [
-          false
-        ],
-        "UsePotentialAfterMeasurement": [
-          true
-        ]
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementPotentiostatic"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [1.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [2.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationTime": [0.0],
+        "IRCompensation": [10.0],
+        "IntervalTime": [0.1],
+        "MaximumChargeLimit": [0.001],
+        "MaximumCurrentLimit": [0.001],
+        "MaximumCurrentRange": [0.01],
+        "MeasureAuxiliaryInput": [false],
+        "MeasureCellPotential": [false],
+        "MeasureWEPotential": [false],
+        "MinimumChargeLimit": [1e-6],
+        "MinimumCurrentLimit": [-1e-6],
+        "MinimumCurrentRange": [1e-6],
+        "Potential": [0.7],
+        "PotentialAfterMeasurement": [0.0],
+        "PotentialOCP": [false],
+        "RunTime": [1.5],
+        "StartingCurrentRange": [0.0001],
+        "UseCurrentAfterMeasurement": [false],
+        "UseIRCompensation": [true],
+        "UseMaximumChargeLimit": [true],
+        "UseMaximumCurrentLimit": [true],
+        "UseMaximumTemperatureLimit": [false],
+        "UseMeasuredCurrentRangeAfterMeasurement": [false],
+        "UseMeasuredPotentialRangeAfterMeasurement": [false],
+        "UseMinimumChargeLimit": [true],
+        "UseMinimumCurrentLimit": [true],
+        "UseMinimumTemperatureLimit": [false],
+        "UsePotentialAfterMeasurement": [true]
       },
       "spec": {
         "bipot": {
@@ -279,11 +161,11 @@
         },
         "charge_limits": {
           "max": 0.001,
-          "min": 1e-06
+          "min": 1e-6
         },
         "current_limits": {
           "max": 0.001,
-          "min": -1e-06
+          "min": -1e-6
         },
         "current_range": {
           "max": "10mA",
@@ -355,75 +237,29 @@
   "cc": {
     "default": {
       "expected": {
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementOff"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          0.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          0.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IntervalTime": [
-          0.5
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureAuxiliaryInput": [
-          false
-        ],
-        "MeasureCellPotential": [
-          false
-        ],
-        "MeasureWEPotential": [
-          false
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "Steps/0/Step/Potential": [
-          0.1
-        ],
-        "Steps/0/Step/RunTime": [
-          1.0
-        ],
-        "Steps/1/Step/Potential": [
-          0.5
-        ],
-        "Steps/1/Step/RunTime": [
-          2.0
-        ],
-        "UseMaximumChargeLimit": [
-          false
-        ],
-        "UseMaximumCurrentLimit": [
-          false
-        ],
-        "UseMinimumChargeLimit": [
-          false
-        ],
-        "UseMinimumCurrentLimit": [
-          false
-        ]
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementOff"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [0.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [0.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationTime": [1.1],
+        "IntervalTime": [0.5],
+        "MaximumCurrentRange": [0.01],
+        "MeasureAuxiliaryInput": [false],
+        "MeasureCellPotential": [false],
+        "MeasureWEPotential": [false],
+        "MinimumCurrentRange": [1e-6],
+        "StartingCurrentRange": [0.0001],
+        "Steps/0/Step/Potential": [0.1],
+        "Steps/0/Step/RunTime": [1.0],
+        "Steps/1/Step/Potential": [0.5],
+        "Steps/1/Step/RunTime": [2.0],
+        "UseMaximumChargeLimit": [false],
+        "UseMaximumCurrentLimit": [false],
+        "UseMinimumChargeLimit": [false],
+        "UseMinimumCurrentLimit": [false]
       },
       "spec": {
         "bandwidth": null,
@@ -476,112 +312,48 @@
     },
     "extended": {
       "expected": {
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementPotentiostatic"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          1.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          2.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IntervalTime": [
-          0.5
-        ],
-        "MaximumChargeLimit": [
-          0.001
-        ],
-        "MaximumCurrentLimit": [
-          0.001
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureAuxiliaryInput": [
-          false
-        ],
-        "MeasureCellPotential": [
-          false
-        ],
-        "MeasureWEPotential": [
-          false
-        ],
-        "MinimumChargeLimit": [
-          1e-06
-        ],
-        "MinimumCurrentLimit": [
-          -1e-06
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "PotentialAfterMeasurement": [
-          0.0
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "Steps/0/Step/Potential": [
-          0.1
-        ],
-        "Steps/0/Step/RunTime": [
-          1.0
-        ],
-        "Steps/1/Step/Potential": [
-          0.5
-        ],
-        "Steps/1/Step/RunTime": [
-          2.0
-        ],
-        "UseCurrentAfterMeasurement": [
-          false
-        ],
-        "UseMaximumChargeLimit": [
-          true
-        ],
-        "UseMaximumCurrentLimit": [
-          true
-        ],
-        "UseMeasuredCurrentRangeAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredPotentialRangeAfterMeasurement": [
-          false
-        ],
-        "UseMinimumChargeLimit": [
-          true
-        ],
-        "UseMinimumCurrentLimit": [
-          true
-        ],
-        "UsePotentialAfterMeasurement": [
-          true
-        ]
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementPotentiostatic"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [1.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [2.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationTime": [1.1],
+        "IntervalTime": [0.5],
+        "MaximumChargeLimit": [0.001],
+        "MaximumCurrentLimit": [0.001],
+        "MaximumCurrentRange": [0.01],
+        "MeasureAuxiliaryInput": [false],
+        "MeasureCellPotential": [false],
+        "MeasureWEPotential": [false],
+        "MinimumChargeLimit": [1e-6],
+        "MinimumCurrentLimit": [-1e-6],
+        "MinimumCurrentRange": [1e-6],
+        "PotentialAfterMeasurement": [0.0],
+        "StartingCurrentRange": [0.0001],
+        "Steps/0/Step/Potential": [0.1],
+        "Steps/0/Step/RunTime": [1.0],
+        "Steps/1/Step/Potential": [0.5],
+        "Steps/1/Step/RunTime": [2.0],
+        "UseCurrentAfterMeasurement": [false],
+        "UseMaximumChargeLimit": [true],
+        "UseMaximumCurrentLimit": [true],
+        "UseMeasuredCurrentRangeAfterMeasurement": [false],
+        "UseMeasuredPotentialRangeAfterMeasurement": [false],
+        "UseMinimumChargeLimit": [true],
+        "UseMinimumCurrentLimit": [true],
+        "UsePotentialAfterMeasurement": [true]
       },
       "spec": {
         "bandwidth": null,
         "charge_limits": {
           "max": 0.001,
-          "min": 1e-06
+          "min": 1e-6
         },
         "current_limits": {
           "max": 0.001,
-          "min": -1e-06
+          "min": -1e-6
         },
         "current_range": {
           "max": "10mA",
@@ -626,93 +398,35 @@
   "cv": {
     "default": {
       "expected": {
-        "BeginPotential": [
-          -0.44
-        ],
-        "BeginPotentialOCP": [
-          false
-        ],
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementOff"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          0.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          0.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureAuxiliaryInput": [
-          false
-        ],
-        "MeasureCellPotential": [
-          false
-        ],
-        "MeasureWEPotential": [
-          false
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "NumberOfScans": [
-          3.0
-        ],
-        "ScanRate": [
-          1.5
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "StepPotential": [
-          0.12
-        ],
-        "UseMaximumChargeLimit": [
-          false
-        ],
-        "UseMaximumCurrentLimit": [
-          false
-        ],
-        "UseMaximumTemperatureLimit": [
-          false
-        ],
-        "UseMinimumChargeLimit": [
-          false
-        ],
-        "UseMinimumCurrentLimit": [
-          false
-        ],
-        "UseMinimumTemperatureLimit": [
-          false
-        ],
-        "Vertex1Potential": [
-          0.66
-        ],
-        "Vertex1PotentialOCP": [
-          false
-        ],
-        "Vertex2Potential": [
-          -0.33
-        ],
-        "Vertex2PotentialOCP": [
-          false
-        ]
+        "BeginPotential": [-0.44],
+        "BeginPotentialOCP": [false],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementOff"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [0.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [0.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationTime": [1.1],
+        "MaximumCurrentRange": [0.01],
+        "MeasureAuxiliaryInput": [false],
+        "MeasureCellPotential": [false],
+        "MeasureWEPotential": [false],
+        "MinimumCurrentRange": [1e-6],
+        "NumberOfScans": [3.0],
+        "ScanRate": [1.5],
+        "StartingCurrentRange": [0.0001],
+        "StepPotential": [0.12],
+        "UseMaximumChargeLimit": [false],
+        "UseMaximumCurrentLimit": [false],
+        "UseMaximumTemperatureLimit": [false],
+        "UseMinimumChargeLimit": [false],
+        "UseMinimumCurrentLimit": [false],
+        "UseMinimumTemperatureLimit": [false],
+        "Vertex1Potential": [0.66],
+        "Vertex1PotentialOCP": [false],
+        "Vertex2Potential": [-0.33],
+        "Vertex2PotentialOCP": [false]
       },
       "spec": {
         "begin_potential": -0.44,
@@ -791,120 +505,44 @@
     },
     "extended": {
       "expected": {
-        "BeginPotential": [
-          -0.44
-        ],
-        "BeginPotentialOCP": [
-          false
-        ],
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementPotentiostatic"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          1.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          2.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IRCompensation": [
-          10.0
-        ],
-        "MaximumCurrentLimit": [
-          0.001
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureAuxiliaryInput": [
-          false
-        ],
-        "MeasureCellPotential": [
-          false
-        ],
-        "MeasureWEPotential": [
-          false
-        ],
-        "MinimumCurrentLimit": [
-          -1e-06
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "NumberOfScans": [
-          3.0
-        ],
-        "PotentialAfterMeasurement": [
-          0.0
-        ],
-        "ScanRate": [
-          1.5
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "StepPotential": [
-          0.12
-        ],
-        "UseCurrentAfterMeasurement": [
-          false
-        ],
-        "UseIRCompensation": [
-          true
-        ],
-        "UseMaximumChargeLimit": [
-          false
-        ],
-        "UseMaximumCurrentLimit": [
-          true
-        ],
-        "UseMaximumTemperatureLimit": [
-          false
-        ],
-        "UseMeasuredCurrentRangeAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredPotentialRangeAfterMeasurement": [
-          false
-        ],
-        "UseMinimumChargeLimit": [
-          false
-        ],
-        "UseMinimumCurrentLimit": [
-          true
-        ],
-        "UseMinimumTemperatureLimit": [
-          false
-        ],
-        "UsePotentialAfterMeasurement": [
-          true
-        ],
-        "Vertex1Potential": [
-          0.66
-        ],
-        "Vertex1PotentialOCP": [
-          false
-        ],
-        "Vertex2Potential": [
-          -0.33
-        ],
-        "Vertex2PotentialOCP": [
-          false
-        ]
+        "BeginPotential": [-0.44],
+        "BeginPotentialOCP": [false],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementPotentiostatic"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [1.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [2.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationTime": [1.1],
+        "IRCompensation": [10.0],
+        "MaximumCurrentLimit": [0.001],
+        "MaximumCurrentRange": [0.01],
+        "MeasureAuxiliaryInput": [false],
+        "MeasureCellPotential": [false],
+        "MeasureWEPotential": [false],
+        "MinimumCurrentLimit": [-1e-6],
+        "MinimumCurrentRange": [1e-6],
+        "NumberOfScans": [3.0],
+        "PotentialAfterMeasurement": [0.0],
+        "ScanRate": [1.5],
+        "StartingCurrentRange": [0.0001],
+        "StepPotential": [0.12],
+        "UseCurrentAfterMeasurement": [false],
+        "UseIRCompensation": [true],
+        "UseMaximumChargeLimit": [false],
+        "UseMaximumCurrentLimit": [true],
+        "UseMaximumTemperatureLimit": [false],
+        "UseMeasuredCurrentRangeAfterMeasurement": [false],
+        "UseMeasuredPotentialRangeAfterMeasurement": [false],
+        "UseMinimumChargeLimit": [false],
+        "UseMinimumCurrentLimit": [true],
+        "UseMinimumTemperatureLimit": [false],
+        "UsePotentialAfterMeasurement": [true],
+        "Vertex1Potential": [0.66],
+        "Vertex1PotentialOCP": [false],
+        "Vertex2Potential": [-0.33],
+        "Vertex2PotentialOCP": [false]
       },
       "spec": {
         "begin_potential": -0.44,
@@ -919,7 +557,7 @@
         },
         "current_limits": {
           "max": 0.001,
-          "min": -1e-06
+          "min": -1e-6
         },
         "current_range": {
           "max": "10mA",
@@ -985,63 +623,25 @@
   "dpv": {
     "default": {
       "expected": {
-        "BeginPotential": [
-          -0.44
-        ],
-        "BeginPotentialOCP": [
-          false
-        ],
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementOff"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          0.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          0.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EndPotential": [
-          0.66
-        ],
-        "EndPotentialOCP": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "PulsePotential": [
-          0.25
-        ],
-        "PulseTime": [
-          0.02
-        ],
-        "ScanRate": [
-          1.0
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "StepPotential": [
-          0.12
-        ]
+        "BeginPotential": [-0.44],
+        "BeginPotentialOCP": [false],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementOff"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [0.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [0.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EndPotential": [0.66],
+        "EndPotentialOCP": [false],
+        "EquilibrationTime": [1.1],
+        "MaximumCurrentRange": [0.01],
+        "MinimumCurrentRange": [1e-6],
+        "PulsePotential": [0.25],
+        "PulseTime": [0.02],
+        "ScanRate": [1.0],
+        "StartingCurrentRange": [0.0001],
+        "StepPotential": [0.12]
       },
       "spec": {
         "begin_potential": -0.44,
@@ -1124,84 +724,32 @@
     },
     "extended": {
       "expected": {
-        "BeginPotential": [
-          -0.44
-        ],
-        "BeginPotentialOCP": [
-          false
-        ],
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementPotentiostatic"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          1.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          2.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EndPotential": [
-          0.66
-        ],
-        "EndPotentialOCP": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IRCompensation": [
-          10.0
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "PotentialAfterMeasurement": [
-          0.0
-        ],
-        "PulsePotential": [
-          0.25
-        ],
-        "PulseTime": [
-          0.02
-        ],
-        "ScanRate": [
-          1.0
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "StepPotential": [
-          0.12
-        ],
-        "UseCurrentAfterMeasurement": [
-          false
-        ],
-        "UseIRCompensation": [
-          true
-        ],
-        "UseMeasuredCurrentRangeAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredPotentialRangeAfterMeasurement": [
-          false
-        ],
-        "UsePotentialAfterMeasurement": [
-          true
-        ]
+        "BeginPotential": [-0.44],
+        "BeginPotentialOCP": [false],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementPotentiostatic"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [1.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [2.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EndPotential": [0.66],
+        "EndPotentialOCP": [false],
+        "EquilibrationTime": [1.1],
+        "IRCompensation": [10.0],
+        "MaximumCurrentRange": [0.01],
+        "MinimumCurrentRange": [1e-6],
+        "PotentialAfterMeasurement": [0.0],
+        "PulsePotential": [0.25],
+        "PulseTime": [0.02],
+        "ScanRate": [1.0],
+        "StartingCurrentRange": [0.0001],
+        "StepPotential": [0.12],
+        "UseCurrentAfterMeasurement": [false],
+        "UseIRCompensation": [true],
+        "UseMeasuredCurrentRangeAfterMeasurement": [false],
+        "UseMeasuredPotentialRangeAfterMeasurement": [false],
+        "UsePotentialAfterMeasurement": [true]
       },
       "spec": {
         "begin_potential": -0.44,
@@ -1286,57 +834,23 @@
   "fam": {
     "default": {
       "expected": {
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementOff"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          0.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          0.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationPotential": [
-          1.0
-        ],
-        "EquilibrationPotentialOCP": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IntervalTime": [
-          0.001
-        ],
-        "MaximumCurrentRange": [
-          1e-07
-        ],
-        "MinimumCurrentRange": [
-          1e-07
-        ],
-        "Potential": [
-          0.7
-        ],
-        "PotentialOCP": [
-          false
-        ],
-        "RunTime": [
-          1.5
-        ],
-        "StartingCurrentRange": [
-          1e-07
-        ]
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementOff"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [0.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [0.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationPotential": [1.0],
+        "EquilibrationPotentialOCP": [false],
+        "EquilibrationTime": [1.1],
+        "IntervalTime": [0.001],
+        "MaximumCurrentRange": [1e-7],
+        "MinimumCurrentRange": [1e-7],
+        "Potential": [0.7],
+        "PotentialOCP": [false],
+        "RunTime": [1.5],
+        "StartingCurrentRange": [1e-7]
       },
       "spec": {
         "bipot": {
@@ -1417,72 +931,28 @@
     },
     "extended": {
       "expected": {
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementPotentiostatic"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          1.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          2.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationPotential": [
-          1.0
-        ],
-        "EquilibrationPotentialOCP": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IntervalTime": [
-          0.001
-        ],
-        "MaximumCurrentRange": [
-          1e-07
-        ],
-        "MinimumCurrentRange": [
-          1e-07
-        ],
-        "Potential": [
-          0.7
-        ],
-        "PotentialAfterMeasurement": [
-          0.0
-        ],
-        "PotentialOCP": [
-          false
-        ],
-        "RunTime": [
-          1.5
-        ],
-        "StartingCurrentRange": [
-          1e-07
-        ],
-        "UseCurrentAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredCurrentRangeAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredPotentialRangeAfterMeasurement": [
-          false
-        ],
-        "UsePotentialAfterMeasurement": [
-          true
-        ]
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementPotentiostatic"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [1.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [2.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationPotential": [1.0],
+        "EquilibrationPotentialOCP": [false],
+        "EquilibrationTime": [1.1],
+        "IntervalTime": [0.001],
+        "MaximumCurrentRange": [1e-7],
+        "MinimumCurrentRange": [1e-7],
+        "Potential": [0.7],
+        "PotentialAfterMeasurement": [0.0],
+        "PotentialOCP": [false],
+        "RunTime": [1.5],
+        "StartingCurrentRange": [1e-7],
+        "UseCurrentAfterMeasurement": [false],
+        "UseMeasuredCurrentRangeAfterMeasurement": [false],
+        "UseMeasuredPotentialRangeAfterMeasurement": [false],
+        "UsePotentialAfterMeasurement": [true]
       },
       "spec": {
         "bipot": {
@@ -1496,11 +966,11 @@
         },
         "charge_limits": {
           "max": 0.001,
-          "min": 1e-06
+          "min": 1e-6
         },
         "current_limits": {
           "max": 0.001,
-          "min": -1e-06
+          "min": -1e-6
         },
         "current_range": "100nA",
         "data_processing": {
@@ -1565,84 +1035,32 @@
   "lsv": {
     "default": {
       "expected": {
-        "BeginPotential": [
-          -0.44
-        ],
-        "BeginPotentialOCP": [
-          false
-        ],
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementOff"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          0.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          0.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EndPotential": [
-          0.66
-        ],
-        "EndPotentialOCP": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureAuxiliaryInput": [
-          false
-        ],
-        "MeasureCellPotential": [
-          false
-        ],
-        "MeasureWEPotential": [
-          false
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "ScanRate": [
-          1.5
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "StepPotential": [
-          0.12
-        ],
-        "UseMaximumChargeLimit": [
-          false
-        ],
-        "UseMaximumCurrentLimit": [
-          false
-        ],
-        "UseMaximumTemperatureLimit": [
-          false
-        ],
-        "UseMinimumChargeLimit": [
-          false
-        ],
-        "UseMinimumCurrentLimit": [
-          false
-        ],
-        "UseMinimumTemperatureLimit": [
-          false
-        ]
+        "BeginPotential": [-0.44],
+        "BeginPotentialOCP": [false],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementOff"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [0.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [0.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EndPotential": [0.66],
+        "EndPotentialOCP": [false],
+        "EquilibrationTime": [1.1],
+        "MaximumCurrentRange": [0.01],
+        "MeasureAuxiliaryInput": [false],
+        "MeasureCellPotential": [false],
+        "MeasureWEPotential": [false],
+        "MinimumCurrentRange": [1e-6],
+        "ScanRate": [1.5],
+        "StartingCurrentRange": [0.0001],
+        "StepPotential": [0.12],
+        "UseMaximumChargeLimit": [false],
+        "UseMaximumCurrentLimit": [false],
+        "UseMaximumTemperatureLimit": [false],
+        "UseMinimumChargeLimit": [false],
+        "UseMinimumCurrentLimit": [false],
+        "UseMinimumTemperatureLimit": [false]
       },
       "spec": {
         "begin_potential": -0.44,
@@ -1727,111 +1145,41 @@
     },
     "extended": {
       "expected": {
-        "BeginPotential": [
-          -0.44
-        ],
-        "BeginPotentialOCP": [
-          false
-        ],
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementPotentiostatic"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          1.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          2.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EndPotential": [
-          0.66
-        ],
-        "EndPotentialOCP": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IRCompensation": [
-          10.0
-        ],
-        "MaximumCurrentLimit": [
-          0.001
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureAuxiliaryInput": [
-          false
-        ],
-        "MeasureCellPotential": [
-          false
-        ],
-        "MeasureWEPotential": [
-          false
-        ],
-        "MinimumCurrentLimit": [
-          -1e-06
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "PotentialAfterMeasurement": [
-          0.0
-        ],
-        "ScanRate": [
-          1.5
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "StepPotential": [
-          0.12
-        ],
-        "UseCurrentAfterMeasurement": [
-          false
-        ],
-        "UseIRCompensation": [
-          true
-        ],
-        "UseMaximumChargeLimit": [
-          false
-        ],
-        "UseMaximumCurrentLimit": [
-          true
-        ],
-        "UseMaximumTemperatureLimit": [
-          false
-        ],
-        "UseMeasuredCurrentRangeAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredPotentialRangeAfterMeasurement": [
-          false
-        ],
-        "UseMinimumChargeLimit": [
-          false
-        ],
-        "UseMinimumCurrentLimit": [
-          true
-        ],
-        "UseMinimumTemperatureLimit": [
-          false
-        ],
-        "UsePotentialAfterMeasurement": [
-          true
-        ]
+        "BeginPotential": [-0.44],
+        "BeginPotentialOCP": [false],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementPotentiostatic"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [1.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [2.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EndPotential": [0.66],
+        "EndPotentialOCP": [false],
+        "EquilibrationTime": [1.1],
+        "IRCompensation": [10.0],
+        "MaximumCurrentLimit": [0.001],
+        "MaximumCurrentRange": [0.01],
+        "MeasureAuxiliaryInput": [false],
+        "MeasureCellPotential": [false],
+        "MeasureWEPotential": [false],
+        "MinimumCurrentLimit": [-1e-6],
+        "MinimumCurrentRange": [1e-6],
+        "PotentialAfterMeasurement": [0.0],
+        "ScanRate": [1.5],
+        "StartingCurrentRange": [0.0001],
+        "StepPotential": [0.12],
+        "UseCurrentAfterMeasurement": [false],
+        "UseIRCompensation": [true],
+        "UseMaximumChargeLimit": [false],
+        "UseMaximumCurrentLimit": [true],
+        "UseMaximumTemperatureLimit": [false],
+        "UseMeasuredCurrentRangeAfterMeasurement": [false],
+        "UseMeasuredPotentialRangeAfterMeasurement": [false],
+        "UseMinimumChargeLimit": [false],
+        "UseMinimumCurrentLimit": [true],
+        "UseMinimumTemperatureLimit": [false],
+        "UsePotentialAfterMeasurement": [true]
       },
       "spec": {
         "begin_potential": -0.44,
@@ -1846,7 +1194,7 @@
         },
         "current_limits": {
           "max": 0.001,
-          "min": -1e-06
+          "min": -1e-6
         },
         "current_range": {
           "max": "10mA",
@@ -1918,97 +1266,37 @@
   "ma": {
     "default": {
       "expected": {
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementOff"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          0.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          0.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IntervalTime": [
-          0.5
-        ],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementOff"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [0.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [0.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationTime": [1.1],
+        "IntervalTime": [0.5],
         "Levels": 2.0,
-        "Levels/0/Level/Potential": [
-          0.1
-        ],
-        "Levels/0/Level/RecordLevel": [
-          true
-        ],
-        "Levels/0/Level/RunTime": [
-          1.0
-        ],
-        "Levels/0/Level/UseMaximumCurrentLimit": [
-          false
-        ],
-        "Levels/0/Level/UseMinimumCurrentLimit": [
-          false
-        ],
-        "Levels/1/Level/Potential": [
-          0.2
-        ],
-        "Levels/1/Level/RecordLevel": [
-          true
-        ],
-        "Levels/1/Level/RunTime": [
-          2.0
-        ],
-        "Levels/1/Level/UseMaximumCurrentLimit": [
-          false
-        ],
-        "Levels/1/Level/UseMinimumCurrentLimit": [
-          false
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureAuxiliaryInput": [
-          false
-        ],
-        "MeasureCellPotential": [
-          false
-        ],
-        "MeasureWEPotential": [
-          false
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "NumberOfCycles": [
-          2.0
-        ],
-        "SelectLimitPerLevel": [
-          false
-        ],
-        "SelectRecordPerLevel": [
-          true
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "UseMaximumCurrentLimit": [
-          false
-        ],
-        "UseMinimumCurrentLimit": [
-          false
-        ]
+        "Levels/0/Level/Potential": [0.1],
+        "Levels/0/Level/RecordLevel": [true],
+        "Levels/0/Level/RunTime": [1.0],
+        "Levels/0/Level/UseMaximumCurrentLimit": [false],
+        "Levels/0/Level/UseMinimumCurrentLimit": [false],
+        "Levels/1/Level/Potential": [0.2],
+        "Levels/1/Level/RecordLevel": [true],
+        "Levels/1/Level/RunTime": [2.0],
+        "Levels/1/Level/UseMaximumCurrentLimit": [false],
+        "Levels/1/Level/UseMinimumCurrentLimit": [false],
+        "MaximumCurrentRange": [0.01],
+        "MeasureAuxiliaryInput": [false],
+        "MeasureCellPotential": [false],
+        "MeasureWEPotential": [false],
+        "MinimumCurrentRange": [1e-6],
+        "NumberOfCycles": [2.0],
+        "SelectLimitPerLevel": [false],
+        "SelectRecordPerLevel": [true],
+        "StartingCurrentRange": [0.0001],
+        "UseMaximumCurrentLimit": [false],
+        "UseMinimumCurrentLimit": [false]
       },
       "spec": {
         "bipot": {
@@ -2092,124 +1380,46 @@
     },
     "extended": {
       "expected": {
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementPotentiostatic"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          1.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          2.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IRCompensation": [
-          10.0
-        ],
-        "IntervalTime": [
-          0.5
-        ],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementPotentiostatic"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [1.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [2.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationTime": [1.1],
+        "IRCompensation": [10.0],
+        "IntervalTime": [0.5],
         "Levels": 2.0,
-        "Levels/0/Level/Potential": [
-          0.1
-        ],
-        "Levels/0/Level/RecordLevel": [
-          true
-        ],
-        "Levels/0/Level/RunTime": [
-          1.0
-        ],
-        "Levels/0/Level/UseMaximumCurrentLimit": [
-          false
-        ],
-        "Levels/0/Level/UseMinimumCurrentLimit": [
-          false
-        ],
-        "Levels/1/Level/Potential": [
-          0.2
-        ],
-        "Levels/1/Level/RecordLevel": [
-          true
-        ],
-        "Levels/1/Level/RunTime": [
-          2.0
-        ],
-        "Levels/1/Level/UseMaximumCurrentLimit": [
-          false
-        ],
-        "Levels/1/Level/UseMinimumCurrentLimit": [
-          false
-        ],
-        "MaximumCurrentLimit": [
-          0.001
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureAuxiliaryInput": [
-          false
-        ],
-        "MeasureCellPotential": [
-          false
-        ],
-        "MeasureWEPotential": [
-          false
-        ],
-        "MinimumCurrentLimit": [
-          -1e-06
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "NumberOfCycles": [
-          2.0
-        ],
-        "PotentialAfterMeasurement": [
-          0.0
-        ],
-        "SelectLimitPerLevel": [
-          false
-        ],
-        "SelectRecordPerLevel": [
-          true
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "UseCurrentAfterMeasurement": [
-          false
-        ],
-        "UseIRCompensation": [
-          true
-        ],
-        "UseMaximumCurrentLimit": [
-          true
-        ],
-        "UseMeasuredCurrentRangeAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredPotentialRangeAfterMeasurement": [
-          false
-        ],
-        "UseMinimumCurrentLimit": [
-          true
-        ],
-        "UsePotentialAfterMeasurement": [
-          true
-        ]
+        "Levels/0/Level/Potential": [0.1],
+        "Levels/0/Level/RecordLevel": [true],
+        "Levels/0/Level/RunTime": [1.0],
+        "Levels/0/Level/UseMaximumCurrentLimit": [false],
+        "Levels/0/Level/UseMinimumCurrentLimit": [false],
+        "Levels/1/Level/Potential": [0.2],
+        "Levels/1/Level/RecordLevel": [true],
+        "Levels/1/Level/RunTime": [2.0],
+        "Levels/1/Level/UseMaximumCurrentLimit": [false],
+        "Levels/1/Level/UseMinimumCurrentLimit": [false],
+        "MaximumCurrentLimit": [0.001],
+        "MaximumCurrentRange": [0.01],
+        "MeasureAuxiliaryInput": [false],
+        "MeasureCellPotential": [false],
+        "MeasureWEPotential": [false],
+        "MinimumCurrentLimit": [-1e-6],
+        "MinimumCurrentRange": [1e-6],
+        "NumberOfCycles": [2.0],
+        "PotentialAfterMeasurement": [0.0],
+        "SelectLimitPerLevel": [false],
+        "SelectRecordPerLevel": [true],
+        "StartingCurrentRange": [0.0001],
+        "UseCurrentAfterMeasurement": [false],
+        "UseIRCompensation": [true],
+        "UseMaximumCurrentLimit": [true],
+        "UseMeasuredCurrentRangeAfterMeasurement": [false],
+        "UseMeasuredPotentialRangeAfterMeasurement": [false],
+        "UseMinimumCurrentLimit": [true],
+        "UsePotentialAfterMeasurement": [true]
       },
       "spec": {
         "bipot": {
@@ -2223,7 +1433,7 @@
         },
         "current_limits": {
           "max": 0.001,
-          "min": -1e-06
+          "min": -1e-6
         },
         "current_range": {
           "max": "10mA",
@@ -2295,60 +1505,24 @@
   "npv": {
     "default": {
       "expected": {
-        "BeginPotential": [
-          -0.44
-        ],
-        "BeginPotentialOCP": [
-          false
-        ],
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementOff"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          0.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          0.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EndPotential": [
-          0.66
-        ],
-        "EndPotentialOCP": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "PulseTime": [
-          0.02
-        ],
-        "ScanRate": [
-          1.0
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "StepPotential": [
-          0.12
-        ]
+        "BeginPotential": [-0.44],
+        "BeginPotentialOCP": [false],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementOff"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [0.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [0.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EndPotential": [0.66],
+        "EndPotentialOCP": [false],
+        "EquilibrationTime": [1.1],
+        "MaximumCurrentRange": [0.01],
+        "MinimumCurrentRange": [1e-6],
+        "PulseTime": [0.02],
+        "ScanRate": [1.0],
+        "StartingCurrentRange": [0.0001],
+        "StepPotential": [0.12]
       },
       "spec": {
         "begin_potential": -0.44,
@@ -2430,81 +1604,31 @@
     },
     "extended": {
       "expected": {
-        "BeginPotential": [
-          -0.44
-        ],
-        "BeginPotentialOCP": [
-          false
-        ],
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementPotentiostatic"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          1.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          2.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EndPotential": [
-          0.66
-        ],
-        "EndPotentialOCP": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IRCompensation": [
-          10.0
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "PotentialAfterMeasurement": [
-          0.0
-        ],
-        "PulseTime": [
-          0.02
-        ],
-        "ScanRate": [
-          1.0
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "StepPotential": [
-          0.12
-        ],
-        "UseCurrentAfterMeasurement": [
-          false
-        ],
-        "UseIRCompensation": [
-          true
-        ],
-        "UseMeasuredCurrentRangeAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredPotentialRangeAfterMeasurement": [
-          false
-        ],
-        "UsePotentialAfterMeasurement": [
-          true
-        ]
+        "BeginPotential": [-0.44],
+        "BeginPotentialOCP": [false],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementPotentiostatic"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [1.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [2.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EndPotential": [0.66],
+        "EndPotentialOCP": [false],
+        "EquilibrationTime": [1.1],
+        "IRCompensation": [10.0],
+        "MaximumCurrentRange": [0.01],
+        "MinimumCurrentRange": [1e-6],
+        "PotentialAfterMeasurement": [0.0],
+        "PulseTime": [0.02],
+        "ScanRate": [1.0],
+        "StartingCurrentRange": [0.0001],
+        "StepPotential": [0.12],
+        "UseCurrentAfterMeasurement": [false],
+        "UseIRCompensation": [true],
+        "UseMeasuredCurrentRangeAfterMeasurement": [false],
+        "UseMeasuredPotentialRangeAfterMeasurement": [false],
+        "UsePotentialAfterMeasurement": [true]
       },
       "spec": {
         "begin_potential": -0.44,
@@ -2588,57 +1712,23 @@
   "pad": {
     "default": {
       "expected": {
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementOff"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          0.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          0.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IntervalTime": [
-          0.5
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "PADMode": [
-          "PADModeDifferential"
-        ],
-        "PotentialDirectCurrent": [
-          0.7
-        ],
-        "PulsePotential": [
-          0.3
-        ],
-        "PulseTime": [
-          0.1
-        ],
-        "RunTime": [
-          1.5
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ]
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementOff"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [0.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [0.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationTime": [1.1],
+        "IntervalTime": [0.5],
+        "MaximumCurrentRange": [0.01],
+        "MinimumCurrentRange": [1e-6],
+        "PADMode": ["PADModeDifferential"],
+        "PotentialDirectCurrent": [0.7],
+        "PulsePotential": [0.3],
+        "PulseTime": [0.1],
+        "RunTime": [1.5],
+        "StartingCurrentRange": [0.0001]
       },
       "spec": {
         "bipot": {
@@ -2716,72 +1806,28 @@
     },
     "extended": {
       "expected": {
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementPotentiostatic"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          1.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          2.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "IntervalTime": [
-          0.5
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "PADMode": [
-          "PADModeDifferential"
-        ],
-        "PotentialAfterMeasurement": [
-          0.0
-        ],
-        "PotentialDirectCurrent": [
-          0.7
-        ],
-        "PulsePotential": [
-          0.3
-        ],
-        "PulseTime": [
-          0.1
-        ],
-        "RunTime": [
-          1.5
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "UseCurrentAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredCurrentRangeAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredPotentialRangeAfterMeasurement": [
-          false
-        ],
-        "UsePotentialAfterMeasurement": [
-          true
-        ]
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementPotentiostatic"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [1.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [2.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EquilibrationTime": [1.1],
+        "IntervalTime": [0.5],
+        "MaximumCurrentRange": [0.01],
+        "MinimumCurrentRange": [1e-6],
+        "PADMode": ["PADModeDifferential"],
+        "PotentialAfterMeasurement": [0.0],
+        "PotentialDirectCurrent": [0.7],
+        "PulsePotential": [0.3],
+        "PulseTime": [0.1],
+        "RunTime": [1.5],
+        "StartingCurrentRange": [0.0001],
+        "UseCurrentAfterMeasurement": [false],
+        "UseMeasuredCurrentRangeAfterMeasurement": [false],
+        "UseMeasuredPotentialRangeAfterMeasurement": [false],
+        "UsePotentialAfterMeasurement": [true]
       },
       "spec": {
         "bipot": {
@@ -2861,63 +1907,25 @@
   "swv": {
     "default": {
       "expected": {
-        "Amplitude": [
-          0.25
-        ],
-        "BeginPotential": [
-          -0.44
-        ],
-        "BeginPotentialOCP": [
-          false
-        ],
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementOff"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          0.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          0.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EndPotential": [
-          0.66
-        ],
-        "EndPotentialOCP": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "Frequency": [
-          15.0
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureCurrentForwardReverse": [
-          true
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "StepPotential": [
-          0.12
-        ]
+        "Amplitude": [0.25],
+        "BeginPotential": [-0.44],
+        "BeginPotentialOCP": [false],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementOff"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [0.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [0.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EndPotential": [0.66],
+        "EndPotentialOCP": [false],
+        "EquilibrationTime": [1.1],
+        "Frequency": [15.0],
+        "MaximumCurrentRange": [0.01],
+        "MeasureCurrentForwardReverse": [true],
+        "MinimumCurrentRange": [1e-6],
+        "StartingCurrentRange": [0.0001],
+        "StepPotential": [0.12]
       },
       "spec": {
         "amplitude": 0.25,
@@ -3000,84 +2008,32 @@
     },
     "extended": {
       "expected": {
-        "Amplitude": [
-          0.25
-        ],
-        "BeginPotential": [
-          -0.44
-        ],
-        "BeginPotentialOCP": [
-          false
-        ],
-        "CellModeAfterMeasurement": [
-          "CellModeAfterMeasurementPotentiostatic"
-        ],
-        "ConditioningPotential": [
-          0.0
-        ],
-        "ConditioningTime": [
-          1.0
-        ],
-        "DepositionPotential": [
-          0.0
-        ],
-        "DepositionTime": [
-          2.0
-        ],
-        "EnableDropDetection": [
-          false
-        ],
-        "EnableHardwareSync": [
-          false
-        ],
-        "EndPotential": [
-          0.66
-        ],
-        "EndPotentialOCP": [
-          false
-        ],
-        "EquilibrationTime": [
-          1.1
-        ],
-        "Frequency": [
-          15.0
-        ],
-        "IRCompensation": [
-          10.0
-        ],
-        "MaximumCurrentRange": [
-          0.01
-        ],
-        "MeasureCurrentForwardReverse": [
-          true
-        ],
-        "MinimumCurrentRange": [
-          1e-06
-        ],
-        "PotentialAfterMeasurement": [
-          0.0
-        ],
-        "StartingCurrentRange": [
-          0.0001
-        ],
-        "StepPotential": [
-          0.12
-        ],
-        "UseCurrentAfterMeasurement": [
-          false
-        ],
-        "UseIRCompensation": [
-          true
-        ],
-        "UseMeasuredCurrentRangeAfterMeasurement": [
-          false
-        ],
-        "UseMeasuredPotentialRangeAfterMeasurement": [
-          false
-        ],
-        "UsePotentialAfterMeasurement": [
-          true
-        ]
+        "Amplitude": [0.25],
+        "BeginPotential": [-0.44],
+        "BeginPotentialOCP": [false],
+        "CellModeAfterMeasurement": ["CellModeAfterMeasurementPotentiostatic"],
+        "ConditioningPotential": [0.0],
+        "ConditioningTime": [1.0],
+        "DepositionPotential": [0.0],
+        "DepositionTime": [2.0],
+        "EnableDropDetection": [false],
+        "EnableHardwareSync": [false],
+        "EndPotential": [0.66],
+        "EndPotentialOCP": [false],
+        "EquilibrationTime": [1.1],
+        "Frequency": [15.0],
+        "IRCompensation": [10.0],
+        "MaximumCurrentRange": [0.01],
+        "MeasureCurrentForwardReverse": [true],
+        "MinimumCurrentRange": [1e-6],
+        "PotentialAfterMeasurement": [0.0],
+        "StartingCurrentRange": [0.0001],
+        "StepPotential": [0.12],
+        "UseCurrentAfterMeasurement": [false],
+        "UseIRCompensation": [true],
+        "UseMeasuredCurrentRangeAfterMeasurement": [false],
+        "UseMeasuredPotentialRangeAfterMeasurement": [false],
+        "UsePotentialAfterMeasurement": [true]
       },
       "spec": {
         "amplitude": 0.25,

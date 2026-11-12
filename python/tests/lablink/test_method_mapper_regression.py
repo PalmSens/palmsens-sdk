@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 from pypalmsens._methods import BaseTechnique
-from pypalmsens.lablink.models._method_mapper import _BUILDERS, _to_parameters
+from pypalmsens.lablink.models._method_mapper import _BUILDERS, _RawWireValue, _to_parameters
 
 FIXTURE = Path(__file__).parent / 'data' / 'lablink_expected_mapping.json'
 _DATA = json.loads(FIXTURE.read_text())
@@ -26,6 +26,10 @@ _BUILT = sorted(set(_DATA) & set(_BUILDERS))
 
 def _norm(value: object) -> object:
     """Normalise numeric leaves so C# ``0`` and Python ``0.0`` compare equal."""
+    if isinstance(value, _RawWireValue):
+        # Ranges are kept as pre-formatted wire text (`0.000100`), which is the same
+        # number the baseline stores.
+        return float(value)
     if isinstance(value, bool):
         return value
     if isinstance(value, (int, float)):

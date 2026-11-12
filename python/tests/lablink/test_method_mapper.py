@@ -41,9 +41,28 @@ def test_to_payload_shape(method_id: str) -> None:
 
 def test_current_range_conversion() -> None:
     params = _params(make('ad', current_range='100uA'))
-    assert params['MinimumCurrentRange'] == [1e-4]
-    assert params['MaximumCurrentRange'] == [1e-4]
-    assert params['StartingCurrentRange'] == [1e-4]
+    assert params['MinimumCurrentRange'] == '0.000100'
+    assert params['MaximumCurrentRange'] == '0.000100'
+    assert params['StartingCurrentRange'] == '0.000100'
+
+
+def test_potential_range_conversion() -> None:
+    params = _params(make('pot', potential_range={'min': '10mV', 'max': '1V', 'start': '1V'}))
+    assert params['MinimumPotentialRange'] == '0.010'
+    assert params['MaximumPotentialRange'] == '1'
+    assert params['StartingPotentialRange'] == '1'
+
+
+def test_wire_number_formatting() -> None:
+    # C# formats doubles with `G7`: integral values print without a decimal point,
+    # and magnitudes below 1e-4 fall back to E notation.
+    payload = to_payload(make('ad', run_time=1.0, interval_time=1e-5, potential=1.2345678))
+    params = cast('dict[str, str]', payload['MethodParameters'])
+    assert params['RunTime'] == '[1]'
+    assert params['IntervalTime'] == '[1E-05]'
+    assert params['Potential'] == '[1.234568]'
+    assert params['Name'] == '["Chronoamperometry"]'
+    assert params['CellModeAfterMeasurement'] == '["CellModeAfterMeasurementOff"]'
 
 
 @pytest.mark.parametrize('method_id', ['ad', 'cv', 'lsv', 'swv', 'dpv', 'npv'])

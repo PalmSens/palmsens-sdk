@@ -8,12 +8,23 @@ python lablink_verify_mappers.py
 
 """
 
+# Compares the DLL-free `to_payload()` port against `MethodMappers.ToDto()`.
+# `Curves` keys are excluded: the port deliberately omits curve templates.
+# Exits non-zero when a ported technique produces different parameters.
+
 from __future__ import annotations
+
+from typing import cast
 
 import pypalmsens as ps
 
 if True:
     from PalmSens.Sdk.Lablink.Example.Lablink.Mappers import MethodMappers
+
+from pypalmsens.lablink.models._method_mapper import to_payload
+
+CURVE = 'Curves'
+"""Curve templates are technique metadata; the port deliberately omits them."""
 
 
 CV = ps.CyclicVoltammetry(
@@ -427,15 +438,61 @@ DEFERRED = [
     'mm',
 ]
 
+
+def csharp_payload(method: object) -> dict[str, object]:
+    """Reference payload from the C# mapper, without the curve keys."""
+    dto = MethodMappers.ToDto(method._to_psmethod())  # type: ignore[attr-defined]
+    return {
+        'Technique': dto.Technique,
+        'MethodParameters': {
+            key: value
+            for key, value in dto.Parameters.items()
+            if key != CURVE and not key.startswith(f'{CURVE}/')
+        },
+    }
+
+
+def compare(method: object) -> str:
+    """Report every difference between the C# mapper and the Python port."""
+    reference = cast('dict[str, object]', csharp_payload(method))
+    cs_params = cast('dict[str, str]', reference['MethodParameters'])
+
+    try:
+        ours = cast('dict[str, object]', to_payload(method))  # type: ignore[arg-type]
+    except NotImplementedError as exc:
+        return f'port not implemented: {exc}'
+
+    py_params = cast('dict[str, str]', ours['MethodParameters'])
+    problems: list[str] = []
+    if reference['Technique'] != ours['Technique']:
+        problems.append(f'technique: cs={reference["Technique"]} py={ours["Technique"]}')
+    for key, value in cs_params.items():
+        if key not in py_params:
+            problems.append(f'missing {key}={value}')
+        elif py_params[key] != value:
+            problems.append(f'differs {key}: cs={value} py={py_params[key]}')
+    for key, value in py_params.items():
+        if key not in cs_params:
+            problems.append(f'extra {key}={value}')
+
+    return '; '.join(problems) if problems else 'ok'
+
+
+bad = 0
+not_ported = 0
+checked = 0
 for name, method in CASES.items():
     if name in DEFERRED:
         continue
-    print(name, method.id, type(method).__name__)
-    dto = MethodMappers.ToDto(method._to_psmethod())
+    checked += 1
+    verdict = compare(method)
+    print(f'{name} {method.id} {type(method).__name__}: {verdict}')  # type: ignore[attr-defined]
+    if verdict.startswith('port not implemented'):
+        not_ported += 1
+    elif verdict != 'ok':
+        bad += 1
 
-    payload = {
-        'Technique': dto.Technique,
-        'MethodParameters': dict(dto.Parameters),
-    }
-
-    # payload2 = to_payload(method)
+print(
+    f'{checked - not_ported - bad} of {checked} match; {not_ported} not ported yet; {bad} mismatching'
+)
+raise SystemExit(1 if bad else 0)

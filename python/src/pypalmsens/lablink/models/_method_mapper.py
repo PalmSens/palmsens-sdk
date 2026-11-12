@@ -23,6 +23,7 @@ from ..._methods.techniques import (
     FastAmperometry,
     LinearSweepPotentiometry,
     LinearSweepVoltammetry,
+    MethodScript,
     MultiplePulseAmperometry,
     MultiStepAmperometry,
     NormalPulseVoltammetry,
@@ -57,6 +58,7 @@ ID_TO_TECHNIQUE: dict[str, TechniqueId] = {
     'mpad': TechniqueId.MultiplePulseAmperometry,
     'cc': TechniqueId.Chronocoulometry,
     'ma': TechniqueId.MultiStepAmperometry,
+    'ms': TechniqueId.MethodScriptSandbox,
 }
 
 
@@ -868,6 +870,19 @@ def _build_multistepamperometry(method: MethodTypeCompatible) -> ParamDict:
     return p
 
 
+def _build_methodscript(method: MethodTypeCompatible) -> ParamDict:
+    """Emit the MethodSCRIPT text, which is the only parameter C# carries.
+
+    The legacy `MethodScriptSandbox.MethodScript` field is stored verbatim, and that field is
+    what `MethodScript._export` writes: an `e` header line and a trailing newline wrapped
+    around `script`. Reproduce that wrapping rather than reading the raw script, or the wire
+    text diverges. `version` only picks the validation parser and `custom_units` only labels
+    curves, so neither reaches the wire here or in C#.
+    """
+    m = cast(MethodScript, method)
+    return {'Script': f'e\n{m.script}\n'}
+
+
 _BUILDERS: dict[str, Callable[[MethodTypeCompatible], ParamDict]] = {
     'ad': _build_chronoamperometry,
     'cv': _build_cyclicvoltammetry,
@@ -885,6 +900,7 @@ _BUILDERS: dict[str, Callable[[MethodTypeCompatible], ParamDict]] = {
     'mpad': _build_multiplepulseamperometry,
     'cc': _build_chronocoulometry,
     'ma': _build_multistepamperometry,
+    'ms': _build_methodscript,
 }
 
 

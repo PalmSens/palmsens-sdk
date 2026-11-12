@@ -14,6 +14,18 @@ if TYPE_CHECKING:
 IMPLEMENTED = sorted(_BUILDERS)
 
 
+def has_field(method_id: str, field: str) -> bool:
+    """Whether the technique model exposes a settings field at all."""
+    return field in BaseTechnique._registry[method_id].model_fields
+
+
+# MethodScript is just a script: it has no `general` or `data_processing` to guard.
+WITH_GENERAL = [method_id for method_id in IMPLEMENTED if has_field(method_id, 'general')]
+WITH_DATA_PROCESSING = [
+    method_id for method_id in IMPLEMENTED if has_field(method_id, 'data_processing')
+]
+
+
 def make(method_id: str, **kwargs: object):
     """Build a concrete technique by id, defaulting any field not passed."""
     return BaseTechnique._registry[method_id](**kwargs)
@@ -77,6 +89,16 @@ def test_level_count_is_written_bare() -> None:
     assert params['Levels/0/Level/Potential'] == '[0.5]'
 
 
+def test_methodscript_sends_the_legacy_script() -> None:
+    # C# stores the legacy MethodScript text, so the `e` header and trailing newline that
+    # `MethodScript._export` adds must survive into the JSON-escaped value.
+    payload = to_payload(make('ms', script='cell_on\n'))
+    params = cast('dict[str, str]', payload['MethodParameters'])
+    assert params['Script'] == '["e\\ncell_on\\n\\n"]'
+    assert params['Name'] == '["MethodScriptSandbox"]'
+    assert set(params) == {'Name', 'Script'}
+
+
 def test_wire_number_formatting() -> None:
     # C# formats doubles with `G7`: integral values print without a decimal point,
     # and magnitudes below 1e-4 fall back to E notation.
@@ -102,19 +124,19 @@ def test_guard_record_auxiliary_input(method_id: str) -> None:
         _ = _params(make(method_id, record_auxiliary_input=True))
 
 
-@pytest.mark.parametrize('method_id', IMPLEMENTED)
+@pytest.mark.parametrize('method_id', WITH_GENERAL)
 def test_guard_general_notes(method_id: str) -> None:
     with pytest.raises(NotImplementedError):
         _ = _params(make(method_id, general={'notes': 'not supported yet'}))
 
 
-@pytest.mark.parametrize('method_id', IMPLEMENTED)
+@pytest.mark.parametrize('method_id', WITH_GENERAL)
 def test_guard_general_save_on_internal_storage(method_id: str) -> None:
     with pytest.raises(NotImplementedError):
         _ = _params(make(method_id, general={'save_on_internal_storage': True}))
 
 
-@pytest.mark.parametrize('method_id', IMPLEMENTED)
+@pytest.mark.parametrize('method_id', WITH_DATA_PROCESSING)
 def test_guard_data_processing(method_id: str) -> None:
     with pytest.raises(NotImplementedError):
         _ = _params(make(method_id, data_processing={'smooth_level': 2}))

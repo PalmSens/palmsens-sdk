@@ -12,6 +12,7 @@ from ..._methods.settings import (
     PostMeasurement,
     PotentialRange,
     Pretreatment,
+    VersusOCP,
 )
 from ..._methods.techniques import (
     ChronoAmperometry,
@@ -76,6 +77,19 @@ def _add_pretreatment(p: ParamDict, pre: Pretreatment) -> None:
     p['DepositionTime'] = [pre.deposition_time]
 
 
+def _add_vs_ocp(p: ParamDict, versus_ocp: VersusOCP) -> None:
+    """Emit the OCP determination group that C# `AddVsOcpParameters` writes.
+
+    The group is gated on the legacy `IsVersusOCP` flag, which pypalmsens sets
+    whenever `potentials` is non-empty (see `VersusOCP._export`).
+    """
+    if not versus_ocp.potentials:
+        return
+    p['EnableOcp'] = [True]
+    p['MaximumOCPTime'] = [versus_ocp.timeout]
+    p['OCPStabilityCriterion'] = [versus_ocp.stability_criterion]
+
+
 def _add_limits(p: ParamDict, kind: str, minimum: float | None, maximum: float | None) -> None:
     """Emit a Use/value limit pair for current, potential, or charge limits."""
     p[f'UseMinimum{kind}Limit'] = [minimum is not None]
@@ -107,7 +121,10 @@ def _add_post_measurement(p: ParamDict, pm: PostMeasurement) -> None:
 
 def _add_general(p: ParamDict, gen: General) -> None:
     """Only hardware sync maps; mains frequency lives in configure, deferred."""
-    p['EnableHardwareSync'] = [gen.use_hardware_sync]
+    # Every C# legacy mapper hardcodes HardwareSyncIsEnabled = false, so the wire
+    # value is always false; forwarding a true here would diverge silently.
+    _require_default('use_hardware_sync', gen.use_hardware_sync, False)
+    p['EnableHardwareSync'] = [False]
     if gen.save_on_internal_storage:
         raise NotImplementedError("Lablink does not yet support 'save_on_internal_storage'")
     if gen.notes:
@@ -148,6 +165,7 @@ def _build_chronoamperometry(method: MethodTypeCompatible) -> ParamDict:
 
     # Chronoamperometry only supports 'potential' versus OCP.
     p['PotentialOCP'] = ['potential' in m.versus_ocp.potentials]
+    _add_vs_ocp(p, m.versus_ocp)
 
     _add_limits(p, 'Current', m.current_limits.min, m.current_limits.max)
     _add_limits(p, 'Charge', m.charge_limits.min, m.charge_limits.max)
@@ -180,7 +198,7 @@ def _build_chronopotentiometry(method: MethodTypeCompatible) -> ParamDict:
     _add_potential_range(p, m.potential_range)
     _add_pretreatment(p, m.pretreatment)
 
-    p['Current'] = [m.current]
+    p['AppliedCurrent'] = [m.current]
     p['AppliedCurrentRange'] = [_current_amp(m.applied_current_range)]
     p['IntervalTime'] = [m.interval_time]
     p['RunTime'] = [m.run_time]
@@ -189,8 +207,9 @@ def _build_chronopotentiometry(method: MethodTypeCompatible) -> ParamDict:
     _add_post_measurement(p, m.post_measurement)
 
     p['MeasureAuxiliaryInput'] = [m.record_auxiliary_input]
-    p['MeasureCellPotential'] = [m.record_cell_potential]
     p['MeasureWECurrent'] = [m.record_we_current]
+
+    p['EnableDropDetection'] = [False]
 
     _add_general(p, m.general)
     return p
@@ -228,6 +247,7 @@ def _build_cyclicvoltammetry(method: MethodTypeCompatible) -> ParamDict:
     p['BeginPotentialOCP'] = ['begin' in m.versus_ocp.potentials]
     p['Vertex1PotentialOCP'] = ['vertex1' in m.versus_ocp.potentials]
     p['Vertex2PotentialOCP'] = ['vertex2' in m.versus_ocp.potentials]
+    _add_vs_ocp(p, m.versus_ocp)
 
     _add_limits(p, 'Current', m.current_limits.min, m.current_limits.max)
     # CV has no charge/temperature limit fields; the hub still expects the flags.
@@ -276,6 +296,7 @@ def _build_linearsweepvoltammetry(method: MethodTypeCompatible) -> ParamDict:
     # LSV OCP is per-potential (begin/end), not a shared EnableOCP flag.
     p['BeginPotentialOCP'] = ['begin' in m.versus_ocp.potentials]
     p['EndPotentialOCP'] = ['end' in m.versus_ocp.potentials]
+    _add_vs_ocp(p, m.versus_ocp)
 
     _add_limits(p, 'Current', m.current_limits.min, m.current_limits.max)
     _add_limits(p, 'Charge', None, None)
@@ -334,6 +355,7 @@ def _build_squarewavevoltammetry(method: MethodTypeCompatible) -> ParamDict:
 
     p['BeginPotentialOCP'] = ['begin' in m.versus_ocp.potentials]
     p['EndPotentialOCP'] = ['end' in m.versus_ocp.potentials]
+    _add_vs_ocp(p, m.versus_ocp)
 
     _add_ir_drop_compensation(p, m.ir_drop_compensation)
     _add_post_measurement(p, m.post_measurement)
@@ -386,6 +408,7 @@ def _build_differentialpulsevoltammetry(method: MethodTypeCompatible) -> ParamDi
 
     p['BeginPotentialOCP'] = ['begin' in m.versus_ocp.potentials]
     p['EndPotentialOCP'] = ['end' in m.versus_ocp.potentials]
+    _add_vs_ocp(p, m.versus_ocp)
 
     _add_ir_drop_compensation(p, m.ir_drop_compensation)
     _add_post_measurement(p, m.post_measurement)
@@ -436,6 +459,7 @@ def _build_normalpulsevoltammetry(method: MethodTypeCompatible) -> ParamDict:
 
     p['BeginPotentialOCP'] = ['begin' in m.versus_ocp.potentials]
     p['EndPotentialOCP'] = ['end' in m.versus_ocp.potentials]
+    _add_vs_ocp(p, m.versus_ocp)
 
     _add_ir_drop_compensation(p, m.ir_drop_compensation)
     _add_post_measurement(p, m.post_measurement)

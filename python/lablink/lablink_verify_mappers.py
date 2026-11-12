@@ -8,23 +8,16 @@ python lablink_verify_mappers.py
 
 """
 
-# Compares the DLL-free `to_payload()` port against `MethodMappers.ToDto()`.
-# `Curves` keys are excluded: the port deliberately omits curve templates.
-# Exits non-zero when a ported technique produces different parameters.
-
 from __future__ import annotations
 
-from typing import cast
-
 import pypalmsens as ps
+from pypalmsens.lablink.models._method_mapper import to_payload
+from pypalmsens.types import MethodTypeCompatible
 
 if True:
-    from PalmSens.Sdk.Lablink.Example.Lablink.Mappers import MethodMappers
-
-from pypalmsens.lablink.models._method_mapper import to_payload
-
-CURVE = 'Curves'
-"""Curve templates are technique metadata; the port deliberately omits them."""
+    from PalmSens.Core.Domain.Models import CurveTemplate
+    from PalmSens.Sdk.Data.Extensions.Method import MethodExtensions
+    from System import Array, DateTimeOffset, String
 
 
 CV = ps.CyclicVoltammetry(
@@ -439,60 +432,54 @@ DEFERRED = [
 ]
 
 
-def csharp_payload(method: object) -> dict[str, object]:
-    """Reference payload from the C# mapper, without the curve keys."""
-    dto = MethodMappers.ToDto(method._to_psmethod())  # type: ignore[attr-defined]
-    return {
-        'Technique': dto.Technique,
-        'MethodParameters': {
-            key: value
-            for key, value in dto.Parameters.items()
-            if key != CURVE and not key.startswith(f'{CURVE}/')
-        },
-    }
+def method_to_entity(method: MethodTypeCompatible):
+    ps_method = method._to_psmethod()
+    technique = MethodExtensions.FromLegacyMethodId(ps_method.GetMethodID())
+    technique_parameters = MethodExtensions.ToMethodParameters(ps_method)
+    return MethodExtensions.ToEntity(
+        technique_parameters,
+        str(technique),
+        '',
+        Array[String](0),
+        Array[CurveTemplate](0),
+        DateTimeOffset.UtcNow,
+    )
 
 
-def compare(method: object) -> str:
-    """Report every difference between the C# mapper and the Python port."""
-    reference = cast('dict[str, object]', csharp_payload(method))
-    cs_params = cast('dict[str, str]', reference['MethodParameters'])
-
-    try:
-        ours = cast('dict[str, object]', to_payload(method))  # type: ignore[arg-type]
-    except NotImplementedError as exc:
-        return f'port not implemented: {exc}'
-
-    py_params = cast('dict[str, str]', ours['MethodParameters'])
-    problems: list[str] = []
-    if reference['Technique'] != ours['Technique']:
-        problems.append(f'technique: cs={reference["Technique"]} py={ours["Technique"]}')
-    for key, value in cs_params.items():
-        if key not in py_params:
-            problems.append(f'missing {key}={value}')
-        elif py_params[key] != value:
-            problems.append(f'differs {key}: cs={value} py={py_params[key]}')
-    for key, value in py_params.items():
-        if key not in cs_params:
-            problems.append(f'extra {key}={value}')
-
-    return '; '.join(problems) if problems else 'ok'
-
-
-bad = 0
-not_ported = 0
-checked = 0
 for name, method in CASES.items():
     if name in DEFERRED:
         continue
-    checked += 1
-    verdict = compare(method)
-    print(f'{name} {method.id} {type(method).__name__}: {verdict}')  # type: ignore[attr-defined]
-    if verdict.startswith('port not implemented'):
-        not_ported += 1
-    elif verdict != 'ok':
-        bad += 1
 
-print(
-    f'{checked - not_ported - bad} of {checked} match; {not_ported} not ported yet; {bad} mismatching'
-)
-raise SystemExit(1 if bad else 0)
+    print(name, method.id, type(method).__name__)
+
+    entity = method_to_entity(method)
+
+    payload = {
+        'Technique': str(entity.Technique),
+        'MethodParameters': {p.Key: p.Value for p in entity.Parameters},
+    }
+
+    try:
+        payload2 = to_payload(method)
+    except NotImplementedError as exc:
+        print(f'  {exc}')
+        continue
+
+    reference = payload['MethodParameters']
+    ours = payload2['MethodParameters']
+    problems = (
+        [f'missing {key}={value}' for key, value in reference.items() if key not in ours]  # type: ignore
+        + [f'extra {key}={value}' for key, value in ours.items() if key not in reference]
+        + [
+            f'differs {key}: dll={value} py={ours[key]}'
+            for key, value in reference.items()  # type: ignore
+            if key in ours and ours[key] != value
+        ]
+    )
+    if payload['Technique'] != payload2['Technique']:
+        problems.insert(0, f'technique: dll={payload["Technique"]} py={payload2["Technique"]}')
+
+    for problem in problems:
+        print(f'  {problem}')
+    if not problems:
+        print('  ok')

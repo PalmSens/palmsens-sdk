@@ -5,6 +5,7 @@ import math
 from collections.abc import Callable
 from typing import TYPE_CHECKING, cast
 
+from ..._methods.mixed_mode import MixedMode
 from ..._methods.settings import (
     CurrentRange,
     General,
@@ -40,6 +41,7 @@ from ..._types import AllowedCurrentRanges, AllowedPotentialRanges
 from ._wire import TechniqueId
 
 if TYPE_CHECKING:
+    from ..._methods.mixed_mode import StageType
     from ..._types import MethodTypeCompatible
 
 ParamDict = dict[str, float | bool | str]
@@ -66,6 +68,7 @@ ID_TO_TECHNIQUE: dict[str, TechniqueId] = {
     'ms': TechniqueId.MethodScriptSandbox,
     'eis': TechniqueId.ElectrochemicalImpedanceSpectroscopy,
     'gis': TechniqueId.GalvanostaticImpedanceSpectroscopy,
+    'mm': TechniqueId.MixedMode,
 }
 
 
@@ -1087,6 +1090,113 @@ def _build_gis(method: MethodTypeCompatible) -> ParamDict:
     return p
 
 
+_STAGE_GROUPS: dict[str, str] = {
+    'ConstantE': 'ConstantPotentialStage',
+    'ConstantI': 'ConstantCurrentStage',
+    'SweepE': 'SweepPotentialStage',
+    'OpenCircuit': 'OpenCircuitStage',
+}
+"""The `GroupId` group name each stage type is nested under, i.e. `Stages/<i>/<group>/…`."""
+
+
+def _add_stage(p: ParamDict, index: int, stage: StageType) -> None:
+    """Emit one stage, nested under `Stages/<index>/<group>/`.
+
+    The `…VersusPrevious` flags come from the legacy `VsEiPropertiesList`, which pypalmsens
+    never populates: no stage setting feeds it, so the DLL stores its default of `false` for
+    every stage (measured). Emitting them is still required because
+    `MixedModeStageMapper.AddParameters` writes them unconditionally.
+    """
+    group = _STAGE_GROUPS.get(stage.stage_type)
+    if group is None:
+        raise NotImplementedError(
+            f'Lablink does not support the MixedMode {stage.stage_type!r} stage: '
+            'the C# stage mapper throws `Unknown stage type` for it (PLAN.md §6)'
+        )
+
+    prefix = f'Stages/{index}/{group}/'
+    if stage.stage_type == 'ConstantE':
+        p[f'{prefix}Potential'] = stage.potential
+        p[f'{prefix}PotentialVersusPrevious'] = False
+        p[f'{prefix}RunTime'] = stage.run_time
+        _add_limits(
+            p, 'Current', stage.current_limits.min, stage.current_limits.max, prefix=prefix
+        )
+    elif stage.stage_type == 'ConstantI':
+        p[f'{prefix}AppliedCurrentRange'] = _wire_range(stage.applied_current_range)
+        # `current` is a factor of `applied_current_range`, stored as a plain double.
+        p[f'{prefix}AppliedCurrent'] = stage.current
+        p[f'{prefix}AppliedCurrentVersusPrevious'] = False
+        p[f'{prefix}RunTime'] = stage.run_time
+        _add_limits(
+            p,
+            'Potential',
+            stage.potential_limits.min,
+            stage.potential_limits.max,
+            prefix=prefix,
+        )
+    elif stage.stage_type == 'SweepE':
+        p[f'{prefix}BeginPotential'] = stage.begin_potential
+        p[f'{prefix}BeginPotentialVersusPrevious'] = False
+        p[f'{prefix}EndPotential'] = stage.end_potential
+        p[f'{prefix}EndPotentialVersusPrevious'] = False
+        p[f'{prefix}StepPotential'] = stage.step_potential
+        p[f'{prefix}ScanRate'] = stage.scanrate
+        _add_limits(
+            p, 'Current', stage.current_limits.min, stage.current_limits.max, prefix=prefix
+        )
+    elif stage.stage_type == 'OpenCircuit':
+        p[f'{prefix}RunTime'] = stage.run_time
+        _add_limits(
+            p,
+            'Potential',
+            stage.potential_limits.min,
+            stage.potential_limits.max,
+            prefix=prefix,
+        )
+    else:
+        # Unreachable: `group` is set for exactly the four types above, so anything else,
+        # including `Impedance`, already raised. Kept so this dispatch stays total.
+        raise NotImplementedError(
+            f'Lablink does not support the MixedMode {stage.stage_type!r} stage'
+        )
+
+
+def _build_mixed_mode(method: MethodTypeCompatible) -> ParamDict:
+    """Map mixed mode, whose stages nest under `Stages/<index>/<group>/`.
+
+    Per-stage measurement triggers reach only the parent's `UseTriggerOnStart` legacy field,
+    which no domain mapper reads, so they are dropped exactly as the DLL drops them.
+    """
+    m = cast(MixedMode, method)
+    default = MixedMode()
+
+    _require_default('data_processing', m.data_processing, default.data_processing)
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    # MixedMode offers no `potential_range` setting, so the legacy `RangingPotential` keeps
+    # its own defaults; C# reads them anyway because the technique record requires the triple.
+    p['MinimumPotentialRange'] = _wire_range('1mV')
+    p['MaximumPotentialRange'] = _wire_range('1V')
+    p['StartingPotentialRange'] = _wire_range('1V')
+    _add_pretreatment(p, m.pretreatment)
+
+    p['IntervalTime'] = m.interval_time
+    p['NumberOfCycles'] = m.cycles
+    # `Stages` is a bare count, like `Levels`; the per-stage keys below are bracketed as usual.
+    p['Stages'] = _GroupValue(str(len(m.stages)))
+    for index, stage in enumerate(m.stages):
+        _add_stage(p, index, stage)
+
+    _add_post_measurement(p, m.post_measurement)
+
+    p['EnableDropDetection'] = False
+    # The legacy mapper hardcodes `HardwareSyncIsEnabled = false`, like every other technique.
+    _add_general(p, m.general)
+    return p
+
+
 _BUILDERS: dict[str, Callable[[MethodTypeCompatible], ParamDict]] = {
     'ad': _build_chronoamperometry,
     'cv': _build_cyclicvoltammetry,
@@ -1108,6 +1218,7 @@ _BUILDERS: dict[str, Callable[[MethodTypeCompatible], ParamDict]] = {
     'ms': _build_methodscript,
     'eis': _build_eis,
     'gis': _build_gis,
+    'mm': _build_mixed_mode,
 }
 
 

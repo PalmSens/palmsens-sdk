@@ -9,14 +9,25 @@ from pypalmsens._methods import BaseTechnique
 from pypalmsens.lablink.models._method_mapper import _BUILDERS, ID_TO_TECHNIQUE, to_payload
 
 if TYPE_CHECKING:
+    from pydantic import BaseModel
+
     from pypalmsens._types import MethodTypeCompatible
 
 IMPLEMENTED = sorted(_BUILDERS)
 
 
+def model_class(method_id: str) -> type[BaseModel]:
+    """The technique class for an id.
+
+    `BaseTechnique._registry` is typed as `type[MethodType]`, which does not declare the
+    pydantic attributes these tests introspect, so it is widened here rather than at every use.
+    """
+    return cast('type[BaseModel]', BaseTechnique._registry[method_id])
+
+
 def has_field(method_id: str, field: str) -> bool:
     """Whether the technique model exposes a settings field at all."""
-    return field in BaseTechnique._registry[method_id].model_fields
+    return field in model_class(method_id).model_fields
 
 
 # MethodScript is just a script: it has no `general` or `data_processing` to guard.
@@ -220,6 +231,124 @@ def test_multistep_potentiometry_levels_apply_current() -> None:
     assert params['MeasureWECurrent'] is True
     assert 'UseIRCompensation' not in params
     assert 'Levels/0/Level/Potential' not in params
+
+
+def test_stage_count_is_written_bare() -> None:
+    payload = to_payload(
+        make(
+            'mm',
+            stages=[
+                {'stage_type': 'OpenCircuit', 'run_time': 0.1},
+                {'stage_type': 'ConstantE', 'potential': 0.5, 'run_time': 0.1},
+            ],
+        )
+    )
+    params = cast('dict[str, str]', payload['MethodParameters'])
+    assert params['Stages'] == '2'
+    assert params['Stages/0/OpenCircuitStage/RunTime'] == '[0.1]'
+    assert params['Stages/1/ConstantPotentialStage/Potential'] == '[0.5]'
+
+
+def test_stage_keys_nest_under_the_group_name() -> None:
+    # Each stage type is nested under its own `GroupId` name, not under the pypalmsens id.
+    params = _params(
+        make(
+            'mm',
+            stages=[
+                {'stage_type': 'ConstantE'},
+                {'stage_type': 'ConstantI'},
+                {'stage_type': 'SweepE'},
+                {'stage_type': 'OpenCircuit'},
+            ],
+        )
+    )
+    groups = {key.split('/')[2] for key in params if key.startswith('Stages/')}
+    assert groups == {
+        'ConstantPotentialStage',
+        'ConstantCurrentStage',
+        'SweepPotentialStage',
+        'OpenCircuitStage',
+    }
+    assert 'Stages/0/ConstantPotentialStage/Potential' in params
+    assert 'Stages/1/ConstantCurrentStage/AppliedCurrent' in params
+    assert 'Stages/2/SweepPotentialStage/ScanRate' in params
+    assert 'Stages/3/OpenCircuitStage/RunTime' in params
+
+
+def test_stage_versus_previous_flags_are_always_false() -> None:
+    # pypalmsens has no setting that feeds the legacy `VsEiPropertiesList`, yet the stage
+    # mapper writes every `…VersusPrevious` flag unconditionally, so the default is what C#
+    # stores (measured against the DLL).
+    params = _params(
+        make(
+            'mm',
+            stages=[
+                {'stage_type': 'ConstantE'},
+                {'stage_type': 'ConstantI'},
+                {'stage_type': 'SweepE'},
+                {'stage_type': 'OpenCircuit'},
+            ],
+        )
+    )
+    versus_previous = [key for key in params if key.endswith('VersusPrevious')]
+    assert versus_previous == [
+        'Stages/0/ConstantPotentialStage/PotentialVersusPrevious',
+        'Stages/1/ConstantCurrentStage/AppliedCurrentVersusPrevious',
+        'Stages/2/SweepPotentialStage/BeginPotentialVersusPrevious',
+        'Stages/2/SweepPotentialStage/EndPotentialVersusPrevious',
+    ]
+    assert all(params[key] is False for key in versus_previous)
+
+
+def test_stage_limits_nest_and_follow_the_stage_kind() -> None:
+    # A stage writes only the limit kinds its record declares, nested like the level limits.
+    params = _params(
+        make(
+            'mm',
+            stages=[
+                {'stage_type': 'ConstantE', 'current_limits': {'min': -2.5}},
+                {'stage_type': 'OpenCircuit', 'potential_limits': {'max': 0.75}},
+            ],
+        )
+    )
+    assert params['Stages/0/ConstantPotentialStage/UseMinimumCurrentLimit'] is True
+    assert params['Stages/0/ConstantPotentialStage/MinimumCurrentLimit'] == -2.5
+    assert params['Stages/0/ConstantPotentialStage/UseMaximumCurrentLimit'] is False
+    assert 'Stages/0/ConstantPotentialStage/MaximumCurrentLimit' not in params
+    assert 'Stages/0/ConstantPotentialStage/UseMinimumPotentialLimit' not in params
+    assert params['Stages/1/OpenCircuitStage/UseMaximumPotentialLimit'] is True
+    assert params['Stages/1/OpenCircuitStage/MaximumPotentialLimit'] == 0.75
+    assert 'Stages/1/OpenCircuitStage/UseMinimumCurrentLimit' not in params
+
+
+def test_mixed_mode_potential_ranges_are_the_legacy_defaults() -> None:
+    # MixedMode offers no `potential_range` setting, but the domain record requires the
+    # triple, so C# stores the `RangingPotential` defaults the legacy object was built with.
+    assert not has_field('mm', 'potential_range')
+    params = _params(make('mm'))
+    assert params['MinimumPotentialRange'] == '0.001'
+    assert params['MaximumPotentialRange'] == '1'
+    assert params['StartingPotentialRange'] == '1'
+
+
+def test_guard_mixed_mode_impedance_stage() -> None:
+    # The C# stage mapper throws `Unknown stage type: MixedModeStageEIS`, so no reference
+    # output exists for a method containing an impedance stage (PLAN.md §6).
+    with pytest.raises(NotImplementedError):
+        _ = _params(
+            make(
+                'mm',
+                stages=[
+                    {
+                        'stage_type': 'Impedance',
+                        'run_time': 0.2,
+                        'dc_potential': 0.0,
+                        'ac_potential': 0.01,
+                        'min_sampling_time': 0.01,
+                    }
+                ],
+            )
+        )
 
 
 def test_methodscript_sends_the_legacy_script() -> None:

@@ -19,7 +19,7 @@ def make(method_id: str, **kwargs: object):
     return BaseTechnique._registry[method_id](**kwargs)
 
 
-def _params(method: MethodTypeCompatible) -> dict[str, list[float | bool | str]]:
+def _params(method: MethodTypeCompatible) -> dict[str, float | bool | str]:
     """Decoded parameter dict (the level the builders return, before encoding)."""
     from pypalmsens.lablink.models._method_mapper import _to_parameters
 

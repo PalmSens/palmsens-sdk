@@ -28,7 +28,7 @@ from ._wire import TechniqueId
 if TYPE_CHECKING:
     from ..._types import MethodTypeCompatible
 
-ParamDict = dict[str, list[float | bool | str]]
+ParamDict = dict[str, float | bool | str]
 
 # Technique id -> wire technique name (drives both `Technique` and `Name`).
 ID_TO_TECHNIQUE: dict[str, TechniqueId] = {

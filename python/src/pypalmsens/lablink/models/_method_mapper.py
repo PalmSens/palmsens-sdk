@@ -14,13 +14,22 @@ from ..._methods.settings import (
     VersusOCP,
 )
 from ..._methods.techniques import (
+    ACVoltammetry,
     ChronoAmperometry,
+    ChronoCoulometry,
     ChronoPotentiometry,
     CyclicVoltammetry,
     DifferentialPulseVoltammetry,
+    FastAmperometry,
+    LinearSweepPotentiometry,
     LinearSweepVoltammetry,
+    MultiplePulseAmperometry,
+    MultiStepAmperometry,
     NormalPulseVoltammetry,
+    OpenCircuitPotentiometry,
+    PulsedAmperometricDetection,
     SquareWaveVoltammetry,
+    StrippingChronoPotentiometry,
 )
 from ..._types import AllowedCurrentRanges, AllowedPotentialRanges
 from ._wire import TechniqueId
@@ -39,6 +48,15 @@ ID_TO_TECHNIQUE: dict[str, TechniqueId] = {
     'dpv': TechniqueId.DifferentialPulseVoltammetry,
     'npv': TechniqueId.NormalPulseVoltammetry,
     'pot': TechniqueId.Chronopotentiometry,
+    'acv': TechniqueId.ACVoltammetry,
+    'fam': TechniqueId.FastAmperometry,
+    'ocp': TechniqueId.OpenCircuitPotentiometry,
+    'scp': TechniqueId.StrippingChronopotentiometry,
+    'lsp': TechniqueId.LinearSweepPotentiometry,
+    'pad': TechniqueId.PulsedAmperometricDetection,
+    'mpad': TechniqueId.MultiplePulseAmperometry,
+    'cc': TechniqueId.Chronocoulometry,
+    'ma': TechniqueId.MultiStepAmperometry,
 }
 
 
@@ -48,6 +66,14 @@ class _RawWireValue(str):
     C# serializes ranges and plain numbers alike as numbers, so range strings built
     by :func:`_wire_range` must not go through the JSON quoting that applies to
     genuine string parameters such as ``Name``.
+    """
+
+
+class _GroupValue(str):
+    """A nested-group count, written verbatim without the ``[...]`` wrapper.
+
+    C# leaves `Stages`, `Levels` and `Curves` values unbracketed (`Levels=2`), while
+    the nested `Levels/0/Level/...` values are bracketed as usual.
     """
 
 
@@ -107,14 +133,21 @@ def _add_vs_ocp(p: ParamDict, versus_ocp: VersusOCP) -> None:
     p['OCPStabilityCriterion'] = versus_ocp.stability_criterion
 
 
-def _add_limits(p: ParamDict, kind: str, minimum: float | None, maximum: float | None) -> None:
-    """Emit a Use/value limit pair for current, potential, or charge limits."""
-    p[f'UseMinimum{kind}Limit'] = minimum is not None
-    p[f'UseMaximum{kind}Limit'] = maximum is not None
+def _add_limits(
+    p: ParamDict,
+    kind: str,
+    minimum: float | None,
+    maximum: float | None,
+    *,
+    prefix: str = '',
+) -> None:
+    """Emit a Use/value limit pair, optionally nested under a group key prefix."""
+    p[f'{prefix}UseMinimum{kind}Limit'] = minimum is not None
+    p[f'{prefix}UseMaximum{kind}Limit'] = maximum is not None
     if minimum is not None:
-        p[f'Minimum{kind}Limit'] = minimum
+        p[f'{prefix}Minimum{kind}Limit'] = minimum
     if maximum is not None:
-        p[f'Maximum{kind}Limit'] = maximum
+        p[f'{prefix}Maximum{kind}Limit'] = maximum
 
 
 def _add_ir_drop_compensation(p: ParamDict, ir: IrDropCompensation) -> None:
@@ -136,12 +169,17 @@ def _add_post_measurement(p: ParamDict, pm: PostMeasurement) -> None:
         p['CellModeAfterMeasurement'] = 'CellModeAfterMeasurementOff'
 
 
-def _add_general(p: ParamDict, gen: General) -> None:
-    """Only hardware sync maps; mains frequency lives in configure, deferred."""
-    # Every C# legacy mapper hardcodes HardwareSyncIsEnabled = false, so the wire
-    # value is always false; forwarding a true here would diverge silently.
+def _add_general(p: ParamDict, gen: General, *, hardware_sync: bool = True) -> None:
+    """Only hardware sync maps; mains frequency lives in configure, deferred.
+
+    Pass `hardware_sync=False` for techniques whose C# mapper leaves the key out
+    entirely, such as stripping chronopotentiometry.
+    """
+    # Every C# legacy mapper that writes this hardcodes HardwareSyncIsEnabled = false,
+    # so the wire value is always false; forwarding a true here would diverge silently.
     _require_default('use_hardware_sync', gen.use_hardware_sync, False)
-    p['EnableHardwareSync'] = False
+    if hardware_sync:
+        p['EnableHardwareSync'] = False
     if gen.save_on_internal_storage:
         raise NotImplementedError("Lablink does not yet support 'save_on_internal_storage'")
     if gen.notes:
@@ -490,6 +528,346 @@ def _build_normalpulsevoltammetry(method: MethodTypeCompatible) -> ParamDict:
     return p
 
 
+def _add_levels(p: ParamDict, levels: list, *, amperometric: bool) -> None:
+    """Emit the multistep `Levels` count plus one `Levels/<i>/Level/...` group each."""
+    p['Levels'] = _GroupValue(str(len(levels)))
+    for index, level in enumerate(levels):
+        base = f'Levels/{index}/Level/'
+        if amperometric:
+            p[base + 'Potential'] = level.level
+            p[base + 'RunTime'] = level.duration
+            _add_limits(
+                p, 'Current', level.limit_current_min, level.limit_current_max, prefix=base
+            )
+        else:
+            p[base + 'AppliedCurrent'] = level.level
+            p[base + 'RunTime'] = level.duration
+            _add_limits(
+                p,
+                'Potential',
+                level.limit_potential_min,
+                level.limit_potential_max,
+                prefix=base,
+            )
+        p[base + 'RecordLevel'] = level.record
+
+
+def _build_acvoltammetry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(ACVoltammetry, method)
+    default = ACVoltammetry()
+
+    _require_default('data_processing', m.data_processing, default.data_processing)
+    _require_default(
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
+    )
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = m.equilibration_time
+    p['BeginPotential'] = m.begin_potential
+    p['BeginPotentialOCP'] = 'begin' in m.versus_ocp.potentials
+    p['EndPotential'] = m.end_potential
+    p['EndPotentialOCP'] = 'end' in m.versus_ocp.potentials
+    p['StepPotential'] = m.step_potential
+    p['SineWaveAmplitude'] = m.ac_potential
+    p['Frequency'] = m.frequency
+    p['ScanRate'] = m.scanrate
+    p['MeasureDCCurrent'] = m.measure_dc_current
+
+    # ACV emits no limit keys and no aux/cell/WE-potential keys.
+    _require_default('versus_ocp potentials used', len(m.versus_ocp.potentials), 0)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general)
+    return p
+
+
+def _build_fastamperometry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(FastAmperometry, method)
+    default = FastAmperometry()
+
+    # The C# fast amperometry mapper writes no limit, iR or BiPot keys at all.
+    _require_default('current_limits', m.current_limits, default.current_limits)
+    _require_default('charge_limits', m.charge_limits, default.charge_limits)
+    _require_default(
+        'ir_drop_compensation', m.ir_drop_compensation, default.ir_drop_compensation
+    )
+    _require_default('bipot', m.bipot, default.bipot)
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+    _require_default(
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
+    )
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+
+    p: ParamDict = {}
+    # Fast amperometry fixes one range for minimum, maximum and start; the model field
+    # is a bare range literal, so it goes through `_wire_range` three times.
+    fixed_range = _wire_range(m.current_range)
+    p['MinimumCurrentRange'] = fixed_range
+    p['MaximumCurrentRange'] = fixed_range
+    p['StartingCurrentRange'] = fixed_range
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = m.equilibration_time
+    p['EquilibrationPotential'] = m.equilibration_potential
+    # The legacy OCPmode bit for the equilibration potential has no OCPFlag value.
+    p['EquilibrationPotentialOCP'] = False
+    p['Potential'] = m.potential
+    p['PotentialOCP'] = 'potential' in m.versus_ocp.potentials
+    p['IntervalTime'] = m.interval_time
+    p['RunTime'] = m.run_time
+
+    _add_vs_ocp(p, m.versus_ocp)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general)
+    return p
+
+
+def _build_opencircuitpotentiometry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(OpenCircuitPotentiometry, method)
+    default = OpenCircuitPotentiometry()
+
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_potential_range(p, m.potential_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['IntervalTime'] = m.interval_time
+    p['RunTime'] = m.run_time
+
+    _add_limits(p, 'Potential', m.potential_limits.min, m.potential_limits.max)
+    _add_limits(p, 'Temperature', None, None)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['MeasureAuxiliaryInput'] = m.record_auxiliary_input
+    p['MeasureWECurrent'] = m.record_we_current
+    # OCP measures with its own current range.
+    p['MeasuredCurrentRange'] = _wire_range(m.record_we_current_range)
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general)
+    return p
+
+
+def _build_strippingchronopotentiometry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(StrippingChronoPotentiometry, method)
+    default = StrippingChronoPotentiometry()
+
+    # Stripping maps neither the potential range nor hardware sync, and no bandwidth.
+    _require_default('potential_range', m.potential_range, default.potential_range)
+    _require_default('bandwidth', m.bandwidth, default.bandwidth)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+    _require_default(
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
+    )
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EndPotential'] = m.end_potential
+    p['AppliedCurrent'] = m.current
+    p['AppliedCurrentRange'] = _wire_range(m.applied_current_range)
+    p['MeasurementTime'] = m.measurement_time
+
+    _add_post_measurement(p, m.post_measurement)
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general, hardware_sync=False)
+    return p
+
+
+def _build_linearsweeppotentiometry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(LinearSweepPotentiometry, method)
+    default = LinearSweepPotentiometry()
+
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+    _require_default('delay_triggers', m.delay_triggers, default.delay_triggers)
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_potential_range(p, m.potential_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['AppliedCurrentRange'] = _wire_range(m.applied_current_range)
+    p['BeginCurrent'] = m.current_begin
+    p['EndCurrent'] = m.current_end
+    p['StepCurrent'] = m.current_step
+    p['ScanRate'] = m.scan_rate
+
+    _add_limits(p, 'Potential', m.potential_limits.min, m.potential_limits.max)
+    _add_limits(p, 'Temperature', None, None)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['MeasureAuxiliaryInput'] = m.record_auxiliary_input
+    p['MeasureWECurrent'] = m.record_we_current
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general)
+    return p
+
+
+_PAD_MODES: dict[str, str] = {
+    'dc': 'PADModeEdc',
+    'pulse': 'PADModePulse',
+    'differential': 'PADModeDifferential',
+}
+
+
+def _build_pulsedamperometricdetection(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(PulsedAmperometricDetection, method)
+    default = PulsedAmperometricDetection()
+
+    _require_default('bipot', m.bipot, default.bipot)
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+    _require_default('delay_triggers', m.delay_triggers, default.delay_triggers)
+    _require_default(
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
+    )
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = m.equilibration_time
+    p['PotentialDirectCurrent'] = m.potential
+    p['PulsePotential'] = m.pulse_potential
+    p['PulseTime'] = m.pulse_time
+    p['PADMode'] = _PAD_MODES[m.mode]
+    p['RunTime'] = m.run_time
+    p['IntervalTime'] = m.interval_time
+
+    _add_post_measurement(p, m.post_measurement)
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general)
+    return p
+
+
+def _build_multiplepulseamperometry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(MultiplePulseAmperometry, method)
+
+    _require_default(
+        'data_processing', m.data_processing, MultiplePulseAmperometry().data_processing
+    )
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = m.equilibration_time
+    p['Potential1'] = m.potential_1
+    p['Time1'] = m.duration_1
+    p['Potential2'] = m.potential_2
+    p['Time2'] = m.duration_2
+    p['Potential3'] = m.potential_3
+    p['Time3'] = m.duration_3
+    p['RunTime'] = m.run_time
+
+    _add_post_measurement(p, m.post_measurement)
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general)
+    return p
+
+
+def _build_chronocoulometry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(ChronoCoulometry, method)
+    default = ChronoCoulometry()
+
+    _require_default('bandwidth', m.bandwidth, default.bandwidth)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = m.equilibration_time
+    p['IntervalTime'] = m.interval_time
+    # Unlike Levels, the coulometry steps are written without a `Steps` count key.
+    for index, (potential, run_time) in enumerate(
+        ((m.step1_potential, m.step1_run_time), (m.step2_potential, m.step2_run_time))
+    ):
+        base = f'Steps/{index}/Step/'
+        p[base + 'Potential'] = potential
+        p[base + 'RunTime'] = run_time
+
+    _add_limits(p, 'Charge', m.charge_limits.min, m.charge_limits.max)
+    _add_limits(p, 'Current', m.current_limits.min, m.current_limits.max)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['MeasureAuxiliaryInput'] = m.record_auxiliary_input
+    p['MeasureCellPotential'] = m.record_cell_potential
+    p['MeasureWEPotential'] = m.record_we_potential
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general)
+    return p
+
+
+def _build_multistepamperometry(method: MethodTypeCompatible) -> ParamDict:
+    m = cast(MultiStepAmperometry, method)
+    default = MultiStepAmperometry()
+
+    _require_default(
+        'enable_bipot_current', m.enable_bipot_current, default.enable_bipot_current
+    )
+    _require_default('bipot', m.bipot, default.bipot)
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = m.equilibration_time
+    p['IntervalTime'] = m.interval_time
+    p['NumberOfCycles'] = m.n_cycles
+    _add_levels(p, m.levels, amperometric=True)
+
+    _add_limits(p, 'Current', m.current_limits.min, m.current_limits.max)
+    p['SelectLimitPerLevel'] = any(level.use_limits for level in m.levels)
+    p['SelectRecordPerLevel'] = any(level.record for level in m.levels)
+    _add_ir_drop_compensation(p, m.ir_drop_compensation)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['MeasureAuxiliaryInput'] = m.record_auxiliary_input
+    p['MeasureCellPotential'] = m.record_cell_potential
+    p['MeasureWEPotential'] = m.record_we_potential
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general)
+    return p
+
+
 _BUILDERS: dict[str, Callable[[MethodTypeCompatible], ParamDict]] = {
     'ad': _build_chronoamperometry,
     'cv': _build_cyclicvoltammetry,
@@ -498,6 +876,15 @@ _BUILDERS: dict[str, Callable[[MethodTypeCompatible], ParamDict]] = {
     'dpv': _build_differentialpulsevoltammetry,
     'npv': _build_normalpulsevoltammetry,
     'pot': _build_chronopotentiometry,
+    'acv': _build_acvoltammetry,
+    'fam': _build_fastamperometry,
+    'ocp': _build_opencircuitpotentiometry,
+    'scp': _build_strippingchronopotentiometry,
+    'lsp': _build_linearsweeppotentiometry,
+    'pad': _build_pulsedamperometricdetection,
+    'mpad': _build_multiplepulseamperometry,
+    'cc': _build_chronocoulometry,
+    'ma': _build_multistepamperometry,
 }
 
 
@@ -514,6 +901,9 @@ def _to_parameters(method: MethodTypeCompatible) -> ParamDict:
 
 def _serialize(value: float | bool | str) -> str:
     """Serialize one parameter value, matching C# ``MethodParametersExtensions``."""
+    if isinstance(value, _GroupValue):
+        # Group counts are written bare, without the [...] wrapper.
+        return str(value)
     if isinstance(value, _RawWireValue):
         ret = str(value)
     elif isinstance(value, bool):

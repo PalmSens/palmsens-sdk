@@ -33,7 +33,11 @@ def test_to_payload_shape(method_id: str) -> None:
     assert payload['Technique'] == ID_TO_TECHNIQUE[method_id].value
     params = cast('dict[str, str]', payload['MethodParameters'])
     assert all(isinstance(value, str) for value in params.values())
-    assert all(isinstance(json.loads(value), list) for value in params.values())
+    # Group counts are the only values C# writes bare; everything else is a JSON array.
+    assert all(
+        isinstance(json.loads(value), int if key in {'Levels', 'Stages', 'Curves'} else list)
+        for key, value in params.items()
+    )
 
     # `Name` is stamped from ID_TO_TECHNIQUE and matches the Technique field.
     assert json.loads(params['Name']) == [ID_TO_TECHNIQUE[method_id].value]
@@ -51,6 +55,26 @@ def test_potential_range_conversion() -> None:
     assert params['MinimumPotentialRange'] == '0.010'
     assert params['MaximumPotentialRange'] == '1'
     assert params['StartingPotentialRange'] == '1'
+
+
+def test_fastamperometry_fixes_one_range() -> None:
+    # Fast amperometry cannot auto-range, so one literal fills min, maximum and start.
+    params = _params(make('fam', current_range='100nA'))
+    assert params['MinimumCurrentRange'] == '0.000000100'
+    assert params['MaximumCurrentRange'] == '0.000000100'
+    assert params['StartingCurrentRange'] == '0.000000100'
+
+
+def test_stripping_omits_hardware_sync() -> None:
+    # The C# stripping mapper leaves `EnableHardwareSync` out instead of writing false.
+    assert 'EnableHardwareSync' not in _params(make('scp'))
+
+
+def test_level_count_is_written_bare() -> None:
+    payload = to_payload(make('ma', levels=[{'level': 0.5, 'duration': 0.1}]))
+    params = cast('dict[str, str]', payload['MethodParameters'])
+    assert params['Levels'] == '1'
+    assert params['Levels/0/Level/Potential'] == '[0.5]'
 
 
 def test_wire_number_formatting() -> None:

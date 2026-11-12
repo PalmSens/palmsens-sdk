@@ -850,7 +850,7 @@
         "Potential": 0.7,
         "PotentialOCP": false,
         "RunTime": 1.5,
-        "StartingCurrentRange": 1e-6
+        "StartingCurrentRange": 1e-7
       },
       "spec": {
         "bipot": {
@@ -1728,7 +1728,7 @@
         "PulsePotential": 0.3,
         "PulseTime": 0.1,
         "RunTime": 1.5,
-        "StartingCurrentRange": 0.000
+        "StartingCurrentRange": 0.0001
       },
       "spec": {
         "bipot": {

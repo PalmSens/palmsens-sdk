@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 from collections.abc import Callable
 from typing import TYPE_CHECKING, cast
 
@@ -20,7 +21,9 @@ from ..._methods.techniques import (
     ChronoPotentiometry,
     CyclicVoltammetry,
     DifferentialPulseVoltammetry,
+    ElectrochemicalImpedanceSpectroscopy,
     FastAmperometry,
+    GalvanostaticImpedanceSpectroscopy,
     LinearSweepPotentiometry,
     LinearSweepVoltammetry,
     MethodScript,
@@ -61,6 +64,8 @@ ID_TO_TECHNIQUE: dict[str, TechniqueId] = {
     'ma': TechniqueId.MultiStepAmperometry,
     'mp': TechniqueId.MultiStepPotentiometry,
     'ms': TechniqueId.MethodScriptSandbox,
+    'eis': TechniqueId.ElectrochemicalImpedanceSpectroscopy,
+    'gis': TechniqueId.GalvanostaticImpedanceSpectroscopy,
 }
 
 
@@ -952,6 +957,136 @@ def _build_methodscript(method: MethodTypeCompatible) -> ParamDict:
     return {'Script': f'e\n{m.script}\n'}
 
 
+def _frequencies_per_decade(
+    n_frequencies: int, max_frequency: float, min_frequency: float
+) -> float:
+    """Recompute `NumberOfFrequenciesPerDecade`, which the EIS/GIS records derive.
+
+    The domain records expose it as a computed property rather than a stored field, so the
+    mapper always writes it even though no legacy field carries it:
+    `(n - 1) / (log10(max) - log10(min))`. A zero denominator means an empty frequency range;
+    C# would write `NaN` or `∞` there, which the hub cannot parse, so it is rejected instead.
+    """
+    denominator = math.log10(max_frequency) - math.log10(min_frequency)
+    if denominator == 0.0:
+        raise NotImplementedError(
+            'Lablink cannot express equal minimum and maximum frequencies: the EIS/GIS record '
+            'derives frequencies per decade by dividing by log10(max) - log10(min)'
+        )
+    # Unlike every other number here, this one is computed rather than stored, so the wire
+    # only ever carries its `G7` text. Round now to keep the decoded dict wire-faithful; the
+    # golden baseline is decoded from the DLL and cannot hold more digits than `G7` printed.
+    return float(format((n_frequencies - 1) / denominator, '.7g'))
+
+
+def _build_eis(method: MethodTypeCompatible) -> ParamDict:
+    """Map a potentiostatic impedance frequency scan.
+
+    `max_equilibration_time` lands in the legacy `MaxEqTime` field, which no domain mapper
+    reads; the DLL accepts the setting and drops it, so the port drops it too.
+    """
+    m = cast(ElectrochemicalImpedanceSpectroscopy, method)
+    default = ElectrochemicalImpedanceSpectroscopy()
+
+    # The domain model represents exactly one EIS shape: a frequency scan at a fixed dc
+    # potential. The legacy mapper returns null for every other scan/frequency combination,
+    # which then throws in `TechniqueParametersMappers.ToEntity` (PLAN.md §6), so there is no
+    # reference output to match for those.
+    _require_default('scan_type', m.scan_type, default.scan_type)
+    _require_default('frequency_type', m.frequency_type, default.frequency_type)
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default('material', m.material, default.material)
+    _require_default(
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
+    )
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_potential_range(p, m.potential_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = m.equilibration_time
+    # `BeginPotential` is an alias of `Potential`, which `_export` sets from `dc_potential`.
+    p['PotentialDirectCurrent'] = m.dc_potential
+    # With a fixed scan type the only OCP flag EIS offers is 'potential', i.e. OCPmode bit 0.
+    p['PotentialDirectCurrentOCP'] = 'potential' in m.versus_ocp.potentials
+    p['PotentialAlternatingCurrent'] = m.ac_potential
+    p['NumberOfFrequencies'] = m.n_frequencies
+    p['NumberOfFrequenciesPerDecade'] = _frequencies_per_decade(
+        m.n_frequencies, m.max_frequency, m.min_frequency
+    )
+    p['MaximumFrequency'] = m.max_frequency
+    p['MinimumFrequency'] = m.min_frequency
+    # `ShowTDDMS` has no pypalmsens setting, so the legacy default is what C# stores.
+    p['RecordTimeDomainData'] = False
+    p['MinimumSamplingTime'] = m.min_sampling_time
+
+    # The EIS mapper hardcodes null limits, so only the `Use...` flags reach the wire.
+    _add_limits(p, 'Current', None, None)
+    _add_limits(p, 'Charge', None, None)
+    _add_limits(p, 'Temperature', None, None)
+    _add_vs_ocp(p, m.versus_ocp)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general, hardware_sync=False)
+    return p
+
+
+def _build_gis(method: MethodTypeCompatible) -> ParamDict:
+    """Map a galvanostatic impedance scan.
+
+    `max_equilibration_time` lands in the legacy `MaxEqTime` field, which no domain mapper
+    reads; the DLL accepts the setting and drops it, so the port drops it too.
+    """
+    m = cast(GalvanostaticImpedanceSpectroscopy, method)
+    default = GalvanostaticImpedanceSpectroscopy()
+
+    # Same restriction as EIS, with dc current instead of dc potential.
+    _require_default('scan_type', m.scan_type, default.scan_type)
+    _require_default('frequency_type', m.frequency_type, default.frequency_type)
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default(
+        'equilibration_triggers', m.equilibration_triggers, default.equilibration_triggers
+    )
+    _require_default(
+        'measurement_triggers', m.measurement_triggers, default.measurement_triggers
+    )
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_potential_range(p, m.potential_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['EquilibrationTime'] = m.equilibration_time
+    p['AppliedCurrentRange'] = _wire_range(m.applied_current_range)
+    # Currents are factors of `applied_current_range`, stored as `CurrentIcr` (plain G7).
+    p['DCCurrent'] = m.dc_current
+    p['ACCurrent'] = m.ac_current
+    p['NumberOfFrequencies'] = m.n_frequencies
+    p['NumberOfFrequenciesPerDecade'] = _frequencies_per_decade(
+        m.n_frequencies, m.max_frequency, m.min_frequency
+    )
+    p['MaximumFrequency'] = m.max_frequency
+    p['MinimumFrequency'] = m.min_frequency
+    p['RecordTimeDomainData'] = False
+    p['MinimumSamplingTime'] = m.min_sampling_time
+
+    # GIS has no versus-OCP group: its record does not implement `IVsOcpParameters`, and the
+    # limits are hardcoded null just like EIS.
+    _add_limits(p, 'Potential', None, None)
+    _add_limits(p, 'Charge', None, None)
+    _add_limits(p, 'Temperature', None, None)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general, hardware_sync=False)
+    return p
+
+
 _BUILDERS: dict[str, Callable[[MethodTypeCompatible], ParamDict]] = {
     'ad': _build_chronoamperometry,
     'cv': _build_cyclicvoltammetry,
@@ -971,6 +1106,8 @@ _BUILDERS: dict[str, Callable[[MethodTypeCompatible], ParamDict]] = {
     'ma': _build_multistepamperometry,
     'mp': _build_multistepotentiometry,
     'ms': _build_methodscript,
+    'eis': _build_eis,
+    'gis': _build_gis,
 }
 
 

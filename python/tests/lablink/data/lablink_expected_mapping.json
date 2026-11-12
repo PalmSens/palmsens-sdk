@@ -996,6 +996,238 @@
       }
     }
   },
+  "eis": {
+    "default": {
+      "expected": {
+        "CellModeAfterMeasurement": "CellModeAfterMeasurementOff",
+        "ConditioningPotential": 0.0,
+        "ConditioningTime": 0.0,
+        "DepositionPotential": 0.0,
+        "DepositionTime": 0.0,
+        "EnableDropDetection": false,
+        "EquilibrationTime": 0.0,
+        "MaximumCurrentRange": 0.01,
+        "MaximumFrequency": 10000.0,
+        "MaximumPotentialRange": 1.0,
+        "MinimumCurrentRange": 1e-6,
+        "MinimumFrequency": 5.0,
+        "MinimumPotentialRange": 0.001,
+        "MinimumSamplingTime": 0.5,
+        "NumberOfFrequencies": 11.0,
+        "NumberOfFrequenciesPerDecade": 3.029358,
+        "PotentialAlternatingCurrent": 0.01,
+        "PotentialDirectCurrent": 0.0,
+        "PotentialDirectCurrentOCP": false,
+        "RecordTimeDomainData": false,
+        "StartingCurrentRange": 0.0001,
+        "StartingPotentialRange": 1.0,
+        "UseMaximumChargeLimit": false,
+        "UseMaximumCurrentLimit": false,
+        "UseMaximumTemperatureLimit": false,
+        "UseMinimumChargeLimit": false,
+        "UseMinimumCurrentLimit": false,
+        "UseMinimumTemperatureLimit": false
+      },
+      "spec": {
+        "ac_potential": 0.01,
+        "begin_potential": 0.0,
+        "current_range": {
+          "max": "10mA",
+          "min": "1uA",
+          "start": "100uA"
+        },
+        "dc_potential": 0.0,
+        "end_potential": 0.0,
+        "equilibration_time": 0.0,
+        "equilibration_triggers": {
+          "d0": false,
+          "d1": false,
+          "d2": false,
+          "d3": false
+        },
+        "fixed_frequency": 1000,
+        "frequency_type": "scan",
+        "general": {
+          "notes": "",
+          "power_frequency": 50,
+          "save_on_internal_storage": false,
+          "use_hardware_sync": false
+        },
+        "id": "eis",
+        "interval_time": 0.1,
+        "material": {
+          "b_anodic": 0.0,
+          "b_cathodic": 0.0,
+          "density": 0.0,
+          "surface_area": 0.0,
+          "weight": 0.0
+        },
+        "max_equilibration_time": 5.0,
+        "max_frequency": 10000,
+        "measurement_triggers": {
+          "d0": false,
+          "d1": false,
+          "d2": false,
+          "d3": false
+        },
+        "min_frequency": 5.0,
+        "min_sampling_time": 0.5,
+        "multiplexer": {
+          "channels": [],
+          "combine_re_ce": false,
+          "common_re_ce": false,
+          "connect_se_we": false,
+          "mode": "none",
+          "unused_we": "float"
+        },
+        "n_frequencies": 11,
+        "post_measurement": {
+          "cell_on_after_measurement": false,
+          "standby_potential": 0.0,
+          "standby_time": 0.0
+        },
+        "potential_range": {
+          "max": "1V",
+          "min": "1mV",
+          "start": "1V"
+        },
+        "pretreatment": {
+          "conditioning_potential": 0.0,
+          "conditioning_time": 0.0,
+          "deposition_potential": 0.0,
+          "deposition_time": 0.0
+        },
+        "run_time": 10.0,
+        "scan_type": "fixed",
+        "step_potential": 0.01,
+        "versus_ocp": {
+          "potentials": [],
+          "stability_criterion": 0.0,
+          "timeout": 20.0
+        }
+      }
+    },
+    "extended": {
+      "expected": {
+        "CellModeAfterMeasurement": "CellModeAfterMeasurementPotentiostatic",
+        "ConditioningPotential": 0.3,
+        "ConditioningTime": 1.0,
+        "DepositionPotential": -0.2,
+        "DepositionTime": 2.0,
+        "EnableDropDetection": false,
+        "EnableOcp": true,
+        "EquilibrationTime": 1.5,
+        "MaximumCurrentRange": 0.01,
+        "MaximumFrequency": 10000.0,
+        "MaximumOCPTime": 15.0,
+        "MaximumPotentialRange": 1.0,
+        "MinimumCurrentRange": 1e-7,
+        "MinimumFrequency": 10.0,
+        "MinimumPotentialRange": 0.1,
+        "MinimumSamplingTime": 0.3,
+        "NumberOfFrequencies": 21.0,
+        "NumberOfFrequenciesPerDecade": 6.666667,
+        "OCPStabilityCriterion": 2.0,
+        "PotentialAfterMeasurement": 0.4,
+        "PotentialAlternatingCurrent": 0.03,
+        "PotentialDirectCurrent": 0.75,
+        "PotentialDirectCurrentOCP": true,
+        "RecordTimeDomainData": false,
+        "StartingCurrentRange": 1e-5,
+        "StartingPotentialRange": 1.0,
+        "UseCurrentAfterMeasurement": false,
+        "UseMaximumChargeLimit": false,
+        "UseMaximumCurrentLimit": false,
+        "UseMaximumTemperatureLimit": false,
+        "UseMeasuredCurrentRangeAfterMeasurement": false,
+        "UseMeasuredPotentialRangeAfterMeasurement": false,
+        "UseMinimumChargeLimit": false,
+        "UseMinimumCurrentLimit": false,
+        "UseMinimumTemperatureLimit": false,
+        "UsePotentialAfterMeasurement": true
+      },
+      "spec": {
+        "ac_potential": 0.03,
+        "begin_potential": 0.0,
+        "current_range": {
+          "max": "10mA",
+          "min": "100nA",
+          "start": "10uA"
+        },
+        "dc_potential": 0.75,
+        "end_potential": 0.0,
+        "equilibration_time": 1.5,
+        "equilibration_triggers": {
+          "d0": false,
+          "d1": false,
+          "d2": false,
+          "d3": false
+        },
+        "fixed_frequency": 1000,
+        "frequency_type": "scan",
+        "general": {
+          "notes": "",
+          "power_frequency": 50,
+          "save_on_internal_storage": false,
+          "use_hardware_sync": false
+        },
+        "id": "eis",
+        "interval_time": 0.1,
+        "material": {
+          "b_anodic": 0.0,
+          "b_cathodic": 0.0,
+          "density": 0.0,
+          "surface_area": 0.0,
+          "weight": 0.0
+        },
+        "max_equilibration_time": 2.0,
+        "max_frequency": 10000.0,
+        "measurement_triggers": {
+          "d0": false,
+          "d1": false,
+          "d2": false,
+          "d3": false
+        },
+        "min_frequency": 10.0,
+        "min_sampling_time": 0.3,
+        "multiplexer": {
+          "channels": [],
+          "combine_re_ce": false,
+          "common_re_ce": false,
+          "connect_se_we": false,
+          "mode": "none",
+          "unused_we": "float"
+        },
+        "n_frequencies": 21,
+        "post_measurement": {
+          "cell_on_after_measurement": true,
+          "standby_potential": 0.4,
+          "standby_time": 0.0
+        },
+        "potential_range": {
+          "max": "500mV",
+          "min": "20mV",
+          "start": "1V"
+        },
+        "pretreatment": {
+          "conditioning_potential": 0.3,
+          "conditioning_time": 1.0,
+          "deposition_potential": -0.2,
+          "deposition_time": 2.0
+        },
+        "run_time": 10.0,
+        "scan_type": "fixed",
+        "step_potential": 0.01,
+        "versus_ocp": {
+          "potentials": [
+            "potential"
+          ],
+          "stability_criterion": 2.0,
+          "timeout": 15.0
+        }
+      }
+    }
+  },
   "fam": {
     "default": {
       "expected": {
@@ -1194,6 +1426,211 @@
           "stability_criterion": 0.0,
           "timeout": 20.0
         }
+      }
+    }
+  },
+  "gis": {
+    "default": {
+      "expected": {
+        "ACCurrent": 0.01,
+        "AppliedCurrentRange": 0.0001,
+        "CellModeAfterMeasurement": "CellModeAfterMeasurementOff",
+        "ConditioningPotential": 0.0,
+        "ConditioningTime": 0.0,
+        "DCCurrent": 0.0,
+        "DepositionPotential": 0.0,
+        "DepositionTime": 0.0,
+        "EnableDropDetection": false,
+        "EquilibrationTime": 0.0,
+        "MaximumCurrentRange": 0.01,
+        "MaximumFrequency": 10000.0,
+        "MaximumPotentialRange": 1.0,
+        "MinimumCurrentRange": 1e-6,
+        "MinimumFrequency": 5.0,
+        "MinimumPotentialRange": 0.001,
+        "MinimumSamplingTime": 0.5,
+        "NumberOfFrequencies": 11.0,
+        "NumberOfFrequenciesPerDecade": 3.029358,
+        "RecordTimeDomainData": false,
+        "StartingCurrentRange": 0.0001,
+        "StartingPotentialRange": 1.0,
+        "UseMaximumChargeLimit": false,
+        "UseMaximumPotentialLimit": false,
+        "UseMaximumTemperatureLimit": false,
+        "UseMinimumChargeLimit": false,
+        "UseMinimumPotentialLimit": false,
+        "UseMinimumTemperatureLimit": false
+      },
+      "spec": {
+        "ac_current": 0.01,
+        "applied_current_range": "100uA",
+        "begin_current": 0.0,
+        "current_range": {
+          "max": "10mA",
+          "min": "1uA",
+          "start": "100uA"
+        },
+        "dc_current": 0.0,
+        "end_current": 0.0,
+        "equilibration_time": 0.0,
+        "equilibration_triggers": {
+          "d0": false,
+          "d1": false,
+          "d2": false,
+          "d3": false
+        },
+        "fixed_frequency": 1000,
+        "frequency_type": "scan",
+        "general": {
+          "notes": "",
+          "power_frequency": 50,
+          "save_on_internal_storage": false,
+          "use_hardware_sync": false
+        },
+        "id": "gis",
+        "interval_time": 0.1,
+        "max_equilibration_time": 5.0,
+        "max_frequency": 10000,
+        "measurement_triggers": {
+          "d0": false,
+          "d1": false,
+          "d2": false,
+          "d3": false
+        },
+        "min_frequency": 5.0,
+        "min_sampling_time": 0.5,
+        "multiplexer": {
+          "channels": [],
+          "combine_re_ce": false,
+          "common_re_ce": false,
+          "connect_se_we": false,
+          "mode": "none",
+          "unused_we": "float"
+        },
+        "n_frequencies": 11,
+        "post_measurement": {
+          "cell_on_after_measurement": false,
+          "standby_potential": 0.0,
+          "standby_time": 0.0
+        },
+        "potential_range": {
+          "max": "1V",
+          "min": "1mV",
+          "start": "1V"
+        },
+        "pretreatment": {
+          "conditioning_potential": 0.0,
+          "conditioning_time": 0.0,
+          "deposition_potential": 0.0,
+          "deposition_time": 0.0
+        },
+        "run_time": 10.0,
+        "scan_type": "fixed",
+        "step_current": 0.01
+      }
+    },
+    "extended": {
+      "expected": {
+        "ACCurrent": 0.05,
+        "AppliedCurrentRange": 0.001,
+        "CellModeAfterMeasurement": "CellModeAfterMeasurementPotentiostatic",
+        "ConditioningPotential": 0.1,
+        "ConditioningTime": 0.5,
+        "DCCurrent": 0.2,
+        "DepositionPotential": 0.0,
+        "DepositionTime": 0.0,
+        "EnableDropDetection": false,
+        "EquilibrationTime": 1.0,
+        "MaximumCurrentRange": 0.001,
+        "MaximumFrequency": 100000.0,
+        "MaximumPotentialRange": 1.0,
+        "MinimumCurrentRange": 1e-8,
+        "MinimumFrequency": 100.0,
+        "MinimumPotentialRange": 0.1,
+        "MinimumSamplingTime": 0.25,
+        "NumberOfFrequencies": 13.0,
+        "NumberOfFrequenciesPerDecade": 4.0,
+        "PotentialAfterMeasurement": -0.3,
+        "RecordTimeDomainData": false,
+        "StartingCurrentRange": 1e-7,
+        "StartingPotentialRange": 0.1,
+        "UseCurrentAfterMeasurement": false,
+        "UseMaximumChargeLimit": false,
+        "UseMaximumPotentialLimit": false,
+        "UseMaximumTemperatureLimit": false,
+        "UseMeasuredCurrentRangeAfterMeasurement": false,
+        "UseMeasuredPotentialRangeAfterMeasurement": false,
+        "UseMinimumChargeLimit": false,
+        "UseMinimumPotentialLimit": false,
+        "UseMinimumTemperatureLimit": false,
+        "UsePotentialAfterMeasurement": true
+      },
+      "spec": {
+        "ac_current": 0.05,
+        "applied_current_range": "1mA",
+        "begin_current": 0.0,
+        "current_range": {
+          "max": "1mA",
+          "min": "10nA",
+          "start": "100nA"
+        },
+        "dc_current": 0.2,
+        "end_current": 0.0,
+        "equilibration_time": 1.0,
+        "equilibration_triggers": {
+          "d0": false,
+          "d1": false,
+          "d2": false,
+          "d3": false
+        },
+        "fixed_frequency": 1000,
+        "frequency_type": "scan",
+        "general": {
+          "notes": "",
+          "power_frequency": 50,
+          "save_on_internal_storage": false,
+          "use_hardware_sync": false
+        },
+        "id": "gis",
+        "interval_time": 0.1,
+        "max_equilibration_time": 3.0,
+        "max_frequency": 100000.0,
+        "measurement_triggers": {
+          "d0": false,
+          "d1": false,
+          "d2": false,
+          "d3": false
+        },
+        "min_frequency": 100.0,
+        "min_sampling_time": 0.25,
+        "multiplexer": {
+          "channels": [],
+          "combine_re_ce": false,
+          "common_re_ce": false,
+          "connect_se_we": false,
+          "mode": "none",
+          "unused_we": "float"
+        },
+        "n_frequencies": 13,
+        "post_measurement": {
+          "cell_on_after_measurement": true,
+          "standby_potential": -0.3,
+          "standby_time": 0.0
+        },
+        "potential_range": {
+          "max": "200mV",
+          "min": "50mV",
+          "start": "10mV"
+        },
+        "pretreatment": {
+          "conditioning_potential": 0.1,
+          "conditioning_time": 0.5,
+          "deposition_potential": 0.0,
+          "deposition_time": 0.0
+        },
+        "run_time": 10.0,
+        "scan_type": "fixed",
+        "step_current": 0.01
       }
     }
   },

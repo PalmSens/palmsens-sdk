@@ -82,6 +82,99 @@ def test_stripping_omits_hardware_sync() -> None:
     assert 'EnableHardwareSync' not in _params(make('scp'))
 
 
+@pytest.mark.parametrize('method_id', ['eis', 'gis'])
+def test_impedance_omits_hardware_sync(method_id: str) -> None:
+    # Neither impedance record carries a hardware-sync field, so the key is absent rather
+    # than false (unlike every technique that goes through `_add_general`).
+    assert 'EnableHardwareSync' not in _params(make(method_id))
+
+
+@pytest.mark.parametrize('method_id', ['eis', 'gis'])
+def test_impedance_emits_no_measure_or_scan_type_keys(method_id: str) -> None:
+    # The impedance mappers write no `Measure*`, iR, `EISScanType` or `EISFrequencyType`
+    # keys, even though pypalmsens exposes recording flags on both techniques.
+    params = _params(make(method_id))
+    assert not [key for key in params if key.startswith('Measure')]
+    assert 'UseIRCompensation' not in params
+    assert 'EISScanType' not in params
+    assert 'EISFrequencyType' not in params
+
+
+def test_eis_frequencies_per_decade_is_recomputed() -> None:
+    # `NumberOfFrequenciesPerDecade` is a computed property on the C# record rather than a
+    # legacy field: `(n - 1) / (log10(max) - log10(min))`, kept at seven significant digits
+    # because that is all the wire carries for a value nothing stores verbatim.
+    params = _params(make('eis', n_frequencies=21, max_frequency=1e4, min_frequency=10.0))
+    assert params['NumberOfFrequencies'] == 21
+    assert params['NumberOfFrequenciesPerDecade'] == 6.666667
+
+    with pytest.raises(NotImplementedError):
+        # An empty frequency range divides by zero; C# writes `NaN` there, which no parser
+        # can read back.
+        _ = _params(make('eis', max_frequency=1e3, min_frequency=1e3))
+
+
+def test_eis_dc_potential_versus_ocp() -> None:
+    # A fixed scan type offers only the 'potential' OCP flag, i.e. OCPmode bit 0.
+    params = _params(make('eis', versus_ocp={'potentials': ['potential'], 'timeout': 15.0}))
+    assert params['PotentialDirectCurrentOCP'] is True
+    assert params['EnableOcp'] is True
+    assert params['MaximumOCPTime'] == 15.0
+    assert params['OCPStabilityCriterion'] == 0.0
+
+
+def test_gis_is_galvanostatic_only() -> None:
+    params = _params(make('gis', applied_current_range='1mA', dc_current=0.2, ac_current=0.05))
+    assert params['AppliedCurrentRange'] == '0.001'
+    assert params['DCCurrent'] == 0.2
+    assert params['ACCurrent'] == 0.05
+    # The GIS record implements neither `IVsOcpParameters` nor a potentiostatic dc level.
+    assert 'EnableOcp' not in params
+    assert 'PotentialDirectCurrent' not in params
+
+
+@pytest.mark.parametrize(
+    'method_id,kinds',
+    [
+        ('eis', ('Current', 'Charge', 'Temperature')),
+        ('gis', ('Potential', 'Charge', 'Temperature')),
+    ],
+)
+def test_impedance_limits_are_flags_only(method_id: str, kinds: tuple[str, ...]) -> None:
+    # Both impedance mappers hardcode null limits, so only the `Use...` flags are written,
+    # and each technique flags only the kinds its own record declares.
+    params = _params(make(method_id))
+    for kind in kinds:
+        assert params[f'UseMinimum{kind}Limit'] is False
+        assert params[f'UseMaximum{kind}Limit'] is False
+        assert f'Minimum{kind}Limit' not in params
+        assert f'Maximum{kind}Limit' not in params
+    absent = 'Potential' if method_id == 'eis' else 'Current'
+    assert f'UseMinimum{absent}Limit' not in params
+
+
+@pytest.mark.parametrize('method_id', ['eis', 'gis'])
+def test_guard_scan_and_frequency_type(method_id: str) -> None:
+    # The domain model represents exactly one shape: a frequency scan at a fixed level. The
+    # legacy mapper returns null for the rest and C# then throws, so there is nothing to copy.
+    with pytest.raises(NotImplementedError):
+        _ = _params(make(method_id, scan_type='time', run_time=1.0))
+    with pytest.raises(NotImplementedError):
+        _ = _params(make(method_id, frequency_type='fixed'))
+
+
+@pytest.mark.parametrize('method_id', ['eis', 'gis'])
+def test_guard_multiplexer(method_id: str) -> None:
+    with pytest.raises(NotImplementedError):
+        _ = _params(make(method_id, multiplexer={'mode': 'consecutive', 'channels': [1]}))
+
+
+def test_guard_eis_material() -> None:
+    # Material only feeds the corrosion-rate analysis, so it never reaches the wire.
+    with pytest.raises(NotImplementedError):
+        _ = _params(make('eis', material={'surface_area': 1.5}))
+
+
 def test_level_count_is_written_bare() -> None:
     payload = to_payload(make('ma', levels=[{'level': 0.5, 'duration': 0.1}]))
     params = cast('dict[str, str]', payload['MethodParameters'])

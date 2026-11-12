@@ -89,6 +89,46 @@ def test_level_count_is_written_bare() -> None:
     assert params['Levels/0/Level/Potential'] == '[0.5]'
 
 
+def test_potential_range_snaps_to_supported_ranges() -> None:
+    # The legacy ranging only supports 1mV/10mV/100mV/1V, snaps the other literals up, and
+    # clamps the start range into the snapped window.
+    params = _params(
+        make('pot', potential_range={'min': '20mV', 'max': '500mV', 'start': '10mV'})
+    )
+    assert params['MinimumPotentialRange'] == '0.100'
+    assert params['MaximumPotentialRange'] == '1'
+    assert params['StartingPotentialRange'] == '0.100'
+
+    params = _params(make('mp', potential_range={'min': '10mV', 'max': '100mV', 'start': '1V'}))
+    assert params['StartingPotentialRange'] == '0.100'
+
+    params = _params(make('ocp', potential_range={'min': '1mV', 'max': '1V', 'start': '200mV'}))
+    assert params['StartingPotentialRange'] == '1'
+
+
+def test_multistep_potentiometry_levels_apply_current() -> None:
+    # MP levels carry an applied current with potential limits; MA carries a potential with
+    # current limits. MP also writes neither iR nor charge keys.
+    params = _params(
+        make(
+            'mp',
+            levels=[{'level': 0.5, 'duration': 0.1, 'limit_potential_max': 1.0}],
+            record_auxiliary_input=True,
+            record_we_current=True,
+        )
+    )
+    assert params['Levels/0/Level/AppliedCurrent'] == 0.5
+    assert params['Levels/0/Level/UseMaximumPotentialLimit'] is True
+    assert params['Levels/0/Level/MaximumPotentialLimit'] == 1.0
+    assert 'Levels/0/Level/MinimumPotentialLimit' not in params
+    assert params['SelectLimitPerLevel'] is True
+    assert params['AppliedCurrentRange'] == '0.000001'
+    assert params['MeasureAuxiliaryInput'] is True
+    assert params['MeasureWECurrent'] is True
+    assert 'UseIRCompensation' not in params
+    assert 'Levels/0/Level/Potential' not in params
+
+
 def test_methodscript_sends_the_legacy_script() -> None:
     # C# stores the legacy MethodScript text, so the `e` header and trailing newline that
     # `MethodScript._export` adds must survive into the JSON-escaped value.

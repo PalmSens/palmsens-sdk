@@ -26,6 +26,7 @@ from ..._methods.techniques import (
     MethodScript,
     MultiplePulseAmperometry,
     MultiStepAmperometry,
+    MultiStepPotentiometry,
     NormalPulseVoltammetry,
     OpenCircuitPotentiometry,
     PulsedAmperometricDetection,
@@ -58,6 +59,7 @@ ID_TO_TECHNIQUE: dict[str, TechniqueId] = {
     'mpad': TechniqueId.MultiplePulseAmperometry,
     'cc': TechniqueId.Chronocoulometry,
     'ma': TechniqueId.MultiStepAmperometry,
+    'mp': TechniqueId.MultiStepPotentiometry,
     'ms': TechniqueId.MethodScriptSandbox,
 }
 
@@ -109,10 +111,39 @@ def _add_current_range(p: ParamDict, rng: CurrentRange) -> None:
     p['StartingCurrentRange'] = _wire_range(rng.start)
 
 
+_SUPPORTED_POTENTIAL_RANGES: tuple[AllowedPotentialRanges, ...] = ('1mV', '10mV', '100mV', '1V')
+"""The potential ranges the legacy `RangingPotential` supports; `AllowedPotentialRanges` offers more.
+
+Measured against the built DLL: any other literal snaps **up** to the next supported range, and
+the start range is additionally clamped into the snapped min/max window.
+"""
+
+
+def _snap_potential_range(value: AllowedPotentialRanges) -> AllowedPotentialRanges:
+    """Snap a potential range up to the smallest one the legacy ranging supports."""
+    volts = float(_wire_range(value))
+    for supported in _SUPPORTED_POTENTIAL_RANGES:
+        if volts <= float(_wire_range(supported)):
+            return supported
+    return _SUPPORTED_POTENTIAL_RANGES[-1]
+
+
 def _add_potential_range(p: ParamDict, rng: PotentialRange) -> None:
-    p['MinimumPotentialRange'] = _wire_range(rng.min)
-    p['MaximumPotentialRange'] = _wire_range(rng.max)
-    p['StartingPotentialRange'] = _wire_range(rng.start)
+    minimum = _snap_potential_range(rng.min)
+    maximum = _snap_potential_range(rng.max)
+    start = _snap_potential_range(rng.start)
+    # The legacy getter clamps the start range into the window, and the minimum wins when the
+    # window is inverted (min > max).
+    clamped = max(
+        float(_wire_range(minimum)), min(float(_wire_range(start)), float(_wire_range(maximum)))
+    )
+    p['MinimumPotentialRange'] = _wire_range(minimum)
+    p['MaximumPotentialRange'] = _wire_range(maximum)
+    p['StartingPotentialRange'] = next(
+        _wire_range(supported)
+        for supported in _SUPPORTED_POTENTIAL_RANGES
+        if float(_wire_range(supported)) == clamped
+    )
 
 
 def _add_pretreatment(p: ParamDict, pre: Pretreatment) -> None:
@@ -870,6 +901,44 @@ def _build_multistepamperometry(method: MethodTypeCompatible) -> ParamDict:
     return p
 
 
+def _build_multistepotentiometry(method: MethodTypeCompatible) -> ParamDict:
+    """Mirror the multistep amperometry shape, but with applied current per level.
+
+    The C# multistep potentiometry mapper writes `Level/AppliedCurrent` plus potential limits
+    instead of `Level/Potential` plus current limits, adds an applied current range and the
+    three potential ranges, and has no equilibration time, iR compensation or cell/WE-potential
+    keys at all.
+    """
+    m = cast(MultiStepPotentiometry, method)
+    default = MultiStepPotentiometry()
+
+    _require_default('multiplexer', m.multiplexer, default.multiplexer)
+    _require_default('data_processing', m.data_processing, default.data_processing)
+
+    p: ParamDict = {}
+    _add_current_range(p, m.current_range)
+    _add_potential_range(p, m.potential_range)
+    _add_pretreatment(p, m.pretreatment)
+
+    p['AppliedCurrentRange'] = _wire_range(m.applied_current_range)
+    p['IntervalTime'] = m.interval_time
+    p['NumberOfCycles'] = m.n_cycles
+    _add_levels(p, m.levels, amperometric=False)
+
+    _add_limits(p, 'Potential', m.potential_limits.min, m.potential_limits.max)
+    # Same aggregation as `MultiStepPotentiometry._export`, which sets the legacy flags.
+    p['SelectLimitPerLevel'] = any(level.use_limits for level in m.levels)
+    p['SelectRecordPerLevel'] = any(level.record for level in m.levels)
+    _add_post_measurement(p, m.post_measurement)
+
+    p['MeasureAuxiliaryInput'] = m.record_auxiliary_input
+    p['MeasureWECurrent'] = m.record_we_current
+
+    p['EnableDropDetection'] = False
+    _add_general(p, m.general)
+    return p
+
+
 def _build_methodscript(method: MethodTypeCompatible) -> ParamDict:
     """Emit the MethodSCRIPT text, which is the only parameter C# carries.
 
@@ -900,6 +969,7 @@ _BUILDERS: dict[str, Callable[[MethodTypeCompatible], ParamDict]] = {
     'mpad': _build_multiplepulseamperometry,
     'cc': _build_chronocoulometry,
     'ma': _build_multistepamperometry,
+    'mp': _build_multistepotentiometry,
     'ms': _build_methodscript,
 }
 

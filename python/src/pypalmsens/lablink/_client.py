@@ -80,8 +80,6 @@ class HttpClient:
                 response=response,
             )
 
-        response.raise_for_status()
-
         if 'exceptionMessage' in data:
             raise build_error(data)
         elif isinstance(data, dict) and all(

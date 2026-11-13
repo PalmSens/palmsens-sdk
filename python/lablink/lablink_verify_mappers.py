@@ -6,6 +6,8 @@ python lablink_verify_mappers.py
 export LABLINK_SDK=/home/stef/code/palmsens-sdk-dotnet/PalmSens.Sdk.Lablink/PalmSens.Sdk.Lablink/bin/Debug/net10.0/
 python lablink_verify_mappers.py
 
+export-env { $env.LABLINK_SDK = 'C:\\Users\\stef\\code\\palmsenssdkdotnet\\PalmSens.Sdk.Lablink\\PalmSens.Sdk.Lablink\\bin\\Debug\\net10.0' }
+
 """
 
 from __future__ import annotations

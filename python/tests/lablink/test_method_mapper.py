@@ -30,7 +30,6 @@ def has_field(method_id: str, field: str) -> bool:
     return field in model_class(method_id).model_fields
 
 
-# MethodScript is just a script: it has no `general` or `data_processing` to guard.
 WITH_GENERAL = [method_id for method_id in IMPLEMENTED if has_field(method_id, 'general')]
 WITH_DATA_PROCESSING = [
     method_id for method_id in IMPLEMENTED if has_field(method_id, 'data_processing')
@@ -56,13 +55,11 @@ def test_to_payload_shape(method_id: str) -> None:
     assert payload['Technique'] == ID_TO_TECHNIQUE[method_id].value
     params = cast('dict[str, str]', payload['MethodParameters'])
     assert all(isinstance(value, str) for value in params.values())
-    # Group counts are the only values C# writes bare; everything else is a JSON array.
     assert all(
         isinstance(json.loads(value), int if key in {'Levels', 'Stages', 'Curves'} else list)
         for key, value in params.items()
     )
 
-    # `Name` is stamped from ID_TO_TECHNIQUE and matches the Technique field.
     assert json.loads(params['Name']) == [ID_TO_TECHNIQUE[method_id].value]
 
 
@@ -81,7 +78,6 @@ def test_potential_range_conversion() -> None:
 
 
 def test_fastamperometry_fixes_one_range() -> None:
-    # Fast amperometry cannot auto-range, so one literal fills min, maximum and start.
     params = _params(make('fam', current_range='100nA'))
     assert params['MinimumCurrentRange'] == '0.000000100'
     assert params['MaximumCurrentRange'] == '0.000000100'
@@ -89,21 +85,16 @@ def test_fastamperometry_fixes_one_range() -> None:
 
 
 def test_stripping_omits_hardware_sync() -> None:
-    # The C# stripping mapper leaves `EnableHardwareSync` out instead of writing false.
     assert 'EnableHardwareSync' not in _params(make('scp'))
 
 
 @pytest.mark.parametrize('method_id', ['eis', 'gis'])
 def test_impedance_omits_hardware_sync(method_id: str) -> None:
-    # Neither impedance record carries a hardware-sync field, so the key is absent rather
-    # than false (unlike every technique that goes through `_add_general`).
     assert 'EnableHardwareSync' not in _params(make(method_id))
 
 
 @pytest.mark.parametrize('method_id', ['eis', 'gis'])
 def test_impedance_emits_no_measure_or_scan_type_keys(method_id: str) -> None:
-    # The impedance mappers write no `Measure*`, iR, `EISScanType` or `EISFrequencyType`
-    # keys, even though pypalmsens exposes recording flags on both techniques.
     params = _params(make(method_id))
     assert not [key for key in params if key.startswith('Measure')]
     assert 'UseIRCompensation' not in params
@@ -112,16 +103,11 @@ def test_impedance_emits_no_measure_or_scan_type_keys(method_id: str) -> None:
 
 
 def test_eis_frequencies_per_decade_is_recomputed() -> None:
-    # `NumberOfFrequenciesPerDecade` is a computed property on the C# record rather than a
-    # legacy field: `(n - 1) / (log10(max) - log10(min))`, kept at seven significant digits
-    # because that is all the wire carries for a value nothing stores verbatim.
     params = _params(make('eis', n_frequencies=21, max_frequency=1e4, min_frequency=10.0))
     assert params['NumberOfFrequencies'] == 21
     assert params['NumberOfFrequenciesPerDecade'] == 6.666667
 
-    with pytest.raises(NotImplementedError):
-        # An empty frequency range divides by zero; C# writes `NaN` there, which no parser
-        # can read back.
+    with pytest.raises(ValueError):
         _ = _params(make('eis', max_frequency=1e3, min_frequency=1e3))
 
 
@@ -194,8 +180,6 @@ def test_level_count_is_written_bare() -> None:
 
 
 def test_potential_range_snaps_to_supported_ranges() -> None:
-    # The legacy ranging only supports 1mV/10mV/100mV/1V, snaps the other literals up, and
-    # clamps the start range into the snapped window.
     params = _params(
         make('pot', potential_range={'min': '20mV', 'max': '500mV', 'start': '10mV'})
     )
@@ -211,8 +195,6 @@ def test_potential_range_snaps_to_supported_ranges() -> None:
 
 
 def test_multistep_potentiometry_levels_apply_current() -> None:
-    # MP levels carry an applied current with potential limits; MA carries a potential with
-    # current limits. MP also writes neither iR nor charge keys.
     params = _params(
         make(
             'mp',
@@ -250,7 +232,6 @@ def test_stage_count_is_written_bare() -> None:
 
 
 def test_stage_keys_nest_under_the_group_name() -> None:
-    # Each stage type is nested under its own `GroupId` name, not under the pypalmsens id.
     params = _params(
         make(
             'mm',
@@ -276,9 +257,6 @@ def test_stage_keys_nest_under_the_group_name() -> None:
 
 
 def test_stage_versus_previous_flags_are_always_false() -> None:
-    # pypalmsens has no setting that feeds the legacy `VsEiPropertiesList`, yet the stage
-    # mapper writes every `…VersusPrevious` flag unconditionally, so the default is what C#
-    # stores (measured against the DLL).
     params = _params(
         make(
             'mm',
@@ -301,7 +279,6 @@ def test_stage_versus_previous_flags_are_always_false() -> None:
 
 
 def test_stage_limits_nest_and_follow_the_stage_kind() -> None:
-    # A stage writes only the limit kinds its record declares, nested like the level limits.
     params = _params(
         make(
             'mm',
@@ -322,8 +299,6 @@ def test_stage_limits_nest_and_follow_the_stage_kind() -> None:
 
 
 def test_mixed_mode_potential_ranges_are_the_legacy_defaults() -> None:
-    # MixedMode offers no `potential_range` setting, but the domain record requires the
-    # triple, so C# stores the `RangingPotential` defaults the legacy object was built with.
     assert not has_field('mm', 'potential_range')
     params = _params(make('mm'))
     assert params['MinimumPotentialRange'] == '0.001'
@@ -332,8 +307,6 @@ def test_mixed_mode_potential_ranges_are_the_legacy_defaults() -> None:
 
 
 def test_guard_mixed_mode_impedance_stage() -> None:
-    # The C# stage mapper throws `Unknown stage type: MixedModeStageEIS`, so no reference
-    # output exists for a method containing an impedance stage (PLAN.md §6).
     with pytest.raises(NotImplementedError):
         _ = _params(
             make(
@@ -352,8 +325,6 @@ def test_guard_mixed_mode_impedance_stage() -> None:
 
 
 def test_methodscript_sends_the_legacy_script() -> None:
-    # C# stores the legacy MethodScript text, so the `e` header and trailing newline that
-    # `MethodScript._export` adds must survive into the JSON-escaped value.
     payload = to_payload(make('ms', script='cell_on\n'))
     params = cast('dict[str, str]', payload['MethodParameters'])
     assert params['Script'] == '["e\\ncell_on\\n\\n"]'
@@ -362,8 +333,6 @@ def test_methodscript_sends_the_legacy_script() -> None:
 
 
 def test_wire_number_formatting() -> None:
-    # C# formats doubles with `G7`: integral values print without a decimal point,
-    # and magnitudes below 1e-4 fall back to E notation.
     payload = to_payload(make('ad', run_time=1.0, interval_time=1e-5, potential=1.2345678))
     params = cast('dict[str, str]', payload['MethodParameters'])
     assert params['RunTime'] == '[1]'
@@ -381,7 +350,6 @@ def test_guard_enable_bipot_current(method_id: str) -> None:
 
 @pytest.mark.parametrize('method_id', ['swv', 'dpv', 'npv'])
 def test_guard_record_auxiliary_input(method_id: str) -> None:
-    # SWV/DPV/NPV emit no aux/cell/WE keys, so a set flag must raise.
     with pytest.raises(NotImplementedError):
         _ = _params(make(method_id, record_auxiliary_input=True))
 

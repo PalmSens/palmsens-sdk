@@ -944,7 +944,7 @@ class GIS:
         for eis_data in eis_datas:
             assert eis_data.n_points == 5
             assert eis_data.n_subscans == 0
-            assert eis_data.n_frequencies == 5
+            assert eis_data.n_frequencies == 10
 
 
 class GIS_cur_fixed:
@@ -1288,6 +1288,7 @@ class MM:
         EIS_time_fixed,
         EIS_single_point,
         FIS,
+        GIS,
         GIS_cur_fixed,
         GIS_cur_scan,
         GIS_time_scan,

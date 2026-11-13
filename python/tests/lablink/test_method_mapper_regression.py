@@ -1,9 +1,9 @@
 """Regression: the DLL-free mapper must reproduce the DLL-produced mapping.
 
-The baseline in ``data/lablink_expected_mapping.json`` is generated from the C#
-``TechniqueParametersMappers`` (see ``lablink/gen_expected_mapping.py``) and
+The baseline in `data/lablink_expected_mapping.json` is generated from the C#
+`TechniqueParametersMappers` (see `lablink/gen_expected_mapping.py`) and
 committed, so this test needs no DLL: it rebuilds each method from the stored
-``spec`` and diffs ``_to_parameters`` output against the ``expected`` mapping.
+`spec` and diffs `_to_parameters` output against the `expected` mapping.
 Re-run the generator after any C# model change to refresh the baseline.
 """
 
@@ -25,15 +25,12 @@ from pypalmsens.lablink.models._method_mapper import (
 FIXTURE = Path(__file__).parent / 'data' / 'lablink_expected_mapping.json'
 _DATA = json.loads(FIXTURE.read_text())
 
-# Only techniques that have both a committed baseline and a current builder.
 _BUILT = sorted(set(_DATA) & set(_BUILDERS))
 
 
 def _norm(value: object) -> object:
-    """Normalise numeric leaves so C# ``0`` and Python ``0.0`` compare equal."""
+    """Normalise numeric leaves so C# `0` and Python `0.0` compare equal."""
     if isinstance(value, (_RawWireValue, _GroupValue)):
-        # Ranges (`0.000100`) and bare group counts (`2`) are pre-formatted wire text,
-        # holding the same numbers the baseline stores.
         return float(value)
     if isinstance(value, bool):
         return value
@@ -54,16 +51,14 @@ def test_matches_dll_mapping(method_id: str, variant: str) -> None:
     import deepdiff
 
     entry = _DATA[method_id][variant]
-    method = BaseTechnique._registry[method_id].model_validate(entry['spec'])
+    method = BaseTechnique._registry[method_id].model_validate(entry['spec'])  # type:ignore
 
     try:
         ours = dict(_to_parameters(method))
     except NotImplementedError as exc:
-        # The baseline spec sets settings the port refuses rather than dropping silently
-        # (fam writes no limit or iR keys, for example); the guards themselves are covered
-        # by test_method_mapper.py.
         pytest.skip(f'{method_id}/{variant} is guarded: {exc}')
     ours.pop('Name', None)
 
     result = deepdiff.DeepDiff(_norm(entry['expected']), _norm(ours), ignore_order=True)
+
     assert not result, f'{method_id}/{variant}: {result}'

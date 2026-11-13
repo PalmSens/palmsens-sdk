@@ -306,10 +306,9 @@ class InstrumentClaim(InstrumentReadsMixin):
     async def configure(
         self,
         mains_frequency: Literal['auto', 50, 60] | None = None,
-        signal_train: Literal['Undefined', 'LowSpeed', 'HighSpeed', 'MaximumRange']
-        | None = None,
+        signal_train: Literal['lowspeed', 'highspeed', 'maximumrange'] | None = None,
         hardware_sync_allowed: bool | None = None,
-        multichannel_role: Literal['Undefined', 'Standalone', 'Master', 'Slave'] | None = None,
+        multichannel_role: Literal['standalone', 'primary', 'secondary'] | None = None,
     ) -> None:
         """Configure this instrument.
 
@@ -322,11 +321,11 @@ class InstrumentClaim(InstrumentReadsMixin):
             The mains frequency of the power grid couples into the measured current.
             The instrument filters sampling at that frequency.
         signal_train : str or None, optional
-            Speed of the analog input train (e.g. 'LowSpeed', 'HighSpeed').
+            Speed of the analog input train (e.g. 'lowSpeed', 'highSpeed').
         hardware_sync_allowed : bool or None, optional
             Whether to use hardware synchronization.
         multichannel_role : str or None, optional
-            Role for multi-channel mode ('Standalone', 'Master', 'Slave').
+            Role for multi-channel mode ('standalone', 'primary', 'secondary').
         """
         if mains_frequency == 50:
             _mains_freq = 'Hz50'
@@ -337,12 +336,26 @@ class InstrumentClaim(InstrumentReadsMixin):
         else:
             _mains_freq = None
 
+        if multichannel_role == 'primary':
+            _role = 'Master'
+        elif multichannel_role == 'secondary':
+            _role = 'Slave'
+        elif multichannel_role == 'standalone':
+            _role = 'Standalone'
+        else:
+            _role = None
+
+        if signal_train:
+            _signal_train = signal_train.capitalize()
+        else:
+            _signal_train = None
+
         config = ConfigureInstrumentsProperties.model_validate(
             {
                 'MainsFrequency': _mains_freq,
                 'SignalTrain': signal_train,
                 'HardwareSyncAllowed': hardware_sync_allowed,
-                'MultiChannelRole': multichannel_role,
+                'MultiChannelRole': _role,
             }
         )
         # TODO: How does the endpoint handle null?

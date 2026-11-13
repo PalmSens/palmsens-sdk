@@ -54,12 +54,12 @@ class Measurement:
 
         Raises
         ------
-        RuntimeError
+        ConnectionError
             If no session is attached. Reattach via
             `session.get_measurement(ref)` before calling.
         """
         if self._session is None:
-            raise RuntimeError(
+            raise ConnectionError(
                 f'This {type(self).__name__} is detached. Reattach it via '
                 'ref = session.get_measurement(ref) before fetching data.'
             )
@@ -78,11 +78,11 @@ class Measurement:
 
         Raises
         ------
-        RuntimeError
+        ConnectionError
             If this reference is detached from a session.
         """
         if self._session is None:
-            raise RuntimeError(
+            raise ConnectionError(
                 f'This {type(self).__name__} is detached. Reattach it via '
                 'ref = session.get_measurement(ref) before fetching data.'
             )
@@ -94,11 +94,11 @@ class Measurement:
 
         Raises
         ------
-        RuntimeError
+        ConnectionError
             If this reference is detached from a session.
         """
         if self._session is None:
-            raise RuntimeError(
+            raise ConnectionError(
                 f'This {type(self).__name__} is detached. Reattach it via '
                 '`ref = session.get_measurement(ref)` before fetching data.'
             )

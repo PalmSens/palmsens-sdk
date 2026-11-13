@@ -238,12 +238,12 @@ class CapabilitiesInterface(BaseModel):
 
     @computed_field
     @property
-    def is_hw_sync_master(self) -> bool:
+    def is_hw_sync_primary(self) -> bool:
         return self.comm.Capabilities.IsHardwareSynchronizationMaster
 
     @computed_field
     @property
-    def is_hw_sync_slave(self) -> bool:
+    def is_hw_sync_secondary(self) -> bool:
         return self.comm.Capabilities.IsSlaveChannel
 
     @computed_field
@@ -445,11 +445,11 @@ class Capabilities(BaseModel):
     is_galvanostat: bool
     """True if the potentiastat can act as a galvanostat."""
 
-    is_hw_sync_master: bool
-    """Gets or sets a value indicating whether this instance is designated as the hardware synchronization master in MultiTrace."""
+    is_hw_sync_primary: bool
+    """Gets or sets a value indicating whether this instance is designated as the hardware synchronization primary channel in MultiTrace."""
 
-    is_hw_sync_slave: bool
-    """Gets or sets a value indicating whether this instance is slave channel in a multichannel device."""
+    is_hw_sync_secondary: bool
+    """Gets or sets a value indicating whether this instance is a secondary channel in a multichannel device."""
 
     max_current: float
     """Maximum current (* current range) that can be read/applied"""

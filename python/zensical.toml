@@ -74,6 +74,7 @@ nav = [
   { "Lablink" = [{ "Lablink" = [
       "lablink/index.md",
       "lablink/concept.md",
+      "lablink/status.md",
     ]},
     { "Reference" = [
       "lablink/reference/index.md",

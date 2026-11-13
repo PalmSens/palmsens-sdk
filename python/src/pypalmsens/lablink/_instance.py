@@ -1,6 +1,6 @@
 """Submodule for discovering and connecting to Lablink instances.
 
-Use [discover][] to find Lablink instances on the network.
+Use [discover][pypalmsens.lablink.discover] to find Lablink instances on the network.
 [Instance][] is a discovered instance with basic metadata. Use
 [login][] to start an authenticated session.
 """
@@ -60,7 +60,7 @@ class Instance:
 
     async def get_info(self) -> LablinkInfo:
         """
-        Fetch fresh metadata from the lablink server.
+        Fetch instance metadata from the lablink server.
 
         Returns
         -------

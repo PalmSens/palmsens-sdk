@@ -8,13 +8,25 @@ instrument. The claim is released when the context exits.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, Protocol, Self, runtime_checkable
+import asyncio
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Literal,
+    Protocol,
+    Self,
+    overload,
+    override,
+    runtime_checkable,
+)
 
-from PalmSens.Sdk.Lablink.Example.Lablink.Mappers import MethodMappers
+from pandas.io.formats.style_render import Sequence
 
 from .._converters import cr_string_to_sig_exp, pr_string_to_sig_exp
 from .._types import AllowedCurrentRanges, AllowedPotentialRanges, MethodTypeCompatible
 from ._measurement import Measurement, MeasurementJob
+from .models._method_mapper import to_payload
 from .models._wire import (
     CellMode,
     CellState,
@@ -50,22 +62,33 @@ class InstrumentReadsMixin:
     async def get_info(self) -> dict[str, Any]:
         """Get info for instrument.
 
-        Returns a dictionary of the most recent instrument info.
-        The data may be stale or empty if no measurement has been run.
+        Returns
+        -------
+        info : dict[str, Any]
+            Dictionary with instrument info.
         """
         info = await self._session.get_instrument_info()
         return info[self._serial]
 
     async def get_signalr_url(self) -> str:
-        """Return the signal rate URL for this instrument."""
+        """Return the signal rate URL for this instrument.
+
+        Returns
+        -------
+        url : str
+            Generated signalr url for this instrument.
+        """
         response = await self._session._http.get(f'/Instrument/{self._serial}/GetSignalRUrl')
         data = response.json()
         return data['result']
 
     async def get_configuration(self) -> dict[str, Any]:
-        """Fetch the current configuration for this instrument.
+        """Get the current configuration for this instrument.
 
-        Returns a dictionary of configured settings.
+        Returns
+        -------
+        dict[str, Any]
+            Dictionary with current configuration.
         """
         response = await self._session._http.get(f'/Instrument/{self._serial}/Configuration')
         data = response.json()
@@ -74,14 +97,28 @@ class InstrumentReadsMixin:
     async def get_capabilities(self) -> dict[str, Any]:
         """Fetch the capabilities of this instrument.
 
-        Returns a dictionary of supported features.
+        Returns
+        -------
+        dict[str, Any]
+            Dictionary with supported features.
         """
         response = await self._session._http.get(f'/Instrument/{self._serial}/Capabilities')
         data = response.json()
         return data['result']
 
     async def get_active_measurement(self) -> Measurement:
-        """Return the active measurement, if any."""
+        """Return the active measurement, if any.
+
+        Returns
+        -------
+        measurement : Measurement
+            Reference to the active measurement
+
+        Raises
+        ------
+        NoActiveMeasurementError
+            If there is no active measurement.
+        """
         response = await self._session._http.get(
             f'/Instrument/{self._serial}/CurrentMeasurement'
         )
@@ -92,7 +129,10 @@ class InstrumentReadsMixin:
     async def get_state(self) -> dict[str, Any]:
         """Fetch the current state of this instrument.
 
-        Returns a dictionary describing the device state.
+        Returns
+        -------
+        dict[str, Any]
+            dictionary describing the current device state.
         """
         response = await self._session._http.get(f'/Instrument/{self._serial}/State')
         data = response.json()
@@ -134,6 +174,11 @@ class Instrument(InstrumentReadsMixin):
         ----------
         auto_release: bool, optional
             If True, the server releases the claim after measurement ends.
+
+        Returns
+        -------
+        claim : InstrumentClaim
+            Claimed instrument
         """
         method = 'Claim' if auto_release else 'ManualClaim'
         await self._session._http.post(f'/Instrument/{self._serial}/{method}')
@@ -142,7 +187,9 @@ class Instrument(InstrumentReadsMixin):
 
 class InstrumentClaim(InstrumentReadsMixin):
     """
-    A context manager for claiming an instrument.
+    A reference to a claimed instrument.
+
+    Can also be used as a context manager for a claiming an instrument.
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_serial', '_session')
@@ -175,26 +222,24 @@ class InstrumentClaim(InstrumentReadsMixin):
         """Release the instrument claim."""
         await self._session._http.post(f'/Instrument/{self._serial}/Unclaim')
 
-    async def set_cell_mode(
-        self, mode: Literal['unknown', 'potentiostatic', 'galvanostatic']
-    ) -> None:
-        """Sets the cell mode.
+    async def set_cell_mode(self, mode: Literal['potentiostatic', 'galvanostatic']) -> None:
+        """Set active measurement mode of the instrument.
 
         Parameters
         ----------
         mode : str
-            The desired cell mode.
+            One of 'potentiostatic' or 'galvanostatic'.
         """
         payload = CellMode[mode.capitalize()].value
         await self._session._http.post(f'/Instrument/{self._serial}/SetCellMode', json=payload)
 
-    async def set_cell_state(self, state: Literal['unknown', 'off', 'on']) -> None:
+    async def set_cell_state(self, state: Literal['off', 'on']) -> None:
         """Sets the cell state.
 
         Parameters
         ----------
         state : str
-            The desired cell state.
+            Set the cell 'on' or 'off'
         """
         payload = CellState[state.capitalize()].value
         await self._session._http.post(f'/Instrument/{self._serial}/SetCellState', json=payload)
@@ -206,13 +251,13 @@ class InstrumentClaim(InstrumentReadsMixin):
         ----------
         method : MethodTypeCompatible
             The measurement technique and parameters to run.
-        """
-        dto = MethodMappers.ToDto(method._to_psmethod())
 
-        payload = {
-            'Technique': dto.Technique,
-            'MethodParameters': dict(dto.Parameters),
-        }
+        Returns
+        -------
+        job : MeasurementJob
+            Reference to the measurement job
+        """
+        payload = to_payload(method)
 
         response = await self._session._http.post(
             f'/Instrument/{self._serial}/StartMeasurement', json=payload
@@ -254,37 +299,63 @@ class InstrumentClaim(InstrumentReadsMixin):
         Parameters
         ----------
         name : str
-            The name to show on the device screen.
+            Custom name to assign to the instrument
         """
         await self._session._http.post(f'/Instrument/{self._serial}/SetCustomName', json=name)
 
     async def configure(
         self,
-        mains_frequency: Literal['Undefined', 'Hz50', 'Hz60', 'DontCare'] | None = None,
-        signal_train: Literal['Undefined', 'LowSpeed', 'HighSpeed', 'MaximumRange']
-        | None = None,
+        mains_frequency: Literal['auto', 50, 60] | None = None,
+        signal_train: Literal['lowspeed', 'highspeed', 'maximumrange'] | None = None,
         hardware_sync_allowed: bool | None = None,
-        multichannel_role: Literal['Undefined', 'Standalone', 'Master', 'Slave'] | None = None,
+        multichannel_role: Literal['standalone', 'primary', 'secondary'] | None = None,
     ) -> None:
-        """Apply configuration settings to this instrument.
+        """Configure this instrument.
 
         Parameters
         ----------
-        mains_frequency : str or None, optional
-            Mains frequency in Hz (e.g. '50' or '60'). Use 'Undefined' for auto.
+        mains_frequency : int or None, optional
+            Set the DC mains frequency in to 50 or 60 Hz, depending on your region.
+            Use 'auto' for automatic determination of the mains frequency.
+
+            The mains frequency of the power grid couples into the measured current.
+            The instrument filters sampling at that frequency.
         signal_train : str or None, optional
-            Speed of the analog input train (e.g. 'LowSpeed', 'HighSpeed').
+            Speed of the analog input train (e.g. 'lowSpeed', 'highSpeed').
         hardware_sync_allowed : bool or None, optional
             Whether to use hardware synchronization.
         multichannel_role : str or None, optional
-            Role for multi-channel mode ('Standalone', 'Master', 'Slave').
+            Role for multi-channel mode ('standalone', 'primary', 'secondary').
         """
+        if mains_frequency == 50:
+            _mains_freq = 'Hz50'
+        elif mains_frequency == 60:
+            _mains_freq = 'Hz60'
+        elif mains_frequency == 'auto':
+            _mains_freq = 'Undefined'
+        else:
+            _mains_freq = None
+
+        if multichannel_role == 'primary':
+            _role = 'Master'
+        elif multichannel_role == 'secondary':
+            _role = 'Slave'
+        elif multichannel_role == 'standalone':
+            _role = 'Standalone'
+        else:
+            _role = None
+
+        if signal_train:
+            _signal_train = signal_train.capitalize()
+        else:
+            _signal_train = None
+
         config = ConfigureInstrumentsProperties.model_validate(
             {
-                'MainsFrequency': mains_frequency,
+                'MainsFrequency': _mains_freq,
                 'SignalTrain': signal_train,
                 'HardwareSyncAllowed': hardware_sync_allowed,
-                'MultiChannelRole': multichannel_role,
+                'MultiChannelRole': _role,
             }
         )
         # TODO: How does the endpoint handle null?
@@ -312,7 +383,7 @@ class InstrumentClaim(InstrumentReadsMixin):
         Parameters
         ----------
         current_range : AllowedCurrentRanges
-            The desired range as a string (e.g. '1 mA'). See [pypalmsens.types.AllowedCurrentRanges][] for options.
+            The desired range as a string (e.g. '1 mA').
         """
         # TODO: investigate intention behind MeasuringRange
         sig, exp = cr_string_to_sig_exp(current_range)
@@ -329,7 +400,7 @@ class InstrumentClaim(InstrumentReadsMixin):
         Parameters
         ----------
         potential_range : AllowedPotentialRanges
-            The desired range as a string (e.g. '100 mV'). See [pypalmsens.types.AllowedPotentialRanges][] for options.
+            The desired range as a string (e.g. '100 mV').
         """
         # TODO: investigate intention behind MeasuringRange
         sig, exp = pr_string_to_sig_exp(potential_range)
@@ -367,7 +438,7 @@ class InstrumentClaim(InstrumentReadsMixin):
         )
 
     async def set_bipot_enabled(self, state: bool) -> None:
-        """Enable or disable the bipotentiostat (the second working electrode).
+        """Enable or disable the second working electrode (bipot, WE2).
 
         Parameters
         ----------
@@ -377,7 +448,7 @@ class InstrumentClaim(InstrumentReadsMixin):
         await self._session._http.post(f'/Instrument/{self._serial}/SetBiPotState', json=state)
 
     async def set_bipot_current_range(self, current_range: AllowedCurrentRanges) -> None:
-        """Set the current range of the second working electrode (WE2).
+        """Set the current range of the second working electrode (bipot, WE2).
 
         Parameters
         ----------
@@ -427,3 +498,49 @@ class InstrumentClaim(InstrumentReadsMixin):
             f'/Instrument/{self._serial}/SetBiPotPotential',
             json=payload,
         )
+
+
+class InstrumentClaimBatch(Sequence[InstrumentClaim]):
+    """
+    A batch of claimed instruments.
+
+    Use as an async context manager. All claims are released when the
+    context exits.
+
+    Parameters
+    ----------
+    claims : list of InstrumentClaim
+        The list of instrument claims to manage.
+    """
+
+    def __init__(self, claims: list[InstrumentClaim]):
+        self.claims: list[InstrumentClaim] = claims
+
+    @override
+    def __repr__(self):
+        return f'{type(self).__name__}({self.claims})'
+
+    @overload
+    def __getitem__(self, index: int) -> InstrumentClaim: ...
+
+    @overload
+    def __getitem__(self, index: slice) -> list[InstrumentClaim]: ...
+
+    @override
+    def __getitem__(self, index) -> InstrumentClaim | list[InstrumentClaim]:
+        return self.claims[index]
+
+    @override
+    def __len__(self):
+        return len(self.claims)
+
+    async def __aenter__(self) -> list[InstrumentClaim]:
+        return self.claims
+
+    async def __aexit__(self, *exc_info) -> None:
+        await self.release()
+
+    async def release(self) -> None:
+        """Release all instrument claims in this batch."""
+        tasks = [claim.release() for claim in self.claims]
+        _ = await asyncio.gather(*tasks)

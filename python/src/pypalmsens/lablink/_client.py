@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import ssl
 from importlib.resources import files
+from json import JSONDecodeError
 from typing import Any
 
 import httpx2
@@ -68,7 +71,14 @@ class HttpClient:
 
     def raise_from_response(self, response: httpx2.Response) -> None:
         """Generates error from response."""
-        data = response.json()
+        try:
+            data = response.json()
+        except JSONDecodeError:
+            raise LablinkApiError(
+                f'{response.status_code} {response.reason_phrase}',
+                status_code=response.status_code,
+                response=response,
+            )
 
         if 'exceptionMessage' in data:
             raise build_error(data)

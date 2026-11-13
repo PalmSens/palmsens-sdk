@@ -2833,7 +2833,7 @@ class GalvanostaticImpedanceSpectroscopy(
     The smallest step is instrument-specific: from 0.000038 times the applied
     current range on Nexus to 0.000183 times on EmStat4 HR."""
 
-    min_sampling_time: float = Field(0.5, gt=0)
+    min_sampling_time: float = Field(default=0.5, gt=0)
     """Minimum sampling time in s.
 
     Each measurement point of the impedance spectrum is performed

@@ -979,6 +979,7 @@ def _build_eis(method: MethodTypeCompatible) -> ParamDict:
 
     p: ParamDict = {}
     _add_current_range(p, m.current_range)
+    _add_potential_range(p, m.potential_range)
     _add_pretreatment(p, m.pretreatment)
 
     p['EquilibrationTime'] = m.equilibration_time

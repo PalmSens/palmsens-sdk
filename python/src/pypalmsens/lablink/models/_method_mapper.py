@@ -213,12 +213,14 @@ def _add_post_measurement(p: ParamDict, pm: PostMeasurement) -> None:
         p['CellModeAfterMeasurement'] = 'CellModeAfterMeasurementOff'
 
 
-def _add_general(p: ParamDict, gen: General, *, hardware_sync: bool = True) -> None:
+def _add_general(p: ParamDict, gen: General) -> None:
     """Only hardware sync maps; mains frequency lives in configure, deferred.
 
     Pass `hardware_sync=False` for techniques whose C# mapper leaves the key out
     entirely, such as stripping chronopotentiometry.
     """
+    default = General()
+
     # Every C# legacy mapper that writes this hardcodes HardwareSyncIsEnabled = false,
     # so the wire value is always false; forwarding a true here would diverge silently.
     if gen.use_hardware_sync:
@@ -226,7 +228,7 @@ def _add_general(p: ParamDict, gen: General, *, hardware_sync: bool = True) -> N
             'Lablink does not support setting hardware sync on the method. '
             'Use `Instrument.configure` to enable hardware sync.'
         )
-    if gen.power_frequency:
+    if gen.power_frequency != default.power_frequency:
         raise ValueError(
             'Lablink does not support setting the mains frequency on the method. '
             'Use `Instrument.configure` to set mains frequency.'

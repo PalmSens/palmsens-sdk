@@ -46,7 +46,6 @@ if TYPE_CHECKING:
 
 ParamDict = dict[str, float | bool | str]
 
-# Technique id -> wire technique name (drives both `Technique` and `Name`).
 ID_TO_TECHNIQUE: dict[str, TechniqueId] = {
     'ad': TechniqueId.Chronoamperometry,
     'cv': TechniqueId.CyclicVoltammetry,
@@ -77,12 +76,12 @@ class _RawWireValue(str):
 
     C# serializes ranges and plain numbers alike as numbers, so range strings built
     by :func:`_wire_range` must not go through the JSON quoting that applies to
-    genuine string parameters such as ``Name``.
+    genuine string parameters such as `Name`.
     """
 
 
 class _GroupValue(str):
-    """A nested-group count, written verbatim without the ``[...]`` wrapper.
+    """A nested-group count, written verbatim without the `[...]` wrapper.
 
     C# leaves `Stages`, `Levels` and `Curves` values unbracketed (`Levels=2`), while
     the nested `Levels/0/Level/...` values are bracketed as usual.
@@ -90,15 +89,15 @@ class _GroupValue(str):
 
 
 _SI_EXPONENTS: dict[str, int] = {'p': -12, 'n': -9, 'u': -6, 'm': -3}
-"""SI prefixes that appear in the range literals; ``'1A'`` and ``'1V'`` have none."""
+"""SI prefixes that appear in the range literals; `'1A'` and `'1V'` have none."""
 
 
 def _wire_range(value: AllowedCurrentRanges | AllowedPotentialRanges) -> _RawWireValue:
     """Format a range literal the way C# serializes a `MeasuringRange`.
 
-    C# stores a range as a ``(significant, exponent)`` pair whose exponent is a whole
-    SI prefix, and writes it as a ``decimal``, which keeps its scale. Trailing zeros
-    therefore matter: ``'100nA'`` is ``0.000000100`` and ``'1mA'`` is ``0.001``, so the
+    C# stores a range as a `(significant, exponent)` pair whose exponent is a whole
+    SI prefix, and writes it as a `decimal`, which keeps its scale. Trailing zeros
+    therefore matter: `'100nA'` is `0.000000100` and `'1mA'` is `0.001`, so the
     string is built from the prefix instead of from a float division.
     """
     body = value[:-1]  # drop the unit character ('A' or 'V')
@@ -120,7 +119,7 @@ def _add_current_range(p: ParamDict, rng: CurrentRange) -> None:
 
 
 _SUPPORTED_POTENTIAL_RANGES: tuple[AllowedPotentialRanges, ...] = ('1mV', '10mV', '100mV', '1V')
-"""The potential ranges the legacy `RangingPotential` supports; `AllowedPotentialRanges` offers more.
+"""The potential ranges the legacy `RangingPotential` supports. `AllowedPotentialRanges` offers more.
 
 Measured against the built DLL: any other literal snaps **up** to the next supported range, and
 the start range is additionally clamped into the snapped min/max window.
@@ -192,13 +191,17 @@ def _add_limits(
 
 
 def _add_ir_drop_compensation(p: ParamDict, ir: IrDropCompensation) -> None:
-    # The C# mapper omits these keys entirely when no resistance is configured.
+    """Omit these keys entirely when no resistance is configured."""
     if ir.resistance is not None:
         p['UseIRCompensation'] = True
         p['IRCompensation'] = ir.resistance
 
 
 def _add_post_measurement(p: ParamDict, pm: PostMeasurement) -> None:
+    """The legacy methods only support potentiostatic mode after measurement.
+
+    TODO: In the future we need to add support for Galvanostatic / other cell modes.
+    """
     if pm.cell_on_after_measurement:
         p['CellModeAfterMeasurement'] = 'CellModeAfterMeasurementPotentiostatic'
         p['UsePotentialAfterMeasurement'] = True
@@ -218,9 +221,16 @@ def _add_general(p: ParamDict, gen: General, *, hardware_sync: bool = True) -> N
     """
     # Every C# legacy mapper that writes this hardcodes HardwareSyncIsEnabled = false,
     # so the wire value is always false; forwarding a true here would diverge silently.
-    _require_default('use_hardware_sync', gen.use_hardware_sync, False)
-    if hardware_sync:
-        p['EnableHardwareSync'] = False
+    if gen.use_hardware_sync:
+        raise ValueError(
+            'Lablink does not support setting hardware sync on the method. '
+            'Use `Instrument.configure` to enable hardware sync.'
+        )
+    if gen.power_frequency:
+        raise ValueError(
+            'Lablink does not support setting the mains frequency on the method. '
+            'Use `Instrument.configure` to set mains frequency.'
+        )
     if gen.save_on_internal_storage:
         raise NotImplementedError("Lablink does not yet support 'save_on_internal_storage'")
     if gen.notes:
@@ -349,7 +359,7 @@ def _build_cyclicvoltammetry(method: MethodTypeCompatible) -> ParamDict:
     _add_vs_ocp(p, m.versus_ocp)
 
     _add_limits(p, 'Current', m.current_limits.min, m.current_limits.max)
-    # CV has no charge/temperature limit fields; the hub still expects the flags.
+    # CV has no charge/temperature limit fields. Lablink still expects the flags.
     _add_limits(p, 'Charge', None, None)
     _add_limits(p, 'Temperature', None, None)
     _add_ir_drop_compensation(p, m.ir_drop_compensation)
@@ -429,7 +439,7 @@ def _build_squarewavevoltammetry(method: MethodTypeCompatible) -> ParamDict:
     _require_default(
         'measurement_triggers', m.measurement_triggers, default.measurement_triggers
     )
-    # The SWV wire model has no aux/cell/WE-potential keys; the hub records only
+    # The SWV wire model has no aux/cell/WE-potential keys. Lablink records only
     # forward/reverse currents here. Raise rather than silently drop these.
     _require_default(
         'record_auxiliary_input',
@@ -482,7 +492,7 @@ def _build_differentialpulsevoltammetry(method: MethodTypeCompatible) -> ParamDi
     _require_default(
         'measurement_triggers', m.measurement_triggers, default.measurement_triggers
     )
-    # Like SWV, DPV emits no aux/cell/WE-potential keys; guard rather than drop.
+    # Like SWV, DPV emits no aux/cell/WE-potential keys. Guard rather than drop.
     _require_default(
         'record_auxiliary_input',
         m.record_auxiliary_input,
@@ -534,7 +544,7 @@ def _build_normalpulsevoltammetry(method: MethodTypeCompatible) -> ParamDict:
     _require_default(
         'measurement_triggers', m.measurement_triggers, default.measurement_triggers
     )
-    # Like SWV/DPV, NPV emits no aux/cell/WE-potential keys; guard rather than drop.
+    # Like SWV/DPV, NPV emits no aux/cell/WE-potential keys. Guard rather than drop.
     _require_default(
         'record_auxiliary_input',
         m.record_auxiliary_input,
@@ -650,7 +660,7 @@ def _build_fastamperometry(method: MethodTypeCompatible) -> ParamDict:
     )
 
     p: ParamDict = {}
-    # Fast amperometry fixes one range for minimum, maximum and start; the model field
+    # Fast amperometry fixes one range for minimum, maximum and start. The model field
     # is a bare range literal, so it goes through `_wire_range` three times.
     fixed_range = _wire_range(m.current_range)
     p['MinimumCurrentRange'] = fixed_range
@@ -734,7 +744,7 @@ def _build_strippingchronopotentiometry(method: MethodTypeCompatible) -> ParamDi
     _add_post_measurement(p, m.post_measurement)
 
     p['EnableDropDetection'] = False
-    _add_general(p, m.general, hardware_sync=False)
+    _add_general(p, m.general)
     return p
 
 
@@ -910,13 +920,6 @@ def _build_multistepamperometry(method: MethodTypeCompatible) -> ParamDict:
 
 
 def _build_multistepotentiometry(method: MethodTypeCompatible) -> ParamDict:
-    """Mirror the multistep amperometry shape, but with applied current per level.
-
-    The C# multistep potentiometry mapper writes `Level/AppliedCurrent` plus potential limits
-    instead of `Level/Potential` plus current limits, adds an applied current range and the
-    three potential ranges, and has no equilibration time, iR compensation or cell/WE-potential
-    keys at all.
-    """
     m = cast(MultiStepPotentiometry, method)
     default = MultiStepPotentiometry()
 
@@ -948,14 +951,6 @@ def _build_multistepotentiometry(method: MethodTypeCompatible) -> ParamDict:
 
 
 def _build_methodscript(method: MethodTypeCompatible) -> ParamDict:
-    """Emit the MethodSCRIPT text, which is the only parameter C# carries.
-
-    The legacy `MethodScriptSandbox.MethodScript` field is stored verbatim, and that field is
-    what `MethodScript._export` writes: an `e` header line and a trailing newline wrapped
-    around `script`. Reproduce that wrapping rather than reading the raw script, or the wire
-    text diverges. `version` only picks the validation parser and `custom_units` only labels
-    curves, so neither reaches the wire here or in C#.
-    """
     m = cast(MethodScript, method)
     return {'Script': f'e\n{m.script}\n'}
 
@@ -970,15 +965,10 @@ def _frequencies_per_decade(
     `(n - 1) / (log10(max) - log10(min))`. A zero denominator means an empty frequency range;
     C# would write `NaN` or `∞` there, which the hub cannot parse, so it is rejected instead.
     """
+    if max_frequency == min_frequency:
+        raise ValueError('Min frequency cannot be equal to max frequency.')
+
     denominator = math.log10(max_frequency) - math.log10(min_frequency)
-    if denominator == 0.0:
-        raise NotImplementedError(
-            'Lablink cannot express equal minimum and maximum frequencies: the EIS/GIS record '
-            'derives frequencies per decade by dividing by log10(max) - log10(min)'
-        )
-    # Unlike every other number here, this one is computed rather than stored, so the wire
-    # only ever carries its `G7` text. Round now to keep the decoded dict wire-faithful; the
-    # golden baseline is decoded from the DLL and cannot hold more digits than `G7` printed.
     return float(format((n_frequencies - 1) / denominator, '.7g'))
 
 
@@ -986,7 +976,7 @@ def _build_eis(method: MethodTypeCompatible) -> ParamDict:
     """Map a potentiostatic impedance frequency scan.
 
     `max_equilibration_time` lands in the legacy `MaxEqTime` field, which no domain mapper
-    reads; the DLL accepts the setting and drops it, so the port drops it too.
+    reads. The DLL accepts the setting and drops it, so the port drops it too.
     """
     m = cast(ElectrochemicalImpedanceSpectroscopy, method)
     default = ElectrochemicalImpedanceSpectroscopy()
@@ -1035,7 +1025,7 @@ def _build_eis(method: MethodTypeCompatible) -> ParamDict:
     _add_post_measurement(p, m.post_measurement)
 
     p['EnableDropDetection'] = False
-    _add_general(p, m.general, hardware_sync=False)
+    _add_general(p, m.general)
     return p
 
 
@@ -1086,17 +1076,8 @@ def _build_gis(method: MethodTypeCompatible) -> ParamDict:
     _add_post_measurement(p, m.post_measurement)
 
     p['EnableDropDetection'] = False
-    _add_general(p, m.general, hardware_sync=False)
+    _add_general(p, m.general)
     return p
-
-
-_STAGE_GROUPS: dict[str, str] = {
-    'ConstantE': 'ConstantPotentialStage',
-    'ConstantI': 'ConstantCurrentStage',
-    'SweepE': 'SweepPotentialStage',
-    'OpenCircuit': 'OpenCircuitStage',
-}
-"""The `GroupId` group name each stage type is nested under, i.e. `Stages/<i>/<group>/…`."""
 
 
 def _add_stage(p: ParamDict, index: int, stage: StageType) -> None:
@@ -1107,15 +1088,8 @@ def _add_stage(p: ParamDict, index: int, stage: StageType) -> None:
     every stage (measured). Emitting them is still required because
     `MixedModeStageMapper.AddParameters` writes them unconditionally.
     """
-    group = _STAGE_GROUPS.get(stage.stage_type)
-    if group is None:
-        raise NotImplementedError(
-            f'Lablink does not support the MixedMode {stage.stage_type!r} stage: '
-            'the C# stage mapper throws `Unknown stage type` for it (PLAN.md §6)'
-        )
-
-    prefix = f'Stages/{index}/{group}/'
     if stage.stage_type == 'ConstantE':
+        prefix = f'Stages/{index}/ConstantPotentialStage/'
         p[f'{prefix}Potential'] = stage.potential
         p[f'{prefix}PotentialVersusPrevious'] = False
         p[f'{prefix}RunTime'] = stage.run_time
@@ -1123,6 +1097,7 @@ def _add_stage(p: ParamDict, index: int, stage: StageType) -> None:
             p, 'Current', stage.current_limits.min, stage.current_limits.max, prefix=prefix
         )
     elif stage.stage_type == 'ConstantI':
+        prefix = f'Stages/{index}/ConstantCurrentStage/'
         p[f'{prefix}AppliedCurrentRange'] = _wire_range(stage.applied_current_range)
         # `current` is a factor of `applied_current_range`, stored as a plain double.
         p[f'{prefix}AppliedCurrent'] = stage.current
@@ -1136,6 +1111,7 @@ def _add_stage(p: ParamDict, index: int, stage: StageType) -> None:
             prefix=prefix,
         )
     elif stage.stage_type == 'SweepE':
+        prefix = f'Stages/{index}/SweepPotentialStage/'
         p[f'{prefix}BeginPotential'] = stage.begin_potential
         p[f'{prefix}BeginPotentialVersusPrevious'] = False
         p[f'{prefix}EndPotential'] = stage.end_potential
@@ -1146,6 +1122,7 @@ def _add_stage(p: ParamDict, index: int, stage: StageType) -> None:
             p, 'Current', stage.current_limits.min, stage.current_limits.max, prefix=prefix
         )
     elif stage.stage_type == 'OpenCircuit':
+        prefix = f'Stages/{index}/OpenCircuitStage/'
         p[f'{prefix}RunTime'] = stage.run_time
         _add_limits(
             p,
@@ -1155,11 +1132,8 @@ def _add_stage(p: ParamDict, index: int, stage: StageType) -> None:
             prefix=prefix,
         )
     else:
-        # Unreachable: `group` is set for exactly the four types above, so anything else,
-        # including `Impedance`, already raised. Kept so this dispatch stays total.
-        raise NotImplementedError(
-            f'Lablink does not support the MixedMode {stage.stage_type!r} stage'
-        )
+        # TODO: Support Impedance, this is not yet supported on the Lablink side
+        raise NotImplementedError(f'Lablink does not support the {stage.stage_type!r} stage')
 
 
 def _build_mixed_mode(method: MethodTypeCompatible) -> ParamDict:
@@ -1234,7 +1208,7 @@ def _to_parameters(method: MethodTypeCompatible) -> ParamDict:
 
 
 def _serialize(value: float | bool | str) -> str:
-    """Serialize one parameter value, matching C# ``MethodParametersExtensions``."""
+    """Serialize one parameter value, matching C# `MethodParametersExtensions`."""
     if isinstance(value, _GroupValue):
         # Group counts are written bare, without the [...] wrapper.
         return str(value)
@@ -1257,20 +1231,19 @@ def _serialize(value: float | bool | str) -> str:
 
 
 def to_payload(method: MethodTypeCompatible) -> dict[str, object]:
-    """Build the ``StartMeasurementCommand`` body for a technique.
+    """Build the `StartMeasurementCommand` payload for a technique.
 
-    Values are formatted exactly like the C# mapper writes them, so the result is
-    the wire ``dict[str, str]`` the hub expects (``MethodParameters``); ``Technique``
-    carries the technique name.
+    Values are formatted exactly like the C# mapper writes them.
+    This matches the `dict[str, str]` the hub expects (`MethodParameters`).
 
     Notes:
 
-    - Numbers are not JSON-encoded: C# formats doubles with ``G7``, which prints
-        ``1`` rather than ``1.0``, and falls back to ``E`` notation for magnitudes
-        below ``1e-4`` (for example ``[1E-05]``).
+    - Numbers are not JSON-encoded: C# formats doubles with `G7`, which prints
+        `1` rather than `1.0`, and falls back to `E` notation for magnitudes
+        below `1e-4` (for example `[1E-05]`).
 
     - Ranges are fixed-point decimals in base units that keep their scale, so
-        ``100nA`` is ``[0.000000100]``; see :func:`_wire_range`.
+        `100nA` is `[0.000000100]`. See [_wire_range][]
 
     """
     params = _to_parameters(method)

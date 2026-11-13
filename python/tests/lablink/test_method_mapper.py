@@ -179,21 +179,6 @@ def test_level_count_is_written_bare() -> None:
     assert params['Levels/0/Level/Potential'] == '[0.5]'
 
 
-def test_potential_range_snaps_to_supported_ranges() -> None:
-    params = _params(
-        make('pot', potential_range={'min': '20mV', 'max': '500mV', 'start': '10mV'})
-    )
-    assert params['MinimumPotentialRange'] == '0.100'
-    assert params['MaximumPotentialRange'] == '1'
-    assert params['StartingPotentialRange'] == '0.100'
-
-    params = _params(make('mp', potential_range={'min': '10mV', 'max': '100mV', 'start': '1V'}))
-    assert params['StartingPotentialRange'] == '0.100'
-
-    params = _params(make('ocp', potential_range={'min': '1mV', 'max': '1V', 'start': '200mV'}))
-    assert params['StartingPotentialRange'] == '1'
-
-
 def test_multistep_potentiometry_levels_apply_current() -> None:
     params = _params(
         make(

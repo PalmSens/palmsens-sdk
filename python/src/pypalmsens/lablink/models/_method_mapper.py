@@ -68,6 +68,12 @@ ID_TO_TECHNIQUE: dict[str, TechniqueId] = {
     'eis': TechniqueId.ElectrochemicalImpedanceSpectroscopy,
     'gis': TechniqueId.GalvanostaticImpedanceSpectroscopy,
     'mm': TechniqueId.MixedMode,
+    # Corrosion methods are not mapped yet
+    'cpot': TechniqueId.CorrosionPotential,
+    'cp': TechniqueId.CyclicPolarization,
+    'gs': TechniqueId.GalvanostaticDetection,
+    'lp': TechniqueId.LinearPolarization,
+    'ps': TechniqueId.PotentiostaticDetection,
 }
 
 
@@ -118,39 +124,10 @@ def _add_current_range(p: ParamDict, rng: CurrentRange) -> None:
     p['StartingCurrentRange'] = _wire_range(rng.start)
 
 
-_SUPPORTED_POTENTIAL_RANGES: tuple[AllowedPotentialRanges, ...] = ('1mV', '10mV', '100mV', '1V')
-"""The potential ranges the legacy `RangingPotential` supports. `AllowedPotentialRanges` offers more.
-
-Measured against the built DLL: any other literal snaps **up** to the next supported range, and
-the start range is additionally clamped into the snapped min/max window.
-"""
-
-
-def _snap_potential_range(value: AllowedPotentialRanges) -> AllowedPotentialRanges:
-    """Snap a potential range up to the smallest one the legacy ranging supports."""
-    volts = float(_wire_range(value))
-    for supported in _SUPPORTED_POTENTIAL_RANGES:
-        if volts <= float(_wire_range(supported)):
-            return supported
-    return _SUPPORTED_POTENTIAL_RANGES[-1]
-
-
 def _add_potential_range(p: ParamDict, rng: PotentialRange) -> None:
-    minimum = _snap_potential_range(rng.min)
-    maximum = _snap_potential_range(rng.max)
-    start = _snap_potential_range(rng.start)
-    # The legacy getter clamps the start range into the window, and the minimum wins when the
-    # window is inverted (min > max).
-    clamped = max(
-        float(_wire_range(minimum)), min(float(_wire_range(start)), float(_wire_range(maximum)))
-    )
-    p['MinimumPotentialRange'] = _wire_range(minimum)
-    p['MaximumPotentialRange'] = _wire_range(maximum)
-    p['StartingPotentialRange'] = next(
-        _wire_range(supported)
-        for supported in _SUPPORTED_POTENTIAL_RANGES
-        if float(_wire_range(supported)) == clamped
-    )
+    p['MinimumPotentialRange'] = _wire_range(rng.min)
+    p['MaximumPotentialRange'] = _wire_range(rng.max)
+    p['StartingPotentialRange'] = _wire_range(rng.start)
 
 
 def _add_pretreatment(p: ParamDict, pre: Pretreatment) -> None:
@@ -1002,7 +979,6 @@ def _build_eis(method: MethodTypeCompatible) -> ParamDict:
 
     p: ParamDict = {}
     _add_current_range(p, m.current_range)
-    _add_potential_range(p, m.potential_range)
     _add_pretreatment(p, m.pretreatment)
 
     p['EquilibrationTime'] = m.equilibration_time

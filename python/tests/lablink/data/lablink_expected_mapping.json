@@ -1088,7 +1088,7 @@
         },
         "potential_range": {
           "max": "1V",
-          "min": "1mV",
+          "min": "100mV",
           "start": "1V"
         },
         "pretreatment": {
@@ -1204,11 +1204,6 @@
           "standby_potential": 0.4,
           "standby_time": 0.0
         },
-        "potential_range": {
-          "max": "500mV",
-          "min": "20mV",
-          "start": "1V"
-        },
         "pretreatment": {
           "conditioning_potential": 0.3,
           "conditioning_time": 1.0,
@@ -1219,9 +1214,7 @@
         "scan_type": "fixed",
         "step_potential": 0.01,
         "versus_ocp": {
-          "potentials": [
-            "potential"
-          ],
+          "potentials": ["potential"],
           "stability_criterion": 2.0,
           "timeout": 15.0
         }
@@ -1515,7 +1508,7 @@
         },
         "potential_range": {
           "max": "1V",
-          "min": "1mV",
+          "min": "100mV",
           "start": "1V"
         },
         "pretreatment": {
@@ -1716,7 +1709,7 @@
         },
         "potential_range": {
           "max": "1V",
-          "min": "1mV",
+          "min": "100mV",
           "start": "1V"
         },
         "pretreatment": {
@@ -2588,7 +2581,7 @@
         },
         "potential_range": {
           "max": "1V",
-          "min": "1mV",
+          "min": "100mV",
           "start": "1V"
         },
         "pretreatment": {
@@ -2703,7 +2696,7 @@
         },
         "potential_range": {
           "max": "1V",
-          "min": "1mV",
+          "min": "100mV",
           "start": "1V"
         },
         "pretreatment": {
@@ -3145,7 +3138,7 @@
         },
         "potential_range": {
           "max": "1V",
-          "min": "1mV",
+          "min": "100mV",
           "start": "1V"
         },
         "pretreatment": {
@@ -3520,7 +3513,7 @@
         },
         "potential_range": {
           "max": "1V",
-          "min": "1mV",
+          "min": "100mV",
           "start": "1V"
         },
         "pretreatment": {

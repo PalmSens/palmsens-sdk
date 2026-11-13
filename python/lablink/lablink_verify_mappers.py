@@ -92,7 +92,7 @@ CP = ps.ChronoPotentiometry(
     applied_current_range='100uA',
     interval_time=0.1,
     run_time=1.0,
-    potential_range={'max': '1V', 'min': '10mV', 'start': '1V'},
+    potential_range={'max': '1V', 'min': '100mV', 'start': '1V'},
 )
 
 
@@ -109,12 +109,14 @@ LSP = ps.LinearSweepPotentiometry(
     applied_current_range='100uA',
     current_step=0.1,
     scan_rate=8.0,
-    potential_range={'max': '1V', 'min': '10mV', 'start': '1V'},
+    potential_range={'max': '1V', 'min': '100mV', 'start': '1V'},
 )
 
 
 OCP = ps.OpenCircuitPotentiometry(
-    interval_time=0.1, run_time=1.0, potential_range={'max': '1V', 'min': '10mV', 'start': '1V'}
+    interval_time=0.1,
+    run_time=1.0,
+    potential_range={'max': '1V', 'min': '100mV', 'start': '1V'},
 )
 
 

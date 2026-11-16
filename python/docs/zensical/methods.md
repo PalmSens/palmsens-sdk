@@ -249,7 +249,7 @@ applied_current_range
 
 ## Device support
 
-You can check if your device supports the method using `method.supports()` and `method.capability_errors()`. Note methods are always validated before a measurement is started.
+You can check if your device supports the method and it's parameters using `method.supports()` and `method.capability_errors()`. The latter gives a list of errors that need to be fixed, for example an unsupported current range or another setting that the device does not support. Note methods are always validated before a measurement is started.
 
 ```pycon
 >>> method = ps.CyclicVoltammetry()

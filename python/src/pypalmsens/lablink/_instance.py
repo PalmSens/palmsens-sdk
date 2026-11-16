@@ -7,8 +7,11 @@ Use [discover][pypalmsens.lablink.discover] to find Lablink instances on the net
 
 from __future__ import annotations
 
+import warnings
+
 from ._client import HttpClient
 from ._session import Session
+from ._version import SUPPORTED
 from .models import LablinkInfo
 from .models._wire import AuthRequestModel, AuthResponseModel
 
@@ -69,6 +72,15 @@ class Instance:
         """
         data = await self._http.get('/Home/GetInfo')
         self._info = LablinkInfo.from_wire(data.json())
+        if not self._info.is_supported:
+            msg = (
+                f'LabLink instance at {self.address} reports version {self._info.version}. '
+                f'This version of pypalmsens supports {SUPPORTED}. '
+                'Calls may fail or behave unexpectedly. '
+                'Upgrade pypalmsens or the LabLink server.'
+            )
+            warnings.warn(msg, stacklevel=2)
+
         return self._info
 
     async def register_new_user(self, name: str, password: str) -> None:

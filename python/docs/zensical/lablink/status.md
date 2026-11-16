@@ -47,6 +47,8 @@ These features are still pending support or missing in Lablink.
 | EIS / GEIS parameters | - `MaxEqTime`<br/>- scan types "Time scan" and "Potential scan"<br/>- frequency type "Fixed current" |
 | Settings | - Multiplexer<br/>- Bipot<br/>- Save to internal storage<br/>- Triggers<br/>- Data processing<br/>- Corrosion (Materials metadata)<br/>- Notes support (unconfirmed) |
 
-## Behavioral change
+## Behaviour changes
 
-Setting the [mains/power frequency][pypalmsens.settings.General.power_frequency] has been moved out of the method settings in Lablink. This is now handled by the session via [InstrumentClaim.configure][pypalmsens.lablink.InstrumentClaim.configure]. Any code that read these from a method object should be updated accordingly.
+### Mains frequency
+
+Lablink does not support the setting the [mains/power frequency][pypalmsens.settings.General.power_frequency] on the method. Setting the mains frequency is now handled by the session via [InstrumentClaim.configure][pypalmsens.lablink.InstrumentClaim.configure].

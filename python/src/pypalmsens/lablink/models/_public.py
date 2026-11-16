@@ -13,7 +13,7 @@ class LablinkInfo(BaseModel):
     model_config = ConfigDict(frozen=True, extra='forbid')
 
     name: str
-    """Display name of the hub, e.g. ``"Lablink-42"``."""
+    """Display name of the hub, e.g. `"Lablink-42"`."""
 
     version: str = ''
     """Lablink version string."""
@@ -38,6 +38,16 @@ class LablinkInfo(BaseModel):
         from ._mapping import _to_lablink_info
 
         return _to_lablink_info(_wire.LablinkInfoResult.model_validate(data))
+
+    @property
+    def is_supported(self) -> bool:
+        """Return True if this version of lablink is supported by pypalmsens."""
+        from .._version import SUPPORTED
+
+        if self.version == '0.0.0':
+            # dev version
+            return True
+        return self.version in SUPPORTED
 
 
 class InstrumentInfo(BaseModel):

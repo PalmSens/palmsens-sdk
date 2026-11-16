@@ -22,8 +22,10 @@ from ._instance import Instance
 from ._instrument import Instrument, InstrumentClaim, InstrumentClaimBatch
 from ._measurement import Measurement, MeasurementJob
 from ._session import Session
+from ._version import SUPPORTED
 
 __all__ = [
+    'SUPPORTED',
     'Instance',
     'Instrument',
     'InstrumentClaim',

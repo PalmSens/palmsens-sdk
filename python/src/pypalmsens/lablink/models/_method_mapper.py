@@ -190,23 +190,12 @@ def _add_post_measurement(p: ParamDict, pm: PostMeasurement) -> None:
         p['CellModeAfterMeasurement'] = 'CellModeAfterMeasurementOff'
 
 
-def _add_general(p: ParamDict, gen: General, *, hardware_sync: bool = True) -> None:
-    """Only hardware sync maps; mains frequency lives in configure, deferred.
-
-    Pass `hardware_sync=False` for techniques whose C# mapper leaves the key out
-    entirely, such as stripping chronopotentiometry.
-    """
+def _add_general(p: ParamDict, gen: General) -> None:
+    """Only hardware sync maps. Mains frequency lives in configure, other settings deferred."""
     default = General()
 
-    if hardware_sync:
-        # This is always emitted by the C# layer for non-impedance methods
-        p['EnableHardwareSync'] = False
+    p['EnableHardwareSync'] = gen.use_hardware_sync
 
-    if gen.use_hardware_sync:
-        raise ValueError(
-            'Lablink does not support setting hardware sync on the method. '
-            'Use `Instrument.configure` to enable hardware sync.'
-        )
     if gen.power_frequency != default.power_frequency:
         raise ValueError(
             'Lablink does not support setting the mains frequency on the method. '
@@ -725,7 +714,7 @@ def _build_strippingchronopotentiometry(method: MethodTypeCompatible) -> ParamDi
     _add_post_measurement(p, m.post_measurement)
 
     p['EnableDropDetection'] = False
-    _add_general(p, m.general, hardware_sync=False)
+    _add_general(p, m.general)
     return p
 
 
@@ -1006,7 +995,7 @@ def _build_eis(method: MethodTypeCompatible) -> ParamDict:
     _add_post_measurement(p, m.post_measurement)
 
     p['EnableDropDetection'] = False
-    _add_general(p, m.general, hardware_sync=False)
+    _add_general(p, m.general)
     return p
 
 
@@ -1057,7 +1046,7 @@ def _build_gis(method: MethodTypeCompatible) -> ParamDict:
     _add_post_measurement(p, m.post_measurement)
 
     p['EnableDropDetection'] = False
-    _add_general(p, m.general, hardware_sync=False)
+    _add_general(p, m.general)
     return p
 
 

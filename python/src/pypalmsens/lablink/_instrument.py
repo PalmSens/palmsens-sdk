@@ -307,8 +307,7 @@ class InstrumentClaim(InstrumentReadsMixin):
         self,
         mains_frequency: Literal['auto', 50, 60] | None = None,
         signal_train: Literal['lowspeed', 'highspeed', 'maximumrange'] | None = None,
-        hardware_sync_allowed: bool | None = None,
-        multichannel_role: Literal['standalone', 'primary', 'secondary'] | None = None,
+        multichannel_role: Literal['standalone', 'main', 'follower'] | None = None,
     ) -> None:
         """Configure this instrument.
 
@@ -322,10 +321,8 @@ class InstrumentClaim(InstrumentReadsMixin):
             The instrument filters sampling at that frequency.
         signal_train : str or None, optional
             Speed of the analog input train (e.g. 'lowSpeed', 'highSpeed').
-        hardware_sync_allowed : bool or None, optional
-            Whether to use hardware synchronization.
         multichannel_role : str or None, optional
-            Role for multi-channel mode ('standalone', 'primary', 'secondary').
+            Role for multi-channel mode ('standalone', 'main', 'follower').
         """
         if mains_frequency == 50:
             _mains_freq = 'Hz50'
@@ -336,9 +333,9 @@ class InstrumentClaim(InstrumentReadsMixin):
         else:
             _mains_freq = None
 
-        if multichannel_role == 'primary':
+        if multichannel_role == 'main':
             _role = 'Master'
-        elif multichannel_role == 'secondary':
+        elif multichannel_role == 'follower':
             _role = 'Slave'
         elif multichannel_role == 'standalone':
             _role = 'Standalone'
@@ -354,7 +351,6 @@ class InstrumentClaim(InstrumentReadsMixin):
             {
                 'MainsFrequency': _mains_freq,
                 'SignalTrain': signal_train,
-                'HardwareSyncAllowed': hardware_sync_allowed,
                 'MultiChannelRole': _role,
             }
         )

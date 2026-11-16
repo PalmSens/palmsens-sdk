@@ -52,3 +52,32 @@ def test_structure_unstructure():
 
     data = technique_adapter.validate_python({'id': 'eis'})
     assert isinstance(data, ps.ElectrochemicalImpedanceSpectroscopy)
+
+
+def test_method_capabilities_errors_ms():
+    method = ps.MethodScript()
+    assert method.supports('emstat4hr')
+    assert not method.supports('palmsens4')
+
+
+def test_method_capabilities_errors_ca():
+    method = ps.ChronoAmperometry()
+
+    assert len(method.capability_errors('emstat4hr')) == 0
+    assert method.supports('emstat4hr')
+
+    method.current_range.min = '100pA'
+    assert len(method.capability_errors('emstat4hr')) == 1
+    assert not method.supports('emstat4hr')
+
+
+@pytest.mark.xfail(reason='https://github.com/PalmSens/palmsens-sdk/issues/522')
+def test_method_capabilities_errors_bipot():
+    method = ps.ChronoAmperometry()
+
+    method.enable_bipot_current = True
+    method.bipot.current_range = {'min': '1uA', 'max': '1mA', 'start': '10uA'}
+
+    # emstat4 does not support bipot autoranging
+    assert len(method.capability_errors('emstat4hr')) > 0
+    assert not method.supports('emstat4hr')

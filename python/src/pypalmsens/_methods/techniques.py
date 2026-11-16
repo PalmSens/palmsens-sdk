@@ -134,6 +134,12 @@ class BaseCyclicVoltammetry(
         ):
             setattr(self, key, msk[key])
 
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        if self.enable_bipot_current:
+            return self.bipot.current_range._capability_errors(capabilities, bipot=True)
+        return []
+
 
 class CyclicVoltammetry(BaseCyclicVoltammetry):
     """Create cyclic voltammetry method parameters.
@@ -462,6 +468,12 @@ class BaseLinearSweepVoltammetry(
         ):
             setattr(self, key, msk[key])
 
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        if self.enable_bipot_current:
+            return self.bipot.current_range._capability_errors(capabilities, bipot=True)
+        return []
+
 
 class LinearSweepVoltammetry(BaseLinearSweepVoltammetry):
     """Create linear sweep method parameters.
@@ -622,6 +634,12 @@ class SquareWaveVoltammetry(
         ):
             setattr(self, key, msk[key])
 
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        if self.enable_bipot_current:
+            return self.bipot.current_range._capability_errors(capabilities, bipot=True)
+        return []
+
 
 class DifferentialPulseVoltammetry(
     mixins.CurrentRangeMixin,
@@ -756,6 +774,12 @@ class DifferentialPulseVoltammetry(
         ):
             setattr(self, key, msk[key])
 
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        if self.enable_bipot_current:
+            return self.bipot.current_range._capability_errors(capabilities, bipot=True)
+        return []
+
 
 class NormalPulseVoltammetry(
     mixins.CurrentRangeMixin,
@@ -882,6 +906,12 @@ class NormalPulseVoltammetry(
         ):
             setattr(self, key, msk[key])
 
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        if self.enable_bipot_current:
+            return self.bipot.current_range._capability_errors(capabilities, bipot=True)
+        return []
+
 
 class BaseChronoAmperometry(
     mixins.CurrentRangeMixin,
@@ -968,6 +998,12 @@ class BaseChronoAmperometry(
             'enable_bipot_current',
         ):
             setattr(self, key, msk[key])
+
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        if self.enable_bipot_current:
+            return self.bipot.current_range._capability_errors(capabilities, bipot=True)
+        return []
 
 
 class ChronoAmperometry(BaseChronoAmperometry):
@@ -1219,6 +1255,12 @@ class MultiStepAmperometry(
             'enable_bipot_current',
         ):
             setattr(self, key, msk[key])
+
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        if self.enable_bipot_current:
+            return self.bipot.current_range._capability_errors(capabilities, bipot=True)
+        return []
 
 
 class PulsedAmperometricDetection(

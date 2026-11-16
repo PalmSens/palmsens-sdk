@@ -104,15 +104,23 @@ class CurrentRange(BaseSettings):
         self.start = cr_enum_to_string(obj.StartCurrentRange)
 
     @override
-    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
-        supported = capabilities.supported_current_ranges
+    def _capability_errors(
+        self, capabilities: CapabilitiesInterface, bipot: bool = False
+    ) -> list[str]:
+        if bipot:
+            supported = capabilities.supported_bipot_current_ranges
+            prefix = 'bipot '
+        else:
+            supported = capabilities.supported_current_ranges
+            prefix = ''
+
         errors = []
         if self.min not in supported:
-            errors.append(f'Unsupported current range value: min={self.min!r}')
+            errors.append(f'Unsupported {prefix}current range value: min={self.min!r}')
         if self.max not in supported:
-            errors.append(f'Unsupported current range value: max={self.max!r}')
+            errors.append(f'Unsupported {prefix}current range value: max={self.max!r}')
         if self.start not in supported:
-            errors.append(f'Unsupported current range value: start={self.start!r}')
+            errors.append(f'Unsupported {prefix}current range value: start={self.start!r}')
         return errors
 
 
@@ -483,19 +491,6 @@ class BiPot(BaseSettings):
         if isinstance(value, str):
             return CurrentRange(min=value, max=value, start=value)
         return value
-
-    @override
-    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
-        supported = capabilities.supported_bipot_current_ranges
-        errors = []
-        cr = self.current_range
-        if cr.min not in supported:
-            errors.append(f'Unsupported bipot current range value: min={cr.min!r}')
-        if cr.max not in supported:
-            errors.append(f'Unsupported bipot current range value: max={cr.max!r}')
-        if cr.start not in supported:
-            errors.append(f'Unsupported bipot current range value: start={cr.start!r}')
-        return errors
 
 
 class PostMeasurement(BaseSettings):

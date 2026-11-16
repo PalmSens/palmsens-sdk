@@ -8,6 +8,8 @@ import PalmSens
 from pydantic import Field, field_validator
 from typing_extensions import override
 
+from pypalmsens._capabilities import CapabilitiesInterface
+
 from .._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
@@ -101,6 +103,18 @@ class CurrentRange(BaseSettings):
         self.min = cr_enum_to_string(obj.MinimumCurrentRange)
         self.start = cr_enum_to_string(obj.StartCurrentRange)
 
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        supported = capabilities.supported_current_ranges
+        errors = []
+        if self.min not in supported:
+            errors.append(f'Unsupported current range value: min={self.min!r}')
+        if self.max not in supported:
+            errors.append(f'Unsupported current range value: max={self.max!r}')
+        if self.start not in supported:
+            errors.append(f'Unsupported current range value: start={self.start!r}')
+        return errors
+
 
 class PotentialRange(BaseSettings):
     """Set the autoranging potential.
@@ -170,6 +184,18 @@ class PotentialRange(BaseSettings):
         self.max = pr_enum_to_string(psmethod.RangingPotential.MaximumPotentialRange)
         self.min = pr_enum_to_string(psmethod.RangingPotential.MinimumPotentialRange)
         self.start = pr_enum_to_string(psmethod.RangingPotential.StartPotentialRange)
+
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        supported = capabilities.supported_potential_ranges
+        errors = []
+        if self.min not in supported:
+            errors.append(f'Unsupported potential range value: min={self.min!r}')
+        if self.max not in supported:
+            errors.append(f'Unsupported potential range value: max={self.max!r}')
+        if self.start not in supported:
+            errors.append(f'Unsupported potential range value: start={self.start!r}')
+        return errors
 
 
 class Pretreatment(BaseSettings):
@@ -457,6 +483,19 @@ class BiPot(BaseSettings):
         if isinstance(value, str):
             return CurrentRange(min=value, max=value, start=value)
         return value
+
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        supported = capabilities.supported_bipot_current_ranges
+        errors = []
+        cr = self.current_range
+        if cr.min not in supported:
+            errors.append(f'Unsupported bipot current range value: min={cr.min!r}')
+        if cr.max not in supported:
+            errors.append(f'Unsupported bipot current range value: max={cr.max!r}')
+        if cr.start not in supported:
+            errors.append(f'Unsupported bipot current range value: start={cr.start!r}')
+        return errors
 
 
 class PostMeasurement(BaseSettings):

@@ -11,6 +11,8 @@ from PalmSens.Techniques.Impedance import enumFrequencyType, enumScanType
 from pydantic import Field, field_validator, model_validator
 from typing_extensions import Self, override
 
+from pypalmsens._capabilities import CapabilitiesInterface
+
 from .._converters import (
     cr_enum_to_string,
     cr_string_to_enum,
@@ -1611,6 +1613,13 @@ class BaseChronoPotentiometry(
         ):
             setattr(self, key, msk[key])
 
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        supported = capabilities.supported_applied_current_ranges
+        if self.applied_current_range not in supported:
+            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+        return []
+
 
 class ChronoPotentiometry(BaseChronoPotentiometry):
     """Create potentiometry method parameters.
@@ -1772,6 +1781,13 @@ class StrippingChronoPotentiometry(
         if psmethod.OverrideBandwidth:
             self.bandwidth = single_to_double(psmethod.Bandwidth)
 
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        supported = capabilities.supported_applied_current_ranges
+        if self.applied_current_range not in supported:
+            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+        return []
+
 
 class LinearSweepPotentiometry(
     mixins.CurrentRangeMixin,
@@ -1904,6 +1920,13 @@ class LinearSweepPotentiometry(
         ):
             setattr(self, key, msk[key])
 
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        supported = capabilities.supported_applied_current_ranges
+        if self.applied_current_range not in supported:
+            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+        return []
+
 
 class MultiStepPotentiometry(
     mixins.CurrentRangeMixin,
@@ -2017,6 +2040,13 @@ class MultiStepPotentiometry(
             'record_we_current',
         ):
             setattr(self, key, msk[key])
+
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        supported = capabilities.supported_applied_current_ranges
+        if self.applied_current_range not in supported:
+            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+        return []
 
 
 class ChronoCoulometry(
@@ -2922,6 +2952,13 @@ class GalvanostaticImpedanceSpectroscopy(
             self.run_time = single_to_double(psmethod.RunTime)
             self.interval_time = single_to_double(psmethod.IntervalTime)
 
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        supported = capabilities.supported_applied_current_ranges
+        if self.applied_current_range not in supported:
+            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+        return []
+
 
 class FastGalvanostaticImpedanceSpectroscopy(
     mixins.CurrentRangeMixin,
@@ -3011,6 +3048,13 @@ class FastGalvanostaticImpedanceSpectroscopy(
         self.frequency = single_to_double(psmethod.FixedFrequency)
         self.run_time = single_to_double(psmethod.RunTime)
         self.interval_time = single_to_double(psmethod.IntervalTime)
+
+    @override
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        supported = capabilities.supported_applied_current_ranges
+        if self.applied_current_range not in supported:
+            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+        return []
 
 
 class MethodScript(BaseTechnique):

@@ -9,6 +9,7 @@ from PalmSens import DataFiles as PSDataFiles
 from System.IO import StringWriter
 
 from .. import __version__
+from .._capabilities import CapabilitiesInterface, get_capabilities
 from .base_model import BaseModel
 
 if typing.TYPE_CHECKING:
@@ -33,6 +34,9 @@ class BaseSettings(BaseModel):
 
     def _import(self, psmethod: PalmSens.Method, /) -> None:
         raise NotImplementedError
+
+    def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
+        return []
 
 
 class BaseTechnique(BaseSettings):
@@ -103,3 +107,50 @@ class BaseTechnique(BaseSettings):
             attribute = getattr(self, field)
             if isinstance(attribute, BaseSettings):
                 attribute._export(psmethod)
+
+    def capability_errors(self, target: str) -> list[str]:
+        """Return list of errors if this method is not supported.
+
+        Parameters
+        ----------
+        target : str
+            Device or model name
+
+        Returns
+        -------
+        errors : list[str]
+            List of method validation errors for this target
+        """
+        capabilities = get_capabilities(target)
+        psmethod = self._to_psmethod()
+        errors = [str(error) for error in psmethod.Validate(capabilities.capabilities)]
+
+        try:
+            _errors = self._capability_errors(capabilities)
+        except AttributeError:
+            pass
+        else:
+            errors.extend(_errors)
+
+        for field in type(self).model_fields:
+            attribute = getattr(self, field)
+            if isinstance(attribute, BaseSettings):
+                _errors = attribute._capability_errors(capabilities)
+                errors.extend(_errors)
+
+        return errors
+
+    def supports(self, target: str) -> bool:
+        """Return True if this method supports the target device.
+
+        Parameters
+        ----------
+        target : str
+            Device or model name
+
+        Returns
+        -------
+        bool
+            True if target is supported
+        """
+        return not self.capability_errors(target)

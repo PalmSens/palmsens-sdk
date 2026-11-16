@@ -5,13 +5,13 @@ from typing import Protocol
 from PalmSens import Comm as PSComm
 from PalmSens import Method as PSMethod
 
+from .._capabilities import Capabilities, CapabilitiesInterface
 from .._types import (
     AllowedCurrentRanges,
     AllowedMethods,
     AllowedPotentialRanges,
     MethodTypeCompatible,
 )
-from .capabilities import Capabilities, CapabilitiesInterface
 from .shared import MethodIncompatibleError
 
 
@@ -47,7 +47,7 @@ class CapabilitiesMixin:
             List of supported methods.
         """
         self.ensure_connection()
-        return CapabilitiesInterface(comm=self._comm).supported_methods
+        return CapabilitiesInterface(capabilities=self._comm.Capabilities).supported_methods
 
     def supported_current_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
         """List current ranges supported by this device.
@@ -58,7 +58,9 @@ class CapabilitiesMixin:
             List of supported current ranges.
         """
         self.ensure_connection()
-        return CapabilitiesInterface(comm=self._comm).supported_current_ranges
+        return CapabilitiesInterface(
+            capabilities=self._comm.Capabilities
+        ).supported_current_ranges
 
     def supported_applied_current_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
         """List applied current ranges supported by this device.
@@ -69,7 +71,9 @@ class CapabilitiesMixin:
             List of supported current ranges.
         """
         self.ensure_connection()
-        return CapabilitiesInterface(comm=self._comm).supported_applied_current_ranges
+        return CapabilitiesInterface(
+            capabilities=self._comm.Capabilities
+        ).supported_applied_current_ranges
 
     def supported_bipot_current_ranges(self: HasCommProtocol) -> list[AllowedCurrentRanges]:
         """List bipot current ranges supported by this device.
@@ -80,7 +84,9 @@ class CapabilitiesMixin:
             List of supported current ranges.
         """
         self.ensure_connection()
-        return CapabilitiesInterface(comm=self._comm).supported_bipot_current_ranges
+        return CapabilitiesInterface(
+            capabilities=self._comm.Capabilities
+        ).supported_bipot_current_ranges
 
     def supported_potential_ranges(self: HasCommProtocol) -> list[AllowedPotentialRanges]:
         """List applied potential ranges supported by this device.
@@ -91,7 +97,9 @@ class CapabilitiesMixin:
             List of supported potential ranges.
         """
         self.ensure_connection()
-        return CapabilitiesInterface(comm=self._comm).supported_potential_ranges
+        return CapabilitiesInterface(
+            capabilities=self._comm.Capabilities
+        ).supported_potential_ranges
 
     def get_estimated_duration(
         self: HasCommProtocol,

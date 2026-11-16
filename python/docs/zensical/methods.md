@@ -101,7 +101,7 @@ False
 
 ```
 
-!!! Tip: Code Completion
+!!! Tip "Code Completion"
 
     The VSCode Debug Console or other Python REPL environments like [IPython](https://ipython.readthedocs.io) will offer auto-completion for properties and functions.
 
@@ -245,6 +245,29 @@ applied_current_range
   Input should be '100pA', '1nA', ... or '1A' [type=literal_error, input_value='1GA', input_type=str]
     For further information visit https://errors.pydantic.dev/2.13/v/literal_error
 
+```
+
+## Device support
+
+You can check if your device supports the method using `method.supports()` and `method.capability_errors()`. Note methods are always validated before a measurement is started.
+
+```pycon
+>>> method = ps.CyclicVoltammetry()
+>>> method.current_range.min = '100pA'
+>>> method.capability_errors('EmStat4HR')
+["Unsupported current range value: min='100pA'"]
+>>> method.supports('EmStat4HR')
+False
+>>> method.supports('PalmSens4')
+True
+
+>>> method = ps.MethodScript()
+>>> method.capability_errors('PalmSens4')
+['This device does not support method script']
+>>> method.supports('PalmSens4')
+False
+>>> method.supports('EmStat4HR')
+True
 ```
 
 ## Starting a measurement

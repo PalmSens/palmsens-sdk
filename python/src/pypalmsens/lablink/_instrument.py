@@ -18,9 +18,10 @@ from typing import (
     Protocol,
     Self,
     overload,
-    override,
     runtime_checkable,
 )
+
+from typing_extensions import override
 
 from .._converters import cr_string_to_sig_exp, pr_string_to_sig_exp
 from .._types import (

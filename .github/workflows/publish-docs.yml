@@ -47,7 +47,7 @@ jobs:
       run: dotnet tool update -g docfx
 
     - name: Setup python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: 3.x
 

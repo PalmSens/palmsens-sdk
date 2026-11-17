@@ -54,6 +54,7 @@ changelog = "https://github.com/palmsens/palmsens-sdk/releases"
 develop = [
     "bump-my-version",
     "coverage",
+    "deepdiff",
     "pre-commit",
     "pytest",
     "pytest-asyncio",

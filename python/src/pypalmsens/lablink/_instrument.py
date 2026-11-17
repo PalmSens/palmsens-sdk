@@ -26,7 +26,6 @@ from .._converters import cr_string_to_sig_exp, pr_string_to_sig_exp
 from .._types import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
-    MethodType,
     MethodTypeCompatible,
 )
 from ..exceptions import MethodIncompatibleError
@@ -64,7 +63,7 @@ class InstrumentReadsMixin:
         """
         return self._session.instrument_info[self._serial]
 
-    def require_supports(self, method: MethodType) -> None:
+    def require_supports(self, method: MethodTypeCompatible) -> None:
         model = self.info['Model']
         errors = method.capability_errors(model)
 
@@ -269,6 +268,8 @@ class InstrumentClaim(InstrumentReadsMixin):
         job : MeasurementJob
             Reference to the measurement job
         """
+        self.require_supports(method)
+
         payload = to_payload(method)
 
         response = await self._session._http.post(

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 
 import pytest
@@ -41,7 +43,9 @@ from test_techniques import (
 
 import pypalmsens as ps
 from pypalmsens import lablink
+from pypalmsens._instruments.shared import MethodIncompatibleError
 from pypalmsens._methods import BaseTechnique
+from pypalmsens.lablink._errors import LablinkClientError
 
 
 @pytest_asyncio.fixture(scope='module')
@@ -82,179 +86,79 @@ async def test_start_many(session: lablink.Session):
 
 @pytest.mark.lablink
 @pytest.mark.asyncio
+def needs_technique_support(technique_id: str):
+    """Lablink has no implementation for this technique."""
+    return pytest.mark.xfail(
+        raises=NotImplementedError,
+        reason=f'Lablink does not support {technique_id!r}',
+    )
+
+
+def not_supported_by_device(method_name: str, device: str = 'EmStat4LR'):
+    """pypalmsens knows the method, but the attached device does not."""
+    return pytest.mark.xfail(
+        raises=MethodIncompatibleError,
+        reason=f'{method_name} is not supported by {device}',
+    )
+
+
+NO_SCAN_TYPE = pytest.mark.xfail(
+    raises=NotImplementedError,
+    reason="Lablink does not support 'scan_type'",
+)
+NO_FREQUENCY_TYPE = pytest.mark.xfail(
+    raises=NotImplementedError,
+    reason="Lablink does not support 'frequency_type'",
+)
+COMMAND_UNSUPPORTED = pytest.mark.xfail(
+    raises=LablinkClientError,
+    reason='The Command Is Unsupported.',
+)
+NO_IMPEDANCE_STAGE = pytest.mark.xfail(
+    raises=NotImplementedError,
+    reason="Lablink does not support the 'Impedance' stage",
+)
+
+
+@pytest.mark.lablink
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     'method',
     (
         CV,
-        pytest.param(
-            FCV,
-            # marks=pytest.mark.xfail(
-            #     raises=System.NotImplementedException,
-            #     reason='Mapping FastCyclicVoltammetry between the legacy method and the domain is not supported yet.',
-            # ),
-        ),
+        pytest.param(FCV, marks=needs_technique_support('fcv')),
         LSV,
         LSV_aux,
-        pytest.param(
-            ACV,
-            # marks=pytest.mark.skip(
-            #     reason='Hangs on System.Text.Json.JsonException: The JSON value could not be converted to System.Double.'
-            # ),
-        ),
+        ACV,
         SWV,
-        pytest.param(
-            CP,
-            # marks=pytest.mark.xfail(
-            #     raises=System.Net.Http.HttpRequestException,
-            #     reason='ES4LR20B0008 returned error code 405',
-            # ),
-        ),
-        pytest.param(
-            SCP,
-            # marks=pytest.mark.xfail(
-            #     raises=System.Net.Http.HttpRequestException,
-            #     reason='ES4LR20B0008 returned error code 405',
-            # ),
-        ),
-        pytest.param(
-            LSP,
-            # marks=pytest.mark.xfail(
-            #     raises=System.Net.Http.HttpRequestException,
-            #     reason='ES4LR20B0008 returned error code 405',
-            # ),
-        ),
-        pytest.param(
-            OCP,
-            # marks=pytest.mark.xfail(
-            #     raises=System.Net.Http.HttpRequestException,
-            #     reason='ES4LR20B0008 returned error code 405',
-            # ),
-        ),
+        CP,
+        pytest.param(SCP, marks=not_supported_by_device('StrippingChronoPotentiometry')),
+        LSP,
+        OCP,
         CA,
         FAM,
         DPV,
         PAD,
-        pytest.param(
-            MPAD,
-            # marks=pytest.mark.xfail(
-            #     raises=System.Net.Http.HttpRequestException,
-            #     reason='ES4LR20B0008 returned error code 405',
-            # ),
-        ),
+        pytest.param(MPAD, marks=not_supported_by_device('MultiplePulseAmperometry')),
         NPV,
         MA,
-        pytest.param(
-            MP,
-            # marks=pytest.mark.xfail(
-            #     raises=System.Net.Http.HttpRequestException,
-            #     reason='ES4LR20B0008 returned error code 405',
-            # ),
-        ),
+        MP,
         CC,
-        pytest.param(
-            EIS,
-            # marks=pytest.mark.xfail(
-            #     raises=System.Net.Http.HttpRequestException,
-            #     reason='ES4LR20B0008 returned error code 405',
-            # ),
-        ),
-        pytest.param(
-            EIS_pot_fixed,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentNullException,
-            #     reason='Value cannot be null. (Parameter `method.ToMethodParameters()`)',
-            # ),
-        ),
-        pytest.param(
-            EIS_pot_scan,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentNullException,
-            #     reason='Value cannot be null. (Parameter `method.ToMethodParameters()`)',
-            # ),
-        ),
-        pytest.param(
-            EIS_time_scan,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentNullException,
-            #     reason='Value cannot be null. (Parameter `method.ToMethodParameters()`)',
-            # ),
-        ),
-        pytest.param(
-            EIS_time_fixed,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentNullException,
-            #     reason='Value cannot be null. (Parameter `method.ToMethodParameters()`)',
-            # ),
-        ),
-        pytest.param(
-            EIS_single_point,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentNullException,
-            #     reason='Value cannot be null. (Parameter `method.ToMethodParameters()`)',
-            # ),
-        ),
-        pytest.param(
-            FIS,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentOutOfRangeException,
-            #     reason='Specified argument was out of the range of valid values. (Parameter `legacyTechnique`)',
-            # ),
-        ),
-        pytest.param(
-            GIS_cur_fixed,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentNullException,
-            #     reason='Value cannot be null. (Parameter `method.ToMethodParameters()`)',
-            # ),
-        ),
-        pytest.param(
-            GIS_cur_scan,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentNullException,
-            #     reason='Value cannot be null. (Parameter `method.ToMethodParameters()`)',
-            # ),
-        ),
-        pytest.param(
-            GIS_time_scan,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentNullException,
-            #     reason='Value cannot be null. (Parameter `method.ToMethodParameters()`)',
-            # ),
-        ),
-        pytest.param(
-            GIS_time_fixed,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentNullException,
-            #     reason='Value cannot be null. (Parameter `method.ToMethodParameters()`)',
-            # ),
-        ),
-        pytest.param(
-            GIS_single_point,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentNullException,
-            #     reason='Value cannot be null. (Parameter `method.ToMethodParameters()`)',
-            # ),
-        ),
-        pytest.param(
-            FGIS,
-            # marks=pytest.mark.xfail(
-            #     raises=System.ArgumentOutOfRangeException,
-            #     reason='Specified argument was out of the range of valid values. (Parameter `legacyTechnique`)',
-            # ),
-        ),
-        pytest.param(
-            MS,
-            # marks=pytest.mark.skip(
-            #     reason='Hangs on System.Text.Json.JsonException: The JSON value could not be converted to System.Double.'
-            # ),
-        ),
-        pytest.param(
-            MM,
-            # marks=pytest.mark.xfail(
-            #     raises=System.NotImplementedException,
-            #     reason='Unknown stage type: MixedModeStageEIS',
-            # ),
-        ),
+        EIS,
+        pytest.param(EIS_pot_fixed, marks=NO_SCAN_TYPE),
+        pytest.param(EIS_pot_scan, marks=NO_SCAN_TYPE),
+        pytest.param(EIS_time_scan, marks=NO_SCAN_TYPE),
+        pytest.param(EIS_time_fixed, marks=NO_SCAN_TYPE),
+        pytest.param(EIS_single_point, marks=NO_FREQUENCY_TYPE),
+        pytest.param(FIS, marks=needs_technique_support('fis')),
+        pytest.param(GIS_cur_fixed, marks=NO_SCAN_TYPE),
+        pytest.param(GIS_cur_scan, marks=NO_SCAN_TYPE),
+        pytest.param(GIS_time_scan, marks=NO_SCAN_TYPE),
+        pytest.param(GIS_time_fixed, marks=NO_SCAN_TYPE),
+        pytest.param(GIS_single_point, marks=NO_FREQUENCY_TYPE),
+        pytest.param(FGIS, marks=needs_technique_support('fgis')),
+        pytest.param(MS, marks=COMMAND_UNSUPPORTED),
+        pytest.param(MM, marks=NO_IMPEDANCE_STAGE),
     ),
 )
 async def test_measurements(session: lablink.Session, method):

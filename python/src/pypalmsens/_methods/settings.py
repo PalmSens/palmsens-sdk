@@ -116,11 +116,17 @@ class CurrentRange(BaseSettings):
 
         errors = []
         if self.min not in supported:
-            errors.append(f'Unsupported {prefix}current range value: min={self.min!r}')
+            errors.append(
+                f'Unsupported {prefix}current range value: min={self.min!r} (valid: {supported})'
+            )
         if self.max not in supported:
-            errors.append(f'Unsupported {prefix}current range value: max={self.max!r}')
+            errors.append(
+                f'Unsupported {prefix}current range value: max={self.max!r} (valid: {supported})'
+            )
         if self.start not in supported:
-            errors.append(f'Unsupported {prefix}current range value: start={self.start!r}')
+            errors.append(
+                f'Unsupported {prefix}current range value: start={self.start!r} (valid: {supported})'
+            )
         return errors
 
 
@@ -198,11 +204,13 @@ class PotentialRange(BaseSettings):
         supported = capabilities.supported_potential_ranges
         errors = []
         if self.min not in supported:
-            errors.append(f'Unsupported potential range value: min={self.min!r}')
+            errors.append(f'Unsupported potential range: min={self.min!r} (valid: {supported})')
         if self.max not in supported:
-            errors.append(f'Unsupported potential range value: max={self.max!r}')
+            errors.append(f'Unsupported potential range: max={self.max!r} (valid: {supported})')
         if self.start not in supported:
-            errors.append(f'Unsupported potential range value: start={self.start!r}')
+            errors.append(
+                f'Unsupported potential range: start={self.start!r} (valid: {supported})'
+            )
         return errors
 
 

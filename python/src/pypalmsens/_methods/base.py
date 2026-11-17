@@ -123,7 +123,19 @@ class BaseTechnique(BaseSettings):
         """
         capabilities = get_capabilities(target)
         psmethod = self._to_psmethod()
-        errors = [str(error) for error in psmethod.Validate(capabilities.capabilities)]
+        errors = []
+        for error in psmethod.Validate(capabilities.capabilities):
+            if not error.IsFatal:
+                continue
+            error_str = str(error)
+            if (
+                'Contact PalmSens BV or your local distributor to upgrade your license.'
+                in error_str
+            ):
+                continue
+            if 'stages are not supported by connected device.' in error_str:
+                continue
+            errors.append(error_str)
 
         try:
             _errors = self._capability_errors(capabilities)

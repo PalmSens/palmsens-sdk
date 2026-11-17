@@ -923,7 +923,7 @@ def _build_multistepotentiometry(method: MethodTypeCompatible) -> ParamDict:
 
 def _build_methodscript(method: MethodTypeCompatible) -> ParamDict:
     m = cast(MethodScript, method)
-    return {'Script': f'e\n{m.script}\n'}
+    return {'Script': f'{m.script}'}
 
 
 def _frequencies_per_decade(

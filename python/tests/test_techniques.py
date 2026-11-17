@@ -323,7 +323,7 @@ class CP:
         'applied_current_range': '100uA',
         'interval_time': 0.1,
         'run_time': 1.0,
-        'potential_range': {'max': '1V', 'min': '10mV', 'start': '1V'},
+        'potential_range': {'max': '1V', 'min': '100mV', 'start': '1V'},
     }
 
     @staticmethod
@@ -372,7 +372,7 @@ class LSP:
         'applied_current_range': '100uA',
         'current_step': 0.1,
         'scan_rate': 8.0,
-        'potential_range': {'max': '1V', 'min': '10mV', 'start': '1V'},
+        'potential_range': {'max': '1V', 'min': '100mV', 'start': '1V'},
     }
 
     @staticmethod
@@ -395,7 +395,7 @@ class OCP:
     kwargs = {
         'interval_time': 0.1,
         'run_time': 1.0,
-        'potential_range': {'max': '1V', 'min': '10mV', 'start': '1V'},
+        'potential_range': {'max': '1V', 'min': '100mV', 'start': '1V'},
     }
 
     @staticmethod
@@ -597,6 +597,7 @@ class MP:
     id = 'mp'
     kwargs = {
         'interval_time': 0.01,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
         'n_cycles': 2,
         'levels': [
             {'level': 0.5, 'duration': 0.1},
@@ -734,6 +735,7 @@ class EIS:
         'frequency_type': 'scan',
         'min_sampling_time': 0.01,
         'max_equilibration_time': 0.01,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -759,6 +761,7 @@ class EIS_pot_fixed:
         'begin_potential': 0.0,
         'end_potential': -0.1,
         'step_potential': 0.1,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -784,6 +787,7 @@ class EIS_pot_scan:
         'begin_potential': 0.0,
         'end_potential': -0.1,
         'step_potential': 0.1,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -807,6 +811,7 @@ class EIS_time_fixed:
         'scan_type': 'time',
         'frequency_type': 'fixed',
         'run_time': 1.3,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -831,6 +836,7 @@ class EIS_time_scan:
         'scan_type': 'time',
         'frequency_type': 'scan',
         'run_time': 0.4,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -853,6 +859,7 @@ class EIS_single_point:
         'min_frequency': 1e3,
         'scan_type': 'fixed',
         'frequency_type': 'fixed',
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -871,7 +878,9 @@ class FIS:
     id = 'fis'
     kwargs = {
         'frequency': 40000,
-        'run_time': 0.5,
+        'run_time': 0.1,
+        'interval_time': 0.9,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -926,13 +935,14 @@ class FIS:
 class GIS:
     id = 'gis'
     kwargs = {
-        'applied_current_range': '10uA',
+        'applied_current_range': '1uA',
         'equilibration_time': 0.0,
         'n_frequencies': 5,
         'max_frequency': 1e5,
         'min_frequency': 1e3,
         'min_sampling_time': 0.01,
         'max_equilibration_time': 0.01,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -958,6 +968,7 @@ class GIS_cur_fixed:
         'begin_current': 0.0,
         'end_current': -0.1,
         'step_current': 0.1,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -983,6 +994,7 @@ class GIS_cur_scan:
         'begin_current': 0.0,
         'end_current': -0.1,
         'step_current': 0.1,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -1006,6 +1018,7 @@ class GIS_time_fixed:
         'scan_type': 'time',
         'frequency_type': 'fixed',
         'run_time': 0.5,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -1030,6 +1043,7 @@ class GIS_time_scan:
         'scan_type': 'time',
         'frequency_type': 'scan',
         'run_time': 0.3,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -1052,6 +1066,7 @@ class GIS_single_point:
         'min_frequency': 1e3,
         'scan_type': 'fixed',
         'frequency_type': 'fixed',
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod
@@ -1069,8 +1084,10 @@ class GIS_single_point:
 class FGIS:
     id = 'fgis'
     kwargs = {
-        'applied_current_range': '10uA',
+        'applied_current_range': '1uA',
         'run_time': 0.3,
+        'interval_time': 0.9,
+        'potential_range': {'min': '100mV', 'max': '1V', 'start': '1V'},
     }
 
     @staticmethod

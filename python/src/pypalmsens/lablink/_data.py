@@ -9,12 +9,13 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from datetime import datetime
-from typing import Any, ClassVar, Literal, Self, cast, overload, override
+from typing import Any, ClassVar, Literal, Self, cast, overload
 
 import System
 import xarray as xr
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Data as PSData
 from PalmSens.Sdk.Lablink.Example.Lablink.Models import Dtos as PSDtos
+from typing_extensions import override
 
 from .._data import Method
 from .._data.data_array import implementation

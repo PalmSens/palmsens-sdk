@@ -308,7 +308,10 @@ class CapabilitiesInterface(BaseModel):
     @computed_field
     @property
     def serial_number(self) -> str:
-        return str(self.capabilities.DeviceSerial)
+        try:
+            return str(self.capabilities.DeviceSerial)
+        except AttributeError:
+            return ''
 
     @computed_field
     @property

@@ -33,6 +33,10 @@ async def main():
 
     [instrument] = session.instruments
 
+    method.current_range.min = '100pA'
+
+    instrument.require_supports(method)
+
     ret = r(session.list_measurements())
     data = r(ret[0].get_data())
 

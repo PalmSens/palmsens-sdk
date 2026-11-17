@@ -147,5 +147,5 @@ class CapabilitiesMixin:
         errors = psmethod.Validate(capabilities)
 
         if any(error.IsFatal for error in errors):
-            message = '\n'.join([error.Message for error in errors])
-            raise MethodIncompatibleError(f'Method not compatible:\n{message}')
+            model = str(self._comm.DeviceType)
+            raise MethodIncompatibleError(method, model, errors)

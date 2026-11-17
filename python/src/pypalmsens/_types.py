@@ -167,6 +167,9 @@ class MethodTypeCompatible(Protocol):
 
     def _to_psmethod(self) -> PalmSens.Method: ...
 
+    def supports(self, model: str) -> bool: ...
+    def capability_errors(self, model: str) -> list[str]: ...
+
 
 class MethodType(MethodTypeCompatible, Protocol):
     """Methods with complete implementation in .NET."""

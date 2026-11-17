@@ -9,6 +9,7 @@ instrument. The claim is released when the context exits.
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Sequence
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -21,10 +22,14 @@ from typing import (
     runtime_checkable,
 )
 
-from pandas.io.formats.style_render import Sequence
-
 from .._converters import cr_string_to_sig_exp, pr_string_to_sig_exp
-from .._types import AllowedCurrentRanges, AllowedPotentialRanges, MethodTypeCompatible
+from .._types import (
+    AllowedCurrentRanges,
+    AllowedPotentialRanges,
+    MethodType,
+    MethodTypeCompatible,
+)
+from ..exceptions import MethodIncompatibleError
 from ._measurement import Measurement, MeasurementJob
 from .models._method_mapper import to_payload
 from .models._wire import (
@@ -58,6 +63,13 @@ class InstrumentReadsMixin:
         May be stale or empty.
         """
         return self._session.instrument_info[self._serial]
+
+    def require_supports(self, method: MethodType) -> None:
+        model = self.info['Model']
+        errors = method.capability_errors(model)
+
+        if errors:
+            raise MethodIncompatibleError(method=method, model=model, errors=errors)
 
     async def get_info(self) -> dict[str, Any]:
         """Get info for instrument.

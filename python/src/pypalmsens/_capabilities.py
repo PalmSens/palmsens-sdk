@@ -125,7 +125,7 @@ class CapabilitiesInterface(BaseModel):
     @property
     def connection(self) -> str:
         try:
-            return self.capabilities.ConnDescription
+            return self.capabilities.ConnDescription or ''
         except AttributeError:
             return ''
 
@@ -189,7 +189,7 @@ class CapabilitiesInterface(BaseModel):
     @computed_field
     @property
     def firmware_build_date(self) -> str:
-        return self.capabilities.FirmwareTimeStamp
+        return self.capabilities.FirmwareTimeStamp or ''
 
     @computed_field
     @property
@@ -207,7 +207,7 @@ class CapabilitiesInterface(BaseModel):
     @computed_field
     @property
     def firmware_special_description(self) -> str:
-        return self.capabilities.SpecialFirmwareDescription
+        return self.capabilities.SpecialFirmwareDescription or ''
 
     @computed_field
     @property
@@ -241,12 +241,12 @@ class CapabilitiesInterface(BaseModel):
 
     @computed_field
     @property
-    def is_hw_sync_master(self) -> bool:
+    def is_hw_sync_main(self) -> bool:
         return self.capabilities.IsHardwareSynchronizationMaster
 
     @computed_field
     @property
-    def is_hw_sync_slave(self) -> bool:
+    def is_hw_sync_follower(self) -> bool:
         return self.capabilities.IsSlaveChannel
 
     @computed_field
@@ -447,11 +447,11 @@ class Capabilities(BaseModel):
     is_galvanostat: bool
     """True if the potentiastat can act as a galvanostat."""
 
-    is_hw_sync_master: bool
-    """Gets or sets a value indicating whether this instance is designated as the hardware synchronization master in MultiTrace."""
+    is_hw_sync_main: bool
+    """Gets or sets a value indicating whether this instance is designated as the main hardware synchronization channel in MultiTrace."""
 
-    is_hw_sync_slave: bool
-    """Gets or sets a value indicating whether this instance is slave channel in a multichannel device."""
+    is_hw_sync_follower: bool
+    """Gets or sets a value indicating whether this instance is a follower channel in a multichannel device."""
 
     max_current: float
     """Maximum current (* current range) that can be read/applied"""

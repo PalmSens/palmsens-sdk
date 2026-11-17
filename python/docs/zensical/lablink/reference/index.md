@@ -1,26 +1,26 @@
 # Lablink API reference
 
-The reference for the [pypalmsens.lablink][] module: connecting to Lablink instances, claiming instruments, running measurements, and fetching data. Everything that talks to the server is async. See [the lablink introduction](../index.md) for a walkthrough and [concepts](../concept.md) for the object model.
-
-## Classes
-
-- [Instance][pypalmsens.lablink.Instance] — a Lablink server: its address plus cached metadata
-- [Session][pypalmsens.lablink.Session] — an authenticated connection; the root object
-- [Instrument][pypalmsens.lablink.Instrument] — a reference to an attached instrument
-- [InstrumentClaim][pypalmsens.lablink.InstrumentClaim] — an exclusive lease on an instrument
-- [InstrumentClaimBatch][pypalmsens.lablink.InstrumentClaimBatch] — a group of claims that release together
-- [Measurement][pypalmsens.lablink.Measurement] — a reference to a stored measurement
-- [MeasurementJob][pypalmsens.lablink.MeasurementJob] — a handle to a running measurement
-
-## Exceptions
-
-- [LablinkApiError][pypalmsens.lablink.LablinkApiError] — base class for API errors
-- [NoActiveMeasurementError][pypalmsens.lablink.NoActiveMeasurementError] — conflict: no active measurement
-- [LablinkClientError][pypalmsens.lablink.LablinkClientError] — 4xx errors
-- [LablinkServerError][pypalmsens.lablink.LablinkServerError] — 5xx errors
+The reference for the [pypalmsens.lablink][] module: connecting to Lablink instances, claiming instruments, running measurements, and fetching data. All methods that talk to the server are async. See [the lablink introduction](../index.md) for how to get started and [concepts](../concept.md) for the object model.
 
 ## Functions
 
-### discover
+- [`discover`][pypalmsens.lablink.discover] – Discover lablink instances on the network
+
+## Classes
+
+- [`Instance`][pypalmsens.lablink.Instance] – Lablink instance: address plus cached metadata
+- [`Session`][pypalmsens.lablink.Session] – Authenticated Lablink connection
+- [`Instrument`][pypalmsens.lablink.Instrument] – Reference to an attached instrument
+- [`InstrumentClaim`][pypalmsens.lablink.InstrumentClaim] – Exclusive claim on an instrument
+- [`InstrumentClaimBatch`][pypalmsens.lablink.InstrumentClaimBatch] – Group of instrument claims
+- [`Measurement`][pypalmsens.lablink.Measurement] – Reference to a stored measurement
+- [`MeasurementJob`][pypalmsens.lablink.MeasurementJob] – Handle to an active measurement
+
+## Exceptions
+
+- [`LablinkApiError`][pypalmsens.lablink.LablinkApiError] – Base class for API errors
+- [`NoActiveMeasurementError`][pypalmsens.lablink.NoActiveMeasurementError] – No active measurement
+- [`LablinkClientError`][pypalmsens.lablink.LablinkClientError] – Client errors (4xx)
+- [`LablinkServerError`][pypalmsens.lablink.LablinkServerError] – Server errors (5xx)
 
 ::: pypalmsens.lablink.discover

@@ -3,10 +3,12 @@ from __future__ import annotations
 import asyncio
 import warnings
 from math import floor
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Final, TypeVar
 
 import System
 from PalmSens.Comm import enumDeviceType
+
+from pypalmsens._types import MethodTypeCompatible
 
 from .. import __sdk_version__
 
@@ -17,7 +19,15 @@ if TYPE_CHECKING:
 T = TypeVar('T')
 
 
-class MethodIncompatibleError(ValueError): ...
+class MethodIncompatibleError(ValueError):
+    def __init__(self, method: MethodTypeCompatible, model: str, errors: list[str]):
+        self.method: Final = method
+        self.model: Final = model
+        self.errors: Final = list(errors)
+        super().__init__(
+            f'{type(method).__name__} is not supported by {model}:\n'
+            + '\n'.join(f' - {e}' for e in self.errors)
+        )
 
 
 def wrap_task(clr_task: System.Task[T]) -> asyncio.Future[T]:

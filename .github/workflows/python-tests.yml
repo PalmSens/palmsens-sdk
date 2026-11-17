@@ -57,7 +57,7 @@ jobs:
       - name: Install dependencies
         if: steps.cache-virtualenv.outputs.cache-hit != 'true'
         run: |
-          python -m pip install -e .[develop]
+          python -m pip install -e .[develop,lablink]
 
       - name: Test with pytest
         run: |

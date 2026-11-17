@@ -1659,7 +1659,9 @@ class BaseChronoPotentiometry(
     def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
         supported = capabilities.supported_applied_current_ranges
         if self.applied_current_range not in supported:
-            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+            return [
+                f'Unsupported value for `applied_current_range`: {self.applied_current_range!r} (valid: {supported})'
+            ]
         return []
 
 
@@ -1827,7 +1829,9 @@ class StrippingChronoPotentiometry(
     def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
         supported = capabilities.supported_applied_current_ranges
         if self.applied_current_range not in supported:
-            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+            return [
+                f'Unsupported value for `applied_current_range`: {self.applied_current_range!r} (valid: {supported})'
+            ]
         return []
 
 
@@ -1966,7 +1970,9 @@ class LinearSweepPotentiometry(
     def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
         supported = capabilities.supported_applied_current_ranges
         if self.applied_current_range not in supported:
-            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+            return [
+                f'Unsupported value for `applied_current_range`: {self.applied_current_range!r} (valid: {supported})'
+            ]
         return []
 
 
@@ -2087,7 +2093,9 @@ class MultiStepPotentiometry(
     def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
         supported = capabilities.supported_applied_current_ranges
         if self.applied_current_range not in supported:
-            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+            return [
+                f'Unsupported value for `applied_current_range`: {self.applied_current_range!r} (valid: {supported})'
+            ]
         return []
 
 
@@ -2905,7 +2913,7 @@ class GalvanostaticImpedanceSpectroscopy(
     The smallest step is instrument-specific: from 0.000038 times the applied
     current range on Nexus to 0.000183 times on EmStat4 HR."""
 
-    min_sampling_time: float = Field(0.5, gt=0)
+    min_sampling_time: float = Field(default=0.5, gt=0)
     """Minimum sampling time in s.
 
     Each measurement point of the impedance spectrum is performed
@@ -2998,7 +3006,9 @@ class GalvanostaticImpedanceSpectroscopy(
     def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
         supported = capabilities.supported_applied_current_ranges
         if self.applied_current_range not in supported:
-            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+            return [
+                f'Unsupported value for `applied_current_range`: {self.applied_current_range!r} (valid: {supported})'
+            ]
         return []
 
 
@@ -3095,7 +3105,9 @@ class FastGalvanostaticImpedanceSpectroscopy(
     def _capability_errors(self, capabilities: CapabilitiesInterface) -> list[str]:
         supported = capabilities.supported_applied_current_ranges
         if self.applied_current_range not in supported:
-            return [f'Unsupported applied current range: {self.applied_current_range!r}']
+            return [
+                f'Unsupported value for `applied_current_range`: {self.applied_current_range!r} (valid: {supported})'
+            ]
         return []
 
 

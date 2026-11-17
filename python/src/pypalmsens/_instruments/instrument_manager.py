@@ -230,7 +230,7 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         Parameters
         -------
         mode : str
-            One of 'potentiostatic' or 'galvanostatic'
+            One of 'potentiostatic' or 'galvanostatic'.
         """
         if mode == 'galvanostatic':
             _mode = PSComm.EnumMode.Galvanostatic

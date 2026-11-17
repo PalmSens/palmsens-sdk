@@ -181,3 +181,22 @@ if __name__ == '__main__':
     asyncio.run(main())
 
 ```
+
+## Hardware sync
+
+On multichannel devices that support it, hardware sync can be used to [synchronize measurements between multiple channels](../measuring.md#multichannel-measurements).
+When synchronization is enabled the follower device will wait until the main channel enables synchronisation.
+After that, the follower and main will synchronize their measurement loop start and iterations.
+
+Your pool of instruments must contain:
+
+* channels from a ([virtual](https://www.palmsens.com/nexus-as-a-multi-channel-instrument/)) [multichannel instrument](https://www.palmsens.com/knowledgebase-article/multichannel-potentiostat/)
+* the first / main channel
+* at least one follower channel
+
+To start a measurement with hardware sync:
+
+1. Enable hardware sync on the method with [`use_hardware_sync = True`][pypalmsens.settings.General.use_hardware_sync].
+2. (optional) Configure the main/follower channels for devices that support it. Multi-instrument devices cannot be configured, channel 1 is always the main channel.
+3. Start the measurement on the follower channels. The instrument are prepared and put in a waiting state.
+4. Start the measurement on the main channel. This will trigger the other instruments to start as well.

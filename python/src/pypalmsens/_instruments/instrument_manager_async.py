@@ -146,7 +146,7 @@ class InstrumentManagerAsync(CapabilitiesMixin, EventsMixin):
 
     def is_measuring(self) -> bool:
         """Return True if device is measuring."""
-        return int(self._comm.State) == PSComm.CommManager.DeviceState.Measurement
+        return self._comm.State == PSComm.CommManager.DeviceState.Measurement
 
     @asynccontextmanager
     async def _lock(self) -> AsyncGenerator[PSComm.CommManager]:

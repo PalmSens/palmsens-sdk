@@ -190,11 +190,12 @@ def _add_post_measurement(p: ParamDict, pm: PostMeasurement) -> None:
         p['CellModeAfterMeasurement'] = 'CellModeAfterMeasurementOff'
 
 
-def _add_general(p: ParamDict, gen: General) -> None:
+def _add_general(p: ParamDict, gen: General, *, hardware_sync: bool = True) -> None:
     """Only hardware sync maps. Mains frequency lives in configure, other settings deferred."""
     default = General()
 
-    p['EnableHardwareSync'] = gen.use_hardware_sync
+    if hardware_sync:
+        p['EnableHardwareSync'] = gen.use_hardware_sync
 
     if gen.power_frequency != default.power_frequency:
         raise ValueError(
@@ -714,7 +715,7 @@ def _build_strippingchronopotentiometry(method: MethodTypeCompatible) -> ParamDi
     _add_post_measurement(p, m.post_measurement)
 
     p['EnableDropDetection'] = False
-    _add_general(p, m.general)
+    _add_general(p, m.general, hardware_sync=False)
     return p
 
 
@@ -995,7 +996,7 @@ def _build_eis(method: MethodTypeCompatible) -> ParamDict:
     _add_post_measurement(p, m.post_measurement)
 
     p['EnableDropDetection'] = False
-    _add_general(p, m.general)
+    _add_general(p, m.general, hardware_sync=False)
     return p
 
 
@@ -1046,7 +1047,7 @@ def _build_gis(method: MethodTypeCompatible) -> ParamDict:
     _add_post_measurement(p, m.post_measurement)
 
     p['EnableDropDetection'] = False
-    _add_general(p, m.general)
+    _add_general(p, m.general, hardware_sync=False)
     return p
 
 

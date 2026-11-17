@@ -157,7 +157,7 @@ NO_IMPEDANCE_STAGE = pytest.mark.xfail(
         pytest.param(GIS_time_fixed, marks=NO_SCAN_TYPE),
         pytest.param(GIS_single_point, marks=NO_FREQUENCY_TYPE),
         pytest.param(FGIS, marks=needs_technique_support('fgis')),
-        pytest.param(MS, marks=COMMAND_UNSUPPORTED),
+        MS,
         pytest.param(MM, marks=NO_IMPEDANCE_STAGE),
     ),
 )

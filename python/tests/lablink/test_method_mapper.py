@@ -312,7 +312,7 @@ def test_guard_mixed_mode_impedance_stage() -> None:
 def test_methodscript_sends_the_legacy_script() -> None:
     payload = to_payload(make('ms', script='cell_on\n'))
     params = cast('dict[str, str]', payload['MethodParameters'])
-    assert params['Script'] == '["e\\ncell_on\\n\\n"]'
+    assert params['Script'] == '["cell_on\\n"]'
     assert params['Name'] == '["MethodScriptSandbox"]'
     assert set(params) == {'Name', 'Script'}
 

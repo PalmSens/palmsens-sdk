@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from .capabilities import AnalogComponent, Capabilities
 from .comm_protocol import CommProtocol, CommProtocolError
 from .comm_protocol_async import CommProtocolAsync
 from .filesystem import DeviceFileSystem, DevicePath, FileSystemException
@@ -20,8 +19,6 @@ from .instrument_pool import InstrumentPool
 from .instrument_pool_async import InstrumentPoolAsync
 
 __all__ = [
-    'AnalogComponent',
-    'Capabilities',
     'CommProtocol',
     'CommProtocolAsync',
     'CommProtocolError',

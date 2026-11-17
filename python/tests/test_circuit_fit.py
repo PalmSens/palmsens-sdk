@@ -4,7 +4,8 @@ import pytest
 from numpy.testing import assert_allclose
 from PalmSens import Fitting as PSFitting
 
-from pypalmsens.fitting import CircuitModel, Parameter, Parameters
+from pypalmsens.data import DataSet
+from pypalmsens.fitting import CircuitModel, Parameter, Parameters, SimulatedResult
 
 
 def test_parameter_slots():
@@ -103,3 +104,27 @@ def test_eis_data_valid_hash_fail(measurement_eis_5freq):
     model = CircuitModel(cdc=cdc)
 
     _ = model.fit(eis_data)
+
+
+def test_simulate():
+    cdc = 'R(RC)'
+    parameters = [560, 10_000, 33e-8]
+
+    model = CircuitModel(cdc=cdc)
+    ret = model.simulate(parameters=parameters)
+
+    assert isinstance(ret, SimulatedResult)
+
+    assert ret.cdc == cdc
+    assert ret.parameters == parameters
+
+    n = len(ret.omega)
+    assert len(ret.frequency) == n
+    assert ret.frequency[0] == 10
+    assert ret.frequency[-1] == 100_000
+
+    assert len(ret.z_imag) == n
+    assert len(ret.z_imag) == n
+    assert len(ret.phase) == n
+
+    assert isinstance(ret.to_dataset(), DataSet)

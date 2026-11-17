@@ -4,10 +4,13 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal
 
+import numpy as np
 import System
 from PalmSens import Fitting as PSFitting
 from PalmSens.Fitting import Models as PSModels
 from typing_extensions import override
+
+from pypalmsens._data import DataArray, DataSet
 
 from ._data.curve import Curve
 from ._data.eisdata import EISData
@@ -110,6 +113,104 @@ class Parameters(Sequence[Parameter]):
 
 
 @dataclass(frozen=True)
+class SimulatedResult:
+    """Container for the simulated impedance spectrum and the inputs used to generate it."""
+
+    cdc: str
+    """Circuit description (CDC) string the spectrum was simulated from."""
+    parameters: list[float]
+    """Parameters used to simulate the circuit"""
+    omega: np.ndarray
+    """Angular frequency in rad/s."""
+    z: np.ndarray
+    """Complex impedance in Ω."""
+
+    @property
+    def z_real(self) -> np.ndarray:
+        """Real part of the impedance in Ω."""
+        return self.z.real
+
+    @property
+    def z_imag(self) -> np.ndarray:
+        """Imaginary part of the impedance in Ω."""
+        return self.z.imag
+
+    @property
+    def frequency(self) -> np.ndarray:
+        """Frequency in Hz, computed as `omega / (2 * pi)`."""
+        return self.omega / (2 * np.pi)
+
+    @property
+    def phase(self) -> np.ndarray:
+        """Impedance phase angle in degrees."""
+        return np.angle(self.z, deg=True)
+
+    def to_dataset(self) -> DataSet:
+        """Convert the spectrum to a `DataSet`.
+
+        Contains frequency, ZRe, ZIm, and Phase arrays.
+
+        Returns
+        -------
+        dataset : DataSet
+        """
+        zre = DataArray(self.z_real, array_type='ZRe')
+        zim = DataArray(self.z_imag, array_type='ZIm')
+        phase = DataArray(self.phase, array_type='Phase')
+        f = DataArray(self.frequency, array_type='Frequency')
+
+        return DataSet([f, zre, zim, phase])
+
+    def plot_nyquist(self) -> figure.Figure:
+        """Return a Matplotlib figure with the Nyquist plot (−Z" vs Z')."""
+        import matplotlib.pyplot as plt
+
+        fig, ax = plt.subplots()
+        _ = ax.set_title('Nyquist plot')
+
+        _ = ax.plot(self.z_real, -self.z_imag, marker='^', linestyle='None')
+        _ = ax.set_xlabel("Z' (Ω)")
+        _ = ax.set_ylabel('-Z" (Ω)')
+        _ = ax.axis('equal')
+
+        return fig
+
+    def plot_bode(self) -> figure.Figure:
+        """Return a Matplotlib figure with the Bode plot (|Z| and −phase vs frequency)."""
+        import matplotlib.pyplot as plt
+
+        fig, ax1 = plt.subplots()
+        _ = ax1.set_title('Bode plot')
+        _ = ax1.set_xscale('log')
+        _ = ax1.set_yscale('log')
+
+        _ = ax1.plot(
+            self.frequency, self.z_real, marker='^', linestyle='None', color='C0', label='Z'
+        )
+
+        ax2 = ax1.twinx()
+        _ = ax2.plot(
+            self.frequency,
+            -self.phase,
+            marker='o',
+            linestyle='None',
+            color='C1',
+            label='-Phase',
+        )
+
+        _ = ax1.set_xlabel('Frequency (Hz)')
+        _ = ax1.set_ylabel('Z (Ω)')
+        _ = ax2.set_ylabel('-Phase (°)')
+
+        h1, l1 = ax1.get_legend_handles_labels()
+        h2, l2 = ax2.get_legend_handles_labels()
+
+        _ = ax2.legend(h1 + h2, l1 + l2, loc='upper right')
+
+        return fig
+
+
+@dataclass(frozen=True)
 class FitResult:
     """Container for fitting results."""
 
@@ -168,7 +269,7 @@ class FitResult:
 
     @classmethod
     def from_eisdata(cls, data: EISData):
-        """Construct fitresulf from EISData."""
+        """Construct FitResult from EISData."""
         return cls(
             cdc=data.cdc,
             parameters=data.cdc_values,
@@ -452,6 +553,79 @@ class CircuitModel:
             opts.SelectedDataPoints = System.Array[bool](bool(item) for item in sel)
 
         return opts
+
+    def simulate(
+        self,
+        parameters: list[float] | Parameters,
+        *,
+        frequencies: list[float] | None = None,
+    ) -> SimulatedResult:
+        """Simulate the impedance response for the equivalent circuit in this model.
+
+        Evaluates the circuit described by `self.cdc` at the requested
+        frequencies and returns the complex impedance together with the frequency
+        used for the calculation.
+
+        Parameters
+        ----------
+        parameters : list of float
+            Values of the circuit's free parameters, ordered exactly as returned
+            by [default_parameters][]. The length must match the number of
+            parameters of the circuit.
+        frequencies : list of float, optional
+            Frequencies in hertz at which the impedance is evaluated. Values must
+            be strictly positive. If `None` (the default), a logarithmically
+            spaced grid of 50 points spanning 10 Hz to 100 kHz is used, i.e.
+            `np.logspace(np.log10(10), np.log10(100_000))`.
+
+        Returns
+        -------
+        SimulatedResult
+            Result object with the following attributes:
+
+            - `cdc` : circuit description used for the simulation
+            - `parameters` : the `parameters` passed in, unmodified.
+            - `omega` : angular frequency in rad/s
+            - `z` : Complex impedance in ohms at each angular frequency
+
+        Raises
+        ------
+        ValueError
+            If `len(parameters)` does not equal `len(self.default_parameters())`.
+
+        See Also
+        --------
+        default_parameters : Names and default values of the circuit parameters,
+            which define the expected ordering of ``parameters``.
+        """
+        if isinstance(parameters, Parameters):
+            if any(p.value is None for p in parameters):
+                raise ValueError('Parameter value cannot be None.')
+            parameters = [p.value for p in parameters if p.value is not None]
+
+        expected_length = len(self.default_parameters())
+        if len(parameters) != expected_length:
+            raise ValueError(
+                f'Invalid parameter length. Expected {expected_length} values for this cdc.'
+            )
+
+        if frequencies is None:
+            frequencies = np.logspace(np.log10(10), np.log10(100_000), 50)
+
+        omega = 2 * np.pi * np.array(frequencies)
+
+        model = PSModels.CircuitModel()
+        model.SetCircuit(self.cdc)
+
+        result = [model.GetValue(parameters, val) for val in omega]
+        z = np.array([complex(c.Real, c.Imaginary) for c in result], dtype=np.complex128)
+
+        return SimulatedResult(
+            cdc=self.cdc,
+            parameters=parameters,
+            omega=omega,
+            z=z,
+        )
 
     @property
     def last_result(self):

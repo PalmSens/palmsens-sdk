@@ -7,6 +7,7 @@ from ._fitting import (
     FitResult,
     Parameter,
     Parameters,
+    SimulatedResult,
 )
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     'FitResult',
     'Parameter',
     'Parameters',
+    'SimulatedResult',
 ]

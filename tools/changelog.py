@@ -76,7 +76,7 @@ def insert_nav(new_version: str):
         else:
             ref = new_version.replace('.', '')
             new_string = (
-                f'{indentation}{{ f"PyPalmSens {new_version}" = f"releases#pypalmsens-{ref}" }}'
+                f'{indentation}{{ "PyPalmSens {new_version}" = "releases#pypalmsens-{ref}" }}'
             )
             print(new_string)
 

@@ -9,6 +9,9 @@ from pypalmsens.data import DataArray, DataSet
 def dataset(measurement_cv_1scan):
     return measurement_cv_1scan.dataset
 
+@pytest.fixture
+def dataset_with_bipot(measurement_cv_1scan_bipot):
+    return measurement_cv_1scan_bipot.dataset
 
 def test_dataset_constructor():
     time = DataArray([1, 2, 3], array_type='Time')
@@ -141,3 +144,17 @@ def test_arrays_by_quantity(dataset):
     assert lst[0].quantity == 'Potential'
 
     assert not dataset.arrays(quantity='laitnetoP')
+
+def test_bipot_arrays(dataset_with_bipot):
+    current_arrays = dataset_with_bipot.arrays(type='Current')
+    assert len(current_arrays) == 1
+    assert current_arrays[0].type == 'Current'
+
+    bipot_current_arrays = dataset_with_bipot.arrays(type='BipotCurrent')
+    assert len(bipot_current_arrays) == 1
+    assert bipot_current_arrays[0].type == 'BipotCurrent'
+
+    dct = dataset_with_bipot.to_dict()
+    expected_keys = ['Current', 'BipotCurrent', 'CR', 'ReadingStatus', 'BipotCR', 'BipotReadingStatus']
+    for key in expected_keys:
+        assert key in dct

@@ -52,3 +52,153 @@ These features are still pending support or missing in Lablink.
 ### Mains frequency
 
 Lablink does not support the setting the [mains/power frequency][pypalmsens.settings.General.power_frequency] on the method. Setting the mains frequency is now handled by the session via [InstrumentClaim.configure][pypalmsens.lablink.InstrumentClaim.configure].
+
+## Lablink API endpoints
+
+Base route: `api/v1`. `Internal` / `Stable` / `Python` track implementation status.
+
+**Total: 67 endpoints.** All endpoints except `Auth` and `Home` require a JWT bearer token.
+
+### Auth
+
+Path: `/Auth` (anonymous)
+
+| Method | Path | Action | Internal | Stable | Python |
+|---|---|---|---|---|---|
+| POST | `/Auth/Register` | `Register` |  |  | ✓ |
+| POST | `/Auth/ApiKey`   | `ApiKey` |  |  | ✓ |
+
+### Home
+
+Path: `/Home` (anonymous)
+
+| Method | Path | Action | Internal | Stable | Python |
+|---|---|---|---|---|---|
+| GET | `/Home/GetInfo` | `GetInfo` |  |  | ✓ |
+| GET | `/Home/GetConnectionType` | `GetConnectionType` |  |  |  |
+| GET | `/Home/DiscoverLablinkList` | `DiscoverLablinkList` |  |  |  |
+
+### DataSets
+
+Path: `/DataSets`
+
+| Method | Path | Action | Internal | Stable | Python |
+|---|---|---|---|---|---|
+| GET | `/DataSets/{dataSetId:guid}/{dataValuesId:guid}` | `GetDataValues` (`FileStreamResult`, range processing enabled) |  |  |  |
+
+### Instruments
+
+Path: `/Instruments`
+
+| Method | Path | Action | Internal | Stable | Python |
+|---|---|---|---|---|---|
+| GET | `/Instruments` | `Get` (all instruments) |  |  | ✓ |
+| POST | `/Instruments/State` | `GetInstrumentState` |  |  |  |
+| POST | `/Instruments/Claim` | `Claim` |  |  | ✓ |
+| POST | `/Instruments/ManualClaim` | `ForceClaim` |  |  | ✓ |
+| POST | `/Instruments/Unclaim` | `Unclaim` |  |  | ✓ |
+| POST | `/Instruments/StartMeasurement` | `Start` |  |  | ✓ |
+| POST | `/Instruments/SkipPreMeasurementStage` | `SkipPreMeasurementStage` |  |  | ✓ |
+| POST | `/Instruments/PauseMeasurement` | `Pause` |  |  | ✓ |
+| POST | `/Instruments/ResumeMeasurement` | `Resume` |  |  | ✓ |
+| POST | `/Instruments/AbortMeasurement` | `Abort` |  |  | ✓ |
+| POST | `/Instruments/SetCustomName` | `SetCustomName` |  |  | ✓ |
+| POST | `/Instruments/ConfigureInstrument` | `ConfigureInstrument` |  |  | ✓ |
+| POST | `/Instruments/SendWorkflow` | `SendWorkflow` |  |  |  |
+| POST | `/Instruments/Configuration` | `GetConfiguration` |  |  |  |
+| POST | `/Instruments/Instrument2Configuration` | `GetInstrument2Configuration` |  |  |  |
+
+### Instrument
+
+Path: `/Instrument` (single instrument)
+
+| Method | Path | Action | Internal | Stable | Python |
+|---|---|---|---|---|---|
+| GET | `/Instrument/{serial}/GetSignalRUrl` | `GetSignalRUrl` |  |  |  |
+| GET | `/Instrument/{serial}/Capabilities` | `GetCapabilities` |  |  |  |
+| GET | `/Instrument/{serial}/Configuration` | `GetConfiguration` |  |  |  |
+| GET | `/Instrument/{serial}/Instrument2Configuration` | `GetInstrument2Configuration` |  |  |  |
+| GET | `/Instrument/{serial}/CurrentMeasurement` | `CurrentMeasurement` |  |  | ✓ |
+| GET | `/Instrument/{serial}/State` | `GetInstrumentState` |  |  |  |
+| POST | `/Instrument/{serial}/Claim` | `Claim` |  |  | ✓ |
+| POST | `/Instrument/{serial}/ManualClaim` | `ManualClaim` |  |  | ✓ |
+| POST | `/Instrument/{serial}/Unclaim` | `Unclaim` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SetCellMode` | `SetCellMode` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SetCellState` | `SetCellSate` (sic in code) |  |  | ✓ |
+| POST | `/Instrument/{serial}/StartMeasurement` | `StartMeasurement` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SkipPreMeasurementStage` | `SkipPretreatment` |  |  | ✓ |
+| POST | `/Instrument/{serial}/PauseMeasurement` | `Pause` |  |  | ✓ |
+| POST | `/Instrument/{serial}/ResumeMeasurement` | `Resume` |  |  | ✓ |
+| POST | `/Instrument/{serial}/AbortMeasurement` | `Abort` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SetCustomName` | `SetCustomName` |  |  | ✓ |
+| POST | `/Instrument/{serial}/ConfigureInstrument` | `ConfigureInstrument` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SendWorkflow` | `SendScript` |  |  |  |
+| GET | `/Instrument/{serial}/CurrentWorkflow` | `CurrentWorkflow` |  |  |  |
+
+### Instrument
+
+Path: `/Instrument` (manual control)
+
+| Method | Path | Action | Internal | Stable | Python |
+|---|---|---|---|---|---|
+| POST | `/Instrument/{serial}/SetCurrentRange` | `SetCurrentRangeAsync` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SetPotentialRange` | `SetPotentialRangeAsync` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SetCurrent` | `SetCurrentAsync` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SetPotential` | `SetPotentialAsync` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SetBiPotState` | `SetBiPotStateAsync` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SetBiPotCurrentRange` | `SetBiPotCurrentRangeAsync` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SetBiPotMode` | `SetBiPotModeAsync` |  |  | ✓ |
+| POST | `/Instrument/{serial}/SetBiPotPotential` | `SetBiPotPotentialAsync` |  |  | ✓ |
+
+### Measurements
+
+Path: `/Measurements`
+
+| Method | Path | Action | Internal | Stable | Python |
+|---|---|---|---|---|---|
+| GET | `/Measurements` | `Get` (list) |  |  | ✓ |
+| GET | `/Measurements/{id:guid}` | `Get` (single) |  |  | ✓ |
+| POST | `/Measurements/Upload/Start` | `StartMeasurementUpload` |  |  |  |
+| POST | `/Measurements/{measurementId:guid}/Upload/{dataValuesId:guid}` | `UploadDataValuesStream` (raw body stream, no form binding) |  |  |  |
+| POST | `/Measurements/{measurementId:guid}/Upload/Finish` | `FinishMeasurementUpload` |  |  |  |
+| POST | `/Measurements/{measurementId:guid}/Upload/Abort` | `AbortMeasurementUpload` |  |  |  |
+| DELETE | `/Measurements/{measurementId:guid}/Delete` | `DeleteMeasurement` |  |  | ✓ |
+| DELETE | `/Measurements/BatchDelete` | `DeleteMultipleMeasurements` (JSON body of GUIDs) |  |  | ✓ |
+
+### Methods
+
+Path: `/Methods`
+
+| Method | Path | Action | Internal | Stable | Python |
+|---|---|---|---|---|---|
+| GET | `/Methods` | `Get` (list) |  |  |  |
+| GET | `/Methods/{id}` | `Get` (single) |  |  |  |
+| POST | `/Methods/Upload` | `Upload` |  |  |  |
+| DELETE | `/Methods/{id}` | `Delete` |  |  |  |
+| DELETE | `/Methods` | `DeleteMultiple` (JSON body of GUIDs) |  |  |  |
+
+### Update
+
+Path: `/Update`
+
+| Method | Path | Action | Internal | Stable | Python |
+|---|---|---|---|---|---|
+| POST | `/Update/ApplyUpdatePackage` | `ApplyUpdatePackage` (`IFormFile`, 2 GB body limit, 10 min timeout) |  |  |  |
+
+### Users
+
+Path: `/Users`
+
+| Method | Path | Action | Internal | Stable | Python |
+|---|---|---|---|---|---|
+| GET | `/Users` | `Get` |  |  | ✓ |
+| DELETE | `/Users/{userId}` | `Delete` |  |  | ✓ |
+
+### Workflows
+
+Path: `/Workflows`
+
+| Method | Path | Action | Internal | Stable | Python |
+|---|---|---|---|---|---|
+| POST | `/Workflows/Start` | `StartWorkflows` |  |  |  |
+| POST | `/Workflows/{serial}/Abort` | `AbortWorkflow` |  |  |  |

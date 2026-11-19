@@ -11,7 +11,16 @@ from pypalmsens.data import CurrentArray, DataArray, PotentialArray
 
 @pytest.fixture
 def array(measurement_cv_1scan):
+    """Recorded Charge array; keeps the tests that assert recorded values."""
     return measurement_cv_1scan.dataset.arrays()[-1]
+
+
+@pytest.fixture
+def data_array():
+    """Artificial array for generic array behaviour tests."""
+    rng = np.random.default_rng(7)
+    values = np.linspace(1.0, 9.0, 41) + rng.normal(0.0, 0.6, 41)
+    return DataArray(values, array_type='Charge', name='synthetic')
 
 
 def test_sequence(array):
@@ -30,15 +39,15 @@ def test_sequence(array):
     assert array.max() == pytest.approx(11.609434)
 
 
-def test_to_numpy(array):
-    arr = array.to_numpy()
+def test_to_numpy(data_array):
+    arr = data_array.to_numpy()
     assert isinstance(arr, np.ndarray)
     assert arr.dtype is np.dtype(float)
     assert len(arr) == 41
 
 
-def test_to_list(array):
-    lst = array.to_list()
+def test_to_list(data_array):
+    lst = data_array.to_list()
     assert isinstance(lst, list)
     assert all(isinstance(val, float) for val in lst)
 
@@ -50,17 +59,17 @@ def test_properties(array):
     assert isnan(array.ocp_value)
 
 
-def test_array_smooth(array):
-    new_array = array.savitsky_golay()
-    assert list(new_array) != list(array)
-    assert new_array is not array
+def test_array_smooth(data_array):
+    new_array = data_array.savitsky_golay()
+    assert list(new_array) != list(data_array)
+    assert new_array is not data_array
 
 
-def test_array_copy(array):
-    new_array = array.copy()
-    assert list(array) == list(new_array)  # data must match
-    assert array is not new_array
-    assert array._inner is not new_array._inner
+def test_array_copy(data_array):
+    new_array = data_array.copy()
+    assert list(data_array) == list(new_array)  # data must match
+    assert data_array is not new_array
+    assert data_array._inner is not new_array._inner
 
 
 def test_array_status(measurement_cv_1scan):
@@ -86,8 +95,8 @@ def test_current_array(measurement_cv_1scan):
     assert len(d) == 5
 
 
-def test_array_add(array):
-    a = array.copy()
+def test_array_add(data_array):
+    a = data_array.copy()
     b = a + a
 
     result = a + b
@@ -98,8 +107,8 @@ def test_array_add(array):
     np.testing.assert_allclose(result.to_numpy(), expected)
 
 
-def test_array_add_commutative(array):
-    a = array.copy()
+def test_array_add_commutative(data_array):
+    a = data_array.copy()
     b = a + a
 
     np.testing.assert_allclose(
@@ -108,8 +117,8 @@ def test_array_add_commutative(array):
     )
 
 
-def test_array_sub(array):
-    a = array.copy()
+def test_array_sub(data_array):
+    a = data_array.copy()
     b = a + a
 
     result = b - a
@@ -124,17 +133,17 @@ def test_array_sub(array):
     np.testing.assert_allclose(zero.to_numpy(), 0)
 
 
-def test_array_rsub_direction(array):
-    a = array.copy()
+def test_array_rsub_direction(data_array):
+    a = data_array.copy()
     b = a + a
 
-    result = type(array).__rsub__(a, b)
+    result = type(data_array).__rsub__(a, b)
 
     np.testing.assert_allclose(result.to_numpy(), (b - a).to_numpy())
 
 
-def test_array_mul(array):
-    a = array.copy()
+def test_array_mul(data_array):
+    a = data_array.copy()
     a_np = a.to_numpy()
 
     # value * array
@@ -149,23 +158,23 @@ def test_array_mul(array):
     np.testing.assert_allclose((10 * a).to_numpy(), a_np * 10)
 
 
-def test_array_ops_type_mismatch(array):
+def test_array_ops_type_mismatch(data_array):
     """Operations against non-array / wrong-type operands are rejected."""
     with pytest.raises(TypeError):
-        _ = array + 1
+        _ = data_array + 1
     with pytest.raises(TypeError):
-        _ = array - 1
+        _ = data_array - 1
     with pytest.raises(TypeError):
-        _ = array * 'x'
+        _ = data_array * 'x'
     with pytest.raises(TypeError):
-        _ = 'x' * array
+        _ = 'x' * data_array
 
 
-def test_array_normalize(array):
-    assert array.min() != 0
-    assert array.max() != 1
+def test_array_normalize(data_array):
+    assert data_array.min() != 0
+    assert data_array.max() != 1
 
-    a = array.normalize()
+    a = data_array.normalize()
 
     assert a.min() == 0
     assert a.max() == 1

@@ -1,12 +1,24 @@
 from __future__ import annotations
 
+import numpy as np
 import pytest
 
-from pypalmsens.data import DataArray, DataSet
+from pypalmsens.data import CurrentArray, DataArray, DataSet, PotentialArray
 
 
 @pytest.fixture
-def dataset(measurement_cv_1scan):
+def dataset():
+    """Artificial dataset mirroring cv scan."""
+    n = 41
+    time = DataArray(np.linspace(0.0, 4.0, n), array_type='Time', name='time')
+    potential = PotentialArray(np.linspace(0.0, 1.0, n), name='scan1channel1')
+    current = CurrentArray(np.linspace(1.0, -1.0, n), name='scan1channel1')
+    charge = DataArray(np.linspace(0.0, 10.0, n), array_type='Charge', name='scan1channel1')
+    return DataSet([time, potential, current, charge])
+
+
+@pytest.fixture
+def dataset_recorded(measurement_cv_1scan):
     return measurement_cv_1scan.dataset
 
 
@@ -78,8 +90,8 @@ def test_dict(dataset):
     ]
 
 
-def test_to_dict(dataset):
-    dct = dataset.to_dict()
+def test_to_dict(dataset_recorded):
+    dct = dataset_recorded.to_dict()
     assert len(dct) == 6
 
 

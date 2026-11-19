@@ -25,10 +25,12 @@ The PalmSens Python SDK uses [pytest](https://docs.pytest.org/en/latest/) to run
 pytest
 ```
 
-To skip the tests that require a connected instrument use the `requires_instrument` [marker](https://docs.pytest.org/en/latest/example/markers.html):
+By default only the 'offline' tests are run: tests that do not require an instrument.
 
 ```console
-pytest -m "not examples"
+pytest --offline
+pytest --instrument
+pytest --lablink
 ```
 
 To check coverage:

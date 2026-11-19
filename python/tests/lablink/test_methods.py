@@ -9,7 +9,6 @@ from helpers.technique_specs import TECHNIQUE_SPECS
 import pypalmsens as ps
 from pypalmsens import lablink
 from pypalmsens._instruments.shared import MethodIncompatibleError
-from pypalmsens._methods import BaseTechnique
 from pypalmsens.lablink._errors import LablinkClientError
 
 
@@ -20,7 +19,6 @@ async def session():
     return session
 
 
-@pytest.mark.lablink
 @pytest.mark.asyncio
 async def test_start_single(session: lablink.Session):
     [instrument] = session.instruments
@@ -34,7 +32,6 @@ async def test_start_single(session: lablink.Session):
     assert measurement
 
 
-@pytest.mark.lablink
 @pytest.mark.asyncio
 async def test_start_many(session: lablink.Session):
     instruments = session.instruments
@@ -49,7 +46,6 @@ async def test_start_many(session: lablink.Session):
     assert all(job.is_finished for job in jobs)
 
 
-@pytest.mark.lablink
 @pytest.mark.asyncio
 def needs_technique_support(technique_id: str):
     """Lablink has no implementation for this technique."""
@@ -85,7 +81,6 @@ NO_IMPEDANCE_STAGE = pytest.mark.xfail(
 )
 
 
-@pytest.mark.lablink
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     'variant',
@@ -126,9 +121,8 @@ NO_IMPEDANCE_STAGE = pytest.mark.xfail(
         pytest.param('mm', marks=NO_IMPEDANCE_STAGE),
     ),
 )
-async def test_measurements(session: lablink.Session, variant):
-    spec = TECHNIQUE_SPECS[variant]
-    params = BaseTechnique._registry[spec.id].from_dict(spec.kwargs)  # type: ignore
+async def test_measurements(session: lablink.Session, variant: str):
+    params = TECHNIQUE_SPECS[variant]
 
     [instrument] = session.instruments
     async with await instrument.claim() as claim:

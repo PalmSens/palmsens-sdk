@@ -108,12 +108,12 @@ class BaseTechnique(BaseSettings):
             if isinstance(attribute, BaseSettings):
                 attribute._export(psmethod)
 
-    def capability_errors(self, target: str) -> list[str]:
+    def capability_errors(self, model: str) -> list[str]:
         """Return list of errors if this method is not supported.
 
         Parameters
         ----------
-        target : str
+        model : str
             Device or model name
 
         Returns
@@ -121,7 +121,7 @@ class BaseTechnique(BaseSettings):
         errors : list[str]
             List of method validation errors for this target
         """
-        capabilities = get_capabilities(target)
+        capabilities = get_capabilities(model)
         psmethod = self._to_psmethod()
         errors = []
         for error in psmethod.Validate(capabilities.capabilities):
@@ -152,12 +152,12 @@ class BaseTechnique(BaseSettings):
 
         return errors
 
-    def supports(self, target: str) -> bool:
+    def supports(self, model: str) -> bool:
         """Return True if this method supports the target device.
 
         Parameters
         ----------
-        target : str
+        model : str
             Device or model name
 
         Returns
@@ -165,4 +165,4 @@ class BaseTechnique(BaseSettings):
         bool
             True if target is supported
         """
-        return not self.capability_errors(target)
+        return not self.capability_errors(model)

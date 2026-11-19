@@ -14,13 +14,14 @@ from pathlib import Path
 
 import pytest
 
-from pypalmsens._methods import BaseTechnique
 from pypalmsens.lablink.models._method_mapper import (
     _BUILDERS,
     _GroupValue,
     _RawWireValue,
     _to_parameters,
 )
+
+from .test_method_mapper import _BY_ID
 
 FIXTURE = Path(__file__).parent / 'data' / 'lablink_expected_mapping.json'
 _DATA = json.loads(FIXTURE.read_text())
@@ -51,7 +52,7 @@ def test_matches_dll_mapping(method_id: str, variant: str) -> None:
     import deepdiff
 
     entry = _DATA[method_id][variant]
-    method = BaseTechnique._registry[method_id].model_validate(entry['spec'])  # type:ignore
+    method = _BY_ID[method_id].from_dict(entry['spec'])
 
     try:
         ours = dict(_to_parameters(method))

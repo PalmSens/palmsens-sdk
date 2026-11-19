@@ -8,7 +8,6 @@ from helpers.technique_specs import TECHNIQUE_SPECS
 from pydantic import ValidationError
 
 import pypalmsens as ps
-from pypalmsens._methods import BaseTechnique
 
 
 def test_forbid_extra_keys():
@@ -17,13 +16,15 @@ def test_forbid_extra_keys():
 
 
 @pytest.mark.parametrize('variant', TECHNIQUE_SPECS)
-def test_params_round_trip(variant):
-    spec = TECHNIQUE_SPECS[variant]
-    params = BaseTechnique._registry[spec.id].from_dict(spec.kwargs)
+def test_params_round_trip(variant: str):
+    method = TECHNIQUE_SPECS[variant]
+
+    # dict-level round trip
+    assert method.from_dict(method.to_dict()) == method
 
     with tempfile.TemporaryDirectory() as tmp:
-        path = Path(tmp, f'{spec.id}.psmethod')
-        ps.save_method_file(path, params)
-        new_params = ps.load_method_file(path)
+        path = Path(tmp, f'{method.id}.psmethod')
+        ps.save_method_file(path, method)
+        new_method = ps.load_method_file(path)
 
-    assert new_params == params
+    assert new_method == method

@@ -8,7 +8,6 @@ from pydantic import ValidationError
 
 import pypalmsens as ps
 from pypalmsens._instruments.shared import MethodIncompatibleError
-from pypalmsens._methods import BaseTechnique
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +103,7 @@ def test_forbid_extra_keys():
 
 
 class CV:
-    id, kwargs = TECHNIQUE_SPECS['cv']
+    method = TECHNIQUE_SPECS['cv']
 
     @staticmethod
     def validate(measurement):
@@ -132,7 +131,7 @@ class CV:
 
 
 class FCV:
-    id, kwargs = TECHNIQUE_SPECS['fcv']
+    method = TECHNIQUE_SPECS['fcv']
 
     @staticmethod
     def validate(measurement):
@@ -166,7 +165,7 @@ class FCV:
 
 
 class LSV:
-    id, kwargs = TECHNIQUE_SPECS['lsv']
+    method = TECHNIQUE_SPECS['lsv']
 
     @staticmethod
     def validate(measurement):
@@ -184,7 +183,7 @@ class LSV:
 
 
 class LSV_aux:
-    id, kwargs = TECHNIQUE_SPECS['lsv_aux']
+    method = TECHNIQUE_SPECS['lsv_aux']
 
     @staticmethod
     def validate(measurement):
@@ -210,7 +209,7 @@ class LSV_aux:
 
 
 class ACV:
-    id, kwargs = TECHNIQUE_SPECS['acv']
+    method = TECHNIQUE_SPECS['acv']
 
     @staticmethod
     def validate(measurement):
@@ -237,7 +236,7 @@ class ACV:
 
 
 class SWV:
-    id, kwargs = TECHNIQUE_SPECS['swv']
+    method = TECHNIQUE_SPECS['swv']
 
     @staticmethod
     def validate(measurement):
@@ -257,7 +256,7 @@ class SWV:
 
 
 class CP:
-    id, kwargs = TECHNIQUE_SPECS['cp']
+    method = TECHNIQUE_SPECS['cp']
 
     @staticmethod
     def validate(measurement):
@@ -275,7 +274,7 @@ class CP:
 
 
 class SCP:
-    id, kwargs = TECHNIQUE_SPECS['scp']
+    method = TECHNIQUE_SPECS['scp']
 
     @staticmethod
     def validate(measurement):
@@ -293,7 +292,7 @@ class SCP:
 
 
 class LSP:
-    id, kwargs = TECHNIQUE_SPECS['lsp']
+    method = TECHNIQUE_SPECS['lsp']
 
     @staticmethod
     def validate(measurement):
@@ -311,7 +310,7 @@ class LSP:
 
 
 class OCP:
-    id, kwargs = TECHNIQUE_SPECS['ocp']
+    method = TECHNIQUE_SPECS['ocp']
 
     @staticmethod
     def validate(measurement):
@@ -329,7 +328,7 @@ class OCP:
 
 
 class CA:
-    id, kwargs = TECHNIQUE_SPECS['ca']
+    method = TECHNIQUE_SPECS['ca']
 
     @staticmethod
     def validate(measurement):
@@ -347,7 +346,7 @@ class CA:
 
 
 class FAM:
-    id, kwargs = TECHNIQUE_SPECS['fam']
+    method = TECHNIQUE_SPECS['fam']
 
     @staticmethod
     def validate(measurement):
@@ -365,7 +364,7 @@ class FAM:
 
 
 class DPV:
-    id, kwargs = TECHNIQUE_SPECS['dpv']
+    method = TECHNIQUE_SPECS['dpv']
 
     @staticmethod
     def validate(measurement):
@@ -383,7 +382,7 @@ class DPV:
 
 
 class PAD:
-    id, kwargs = TECHNIQUE_SPECS['pad']
+    method = TECHNIQUE_SPECS['pad']
 
     @staticmethod
     def validate(measurement):
@@ -401,7 +400,7 @@ class PAD:
 
 
 class MPAD:
-    id, kwargs = TECHNIQUE_SPECS['mpad']
+    method = TECHNIQUE_SPECS['mpad']
 
     @staticmethod
     def validate(measurement):
@@ -419,7 +418,7 @@ class MPAD:
 
 
 class NPV:
-    id, kwargs = TECHNIQUE_SPECS['npv']
+    method = TECHNIQUE_SPECS['npv']
 
     @staticmethod
     def validate(measurement):
@@ -437,7 +436,7 @@ class NPV:
 
 
 class MA:
-    id, kwargs = TECHNIQUE_SPECS['ma']
+    method = TECHNIQUE_SPECS['ma']
 
     @staticmethod
     def validate(measurement):
@@ -460,7 +459,7 @@ class MA:
 
 
 class MP:
-    id, kwargs = TECHNIQUE_SPECS['mp']
+    method = TECHNIQUE_SPECS['mp']
 
     @staticmethod
     def validate(measurement):
@@ -483,7 +482,7 @@ class MP:
 
 
 class CC:
-    id, kwargs = TECHNIQUE_SPECS['cc']
+    method = TECHNIQUE_SPECS['cc']
 
     @staticmethod
     def validate(measurement):
@@ -577,7 +576,7 @@ def check_eis_measurement(measurement):
 
 
 class EIS:
-    id, kwargs = TECHNIQUE_SPECS['eis']
+    method = TECHNIQUE_SPECS['eis']
 
     @staticmethod
     def validate(measurement):
@@ -592,7 +591,7 @@ class EIS:
 
 
 class EIS_pot_fixed:
-    id, kwargs = TECHNIQUE_SPECS['eis_pot_fixed']
+    method = TECHNIQUE_SPECS['eis_pot_fixed']
 
     @staticmethod
     def validate(measurement):
@@ -607,7 +606,7 @@ class EIS_pot_fixed:
 
 
 class EIS_pot_scan:
-    id, kwargs = TECHNIQUE_SPECS['eis_pot_scan']
+    method = TECHNIQUE_SPECS['eis_pot_scan']
 
     @staticmethod
     def validate(measurement):
@@ -622,7 +621,7 @@ class EIS_pot_scan:
 
 
 class EIS_time_fixed:
-    id, kwargs = TECHNIQUE_SPECS['eis_time_fixed']
+    method = TECHNIQUE_SPECS['eis_time_fixed']
 
     @staticmethod
     def validate(measurement):
@@ -638,7 +637,7 @@ class EIS_time_fixed:
 
 
 class EIS_time_scan:
-    id, kwargs = TECHNIQUE_SPECS['eis_time_scan']
+    method = TECHNIQUE_SPECS['eis_time_scan']
 
     @staticmethod
     def validate(measurement):
@@ -653,7 +652,7 @@ class EIS_time_scan:
 
 
 class EIS_single_point:
-    id, kwargs = TECHNIQUE_SPECS['eis_single_point']
+    method = TECHNIQUE_SPECS['eis_single_point']
 
     @staticmethod
     def validate(measurement):
@@ -668,7 +667,7 @@ class EIS_single_point:
 
 
 class FIS:
-    id, kwargs = TECHNIQUE_SPECS['fis']
+    method = TECHNIQUE_SPECS['fis']
 
     @staticmethod
     def validate(measurement):
@@ -720,7 +719,7 @@ class FIS:
 
 
 class GIS:
-    id, kwargs = TECHNIQUE_SPECS['gis']
+    method = TECHNIQUE_SPECS['gis']
 
     @staticmethod
     def validate(measurement):
@@ -735,7 +734,7 @@ class GIS:
 
 
 class GIS_cur_fixed:
-    id, kwargs = TECHNIQUE_SPECS['gis_cur_fixed']
+    method = TECHNIQUE_SPECS['gis_cur_fixed']
 
     @staticmethod
     def validate(measurement):
@@ -750,7 +749,7 @@ class GIS_cur_fixed:
 
 
 class GIS_cur_scan:
-    id, kwargs = TECHNIQUE_SPECS['gis_cur_scan']
+    method = TECHNIQUE_SPECS['gis_cur_scan']
 
     @staticmethod
     def validate(measurement):
@@ -765,7 +764,7 @@ class GIS_cur_scan:
 
 
 class GIS_time_fixed:
-    id, kwargs = TECHNIQUE_SPECS['gis_time_fixed']
+    method = TECHNIQUE_SPECS['gis_time_fixed']
 
     @staticmethod
     def validate(measurement):
@@ -781,7 +780,7 @@ class GIS_time_fixed:
 
 
 class GIS_time_scan:
-    id, kwargs = TECHNIQUE_SPECS['gis_time_scan']
+    method = TECHNIQUE_SPECS['gis_time_scan']
 
     @staticmethod
     def validate(measurement):
@@ -796,7 +795,7 @@ class GIS_time_scan:
 
 
 class GIS_single_point:
-    id, kwargs = TECHNIQUE_SPECS['gis_single_point']
+    method = TECHNIQUE_SPECS['gis_single_point']
 
     @staticmethod
     def validate(measurement):
@@ -811,7 +810,7 @@ class GIS_single_point:
 
 
 class FGIS:
-    id, kwargs = TECHNIQUE_SPECS['fgis']
+    method = TECHNIQUE_SPECS['fgis']
 
     @staticmethod
     def validate(measurement):
@@ -863,7 +862,7 @@ class FGIS:
 
 
 class MS:
-    id, kwargs = TECHNIQUE_SPECS['ms']
+    method = TECHNIQUE_SPECS['ms']
 
     @staticmethod
     def validate(measurement):
@@ -881,15 +880,15 @@ class MS:
 
 
 class MM:
-    id, kwargs = TECHNIQUE_SPECS['mm']
+    method = TECHNIQUE_SPECS['mm']
 
     @staticmethod
     def validate(measurement):
         assert measurement
         assert isinstance(measurement, ps.data.Measurement)
 
-        params = measurement.method
-        stages = [stage.stage_type for stage in params.stages]
+        method = measurement.method
+        stages = [stage.stage_type for stage in method.stages]
 
         assert stages == ['ConstantE', 'ConstantI', 'SweepE', 'OpenCircuit', 'Impedance']
 
@@ -947,7 +946,7 @@ class MM:
 
 
 @pytest.mark.parametrize(
-    'method',
+    'case',
     (
         CV,
         FCV,
@@ -986,11 +985,11 @@ class MM:
         MM,
     ),
 )
-def test_measure(manager, method):
-    params = BaseTechnique._registry[method.id].from_dict(method.kwargs)
+def test_measure(manager, case):
+    method = case.method
 
     try:
-        measurement = manager.measure(params)
+        measurement = manager.measure(method)
     except MethodIncompatibleError as exc:
         message = str(exc)
         if (
@@ -1003,4 +1002,4 @@ def test_measure(manager, method):
             pytest.skip(f'Unlicensed method: {method.id!r}')
         raise
 
-    method.validate(measurement)
+    case.validate(measurement)

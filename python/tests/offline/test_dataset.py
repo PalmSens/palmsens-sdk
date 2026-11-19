@@ -12,7 +12,7 @@ def dataset():
     n = 41
     time = DataArray(np.linspace(0.0, 4.0, n), array_type='Time', name='time')
     potential = PotentialArray(np.linspace(0.0, 1.0, n), name='scan1channel1')
-    current = CurrentArray(
+    current = CurrentArray.with_readings(
         np.linspace(1.0, -1.0, n),
         name='scan1channel1',
         current_range='10uA',

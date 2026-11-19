@@ -400,31 +400,23 @@ class CurrentArray(DataArray):
     name : str, optional
         Name of the array. Defaults to the value of `array_type` when not
         given. The name is used in `__repr__` and for identification.
-    array_type : AllowedArrayTypes, optional
-        Defaults to `'Current'`, use `'miDC'` to mimic EIS mIDC arrays.
-    current_range : str | Sequence[str], optional
-        Current range, one literal for all points or one per point.
-        Defaults to `'10mA'`.
-    reading_status : str | Sequence[str], optional
-        Reading status, one literal for all points or one per point.
-        Defaults to `'OK'`.
-    timing_status : str | Sequence[str], optional
-        Timing status, one literal for all points or one per point.
-        Defaults to `'OK'`.
-
-    Note
-    ----
-    Values are stored as typed readings, so the range and status accessors
-    always work. Arrays of recorded measurements are wrapped, not constructed.
     """
 
     __slots__ = ()
 
     _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayCurrents
 
-    @override
     def __init__(
         self,
+        values: Iterable[float],
+        *,
+        name: str | None = None,
+    ):
+        super().__init__(values, array_type='Current', name=name)
+
+    @classmethod
+    def with_readings(
+        cls,
         values: Iterable[float],
         *,
         name: str | None = None,
@@ -432,7 +424,32 @@ class CurrentArray(DataArray):
         current_range: AllowedCurrentRanges | Sequence[AllowedCurrentRanges] = '10mA',
         reading_status: AllowedReadingStatus | Sequence[AllowedReadingStatus] = 'OK',
         timing_status: AllowedTimingStatus | Sequence[AllowedTimingStatus] = 'OK',
-    ):
+    ) -> Self:
+        """Create an array of typed current readings.
+
+        Parameters
+        ----------
+        values : Iterable[float]
+            Current values in µA.
+        name : str, optional
+            Name of the array. Defaults to the value of `array_type`.
+        array_type : AllowedArrayTypes, optional
+            Defaults to `'Current'`, use `'miDC'` to mimic EIS mIDC arrays.
+        current_range : str | Sequence[str], optional
+            Current range, one literal for all points or one per point.
+            Defaults to `'10mA'`.
+        reading_status : str | Sequence[str], optional
+            Reading status, one literal for all points or one per point.
+            Defaults to `'OK'`.
+        timing_status : str | Sequence[str], optional
+            Timing status, one literal for all points or one per point.
+            Defaults to `'OK'`.
+
+        Returns
+        -------
+        array : CurrentArray
+            Array with typed readings, so the range and status accessors work.
+        """
         values = list(values)
         n = len(values)
         ranges: list[AllowedCurrentRanges] = _expand_metadata(current_range, n, 'current_range')
@@ -441,9 +458,9 @@ class CurrentArray(DataArray):
         )
         timings: list[AllowedTimingStatus] = _expand_metadata(timing_status, n, 'timing_status')
 
-        super().__init__([], array_type=array_type, name=name)
+        inner = PSDataArrayCurrents(name or array_type, array_str_to_enum(array_type))
         for value, cr, status, timing in zip(values, ranges, statuses, timings):
-            self._inner.Add(
+            inner.Add(
                 PSDataCurrentReading(
                     float(value),
                     cr_string_to_enum(cr),
@@ -451,6 +468,7 @@ class CurrentArray(DataArray):
                     _timing_status_enum(timing),
                 )
             )
+        return cls._wrap(inner)
 
     def current(self) -> list[float]:
         """Current in µA."""
@@ -532,31 +550,53 @@ class PotentialArray(DataArray):
     name : str, optional
         Name of the array. Defaults to the value of `array_type` when not
         given. The name is used in `__repr__` and for identification.
-    potential_range : str | Sequence[str], optional
-        Potential range, one literal for all points or one per point.
-        Defaults to `'1V'`.
-    reading_status : str | Sequence[str], optional
-        Reading status, one literal for all points or one per point.
-        Defaults to `'OK'`.
-    timing_status : str | Sequence[str], optional
-        Timing status, one literal for all points or one per point.
-        Defaults to `'OK'`.
     """
 
     __slots__ = ()
 
     _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayPotentials
 
-    @override
     def __init__(
         self,
+        values: Iterable[float],
+        *,
+        name: str | None = None,
+    ):
+        super().__init__(values, array_type='Potential', name=name)
+
+    @classmethod
+    def with_readings(
+        cls,
         values: Iterable[float],
         *,
         name: str | None = None,
         potential_range: AllowedPotentialRanges | Sequence[AllowedPotentialRanges] = '1V',
         reading_status: AllowedReadingStatus | Sequence[AllowedReadingStatus] = 'OK',
         timing_status: AllowedTimingStatus | Sequence[AllowedTimingStatus] = 'OK',
-    ):
+    ) -> Self:
+        """Create an array of typed potential readings.
+
+        Parameters
+        ----------
+        values : Iterable[float]
+            Potential values in V.
+        name : str, optional
+            Name of the array. Defaults to `'Potential'`.
+        potential_range : str | Sequence[str], optional
+            Potential range, one literal for all points or one per point.
+            Defaults to `'1V'`.
+        reading_status : str | Sequence[str], optional
+            Reading status, one literal for all points or one per point.
+            Defaults to `'OK'`.
+        timing_status : str | Sequence[str], optional
+            Timing status, one literal for all points or one per point.
+            Defaults to `'OK'`.
+
+        Returns
+        -------
+        array : PotentialArray
+            Array with typed readings, so the range and status accessors work.
+        """
         values = list(values)
         n = len(values)
         ranges: list[AllowedPotentialRanges] = _expand_metadata(
@@ -567,9 +607,9 @@ class PotentialArray(DataArray):
         )
         timings: list[AllowedTimingStatus] = _expand_metadata(timing_status, n, 'timing_status')
 
-        super().__init__([], array_type='Potential', name=name)
+        inner = PSDataArrayPotentials(name or 'Potential', array_str_to_enum('Potential'))
         for value, pr, status, timing in zip(values, ranges, statuses, timings):
-            self._inner.Add(
+            inner.Add(
                 PSDataVoltageReading(
                     float(value),
                     _reading_status_enum(status),
@@ -577,6 +617,7 @@ class PotentialArray(DataArray):
                     _timing_status_enum(timing),
                 )
             )
+        return cls._wrap(inner)
 
     def potential(self) -> list[float]:
         """Return list of potential values in V."""

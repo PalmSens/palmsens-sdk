@@ -72,26 +72,46 @@ def test_array_copy(data_array):
     assert data_array._inner is not new_array._inner
 
 
-def test_array_status(measurement_cv_1scan):
-    array, *_ = measurement_cv_1scan.dataset.arrays(type='Current')
-    _ = array.current_range()
-    _ = array.timing_status()
-    _ = array.reading_status()
+@pytest.fixture
+def current_array():
+    """Current array with reading metadata, so the range and status accessors work."""
+    return CurrentArray(
+        [1.0, 2.0, 3.0, 4.0],
+        name='scan1channel1',
+        current_range=['10uA', '10uA', '1uA', '1uA'],
+        reading_status=['OK', 'Overload', 'Underload', 'OK'],
+    )
 
 
-def test_current_array(measurement_cv_1scan):
-    arr = measurement_cv_1scan.dataset['Current']
-    assert isinstance(arr, CurrentArray)
+@pytest.fixture
+def potential_array():
+    """Potential array with reading metadata."""
+    return PotentialArray(
+        [0.0, 0.1, 0.2, 0.3],
+        name='scan1channel1',
+        potential_range='1V',
+        reading_status='OK',
+    )
 
-    n_points = len(arr)
 
-    assert len(arr.current()) == n_points
-    assert len(arr.current_reading()) == n_points
-    assert len(arr.current_range()) == n_points
-    assert len(arr.reading_status()) == n_points
-    assert len(arr.timing_status()) == n_points
+def test_array_status(current_array):
+    _ = current_array.current_range()
+    _ = current_array.timing_status()
+    _ = current_array.reading_status()
 
-    d = arr.to_dict()
+
+def test_current_array(current_array):
+    assert isinstance(current_array, CurrentArray)
+
+    n_points = len(current_array)
+
+    assert len(current_array.current()) == n_points
+    assert len(current_array.current_reading()) == n_points
+    assert len(current_array.current_range()) == n_points
+    assert len(current_array.reading_status()) == n_points
+    assert len(current_array.timing_status()) == n_points
+
+    d = current_array.to_dict()
     assert len(d) == 5
 
 
@@ -196,19 +216,18 @@ def test_current_array_midc(measurement_eis_5freq):
     assert iac.to_list() != iac.current_in_range()
 
 
-def test_potential_array(measurement_cv_1scan):
-    arr = measurement_cv_1scan.dataset['Potential']
-    assert isinstance(arr, PotentialArray)
+def test_potential_array(potential_array):
+    assert isinstance(potential_array, PotentialArray)
 
-    n_points = len(arr)
+    n_points = len(potential_array)
 
-    assert len(arr.potential()) == n_points
-    assert len(arr.potential_reading()) == n_points
-    assert len(arr.potential_range()) == n_points
-    assert len(arr.reading_status()) == n_points
-    assert len(arr.timing_status()) == n_points
+    assert len(potential_array.potential()) == n_points
+    assert len(potential_array.potential_reading()) == n_points
+    assert len(potential_array.potential_range()) == n_points
+    assert len(potential_array.reading_status()) == n_points
+    assert len(potential_array.timing_status()) == n_points
 
-    d = arr.to_dict()
+    d = potential_array.to_dict()
     assert len(d) == 5
 
 
@@ -237,16 +256,88 @@ def test_constructor():
     assert g_arr.unit == 'Unknown'
 
 
-@pytest.mark.xfail(reason='Constructor does initialize values as CurrentReading')
-def test_constructor_current_reading_fail():
+def test_constructor_current_reading():
+    """Constructed arrays always carry reading metadata, defaults included."""
     arr = CurrentArray([1, 2, 3])
-    _ = arr.current_reading()
+
+    assert arr.current_range() == ['10mA', '10mA', '10mA']
+    assert arr.reading_status() == ['OK', 'OK', 'OK']
+    assert arr.timing_status() == ['OK', 'OK', 'OK']
+    assert len(arr.current_reading()) == 3
+    assert len(arr.to_dict()) == 5
 
 
-@pytest.mark.xfail(reason='Constructor does initialize values as PotentialReading')
-def test_constructor_potential_reading_fail():
+def test_constructor_potential_reading():
+    """Constructed potential arrays carry range and status defaults too."""
     arr = PotentialArray([1, 2, 3])
-    _ = arr.potential_reading()
+
+    assert arr.potential_range() == ['1V', '1V', '1V']
+    assert arr.reading_status() == ['OK', 'OK', 'OK']
+    assert arr.timing_status() == ['OK', 'OK', 'OK']
+    assert len(arr.potential_reading()) == 3
+    assert len(arr.to_dict()) == 5
+
+
+def test_current_array_reading_metadata():
+    """Artificial array can carry per-point current ranges and reading statuses."""
+    arr = CurrentArray(
+        [1.0, 2.0, 0.2],
+        current_range=['10mA', '10mA', '1uA'],
+        reading_status=['Underload', 'OK', 'OK'],
+    )
+
+    assert arr.current_range() == ['10mA', '10mA', '1uA']
+    assert arr.reading_status() == ['Underload', 'OK', 'OK']
+    assert arr.timing_status() == ['OK', 'OK', 'OK']
+
+    assert arr.current() == [1.0, 2.0, 0.2]
+    np.testing.assert_allclose(arr.current_in_range(), [0.0001, 0.0002, 0.2])
+
+    assert len(arr.current_reading()) == 3
+    assert len(arr.to_dict()) == 5
+
+
+def test_current_array_reading_metadata_broadcast():
+    """A single literal applies to every point."""
+    arr = CurrentArray([1.0, 2.0], current_range='1uA', reading_status='Overload')
+
+    assert arr.current_range() == ['1uA', '1uA']
+    assert arr.reading_status() == ['Overload', 'Overload']
+
+
+def test_current_array_reading_metadata_length_mismatch():
+    with pytest.raises(ValueError):
+        _ = CurrentArray([1.0, 2.0, 3.0], current_range=['1uA', '10uA'])
+
+
+def test_potential_array_reading_metadata():
+    """Artificial potential array exposes range and status metadata."""
+    arr = PotentialArray(
+        [0.5, 0.75],
+        potential_range='1V',
+        reading_status=['OK', 'OverloadWarning'],
+    )
+
+    assert arr.potential_range() == ['1V', '1V']
+    assert arr.reading_status() == ['OK', 'OverloadWarning']
+    assert arr.potential_in_range() == [0.5, 0.75]
+    assert len(arr.potential_reading()) == 2
+    assert len(arr.to_dict()) == 5
+
+
+def test_current_array_midc_metadata():
+    """The mIDC in-range quirk reproduces without a session file.
+
+    Mirrors test_current_array_midc, which validates the same behaviour against
+    recorded EIS data.
+    """
+    midc = CurrentArray([0.2, 0.5], array_type='miDC', current_range='10uA')
+
+    assert isinstance(midc, CurrentArray)
+    assert midc.type == 'miDC'
+
+    assert midc.to_list() != midc.current()
+    assert midc.to_list() == midc.current_in_range()
 
 
 def test_array_update():

@@ -1,17 +1,27 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Any, ClassVar, Self, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Self, TypeVar, cast, overload
 
 import numpy as np
+import System
 from PalmSens import Units as PSUnits
 from PalmSens.Calculations import MathFunctions as PSMath
+from PalmSens.Comm import ReadingStatus as PSReadingStatus
+from PalmSens.Comm import TimingStatus as PSTimingStatus
+from PalmSens.Data import CurrentReading as PSDataCurrentReading
 from PalmSens.Data import DataArray as PSDataArray
 from PalmSens.Data import DataArrayCurrents as PSDataArrayCurrents
 from PalmSens.Data import DataArrayPotentials as PSDataArrayPotentials
+from PalmSens.Data import VoltageReading as PSDataVoltageReading
 from typing_extensions import override
 
-from .._converters import cr_enum_to_string, pr_enum_to_string
+from .._converters import (
+    cr_enum_to_string,
+    cr_string_to_enum,
+    pr_enum_to_string,
+    pr_string_to_enum,
+)
 from .._types import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
@@ -31,6 +41,33 @@ def implementation(interface):
     # if you need to "downcast" to the implementation class.
     # https://github.com/pythonnet/pythonnet/blob/a404d6e4d2ef6182763bd626ab08e0de4400e621/CHANGELOG.md?plain=1#L73-L77
     return interface.__implementation__
+
+
+MetadataT = TypeVar('MetadataT')
+
+
+def _reading_status_enum(status: AllowedReadingStatus) -> PSReadingStatus:
+    """Convert reading status literal to the .NET enum member."""
+    return System.Enum.Parse(PSReadingStatus, status, True)
+
+
+def _timing_status_enum(status: AllowedTimingStatus) -> PSTimingStatus:
+    """Convert timing status literal to the .NET enum member."""
+    return System.Enum.Parse(PSTimingStatus, status, True)
+
+
+def _expand_metadata(
+    value: MetadataT | Sequence[MetadataT],
+    n: int,
+    param: str,
+) -> list[MetadataT]:
+    """Broadcast one literal to every point, or validate a per-point sequence."""
+    if isinstance(value, str):
+        return cast(list[MetadataT], [value] * n)
+    seq = list(cast(Sequence[MetadataT], value))
+    if len(seq) != n:
+        raise ValueError(f'{param} must be one literal or {n} values, got {len(seq)}')
+    return seq
 
 
 DEFAULT_UNIT_MAPPING = {
@@ -66,7 +103,7 @@ class DataArray(Sequence[float]):
 
     Parameters
     ----------
-    values : Iterable[float]
+    values : Iterable[float], optional
         Values to store in the array.
         Any iterable (list, tuple, generator, etc.) of floats is accepted.
     array_type : AllowedArrayTypes, optional
@@ -363,19 +400,57 @@ class CurrentArray(DataArray):
     name : str, optional
         Name of the array. Defaults to the value of `array_type` when not
         given. The name is used in `__repr__` and for identification.
+    array_type : AllowedArrayTypes, optional
+        Defaults to `'Current'`, use `'miDC'` to mimic EIS mIDC arrays.
+    current_range : str | Sequence[str], optional
+        Current range, one literal for all points or one per point.
+        Defaults to `'10mA'`.
+    reading_status : str | Sequence[str], optional
+        Reading status, one literal for all points or one per point.
+        Defaults to `'OK'`.
+    timing_status : str | Sequence[str], optional
+        Timing status, one literal for all points or one per point.
+        Defaults to `'OK'`.
+
+    Note
+    ----
+    Values are stored as typed readings, so the range and status accessors
+    always work. Arrays of recorded measurements are wrapped, not constructed.
     """
 
     __slots__ = ()
 
     _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayCurrents
 
+    @override
     def __init__(
         self,
         values: Iterable[float],
         *,
         name: str | None = None,
+        array_type: AllowedArrayTypes = 'Current',
+        current_range: AllowedCurrentRanges | Sequence[AllowedCurrentRanges] = '10mA',
+        reading_status: AllowedReadingStatus | Sequence[AllowedReadingStatus] = 'OK',
+        timing_status: AllowedTimingStatus | Sequence[AllowedTimingStatus] = 'OK',
     ):
-        super().__init__(values, array_type='Current', name=name)
+        values = list(values)
+        n = len(values)
+        ranges: list[AllowedCurrentRanges] = _expand_metadata(current_range, n, 'current_range')
+        statuses: list[AllowedReadingStatus] = _expand_metadata(
+            reading_status, n, 'reading_status'
+        )
+        timings: list[AllowedTimingStatus] = _expand_metadata(timing_status, n, 'timing_status')
+
+        super().__init__([], array_type=array_type, name=name)
+        for value, cr, status, timing in zip(values, ranges, statuses, timings):
+            self._inner.Add(
+                PSDataCurrentReading(
+                    float(value),
+                    cr_string_to_enum(cr),
+                    _reading_status_enum(status),
+                    _timing_status_enum(timing),
+                )
+            )
 
     def current(self) -> list[float]:
         """Current in µA."""
@@ -457,19 +532,51 @@ class PotentialArray(DataArray):
     name : str, optional
         Name of the array. Defaults to the value of `array_type` when not
         given. The name is used in `__repr__` and for identification.
+    potential_range : str | Sequence[str], optional
+        Potential range, one literal for all points or one per point.
+        Defaults to `'1V'`.
+    reading_status : str | Sequence[str], optional
+        Reading status, one literal for all points or one per point.
+        Defaults to `'OK'`.
+    timing_status : str | Sequence[str], optional
+        Timing status, one literal for all points or one per point.
+        Defaults to `'OK'`.
     """
 
     __slots__ = ()
 
     _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayPotentials
 
+    @override
     def __init__(
         self,
         values: Iterable[float],
         *,
         name: str | None = None,
+        potential_range: AllowedPotentialRanges | Sequence[AllowedPotentialRanges] = '1V',
+        reading_status: AllowedReadingStatus | Sequence[AllowedReadingStatus] = 'OK',
+        timing_status: AllowedTimingStatus | Sequence[AllowedTimingStatus] = 'OK',
     ):
-        super().__init__(values, array_type='Potential', name=name)
+        values = list(values)
+        n = len(values)
+        ranges: list[AllowedPotentialRanges] = _expand_metadata(
+            potential_range, n, 'potential_range'
+        )
+        statuses: list[AllowedReadingStatus] = _expand_metadata(
+            reading_status, n, 'reading_status'
+        )
+        timings: list[AllowedTimingStatus] = _expand_metadata(timing_status, n, 'timing_status')
+
+        super().__init__([], array_type='Potential', name=name)
+        for value, pr, status, timing in zip(values, ranges, statuses, timings):
+            self._inner.Add(
+                PSDataVoltageReading(
+                    float(value),
+                    _reading_status_enum(status),
+                    pr_string_to_enum(pr),
+                    _timing_status_enum(timing),
+                )
+            )
 
     def potential(self) -> list[float]:
         """Return list of potential values in V."""

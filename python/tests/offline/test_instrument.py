@@ -1,0 +1,352 @@
+from __future__ import annotations
+
+import asyncio
+import gc
+import warnings
+import weakref
+from dataclasses import dataclass
+from itertools import groupby
+
+import pytest
+from PalmSens.Comm import enumDeviceType
+
+import pypalmsens as ps
+from pypalmsens._instruments.measurement_manager_async import MeasurementManagerAsync
+from pypalmsens._instruments.shared import firmware_warning
+from pypalmsens.data import Measurement
+
+
+@dataclass
+class MockCapabilities:
+    DeviceType: str
+    FirmwareVersion: float
+    MinFirmwareVersionRequired: float
+
+
+@pytest.mark.parametrize(
+    'cap',
+    (
+        MockCapabilities(
+            DeviceType=enumDeviceType.Unknown,
+            FirmwareVersion=0.0,
+            MinFirmwareVersionRequired=1.2,
+        ),
+        MockCapabilities(
+            DeviceType=enumDeviceType.PalmSens4,
+            FirmwareVersion=1.9,
+            MinFirmwareVersionRequired=1.9,
+        ),
+        MockCapabilities(
+            DeviceType=enumDeviceType.PalmSens4,
+            FirmwareVersion=2.8,
+            MinFirmwareVersionRequired=1.9,
+        ),
+        MockCapabilities(
+            DeviceType=enumDeviceType.EmStat4HR,
+            FirmwareVersion=1.307,
+            MinFirmwareVersionRequired=1.301,
+        ),
+        MockCapabilities(
+            DeviceType=enumDeviceType.EmStat4HR,
+            FirmwareVersion=1.401,
+            MinFirmwareVersionRequired=1.307,
+        ),
+    ),
+)
+def test_firmware_warning_ok(cap):
+    with warnings.catch_warnings():
+        warnings.simplefilter('error')
+        firmware_warning(cap)
+
+
+@pytest.mark.parametrize(
+    'cap',
+    (
+        MockCapabilities(
+            DeviceType=enumDeviceType.PalmSens4,
+            FirmwareVersion=1.2,
+            MinFirmwareVersionRequired=1.9,
+        ),
+        MockCapabilities(
+            DeviceType=enumDeviceType.PalmSens4,
+            FirmwareVersion=2.8,
+            MinFirmwareVersionRequired=3.1,
+        ),
+        MockCapabilities(
+            DeviceType=enumDeviceType.EmStat4HR,
+            FirmwareVersion=1.207,
+            MinFirmwareVersionRequired=1.307,
+        ),
+        MockCapabilities(
+            DeviceType=enumDeviceType.EmStat4HR,
+            FirmwareVersion=1.307,
+            MinFirmwareVersionRequired=1.401,
+        ),
+    ),
+)
+def test_firmware_warning_fail(cap):
+    with pytest.warns(UserWarning):
+        firmware_warning(cap)
+
+
+@pytest.mark.instrument
+def test_connect():
+    with ps.connect() as manager:
+        assert isinstance(manager, ps.InstrumentManager)
+        assert not manager._comm.StatusWhenIdle
+
+
+@pytest.mark.instrument
+def test_connect_serial_port():
+    instrument, *_ = ps.discover()
+    assert instrument
+
+    if instrument.interface == 'ftdi':
+        pytest.skip('Unsupported for FTDI')
+
+    portname = instrument.device.portname
+
+    new_instrument = ps.Instrument.from_port(portname)
+    with ps.connect(new_instrument) as manager:
+        assert manager.instrument.name == portname
+        assert manager.get_instrument_serial()
+
+
+def test_connect_serial_port_fail():
+    instrument = ps.Instrument.from_port('COM_IMAGINARY')
+    with pytest.raises(IOError):
+        _ = ps.connect(instrument)
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_connect_async():
+    async with await ps.connect_async() as manager:
+        assert isinstance(manager, ps.InstrumentManagerAsync)
+        assert not manager._comm.StatusWhenIdle
+
+
+@pytest.mark.instrument
+def test_measure():
+    method = ps.LinearSweepVoltammetry(
+        begin_potential=0.0,
+        end_potential=0.5,
+        step_potential=0.1,
+        scanrate=10.0,
+    )
+    measurement = ps.measure(method)
+    assert isinstance(measurement, Measurement)
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_measure_async():
+    method = ps.LinearSweepVoltammetry(
+        begin_potential=0.0,
+        end_potential=0.5,
+        step_potential=0.1,
+        scanrate=10.0,
+    )
+    measurement = await ps.measure_async(method)
+    assert isinstance(measurement, Measurement)
+
+
+@pytest.mark.instrument
+def test_discover():
+    instruments = ps.discover()
+    assert len(instruments) >= 0
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_discover_async():
+    instruments = await ps.discover_async()
+    assert len(instruments) >= 0
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_idle_status_callback_async():
+    points = []
+
+    def callback(status):
+        points.append(status)
+
+    async with await ps.connect_async() as manager:
+        handle = manager.on_receive_status(callback)
+
+        await asyncio.sleep(1)
+
+        method = ps.ChronoAmperometry(
+            pretreatment=ps.settings.Pretreatment(
+                conditioning_time=0.3,
+                deposition_time=0.3,
+            ),
+            interval_time=0.02,
+            potential=1.0,
+            run_time=0.1,
+        )
+        _ = await manager.measure(method)
+        await asyncio.sleep(1)
+
+        handle.cancel()
+
+    assert len(points) == 6
+
+    assert [_[0] for _ in groupby(points, key=lambda _: _.device_state)] == [
+        'Idle',
+        'Pretreatment',
+        'Idle',
+    ]
+    assert [_[0] for _ in groupby(points, key=lambda _: _.pretreatment_phase)] == [
+        'None',
+        'Conditioning',
+        'Depositing',
+        'None',
+    ]
+
+    for point in points:
+        assert isinstance(point.current, float)
+        assert isinstance(point.potential, float)
+        assert isinstance(point.current_we2, float)
+
+
+@pytest.mark.instrument
+def test_message_callback():
+    points = []
+
+    def callback(message: str):
+        points.append(message)
+
+    with ps.connect() as manager:
+        if 'ms' not in manager.supported_methods():
+            pytest.skip('Device does not support MethodSCRIPT.')
+
+        handle = manager.on_receive_message(callback)
+
+        method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
+
+        _ = manager.measure(method)
+
+        handle.cancel()
+
+    assert len(points) == 2
+
+    assert points == ['Running: MethodSCRIPT Sandbox', 'Hello world']
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_message_callback_async():
+    points = []
+
+    def callback(message: str):
+        points.append(message)
+
+    async with await ps.connect_async() as manager:
+        if 'ms' not in manager.supported_methods():
+            pytest.skip('Device does not support MethodSCRIPT.')
+
+        handle = manager.on_receive_message(callback)
+
+        method = ps.MethodScript(script=('wait 100m\nsend_string "Hello world"'))
+
+        _ = await manager.measure(method)
+
+        handle.cancel()
+
+    assert len(points) == 2
+
+    assert points == ['Running: MethodSCRIPT Sandbox', 'Hello world']
+
+
+@pytest.mark.instrument
+def test_supported():
+    instrument, *_ = ps.discover()
+    with ps.connect(instrument) as manager:
+        assert isinstance(manager.supported_methods(), list)
+        assert isinstance(manager.supported_current_ranges(), list)
+        assert isinstance(manager.supported_applied_current_ranges(), list)
+        assert isinstance(manager.supported_potential_ranges(), list)
+        assert isinstance(manager.supported_bipot_current_ranges(), list)
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_supported_async():
+    instrument, *_ = await ps.discover_async()
+    async with await ps.connect_async(instrument) as manager:
+        assert isinstance(manager.supported_methods(), list)
+        assert isinstance(manager.supported_current_ranges(), list)
+        assert isinstance(manager.supported_applied_current_ranges(), list)
+        assert isinstance(manager.supported_potential_ranges(), list)
+        assert isinstance(manager.supported_bipot_current_ranges(), list)
+
+
+@pytest.mark.instrument
+def test_capabilities():
+    instrument, *_ = ps.discover()
+    with ps.connect(instrument) as manager:
+        cap = manager.capabilities
+
+    # Must be accessible without connection
+    assert cap.model_dump()
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_get_estimated_duration():
+    instrument, *_ = await ps.discover_async()
+
+    method = ps.OpenCircuitPotentiometry(run_time=10)
+
+    async with await ps.connect_async(instrument) as manager:
+        t = manager.get_estimated_duration(method)
+
+    assert t == pytest.approx(10.1)
+
+
+@pytest.mark.instrument
+def test_query():
+    instrument, *_ = ps.discover()
+    with ps.connect(instrument) as manager:
+        try:
+            assert manager.query('t')
+        except ValueError as e:
+            pytest.skip(str(e))
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_query_async():
+    instrument, *_ = await ps.discover_async()
+    async with await ps.connect_async(instrument) as manager:
+        try:
+            assert await manager.query('t')
+        except ValueError as e:
+            pytest.skip(str(e))
+
+
+@pytest.mark.instrument
+def test_manager_is_collectable_after_construction():
+    # https://github.com/PalmSens/palmsens-sdk/issues/511
+    with ps.connect() as manager:
+        mm = MeasurementManagerAsync(comm=manager._comm)
+        ref = weakref.ref(mm)
+        del mm
+        _ = gc.collect()
+        assert ref() is None, f'manager kept alive by {gc.get_referrers(ref())}'
+
+
+@pytest.mark.instrument
+@pytest.mark.asyncio
+async def test_manager_is_collectable_after_measurement():
+    # https://github.com/PalmSens/palmsens-sdk/issues/511
+    async with await ps.connect_async() as manager:
+        mm = MeasurementManagerAsync(comm=manager._comm)
+        ref_mm = weakref.ref(mm)
+        _ = await mm.measure(ps.ChronoAmperometry(run_time=0.1))
+        assert mm.active_measurement is None
+        del mm
+        _ = gc.collect()
+        assert ref_mm() is None

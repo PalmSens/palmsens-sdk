@@ -210,10 +210,10 @@ class ConstantResistance(BaseMethodScriptTechnique):
     cutoff: float = 2.5
     """A cut-off potential in V to finish the discharge step."""
 
-    duration: float = Field(3600, ge=0)
+    duration: float = Field(default=3600, ge=0)
     """The total duration of the experiment in s (if the cut-off limit currents not met)."""
 
-    interval: float = Field(1, ge=0)
+    interval: float = Field(default=1, ge=0)
     """The interval time in s of each data point."""
 
     cell_on_ocp: bool = False

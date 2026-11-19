@@ -4,12 +4,13 @@ import logging
 
 import pytest
 import pytest_asyncio
-from test_techniques import CP, CV, EIS, MM, MS
 
 import pypalmsens as ps
 from pypalmsens._instruments.shared import MethodIncompatibleError
 from pypalmsens._methods import BaseTechnique
 from pypalmsens.data import DataArray, DataSet
+
+from .test_techniques import CP, CV, EIS, MM, MS
 
 logger = logging.getLogger(__name__)
 

@@ -79,5 +79,5 @@ def test_method_capabilities_errors_bipot():
     method.bipot.current_range = {'min': '1uA', 'max': '1mA', 'start': '10uA'}
 
     # emstat4 does not support bipot autoranging
-    assert len(method.capability_errors('emstat4hr')) > 0
+    assert len(method.capability_errors('palmsens4')) > 0
     assert not method.supports('emstat4hr')

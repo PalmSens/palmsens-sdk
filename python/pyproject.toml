@@ -89,13 +89,9 @@ source = ["pypalmsens"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = [
-    "instrument: Mark tests that need an instrument connection.",
-    "lablink: Mark tests that require lablink.",
-]
+markers = []
 log_cli = false
 log_cli_level = "INFO"
-addopts = '-m "not lablink"'
 
 [tool.ruff]
 src = ['src/pypalmsens']

@@ -27,34 +27,6 @@ async def manager_async():
         yield mgr
 
 
-@pytest.mark.parametrize(
-    'pins,expected_mask',
-    (
-        ([0], 1),
-        ([1, 3, 5], 42),
-        ([1, 1, 1, 1], 2),
-        ([4, 2], 20),
-        ([2, 4], 20),
-    ),
-)
-def test_pins_to_bitmask(pins, expected_mask):
-    assert gpio.pins_to_bitmask(pins) == expected_mask
-
-
-@pytest.mark.parametrize(
-    'mask,expected_pins',
-    (
-        (1, [0]),
-        (42, [1, 3, 5]),
-        (2, [1]),
-        (20, [2, 4]),
-    ),
-)
-def test_bitmask_to_pins(mask, expected_pins):
-    assert gpio.bitmask_to_pins(mask) == expected_pins
-
-
-@pytest.mark.instrument
 def test_raise_if_not_supported(manager):
     client = manager._comm.ClientConnection
 
@@ -77,21 +49,18 @@ def test_raise_if_not_supported(manager):
     gpio.raise_if_pins_not_supported(client, write_pins, mode='write')
 
 
-@pytest.mark.instrument
 def test_readable_pins(manager):
     pins = manager.gpio.readable_pins
     assert pins
     assert all(isinstance(val, int) for val in pins)
 
 
-@pytest.mark.instrument
 def test_writable_pins(manager):
     pins = manager.gpio.writable_pins
     assert pins
     assert all(isinstance(val, int) for val in pins)
 
 
-@pytest.mark.instrument
 def test_read(manager):
     pins = manager.gpio.readable_pins
 
@@ -105,7 +74,6 @@ def test_read(manager):
         _ = manager.gpio.read(1234)
 
 
-@pytest.mark.instrument
 def test_write(manager):
     pins = manager.gpio.writable_pins
 

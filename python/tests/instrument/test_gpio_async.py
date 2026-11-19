@@ -19,7 +19,6 @@ async def manager():
         yield mgr
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_read_async(manager):
     pins = manager.gpio.readable_pins
@@ -34,7 +33,6 @@ async def test_read_async(manager):
         _ = await manager.gpio.read_async(1234)
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_write_async(manager):
     pins = manager.gpio.writable_pins

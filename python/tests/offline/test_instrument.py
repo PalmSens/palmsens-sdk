@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import pytest
 from PalmSens.Comm import enumDeviceType
 
+import pypalmsens as ps
 from pypalmsens._instruments.shared import firmware_warning
 
 
@@ -80,3 +81,9 @@ def test_firmware_warning_ok(cap):
 def test_firmware_warning_fail(cap):
     with pytest.warns(UserWarning):
         firmware_warning(cap)
+
+
+def test_connect_serial_port_fail():
+    instrument = ps.Instrument.from_port('COM_IMAGINARY')
+    with pytest.raises(IOError):
+        _ = ps.connect(instrument)

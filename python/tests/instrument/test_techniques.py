@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import logging
-import tempfile
-from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
@@ -22,20 +20,17 @@ def manager():
         yield mgr
 
 
-@pytest.mark.instrument
 def test_get_instrument_serial(manager):
     val = manager.get_instrument_serial()
     assert val
     assert isinstance(val, str)
 
 
-@pytest.mark.instrument
 def test_status(manager):
     status = manager.status()
     assert status.device_state == 'Idle'
 
 
-@pytest.mark.instrument
 def test_cell_on(manager):
     assert not manager.is_cell_on()
     manager.set_cell(True)
@@ -44,7 +39,6 @@ def test_cell_on(manager):
     assert not manager.is_cell_on()
 
 
-@pytest.mark.instrument
 def test_read_current(manager):
     assert not manager.is_cell_on()
     manager.set_cell(True)
@@ -71,7 +65,6 @@ def test_read_current(manager):
     assert not manager.is_cell_on()
 
 
-@pytest.mark.instrument
 def test_read_potential(manager):
     manager.set_cell(True)
 
@@ -94,7 +87,6 @@ def test_read_potential(manager):
     manager.set_cell(False)
 
 
-@pytest.mark.instrument
 def test_set_mode(manager):
     manager.set_cell(True)
     for mode in ['galvanostatic', 'potentiostatic', 'galvanostatic']:
@@ -1275,7 +1267,6 @@ class MM:
         }
 
 
-@pytest.mark.instrument
 @pytest.mark.parametrize(
     'method',
     (
@@ -1334,54 +1325,3 @@ def test_measure(manager, method):
         raise
 
     method.validate(measurement)
-
-
-@pytest.mark.parametrize(
-    'method',
-    (
-        CV,
-        FCV,
-        LSV,
-        LSV_aux,
-        ACV,
-        SWV,
-        CP,
-        SCP,
-        LSP,
-        OCP,
-        CA,
-        FAM,
-        DPV,
-        PAD,
-        MPAD,
-        NPV,
-        MA,
-        MP,
-        CC,
-        EIS,
-        EIS_pot_fixed,
-        EIS_pot_scan,
-        EIS_time_scan,
-        EIS_time_fixed,
-        EIS_single_point,
-        FIS,
-        GIS,
-        GIS_cur_fixed,
-        GIS_cur_scan,
-        GIS_time_scan,
-        GIS_time_fixed,
-        GIS_single_point,
-        FGIS,
-        MS,
-        MM,
-    ),
-)
-def test_params_round_trip(method):
-    params = BaseTechnique._registry[method.id].from_dict(method.kwargs)
-
-    with tempfile.TemporaryDirectory() as tmp:
-        path = Path(tmp, f'{method.id}.psmethod')
-        ps.save_method_file(path, params)
-        new_params = ps.load_method_file(path)
-
-    assert new_params == params

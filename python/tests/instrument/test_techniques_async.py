@@ -23,20 +23,17 @@ async def manager():
         yield mgr
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_get_instrument_serial(manager):
     val = await manager.get_instrument_serial()
     assert isinstance(val, str)
 
 
-@pytest.mark.instrument
 def test_status_async(manager):
     status = manager.status()
     assert status.device_state == 'Idle'
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_cell_on(manager):
     assert not await manager.is_cell_on()
@@ -46,7 +43,6 @@ async def test_cell_on(manager):
     assert not await manager.is_cell_on()
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_read_current(manager):
     await manager.set_cell(True)
@@ -71,7 +67,6 @@ async def test_read_current(manager):
     await manager.set_cell(False)
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_read_potential(manager):
     await manager.set_cell(True)
@@ -95,7 +90,6 @@ async def test_read_potential(manager):
     await manager.set_cell(False)
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_set_mode(manager):
     for mode in ['galvanostatic', 'potentiostatic', 'galvanostatic']:
@@ -106,7 +100,6 @@ async def test_set_mode(manager):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 @pytest.mark.parametrize(
     'method',
     (
@@ -137,7 +130,6 @@ async def test_measure(manager, method):
     method.validate(measurement)
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_callback(manager):
     points = []
@@ -162,7 +154,6 @@ async def test_callback(manager):
     assert len(point.y_array) == 11
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_callback_eis(manager):
     points = []

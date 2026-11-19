@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
-import pytest
 
 import pypalmsens as ps
 from pypalmsens.types import MethodTypeCompatible
@@ -60,7 +59,6 @@ def _test_stream(path: Path, method: MethodTypeCompatible):
     return measurement
 
 
-@pytest.mark.instrument
 def test_measure_stream_cv_multiple_scans(tmpdir):
     path = tmpdir / 'cv.jsonl'
 
@@ -79,7 +77,6 @@ def test_measure_stream_cv_multiple_scans(tmpdir):
     assert not measurement.eis_data
 
 
-@pytest.mark.instrument
 def test_measure_stream_cp_with_aux(tmpdir):
     path = tmpdir / 'cp.jsonl'
 
@@ -95,7 +92,6 @@ def test_measure_stream_cp_with_aux(tmpdir):
     assert not measurement.eis_data
 
 
-@pytest.mark.instrument
 def test_measure_stream_eis(tmpdir):
     path = tmpdir / 'eis.jsonl'
 

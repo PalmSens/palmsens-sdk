@@ -2,101 +2,22 @@ from __future__ import annotations
 
 import asyncio
 import gc
-import warnings
 import weakref
-from dataclasses import dataclass
 from itertools import groupby
 
 import pytest
-from PalmSens.Comm import enumDeviceType
 
 import pypalmsens as ps
 from pypalmsens._instruments.measurement_manager_async import MeasurementManagerAsync
-from pypalmsens._instruments.shared import firmware_warning
 from pypalmsens.data import Measurement
 
 
-@dataclass
-class MockCapabilities:
-    DeviceType: str
-    FirmwareVersion: float
-    MinFirmwareVersionRequired: float
-
-
-@pytest.mark.parametrize(
-    'cap',
-    (
-        MockCapabilities(
-            DeviceType=enumDeviceType.Unknown,
-            FirmwareVersion=0.0,
-            MinFirmwareVersionRequired=1.2,
-        ),
-        MockCapabilities(
-            DeviceType=enumDeviceType.PalmSens4,
-            FirmwareVersion=1.9,
-            MinFirmwareVersionRequired=1.9,
-        ),
-        MockCapabilities(
-            DeviceType=enumDeviceType.PalmSens4,
-            FirmwareVersion=2.8,
-            MinFirmwareVersionRequired=1.9,
-        ),
-        MockCapabilities(
-            DeviceType=enumDeviceType.EmStat4HR,
-            FirmwareVersion=1.307,
-            MinFirmwareVersionRequired=1.301,
-        ),
-        MockCapabilities(
-            DeviceType=enumDeviceType.EmStat4HR,
-            FirmwareVersion=1.401,
-            MinFirmwareVersionRequired=1.307,
-        ),
-    ),
-)
-def test_firmware_warning_ok(cap):
-    with warnings.catch_warnings():
-        warnings.simplefilter('error')
-        firmware_warning(cap)
-
-
-@pytest.mark.parametrize(
-    'cap',
-    (
-        MockCapabilities(
-            DeviceType=enumDeviceType.PalmSens4,
-            FirmwareVersion=1.2,
-            MinFirmwareVersionRequired=1.9,
-        ),
-        MockCapabilities(
-            DeviceType=enumDeviceType.PalmSens4,
-            FirmwareVersion=2.8,
-            MinFirmwareVersionRequired=3.1,
-        ),
-        MockCapabilities(
-            DeviceType=enumDeviceType.EmStat4HR,
-            FirmwareVersion=1.207,
-            MinFirmwareVersionRequired=1.307,
-        ),
-        MockCapabilities(
-            DeviceType=enumDeviceType.EmStat4HR,
-            FirmwareVersion=1.307,
-            MinFirmwareVersionRequired=1.401,
-        ),
-    ),
-)
-def test_firmware_warning_fail(cap):
-    with pytest.warns(UserWarning):
-        firmware_warning(cap)
-
-
-@pytest.mark.instrument
 def test_connect():
     with ps.connect() as manager:
         assert isinstance(manager, ps.InstrumentManager)
         assert not manager._comm.StatusWhenIdle
 
 
-@pytest.mark.instrument
 def test_connect_serial_port():
     instrument, *_ = ps.discover()
     assert instrument
@@ -112,13 +33,6 @@ def test_connect_serial_port():
         assert manager.get_instrument_serial()
 
 
-def test_connect_serial_port_fail():
-    instrument = ps.Instrument.from_port('COM_IMAGINARY')
-    with pytest.raises(IOError):
-        _ = ps.connect(instrument)
-
-
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_connect_async():
     async with await ps.connect_async() as manager:
@@ -126,7 +40,6 @@ async def test_connect_async():
         assert not manager._comm.StatusWhenIdle
 
 
-@pytest.mark.instrument
 def test_measure():
     method = ps.LinearSweepVoltammetry(
         begin_potential=0.0,
@@ -138,7 +51,6 @@ def test_measure():
     assert isinstance(measurement, Measurement)
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_measure_async():
     method = ps.LinearSweepVoltammetry(
@@ -151,20 +63,17 @@ async def test_measure_async():
     assert isinstance(measurement, Measurement)
 
 
-@pytest.mark.instrument
 def test_discover():
     instruments = ps.discover()
     assert len(instruments) >= 0
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_discover_async():
     instruments = await ps.discover_async()
     assert len(instruments) >= 0
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_idle_status_callback_async():
     points = []
@@ -211,7 +120,6 @@ async def test_idle_status_callback_async():
         assert isinstance(point.current_we2, float)
 
 
-@pytest.mark.instrument
 def test_message_callback():
     points = []
 
@@ -235,7 +143,6 @@ def test_message_callback():
     assert points == ['Running: MethodSCRIPT Sandbox', 'Hello world']
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_message_callback_async():
     points = []
@@ -260,7 +167,6 @@ async def test_message_callback_async():
     assert points == ['Running: MethodSCRIPT Sandbox', 'Hello world']
 
 
-@pytest.mark.instrument
 def test_supported():
     instrument, *_ = ps.discover()
     with ps.connect(instrument) as manager:
@@ -271,7 +177,6 @@ def test_supported():
         assert isinstance(manager.supported_bipot_current_ranges(), list)
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_supported_async():
     instrument, *_ = await ps.discover_async()
@@ -283,7 +188,6 @@ async def test_supported_async():
         assert isinstance(manager.supported_bipot_current_ranges(), list)
 
 
-@pytest.mark.instrument
 def test_capabilities():
     instrument, *_ = ps.discover()
     with ps.connect(instrument) as manager:
@@ -293,7 +197,6 @@ def test_capabilities():
     assert cap.model_dump()
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_get_estimated_duration():
     instrument, *_ = await ps.discover_async()
@@ -306,7 +209,6 @@ async def test_get_estimated_duration():
     assert t == pytest.approx(10.1)
 
 
-@pytest.mark.instrument
 def test_query():
     instrument, *_ = ps.discover()
     with ps.connect(instrument) as manager:
@@ -316,7 +218,6 @@ def test_query():
             pytest.skip(str(e))
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_query_async():
     instrument, *_ = await ps.discover_async()
@@ -327,7 +228,6 @@ async def test_query_async():
             pytest.skip(str(e))
 
 
-@pytest.mark.instrument
 def test_manager_is_collectable_after_construction():
     # https://github.com/PalmSens/palmsens-sdk/issues/511
     with ps.connect() as manager:
@@ -338,7 +238,6 @@ def test_manager_is_collectable_after_construction():
         assert ref() is None, f'manager kept alive by {gc.get_referrers(ref())}'
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_manager_is_collectable_after_measurement():
     # https://github.com/PalmSens/palmsens-sdk/issues/511

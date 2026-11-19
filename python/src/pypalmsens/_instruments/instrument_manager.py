@@ -146,7 +146,7 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
 
     def is_measuring(self) -> bool:
         """Return True if device is measuring."""
-        return int(self._comm.State) == PSComm.CommManager.DeviceState.Measurement
+        return self._comm.State == PSComm.CommManager.DeviceState.Measurement
 
     @contextmanager
     def _lock(self) -> Generator[PSComm.CommManager]:

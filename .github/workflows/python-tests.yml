@@ -61,7 +61,7 @@ jobs:
 
       - name: Test with pytest
         run: |
-          coverage run -m pytest -m "not examples and not instrument"
+          coverage run -m pytest --offline
 
       - name: Report coverage
         if: ${{ matrix.os == 'windows-latest' }}

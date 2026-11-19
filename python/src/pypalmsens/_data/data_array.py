@@ -13,6 +13,7 @@ from PalmSens.Data import CurrentReading as PSDataCurrentReading
 from PalmSens.Data import DataArray as PSDataArray
 from PalmSens.Data import DataArrayCurrents as PSDataArrayCurrents
 from PalmSens.Data import DataArrayPotentials as PSDataArrayPotentials
+from PalmSens.Data import IDataValue
 from PalmSens.Data import VoltageReading as PSDataVoltageReading
 from typing_extensions import override
 
@@ -458,16 +459,19 @@ class CurrentArray(DataArray):
         )
         timings: list[AllowedTimingStatus] = _expand_metadata(timing_status, n, 'timing_status')
 
-        inner = PSDataArrayCurrents(name or array_type, array_str_to_enum(array_type))
-        for value, cr, status, timing in zip(values, ranges, statuses, timings):
-            inner.Add(
-                PSDataCurrentReading(
-                    float(value),
-                    cr_string_to_enum(cr),
-                    _reading_status_enum(status),
-                    _timing_status_enum(timing),
-                )
+        readings = System.Array[IDataValue](
+            PSDataCurrentReading(
+                float(value),
+                cr_string_to_enum(cr),
+                _reading_status_enum(status),
+                _timing_status_enum(timing),
             )
+            for value, cr, status, timing in zip(values, ranges, statuses, timings)
+        )
+
+        inner = PSDataArrayCurrents(name or array_type, array_str_to_enum(array_type))
+        inner.AddRange(readings)
+
         return cls._wrap(inner)
 
     def current(self) -> list[float]:
@@ -607,16 +611,19 @@ class PotentialArray(DataArray):
         )
         timings: list[AllowedTimingStatus] = _expand_metadata(timing_status, n, 'timing_status')
 
-        inner = PSDataArrayPotentials(name or 'Potential', array_str_to_enum('Potential'))
-        for value, pr, status, timing in zip(values, ranges, statuses, timings):
-            inner.Add(
-                PSDataVoltageReading(
-                    float(value),
-                    _reading_status_enum(status),
-                    pr_string_to_enum(pr),
-                    _timing_status_enum(timing),
-                )
+        readings = System.Array[IDataValue](
+            PSDataVoltageReading(
+                float(value),
+                _reading_status_enum(status),
+                pr_string_to_enum(pr),
+                _timing_status_enum(timing),
             )
+            for value, pr, status, timing in zip(values, ranges, statuses, timings)
+        )
+
+        inner = PSDataArrayPotentials(name or 'Potential', array_str_to_enum('Potential'))
+        inner.AddRange(readings)
+
         return cls._wrap(inner)
 
     def potential(self) -> list[float]:

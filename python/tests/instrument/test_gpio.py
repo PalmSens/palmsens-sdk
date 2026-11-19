@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 
 import pytest
-import pytest_asyncio
 
 import pypalmsens as ps
 from pypalmsens._instruments import gpio
@@ -15,14 +14,6 @@ logger = logging.getLogger(__name__)
 def manager():
     instrument, *_ = ps.discover()
     with ps.connect(instrument) as mgr:
-        logger.warning('Connected to %s', mgr.instrument.id)
-        yield mgr
-
-
-@pytest_asyncio.fixture(scope='module')
-async def manager_async():
-    instrument, *_ = await ps.discover_async()
-    async with await ps.connect_async(instrument) as mgr:
         logger.warning('Connected to %s', mgr.instrument.id)
         yield mgr
 

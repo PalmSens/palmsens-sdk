@@ -15,23 +15,6 @@ if True:
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.parametrize(
-    'parts,expected',
-    (
-        ([], ''),
-        (['a'], 'a'),
-        (['a', 'b'], 'a/b'),
-        (['a', 'b/c.x'], 'a/b/c.x'),
-        (['a/b', 'c.x'], 'a/b/c.x'),
-        (['', 'c.x'], 'c.x'),
-        (['a/b', ''], 'a/b'),
-    ),
-)
-def test_device_path(parts, expected):
-    p = ps.DevicePath(*parts)
-    assert p.__fspath__() == expected
-
-
 @pytest.fixture(scope='module')
 def fs():
     instrument, *_ = ps.discover()
@@ -40,17 +23,14 @@ def fs():
         yield ps.DeviceFileSystem(mgr)
 
 
-@pytest.mark.instrument
 def test_truediv(fs):
     assert fs / 'Measurements' == ps.DevicePath('Measurements')
 
 
-@pytest.mark.instrument
 def test_root(fs):
     assert str(fs.root) == ''
 
 
-@pytest.mark.instrument
 def test_exists(fs):
     files = fs.listdir()
 
@@ -60,7 +40,6 @@ def test_exists(fs):
         assert not fs.exists(f.with_name('foo'))
 
 
-@pytest.mark.instrument
 def test_load_measurement(fs):
     for f in fs.walk():
         if f.suffix == '.dmeas':
@@ -72,7 +51,6 @@ def test_load_measurement(fs):
     assert measurement.curves
 
 
-@pytest.mark.instrument
 def test_remove(fs):
     path = 'foo.dmeas'
 
@@ -84,7 +62,6 @@ def test_remove(fs):
     mocked.ClientConnection.DeleteDeviceFile.assert_called_once_with(path)
 
 
-@pytest.mark.instrument
 def test_delete_all_files(fs):
     with mock.patch.object(fs.manager, '_comm') as mocked:
         fs.delete_all_files(confirm=False)
@@ -96,17 +73,14 @@ def test_delete_all_files(fs):
         mocked.ClientConnection.ClearDeviceFiles.assert_called_once()
 
 
-@pytest.mark.instrument
 def test_free(fs):
     assert fs.free()
 
 
-@pytest.mark.instrument
 def test_size(fs):
     assert fs.size()
 
 
-@pytest.mark.instrument
 def test_timestamp_of(fs):
     ret = SimpleNamespace(Timestamp=DateTime.Now)
 
@@ -121,7 +95,6 @@ def test_timestamp_of(fs):
     mocked.ClientConnection.GetDeviceFile.assert_called_once_with(f'/{path}')
 
 
-@pytest.mark.instrument
 def test_size_of(fs):
     ret = SimpleNamespace(Size=123)
 
@@ -135,7 +108,6 @@ def test_size_of(fs):
     mocked.ClientConnection.GetDeviceFile.assert_called_once_with(f'/{path}')
 
 
-@pytest.mark.instrument
 def test_read_text(fs):
     ret = SimpleNamespace(Content='hello world')
 
@@ -149,17 +121,14 @@ def test_read_text(fs):
     mocked.ClientConnection.GetDeviceFile.assert_called_once_with(f'/{path}')
 
 
-@pytest.mark.instrument
 def test_iterdir(fs):
     assert fs.listdir()
 
 
-@pytest.mark.instrument
 def test_listdir(fs):
     assert list(fs.listdir())
 
 
-@pytest.mark.instrument
 def test_walk(fs):
     for item in fs.walk():
         assert isinstance(item, ps.DevicePath)

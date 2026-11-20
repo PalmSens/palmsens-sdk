@@ -1,17 +1,23 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Any, ClassVar, Self, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Self, TypeVar, cast, overload
 
 import numpy as np
+import System
+from PalmSens import Data as PSData
 from PalmSens import Units as PSUnits
 from PalmSens.Calculations import MathFunctions as PSMath
-from PalmSens.Data import DataArray as PSDataArray
-from PalmSens.Data import DataArrayCurrents as PSDataArrayCurrents
-from PalmSens.Data import DataArrayPotentials as PSDataArrayPotentials
+from PalmSens.Comm import ReadingStatus as PSReadingStatus
+from PalmSens.Comm import TimingStatus as PSTimingStatus
 from typing_extensions import override
 
-from .._converters import cr_enum_to_string, pr_enum_to_string
+from .._converters import (
+    cr_enum_to_string,
+    cr_string_to_enum,
+    pr_enum_to_string,
+    pr_string_to_enum,
+)
 from .._types import (
     AllowedCurrentRanges,
     AllowedPotentialRanges,
@@ -31,6 +37,33 @@ def implementation(interface):
     # if you need to "downcast" to the implementation class.
     # https://github.com/pythonnet/pythonnet/blob/a404d6e4d2ef6182763bd626ab08e0de4400e621/CHANGELOG.md?plain=1#L73-L77
     return interface.__implementation__
+
+
+MetadataT = TypeVar('MetadataT')
+
+
+def _parse_reading_status(status: AllowedReadingStatus) -> PSReadingStatus:
+    """Parse reading status literal to the .NET enum member."""
+    return System.Enum.Parse(PSReadingStatus, status, True)
+
+
+def _parse_timing_status(status: AllowedTimingStatus) -> PSTimingStatus:
+    """Parse timing status literal to the .NET enum member."""
+    return System.Enum.Parse(PSTimingStatus, status, True)
+
+
+def _broadcast(
+    value: MetadataT | Sequence[MetadataT],
+    length: int,
+    param: str,
+) -> list[MetadataT]:
+    """Broadcast one literal to every point, or validate a per-point sequence."""
+    if isinstance(value, str):
+        return cast(list[MetadataT], [value] * length)
+    seq = list(cast(Sequence[MetadataT], value))
+    if len(seq) != length:
+        raise ValueError(f'{param} must be one literal or {length} values, got {len(seq)}')
+    return seq
 
 
 DEFAULT_UNIT_MAPPING = {
@@ -62,11 +95,11 @@ class DataArray(Sequence[float]):
     """Array of data values.
 
     A data array can be created from an iterable of values, or wrapped from an
-    existing ``PSDataArray`` (see ``_wrap``).
+    existing `PalmSens.Data.DataArray` (see `_wrap`).
 
     Parameters
     ----------
-    values : Iterable[float]
+    values : Iterable[float], optional
         Values to store in the array.
         Any iterable (list, tuple, generator, etc.) of floats is accepted.
     array_type : AllowedArrayTypes, optional
@@ -85,8 +118,8 @@ class DataArray(Sequence[float]):
     """
 
     __slots__: ClassVar[tuple[str, ...]] = ('_inner',)
-    _inner: PSDataArray
-    _ps_cls: ClassVar[type[PSDataArray]] = PSDataArray
+    _inner: PSData.DataArray
+    _ps_cls: ClassVar[type[PSData.DataArray]] = PSData.DataArray
 
     def __init__(
         self,
@@ -101,9 +134,9 @@ class DataArray(Sequence[float]):
             name = array_type
 
         if isinstance(self, CurrentArray):
-            inner = PSDataArrayCurrents(name, array_type_enum)
+            inner = PSData.DataArrayCurrents(name, array_type_enum)
         elif isinstance(self, PotentialArray):
-            inner = PSDataArrayPotentials(name, array_type_enum)
+            inner = PSData.DataArrayPotentials(name, array_type_enum)
         else:
             try:
                 unit = DEFAULT_UNIT_MAPPING[array_type]()
@@ -117,18 +150,18 @@ class DataArray(Sequence[float]):
         self._inner = inner
 
     @classmethod
-    def _wrap(cls, inner: PSDataArray) -> Self:
+    def _wrap(cls, inner: PSData.DataArray) -> Self:
         obj = cls.__new__(cls)
         obj._inner = inner
         return obj
 
     @classmethod
     def _wrap_dispatched(
-        cls, psarray: PSDataArray
+        cls, psarray: PSData.DataArray
     ) -> DataArray | CurrentArray | PotentialArray:
-        if isinstance(psarray, PSDataArrayPotentials):
+        if isinstance(psarray, PSData.DataArrayPotentials):
             return PotentialArray._wrap(psarray)
-        if isinstance(psarray, PSDataArrayCurrents):
+        if isinstance(psarray, PSData.DataArrayCurrents):
             return CurrentArray._wrap(psarray)
 
         return DataArray._wrap(psarray)
@@ -223,7 +256,7 @@ class DataArray(Sequence[float]):
 
         new_values = PSMath.MultiplyDataArray(self._inner.GetValues(), value)
 
-        new_array = PSDataArray(
+        new_array = PSData.DataArray(
             self._inner.Description, self._inner.Unit, self._inner.ArrayType
         )
         new_array.AddRange(new_values)
@@ -247,7 +280,7 @@ class DataArray(Sequence[float]):
             Data array with normalized values.
         """
         new_values = PSMath.NormalizeArray(self._inner.GetValues(), self.min(), self.max())
-        new_array = PSDataArray(
+        new_array = PSData.DataArray(
             self._inner.Description, self._inner.Unit, self._inner.ArrayType
         )
         new_array.AddRange(new_values)
@@ -367,7 +400,7 @@ class CurrentArray(DataArray):
 
     __slots__ = ()
 
-    _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayCurrents
+    _ps_cls: ClassVar[type[PSData.DataArray]] = PSData.DataArrayCurrents
 
     def __init__(
         self,
@@ -376,6 +409,63 @@ class CurrentArray(DataArray):
         name: str | None = None,
     ):
         super().__init__(values, array_type='Current', name=name)
+
+    @classmethod
+    def with_readings(
+        cls,
+        values: Iterable[float],
+        *,
+        name: str | None = None,
+        array_type: AllowedArrayTypes = 'Current',
+        current_range: AllowedCurrentRanges | Sequence[AllowedCurrentRanges] = '10mA',
+        reading_status: AllowedReadingStatus | Sequence[AllowedReadingStatus] = 'OK',
+        timing_status: AllowedTimingStatus | Sequence[AllowedTimingStatus] = 'OK',
+    ) -> Self:
+        """Create an array of typed current readings.
+
+        Parameters
+        ----------
+        values : Iterable[float]
+            Current values in µA.
+        name : str, optional
+            Name of the array. Defaults to the value of `array_type`.
+        array_type : AllowedArrayTypes, optional
+            Defaults to `'Current'`, use `'miDC'` to mimic EIS mIDC arrays.
+        current_range : str | Sequence[str], optional
+            Current range, one literal for all points or one per point.
+            Defaults to `'10mA'`.
+        reading_status : str | Sequence[str], optional
+            Reading status, one literal for all points or one per point.
+            Defaults to `'OK'`.
+        timing_status : str | Sequence[str], optional
+            Timing status, one literal for all points or one per point.
+            Defaults to `'OK'`.
+
+        Returns
+        -------
+        array : CurrentArray
+            Current array with reading status, timing status, and current range.
+        """
+        values = list(values)
+        n = len(values)
+        ranges: list[AllowedCurrentRanges] = _broadcast(current_range, n, 'current_range')
+        statuses: list[AllowedReadingStatus] = _broadcast(reading_status, n, 'reading_status')
+        timings: list[AllowedTimingStatus] = _broadcast(timing_status, n, 'timing_status')
+
+        readings = System.Array[PSData.IDataValue](
+            PSData.CurrentReading(
+                float(value),
+                cr_string_to_enum(cr),
+                _parse_reading_status(status),
+                _parse_timing_status(timing),
+            )
+            for value, cr, status, timing in zip(values, ranges, statuses, timings)
+        )
+
+        inner = PSData.DataArrayCurrents(name or array_type, array_str_to_enum(array_type))
+        inner.AddRange(readings)
+
+        return cls._wrap(inner)
 
     def current(self) -> list[float]:
         """Current in µA."""
@@ -461,7 +551,7 @@ class PotentialArray(DataArray):
 
     __slots__ = ()
 
-    _ps_cls: ClassVar[type[PSDataArray]] = PSDataArrayPotentials
+    _ps_cls: ClassVar[type[PSData.DataArray]] = PSData.DataArrayPotentials
 
     def __init__(
         self,
@@ -470,6 +560,60 @@ class PotentialArray(DataArray):
         name: str | None = None,
     ):
         super().__init__(values, array_type='Potential', name=name)
+
+    @classmethod
+    def with_readings(
+        cls,
+        values: Iterable[float],
+        *,
+        name: str | None = None,
+        potential_range: AllowedPotentialRanges | Sequence[AllowedPotentialRanges] = '1V',
+        reading_status: AllowedReadingStatus | Sequence[AllowedReadingStatus] = 'OK',
+        timing_status: AllowedTimingStatus | Sequence[AllowedTimingStatus] = 'OK',
+    ) -> Self:
+        """Create an array of typed potential readings.
+
+        Parameters
+        ----------
+        values : Iterable[float]
+            Potential values in V.
+        name : str, optional
+            Name of the array. Defaults to `'Potential'`.
+        potential_range : str | Sequence[str], optional
+            Potential range, one literal for all points or one per point.
+            Defaults to `'1V'`.
+        reading_status : str | Sequence[str], optional
+            Reading status, one literal for all points or one per point.
+            Defaults to `'OK'`.
+        timing_status : str | Sequence[str], optional
+            Timing status, one literal for all points or one per point.
+            Defaults to `'OK'`.
+
+        Returns
+        -------
+        array : PotentialArray
+            Potential array with reading status, timing status, and potential ranges.
+        """
+        values = list(values)
+        n = len(values)
+        ranges: list[AllowedPotentialRanges] = _broadcast(potential_range, n, 'potential_range')
+        statuses: list[AllowedReadingStatus] = _broadcast(reading_status, n, 'reading_status')
+        timings: list[AllowedTimingStatus] = _broadcast(timing_status, n, 'timing_status')
+
+        readings = System.Array[PSData.IDataValue](
+            PSData.VoltageReading(
+                float(value),
+                _parse_reading_status(status),
+                pr_string_to_enum(pr),
+                _parse_timing_status(timing),
+            )
+            for value, pr, status, timing in zip(values, ranges, statuses, timings)
+        )
+
+        inner = PSData.DataArrayPotentials(name or 'Potential', array_str_to_enum('Potential'))
+        inner.AddRange(readings)
+
+        return cls._wrap(inner)
 
     def potential(self) -> list[float]:
         """Return list of potential values in V."""

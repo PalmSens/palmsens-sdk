@@ -21,7 +21,6 @@ async def comm():
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 @pytest.mark.parametrize(
     'q',
     ('', '\n', 't', 'i', 'v', 'CC', 'CM'),
@@ -36,7 +35,6 @@ async def test_query(comm, q):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_run_methodscript(comm):
     script = 'send_string "hello world!"'
 
@@ -45,7 +43,6 @@ async def test_run_methodscript(comm):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_run_methodscript_fail(comm):
     script = 'fail!'
 
@@ -54,21 +51,18 @@ async def test_run_methodscript_fail(comm):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_get_methodscript_capabilities(comm):
     ret = await comm.get_methodscript_capabilities()
     assert 'var' in ret
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_get_communication_capabilities(comm):
     ret = await comm.get_communication_capabilities()
     assert 't' in ret
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_flush(comm):
     await comm.write('t')
     await asyncio.sleep(0.1)
@@ -77,13 +71,11 @@ async def test_flush(comm):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_abort_nothing(comm):
     await comm.abort()
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 @pytest.mark.parametrize(
     'q, error_code',
     (

@@ -1,17 +1,31 @@
 from __future__ import annotations
 
+import numpy as np
 import pytest
 
-from pypalmsens.data import DataArray, DataSet
+from pypalmsens.data import CurrentArray, DataArray, DataSet, PotentialArray
 
 
 @pytest.fixture
-def dataset(measurement_cv_1scan):
-    return measurement_cv_1scan.dataset
+def dataset():
+    """Artificial dataset mirroring cv scan."""
+    n = 41
+    time = DataArray(np.linspace(0.0, 4.0, n), array_type='Time', name='time')
+    potential = PotentialArray(np.linspace(0.0, 1.0, n), name='scan1channel1')
+    current = CurrentArray.with_readings(
+        np.linspace(1.0, -1.0, n),
+        name='scan1channel1',
+        current_range='10uA',
+        reading_status='OK',
+    )
+    charge = DataArray(np.linspace(0.0, 10.0, n), array_type='Charge', name='scan1channel1')
+    return DataSet([time, potential, current, charge])
+
 
 @pytest.fixture
 def dataset_with_bipot(measurement_cv_1scan_bipot):
     return measurement_cv_1scan_bipot.dataset
+
 
 def test_dataset_constructor():
     time = DataArray([1, 2, 3], array_type='Time')
@@ -80,6 +94,15 @@ def test_to_dict(dataset):
     dct = dataset.to_dict()
     assert len(dct) == 6
 
+    assert set(dct) == {
+        'Time',
+        'Potential',
+        'Current',
+        'Charge',
+        'CR',
+        'ReadingStatus',
+    }
+
 
 def test_list_arrays(dataset):
     assert len(dataset.arrays(type='Current')[0]) == 41
@@ -145,6 +168,7 @@ def test_arrays_by_quantity(dataset):
 
     assert not dataset.arrays(quantity='laitnetoP')
 
+
 def test_bipot_arrays(dataset_with_bipot):
     current_arrays = dataset_with_bipot.arrays(type='Current')
     assert len(current_arrays) == 1
@@ -155,6 +179,13 @@ def test_bipot_arrays(dataset_with_bipot):
     assert bipot_current_arrays[0].type == 'BipotCurrent'
 
     dct = dataset_with_bipot.to_dict()
-    expected_keys = ['Current', 'BipotCurrent', 'CR', 'ReadingStatus', 'BipotCR', 'BipotReadingStatus']
+    expected_keys = [
+        'Current',
+        'BipotCurrent',
+        'CR',
+        'ReadingStatus',
+        'BipotCR',
+        'BipotReadingStatus',
+    ]
     for key in expected_keys:
         assert key in dct

@@ -4,47 +4,11 @@ import asyncio
 
 import pytest
 import pytest_asyncio
-from test_techniques import (
-    ACV,
-    CA,
-    CC,
-    CP,
-    CV,
-    DPV,
-    EIS,
-    FAM,
-    FCV,
-    FGIS,
-    FIS,
-    LSP,
-    LSV,
-    MA,
-    MM,
-    MP,
-    MPAD,
-    MS,
-    NPV,
-    OCP,
-    PAD,
-    SCP,
-    SWV,
-    EIS_pot_fixed,
-    EIS_pot_scan,
-    EIS_single_point,
-    EIS_time_fixed,
-    EIS_time_scan,
-    GIS_cur_fixed,
-    GIS_cur_scan,
-    GIS_single_point,
-    GIS_time_fixed,
-    GIS_time_scan,
-    LSV_aux,
-)
+from helpers.technique_specs import TECHNIQUE_SPECS
 
 import pypalmsens as ps
 from pypalmsens import lablink
 from pypalmsens._instruments.shared import MethodIncompatibleError
-from pypalmsens._methods import BaseTechnique
 from pypalmsens.lablink._errors import LablinkClientError
 
 
@@ -55,7 +19,6 @@ async def session():
     return session
 
 
-@pytest.mark.lablink
 @pytest.mark.asyncio
 async def test_start_single(session: lablink.Session):
     [instrument] = session.instruments
@@ -69,7 +32,6 @@ async def test_start_single(session: lablink.Session):
     assert measurement
 
 
-@pytest.mark.lablink
 @pytest.mark.asyncio
 async def test_start_many(session: lablink.Session):
     instruments = session.instruments
@@ -84,7 +46,6 @@ async def test_start_many(session: lablink.Session):
     assert all(job.is_finished for job in jobs)
 
 
-@pytest.mark.lablink
 @pytest.mark.asyncio
 def needs_technique_support(technique_id: str):
     """Lablink has no implementation for this technique."""
@@ -120,49 +81,48 @@ NO_IMPEDANCE_STAGE = pytest.mark.xfail(
 )
 
 
-@pytest.mark.lablink
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    'method',
+    'variant',
     (
-        CV,
-        pytest.param(FCV, marks=needs_technique_support('fcv')),
-        LSV,
-        LSV_aux,
-        ACV,
-        SWV,
-        CP,
-        pytest.param(SCP, marks=not_supported_by_device('StrippingChronoPotentiometry')),
-        LSP,
-        OCP,
-        CA,
-        FAM,
-        DPV,
-        PAD,
-        pytest.param(MPAD, marks=not_supported_by_device('MultiplePulseAmperometry')),
-        NPV,
-        MA,
-        MP,
-        CC,
-        EIS,
-        pytest.param(EIS_pot_fixed, marks=NO_SCAN_TYPE),
-        pytest.param(EIS_pot_scan, marks=NO_SCAN_TYPE),
-        pytest.param(EIS_time_scan, marks=NO_SCAN_TYPE),
-        pytest.param(EIS_time_fixed, marks=NO_SCAN_TYPE),
-        pytest.param(EIS_single_point, marks=NO_FREQUENCY_TYPE),
-        pytest.param(FIS, marks=needs_technique_support('fis')),
-        pytest.param(GIS_cur_fixed, marks=NO_SCAN_TYPE),
-        pytest.param(GIS_cur_scan, marks=NO_SCAN_TYPE),
-        pytest.param(GIS_time_scan, marks=NO_SCAN_TYPE),
-        pytest.param(GIS_time_fixed, marks=NO_SCAN_TYPE),
-        pytest.param(GIS_single_point, marks=NO_FREQUENCY_TYPE),
-        pytest.param(FGIS, marks=needs_technique_support('fgis')),
-        MS,
-        pytest.param(MM, marks=NO_IMPEDANCE_STAGE),
+        'cv',
+        pytest.param('fcv', marks=needs_technique_support('fcv')),
+        'lsv',
+        'lsv_aux',
+        'acv',
+        'swv',
+        'cp',
+        pytest.param('scp', marks=not_supported_by_device('StrippingChronoPotentiometry')),
+        'lsp',
+        'ocp',
+        'ca',
+        'fam',
+        'dpv',
+        'pad',
+        pytest.param('mpad', marks=not_supported_by_device('MultiplePulseAmperometry')),
+        'npv',
+        'ma',
+        'mp',
+        'cc',
+        'eis',
+        pytest.param('eis_pot_fixed', marks=NO_SCAN_TYPE),
+        pytest.param('eis_pot_scan', marks=NO_SCAN_TYPE),
+        pytest.param('eis_time_scan', marks=NO_SCAN_TYPE),
+        pytest.param('eis_time_fixed', marks=NO_SCAN_TYPE),
+        pytest.param('eis_single_point', marks=NO_FREQUENCY_TYPE),
+        pytest.param('fis', marks=needs_technique_support('fis')),
+        pytest.param('gis_cur_fixed', marks=NO_SCAN_TYPE),
+        pytest.param('gis_cur_scan', marks=NO_SCAN_TYPE),
+        pytest.param('gis_time_scan', marks=NO_SCAN_TYPE),
+        pytest.param('gis_time_fixed', marks=NO_SCAN_TYPE),
+        pytest.param('gis_single_point', marks=NO_FREQUENCY_TYPE),
+        pytest.param('fgis', marks=needs_technique_support('fgis')),
+        'ms',
+        pytest.param('mm', marks=NO_IMPEDANCE_STAGE),
     ),
 )
-async def test_measurements(session: lablink.Session, method):
-    params = BaseTechnique._registry[method.id].from_dict(method.kwargs)  # type: ignore
+async def test_measurements(session: lablink.Session, variant: str):
+    params = TECHNIQUE_SPECS[variant]
 
     [instrument] = session.instruments
     async with await instrument.claim() as claim:

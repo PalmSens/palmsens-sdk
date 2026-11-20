@@ -6,6 +6,20 @@ import pytest
 from pytest import approx
 
 import pypalmsens as ps
+from pypalmsens.data import CurrentArray, DataArray, DataSet, Measurement, PotentialArray
+
+
+@pytest.fixture
+def measurement_a():
+    n = 11
+    dataset = DataSet(
+        [
+            DataArray([i * 0.1 for i in range(n)], array_type='Time', name='time'),
+            PotentialArray([i * 0.02 for i in range(n)], name='scan1channel1'),
+            CurrentArray([i * 0.1 for i in range(n)], name='scan1channel1'),
+        ]
+    )
+    return Measurement(method=ps.CyclicVoltammetry(), dataset=dataset)
 
 
 def test_save_load_session(tmpdir, measurement_dpv):
@@ -53,16 +67,16 @@ def test_save_load_measurement(tmpdir, measurement_dpv):
     assert measurement_dpv.device == meas2.device
 
 
-def test_save_load_measurement_fail(tmpdir, measurement_dpv, measurement_cv):
+def test_save_load_measurement_fail(tmpdir, measurement_a):
     path = tmpdir / 'test_multiple.psmethod'
 
-    ps.save_session_file(path, [measurement_dpv, measurement_cv])
+    ps.save_session_file(path, [measurement_a, measurement_a])
 
     with pytest.raises(ValueError):
         _ = ps.load_measurement(path)
 
     with pytest.raises(TypeError):
-        ps.save_measurement(path, [measurement_dpv, measurement_cv])
+        ps.save_measurement(path, [measurement_a, measurement_a])
 
 
 def test_save_session_file_empty():

@@ -9,12 +9,37 @@ from pypalmsens.data import CurrentArray, Curve, PotentialArray
 
 
 @pytest.fixture
-def curve_noise(measurement_noise_test):
-    return measurement_noise_test.curves[0]
+def curve():
+    """Artificial curve with rising current on a potential ramp."""
+    x = PotentialArray(np.linspace(-1.0, 0.0, 41))
+    y = CurrentArray(np.linspace(1.0, 37.0, 41))
+    return Curve(x, y, title='synthetic')
+
+
+@pytest.fixture
+def curve_peaks():
+    """Artificial curve with peaks on a near-zero baseline, for baseline correction."""
+    x_arr = np.linspace(-1.0, 0.0, 201)
+    y_arr = (
+        4.0 * np.exp(-(((x_arr + 0.8) / 0.05) ** 2))
+        + 12.0 * np.exp(-(((x_arr + 0.5) / 0.05) ** 2))
+        + 30.0 * np.exp(-(((x_arr + 0.3) / 0.05) ** 2))
+    )
+    return Curve(PotentialArray(x_arr), CurrentArray(y_arr), title='synthetic peaks')
+
+
+@pytest.fixture
+def curve_noise():
+    """Artificial curve with deterministic noise, for the smoothing tests."""
+    rng = np.random.default_rng(42)
+    x_arr = np.linspace(-1.0, 0.0, 50)
+    y_arr = 10.0 * np.sin(np.linspace(0.0, 6.0, 50)) + rng.normal(0.0, 1.0, 50)
+    return Curve(PotentialArray(x_arr), CurrentArray(y_arr), title='synthetic noise')
 
 
 @pytest.fixture
 def curve_dpv(measurement_dpv):
+    """Recorded DPV curve."""
     return measurement_dpv.curves[0]
 
 
@@ -107,16 +132,16 @@ def test_curve_properties(curve_dpv):
     assert curve_dpv.max_y == max(y_arr)
 
 
-def test_curve_copy(curve_dpv):
-    new_curve = curve_dpv.copy()
-    assert curve_dpv is not new_curve
-    assert curve_dpv._inner is not new_curve._inner
-    assert curve_dpv._inner.XAxisDataArray is not new_curve._inner.XAxisDataArray
-    assert curve_dpv._inner.YAxisDataArray is not new_curve._inner.YAxisDataArray
+def test_curve_copy(curve):
+    new_curve = curve.copy()
+    assert curve is not new_curve
+    assert curve._inner is not new_curve._inner
+    assert curve._inner.XAxisDataArray is not new_curve._inner.XAxisDataArray
+    assert curve._inner.YAxisDataArray is not new_curve._inner.YAxisDataArray
 
 
-def test_curve_add(curve_dpv):
-    a = curve_dpv.copy()
+def test_curve_add(curve):
+    a = curve.copy()
     b = a + a
 
     result = a + b
@@ -128,8 +153,8 @@ def test_curve_add(curve_dpv):
     np.testing.assert_allclose(result.y_array.to_numpy(), expected)
 
 
-def test_curve_add_commutative(curve_dpv):
-    a = curve_dpv.copy()
+def test_curve_add_commutative(curve):
+    a = curve.copy()
     b = a + a
 
     np.testing.assert_allclose(
@@ -138,8 +163,8 @@ def test_curve_add_commutative(curve_dpv):
     )
 
 
-def test_curve_sub(curve_dpv):
-    a = curve_dpv.copy()
+def test_curve_sub(curve):
+    a = curve.copy()
     b = a + a
 
     result = b - a
@@ -155,44 +180,44 @@ def test_curve_sub(curve_dpv):
     np.testing.assert_allclose(zero.y_array.to_numpy(), 0)
 
 
-def test_curve_rsub_direction(curve_dpv):
+def test_curve_rsub_direction(curve):
     """__rsub__ must compute other - self (operands reversed vs __sub__)."""
-    a = curve_dpv.copy()
+    a = curve.copy()
     b = a + a
 
-    result = type(curve_dpv).__rsub__(a, b)
+    result = type(curve).__rsub__(a, b)
 
     np.testing.assert_allclose(result.y_array.to_numpy(), (b - a).y_array.to_numpy())
 
 
-def test_curve_add_sub_types(curve_dpv):
+def test_curve_add_sub_types(curve):
     with pytest.raises(TypeError):
-        _ = curve_dpv + 1
+        _ = curve + 1
     with pytest.raises(TypeError):
-        _ = curve_dpv - 1
+        _ = curve - 1
     with pytest.raises(TypeError):
-        _ = 1 - curve_dpv
+        _ = 1 - curve
 
 
-def test_curve_remove_baseline(curve_dpv):
-    corrected, baseline = curve_dpv.remove_baseline(max_sweeps=1001, window_size=2)
+def test_curve_remove_baseline(curve_peaks):
+    corrected, baseline = curve_peaks.remove_baseline(max_sweeps=1001, window_size=2)
 
     assert baseline.title.endswith('(baseline)')
     assert corrected.title.endswith('(corrected)')
 
-    assert list(corrected.x_array) == list(curve_dpv.x_array)
-    assert list(baseline.x_array) == list(curve_dpv.x_array)
+    assert list(corrected.x_array) == list(curve_peaks.x_array)
+    assert list(baseline.x_array) == list(curve_peaks.x_array)
 
-    assert list(corrected.y_array) != list(curve_dpv.y_array)
-    assert list(baseline.y_array) != list(curve_dpv.y_array)
+    assert list(corrected.y_array) != list(curve_peaks.y_array)
+    assert list(baseline.y_array) != list(curve_peaks.y_array)
 
-    assert sum(curve_dpv.y_array) > sum(corrected.y_array) > sum(baseline.y_array)
+    assert sum(curve_peaks.y_array) > sum(corrected.y_array) > sum(baseline.y_array)
 
 
-def test_concat(curve_dpv):
-    c = curve_dpv.concat(curve_dpv)
-    assert len(c) == 2 * len(curve_dpv)
-    assert c.n_points == 2 * curve_dpv.n_points
+def test_concat(curve):
+    c = curve.concat(curve)
+    assert len(c) == 2 * len(curve)
+    assert c.n_points == 2 * curve.n_points
 
 
 def test_constructor():

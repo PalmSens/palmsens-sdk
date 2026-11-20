@@ -18,7 +18,6 @@ def manager():
         yield mgr
 
 
-@pytest.mark.instrument
 def test_callback(manager):
     points = []
 
@@ -44,7 +43,6 @@ def test_callback(manager):
     assert len(list(points[0].new_datapoints())) == 11
 
 
-@pytest.mark.instrument
 def test_callback_eis(manager):
     points = []
 
@@ -68,7 +66,6 @@ def test_callback_eis(manager):
     assert len(list(points[0].new_datapoints())) == 1
 
 
-@pytest.mark.instrument
 @pytest.mark.parametrize(
     'method,event_names',
     [

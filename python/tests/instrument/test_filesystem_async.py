@@ -24,19 +24,16 @@ async def fs():
         yield ps.DeviceFileSystemAsync(mgr)
 
 
-@pytest.mark.instrument
 def test_truediv(fs):
     assert fs / 'Measurements' == ps.DevicePath('Measurements')
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_root(fs):
     assert str(fs.root) == ''
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_exists(fs):
     async for f in fs.iterdir():
         assert await fs.exists(f)
@@ -45,7 +42,6 @@ async def test_exists(fs):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_load_measurement(fs):
     async for f in fs.walk():
         if f.suffix == '.dmeas':
@@ -59,32 +55,27 @@ async def test_load_measurement(fs):
 
 @pytest.mark.asyncio
 @pytest.mark.skip(reason='No way of testing this.')
-@pytest.mark.instrument
 async def test_remove(fs):
     pass
 
 
 @pytest.mark.asyncio
 @pytest.mark.skip(reason='No way of testing this.')
-@pytest.mark.instrument
 async def test_delete_all_files(fs):
     pass
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_free(fs):
     assert await fs.free()
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_size(fs):
     assert await fs.size()
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_timestamp_of(fs):
     ret = SimpleNamespace(Timestamp=DateTime.Now)
 
@@ -96,7 +87,6 @@ async def test_timestamp_of(fs):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_size_of(fs):
     ret = SimpleNamespace(Size=123)
 
@@ -107,7 +97,6 @@ async def test_size_of(fs):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_read_text(fs):
     ret = SimpleNamespace(Content='hello world')
 
@@ -118,20 +107,17 @@ async def test_read_text(fs):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_iterdir(fs):
     assert await fs.listdir()
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_listdir(fs):
     async for item in fs.iterdir():
         assert item
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_walk(fs):
     async for item in fs.walk():
         assert isinstance(item, ps.DevicePath)

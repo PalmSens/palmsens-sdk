@@ -12,7 +12,6 @@ async def session():
     return session
 
 
-@pytest.mark.lablink
 @pytest.mark.asyncio
 async def test_list_measurements(session: lablink.Session):
     measurements = await session.list_measurements()

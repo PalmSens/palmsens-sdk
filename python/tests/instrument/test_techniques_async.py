@@ -4,12 +4,12 @@ import logging
 
 import pytest
 import pytest_asyncio
-from test_techniques import CP, CV, EIS, MM, MS
 
 import pypalmsens as ps
 from pypalmsens._instruments.shared import MethodIncompatibleError
-from pypalmsens._methods import BaseTechnique
 from pypalmsens.data import DataArray, DataSet
+
+from .test_techniques import CP, CV, EIS, MM, MS
 
 logger = logging.getLogger(__name__)
 
@@ -22,20 +22,17 @@ async def manager():
         yield mgr
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_get_instrument_serial(manager):
     val = await manager.get_instrument_serial()
     assert isinstance(val, str)
 
 
-@pytest.mark.instrument
 def test_status_async(manager):
     status = manager.status()
     assert status.device_state == 'Idle'
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_cell_on(manager):
     assert not await manager.is_cell_on()
@@ -45,7 +42,6 @@ async def test_cell_on(manager):
     assert not await manager.is_cell_on()
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_read_current(manager):
     await manager.set_cell(True)
@@ -70,7 +66,6 @@ async def test_read_current(manager):
     await manager.set_cell(False)
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_read_potential(manager):
     await manager.set_cell(True)
@@ -94,7 +89,6 @@ async def test_read_potential(manager):
     await manager.set_cell(False)
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_set_mode(manager):
     for mode in ['galvanostatic', 'potentiostatic', 'galvanostatic']:
@@ -105,9 +99,8 @@ async def test_set_mode(manager):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 @pytest.mark.parametrize(
-    'method',
+    'case',
     (
         CV,
         CP,
@@ -116,11 +109,11 @@ async def test_set_mode(manager):
         MM,
     ),
 )
-async def test_measure(manager, method):
-    params = BaseTechnique._registry[method.id].from_dict(method.kwargs)
+async def test_measure(manager, case):
+    method = case.params
 
     try:
-        measurement = await manager.measure(params)
+        measurement = await manager.measure(method)
     except MethodIncompatibleError as exc:
         message = str(exc)
         if (
@@ -133,10 +126,9 @@ async def test_measure(manager, method):
             pytest.skip(f'Unlicensed method: {method.id!r}')
         raise
 
-    method.validate(measurement)
+    case.validate(measurement)
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_callback(manager):
     points = []
@@ -161,7 +153,6 @@ async def test_callback(manager):
     assert len(point.y_array) == 11
 
 
-@pytest.mark.instrument
 @pytest.mark.asyncio
 async def test_callback_eis(manager):
     points = []

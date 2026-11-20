@@ -30,7 +30,6 @@ async def apool():
     assert pool.is_disconnected() is True
 
 
-@pytest.mark.instrument
 def test_pool(pool):
     assert pool.is_connected() is True
 
@@ -51,7 +50,6 @@ def test_pool(pool):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_pool_async(apool):
     assert apool.is_connected() is True
 
@@ -71,7 +69,6 @@ async def test_pool_async(apool):
     assert len(apool.status()) == len(apool)
 
 
-@pytest.mark.instrument
 def test_pool_measure(pool):
     method = ps.LinearSweepVoltammetry(
         end_potential=-0.5,
@@ -87,7 +84,6 @@ def test_pool_measure(pool):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_pool_measure_async(apool):
     method = ps.LinearSweepVoltammetry(
         end_potential=-0.5,
@@ -103,7 +99,6 @@ async def test_pool_measure_async(apool):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_pool_submit_async(apool):
     async def my_func(manager, value):
         assert value == 1
@@ -117,7 +112,6 @@ async def test_pool_submit_async(apool):
 
 
 @pytest.mark.asyncio
-@pytest.mark.instrument
 @pytest.mark.xfail(raises=ValueError, reason='Requires multichannel device.')
 async def test_pool_hw_sync_async(apool):
     method = ps.LinearSweepVoltammetry(
@@ -158,7 +152,6 @@ async def test_pool_hw_sync_async(apool):
     ],
 )
 @pytest.mark.asyncio
-@pytest.mark.instrument
 async def test_pool_hw_sync_fail(devices):
     method = ps.LinearSweepVoltammetry()
     method.general.use_hardware_sync = True
@@ -168,7 +161,6 @@ async def test_pool_hw_sync_fail(devices):
         _ = await pool.measure(method)
 
 
-@pytest.mark.instrument
 def test_pool_instrument():
     device = ps._instruments.Instrument(id='test', interface='test', device=None)
     mgr = ps.InstrumentManagerAsync(device)

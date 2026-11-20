@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 @pytest.mark.parametrize(
     'parts,expected',
     (
-        ([], ''),
+        ([], '.'),
         (['a'], 'a'),
         (['a', 'b'], 'a/b'),
         (['a', 'b/c.x'], 'a/b/c.x'),

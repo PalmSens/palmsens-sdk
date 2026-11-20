@@ -20,6 +20,7 @@ if not DATA:
 
 @pytest.mark.parametrize('method_file', DATA)
 def test_regression(method_file: Path, data_regression: DataRegressionFixture) -> None:
+    """Use `pytest --force-regen` to regenerate regression data."""
     with open(method_file) as f:
         dct = yaml.safe_load(f)
 

@@ -89,7 +89,9 @@ source = ["pypalmsens"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-markers = []
+markers = [
+    "flaky: mark tests that sometimes fail",
+]
 log_cli = false
 log_cli_level = "INFO"
 

@@ -328,11 +328,11 @@ class DeviceFileSystemAsync:
         """
         paths = await self._get_device_files(directory=directory)
 
-        for path in paths:
+        for path in iter(paths):
             df = DevicePath(path.Dir, path.Name)
 
             if str(path.Type) == 'Folder':
-                async for item in self.walk(str(df)):
+                async for item in self.walk(df):
                     yield item
             else:
                 yield df

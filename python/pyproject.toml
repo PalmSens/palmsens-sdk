@@ -58,6 +58,7 @@ develop = [
     "pre-commit",
     "pytest",
     "pytest-asyncio",
+    "pytest-regressions",
     "sybil",
 ]
 

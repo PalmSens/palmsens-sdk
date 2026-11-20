@@ -1,0 +1,31 @@
+current_range:
+  max: 10mA
+  min: 100nA
+  start: 10uA
+data_processing:
+  min_height: 0.0
+  min_width: 0.1
+  smooth_level: 0
+duration_1: 0.15
+duration_2: 0.25
+duration_3: 0.35
+equilibration_time: 1.0
+general:
+  notes: ''
+  power_frequency: 50
+  save_on_internal_storage: false
+  use_hardware_sync: false
+id: mpad
+post_measurement:
+  cell_on_after_measurement: true
+  standby_potential: 0.05
+  standby_time: 0.0
+potential_1: 0.1
+potential_2: 0.3
+potential_3: -0.2
+pretreatment:
+  conditioning_potential: -0.1
+  conditioning_time: 1.5
+  deposition_potential: 0.0
+  deposition_time: 0.0
+run_time: 2.5

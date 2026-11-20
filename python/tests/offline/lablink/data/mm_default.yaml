@@ -1,0 +1,26 @@
+current_range:
+  max: 10mA
+  min: 1uA
+  start: 100uA
+cycles: 1
+data_processing:
+  min_height: 0.0
+  min_width: 0.1
+  smooth_level: 0
+general:
+  notes: ''
+  power_frequency: 50
+  save_on_internal_storage: false
+  use_hardware_sync: false
+id: mm
+interval_time: 0.1
+post_measurement:
+  cell_on_after_measurement: false
+  standby_potential: 0.0
+  standby_time: 0.0
+pretreatment:
+  conditioning_potential: 0.0
+  conditioning_time: 0.0
+  deposition_potential: 0.0
+  deposition_time: 0.0
+stages: []

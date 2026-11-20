@@ -75,7 +75,7 @@ class DeviceFileSystemAsync:
         if hasattr(path, '_cached_device_file'):
             return path._cached_device_file
 
-        fspath = path.__fspath__()
+        fspath = str(path)
         if not fspath.startswith('/'):
             fspath = f'{fspath}'
 
@@ -103,7 +103,7 @@ class DeviceFileSystemAsync:
 
         async with self.manager._lock():
             ret: list[PSData.DeviceFile] = await wrap_task(
-                self._client_connection.GetDeviceFilesAsync(directory.__fspath__())
+                self._client_connection.GetDeviceFilesAsync(str(directory))
             )
 
         return ret

@@ -1,0 +1,4 @@
+custom_units: {}
+id: ms
+script: "wait 100m\nif 1 < 2\n    send_string \"Hello world\"\nendif\n"
+version: '1.10'

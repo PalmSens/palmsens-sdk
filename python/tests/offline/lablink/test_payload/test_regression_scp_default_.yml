@@ -1,0 +1,16 @@
+MethodParameters:
+  AppliedCurrent: '[0]'
+  AppliedCurrentRange: '[0.000100]'
+  CellModeAfterMeasurement: '["CellModeAfterMeasurementOff"]'
+  ConditioningPotential: '[0]'
+  ConditioningTime: '[0]'
+  DepositionPotential: '[0]'
+  DepositionTime: '[0]'
+  EnableDropDetection: '[false]'
+  EndPotential: '[0]'
+  MaximumCurrentRange: '[0.010]'
+  MeasurementTime: '[1]'
+  MinimumCurrentRange: '[0.000001]'
+  Name: '["StrippingChronopotentiometry"]'
+  StartingCurrentRange: '[0.000100]'
+Technique: StrippingChronopotentiometry

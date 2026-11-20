@@ -1,0 +1,6 @@
+custom_units: {}
+id: ms
+script: "var p\nvar c\nset_pgstat_chan 0\nset_pgstat_mode 2\ncell_on\nmeas_loop_ca\
+  \ p c 100m 200m 1000m\n    pck_start\n    pck_add p\n    pck_add c\n    pck_end\n\
+  endloop\n"
+version: null

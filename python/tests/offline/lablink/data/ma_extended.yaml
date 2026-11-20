@@ -1,0 +1,62 @@
+bipot:
+  current_range:
+    max: 10mA
+    min: 1uA
+    start: 100uA
+  mode: constant
+  potential: 0.0
+current_limits:
+  max: 0.001
+  min: -1.0e-06
+current_range:
+  max: 10mA
+  min: 1uA
+  start: 100uA
+data_processing:
+  min_height: 0.0
+  min_width: 0.1
+  smooth_level: 0
+enable_bipot_current: false
+equilibration_time: 1.1
+general:
+  notes: ''
+  power_frequency: 50
+  save_on_internal_storage: false
+  use_hardware_sync: false
+id: ma
+interval_time: 0.5
+ir_drop_compensation:
+  resistance: 10.0
+levels:
+- duration: 1.0
+  level: 0.1
+  limit_current_max: null
+  limit_current_min: null
+  record: true
+  trigger_lines: []
+- duration: 2.0
+  level: 0.2
+  limit_current_max: null
+  limit_current_min: null
+  record: true
+  trigger_lines: []
+multiplexer:
+  channels: []
+  combine_re_ce: false
+  common_re_ce: false
+  connect_se_we: false
+  mode: none
+  unused_we: float
+n_cycles: 2
+post_measurement:
+  cell_on_after_measurement: true
+  standby_potential: 0.0
+  standby_time: 0.0
+pretreatment:
+  conditioning_potential: 0.0
+  conditioning_time: 1.0
+  deposition_potential: 0.0
+  deposition_time: 2.0
+record_auxiliary_input: false
+record_cell_potential: false
+record_we_potential: false

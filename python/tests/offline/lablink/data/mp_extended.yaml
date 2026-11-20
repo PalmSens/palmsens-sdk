@@ -1,0 +1,55 @@
+applied_current_range: 10mA
+current_range:
+  max: 10mA
+  min: 1uA
+  start: 100uA
+data_processing:
+  min_height: 0.0
+  min_width: 0.1
+  smooth_level: 0
+general:
+  notes: ''
+  power_frequency: 50
+  save_on_internal_storage: false
+  use_hardware_sync: false
+id: mp
+interval_time: 0.001
+levels:
+- duration: 0.1
+  level: 0.5
+  limit_potential_max: 1.0
+  limit_potential_min: null
+  record: false
+  trigger_lines: []
+- duration: 0.2
+  level: 0.2
+  limit_potential_max: null
+  limit_potential_min: null
+  record: true
+  trigger_lines: []
+multiplexer:
+  channels: []
+  combine_re_ce: false
+  common_re_ce: false
+  connect_se_we: false
+  mode: none
+  unused_we: float
+n_cycles: 3
+post_measurement:
+  cell_on_after_measurement: true
+  standby_potential: 0.25
+  standby_time: 0.0
+potential_limits:
+  max: 1.5
+  min: -1.0
+potential_range:
+  max: 1V
+  min: 100mV
+  start: 1V
+pretreatment:
+  conditioning_potential: 0.0
+  conditioning_time: 1.0
+  deposition_potential: 0.1
+  deposition_time: 2.0
+record_auxiliary_input: true
+record_we_current: true

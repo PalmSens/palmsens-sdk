@@ -1,0 +1,39 @@
+bandwidth: null
+charge_limits:
+  max: null
+  min: null
+current_limits:
+  max: null
+  min: null
+current_range:
+  max: 10mA
+  min: 1uA
+  start: 100uA
+data_processing:
+  min_height: 0.0
+  min_width: 0.1
+  smooth_level: 0
+equilibration_time: 1.1
+general:
+  notes: ''
+  power_frequency: 50
+  save_on_internal_storage: false
+  use_hardware_sync: false
+id: cc
+interval_time: 0.5
+post_measurement:
+  cell_on_after_measurement: false
+  standby_potential: 0.0
+  standby_time: 0.0
+pretreatment:
+  conditioning_potential: 0.0
+  conditioning_time: 0.0
+  deposition_potential: 0.0
+  deposition_time: 0.0
+record_auxiliary_input: false
+record_cell_potential: false
+record_we_potential: false
+step1_potential: 0.1
+step1_run_time: 1.0
+step2_potential: 0.5
+step2_run_time: 2.0

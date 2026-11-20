@@ -1,0 +1,60 @@
+begin_potential: -0.44
+bipot:
+  current_range:
+    max: 10mA
+    min: 1uA
+    start: 100uA
+  mode: constant
+  potential: 0.0
+current_limits:
+  max: 0.001
+  min: -1.0e-06
+current_range:
+  max: 10mA
+  min: 1uA
+  start: 100uA
+data_processing:
+  min_height: 0.0
+  min_width: 0.1
+  smooth_level: 0
+enable_bipot_current: false
+equilibration_time: 1.1
+equilibration_triggers:
+  d0: false
+  d1: false
+  d2: false
+  d3: false
+general:
+  notes: ''
+  power_frequency: 50
+  save_on_internal_storage: false
+  use_hardware_sync: false
+id: cv
+ir_drop_compensation:
+  resistance: 10.0
+measurement_triggers:
+  d0: false
+  d1: false
+  d2: false
+  d3: false
+n_scans: 3
+post_measurement:
+  cell_on_after_measurement: true
+  standby_potential: 0.0
+  standby_time: 0.0
+pretreatment:
+  conditioning_potential: 0.0
+  conditioning_time: 1.0
+  deposition_potential: 0.0
+  deposition_time: 2.0
+record_auxiliary_input: false
+record_cell_potential: false
+record_we_potential: false
+scanrate: 1.5
+step_potential: 0.12
+versus_ocp:
+  potentials: []
+  stability_criterion: 0.0
+  timeout: 20.0
+vertex1_potential: 0.66
+vertex2_potential: -0.33

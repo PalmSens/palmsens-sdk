@@ -26,9 +26,9 @@
   --md-primary-bg-color:          var(--ps-white);
   --md-primary-bg-color--light:   rgb(255 255 255 / 70%);
 
-  --md-accent-fg-color:           var(--ps-sky-azure);
-  --md-accent-fg-color--transparent: rgb(18 137 202 / 10%);
-  --md-accent-bg-color:           var(--ps-white);
+  --md-accent-fg-color:              var(--ps-sky-azure);
+  --md-accent-fg-color--transparent: var(--ps-pale-sky);
+  --md-accent-bg-color:              var(--ps-white);
 
   --md-default-fg-color:          var(--ps-night);
   --md-default-fg-color--light:   rgb(14 16 48 / 70%);
@@ -62,7 +62,7 @@
   --md-primary-bg-color:          var(--ps-white);
 
   --md-accent-fg-color:              var(--ps-white);
-  --md-accent-fg-color--transparent: var(--ps-sky-azure);
+  --md-accent-fg-color--transparent: var(--ps-navy-light);
 
   --md-default-fg-color:          var(--ps-pale-sky);
   --md-default-fg-color--light:   rgb(211 227 238 / 70%);
@@ -157,7 +157,7 @@ html .md-footer-meta.md-typeset a:focus {
   text-decoration: underline;
 }
 
-/* ─── H1 colour token ──────────────────────────────────────── */
+/* H1 colour token */
 [data-md-color-scheme="default"],
 [data-md-color-scheme="slate"] {
   --ps-h1-color: var(--ps-sky-azure);
@@ -205,6 +205,10 @@ html .md-footer-meta.md-typeset a:focus {
   --md-code-hl-comment-color:  rgb(211 227 238 / 70%); /* 5.3:1 */
   --md-code-hl-string-color:   var(--ps-green);        /* 7.3:1 */
   --md-code-hl-keyword-color:  var(--ps-sky-azure-tint); /* 6.0:1 */
+}
+
+[data-md-color-scheme="slate"] .md-typeset :not(pre) > code {
+  background-color: rgb(18 137 202 / 20%);
 }
 
 /* Don't copy >>> in python code blocks*/

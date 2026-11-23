@@ -1,57 +1,121 @@
-:root {
-    --palmsens-dark-blue: #00387B;
-    --palmsens-classic-blue: #2D9DD6;
-    --palmsens-secondary-background: #EBF3FA;
-    --palmsens-secondary-cta: #A28D5B;
-    --palmsens-footer-background: #0f243c;
+/*  Brand tokens */
+:root > * {
+  --ps-white:       #FFFFFF;
+  --ps-navy:        #003863;
+  --ps-night:       #0E1030;
+  --ps-sky-azure:   #1289CA;
+  --ps-pale-sky:    #D3E3EE;
+  --ps-near-white:  #F4F4F4;
+  --ps-green:       #5BE199;
+  --ps-dark-gold:   #A28D5B;
+  --ps-pale-gold:   #BBA97E;
+
+  /* Derived shades */
+  --ps-navy-light:  #0A4E7D;
+  --ps-navy-dark:   #00243F;
+  --ps-night-soft:  #14172E;
+
+  --ps-sky-azure-tint: #71B8DF;
 }
 
-[data-md-color-scheme="slate"] {
-
-    --md-primary-fg-color:        var(--palmsens-dark-blue);
-    --md-accent-fg-color:         var(--palmsens-classic-blue);
-    --md-typeset-a-color:         var(--palmsens-classic-blue);
-    --md-accent-fg-color--transparent: var(--palmsens-secondary-background);
-    --md-default-bg-color:        var(--palmsens-footer-background);
-    --md-code-bg-color:           #183a62;
-    --md-code-bg-color--light:    #183a62;
-    --md-code-bg-color--lighter:  #183a62;
-}
-
+/*  Light scheme ("default") */
 [data-md-color-scheme="default"] {
-    --md-primary-fg-color:        var(--palmsens-dark-blue);
-    --md-accent-fg-color:         var(--palmsens-classic-blue);
-    --md-typeset-a-color:         var(--palmsens-classic-blue);
-    --md-accent-fg-color--transparent: var(--palmsens-secondary-background);
+  --md-primary-fg-color:          var(--ps-navy);
+  --md-primary-fg-color--light:   var(--ps-navy-light);
+  --md-primary-fg-color--dark:    var(--ps-navy-dark);
+  --md-primary-bg-color:          var(--ps-white);
+  --md-primary-bg-color--light:   rgb(255 255 255 / 70%);
+
+  --md-accent-fg-color:           var(--ps-sky-azure);
+  --md-accent-fg-color--transparent: rgb(18 137 202 / 10%);
+  --md-accent-bg-color:           var(--ps-white);
+
+  --md-default-fg-color:          var(--ps-night);
+  --md-default-fg-color--light:   rgb(14 16 48 / 70%);
+  --md-default-fg-color--lighter: rgb(14 16 48 / 32%);
+  --md-default-fg-color--lightest: rgb(14 16 48 / 12%);
+  --md-default-bg-color:          var(--ps-white);
+  --md-default-bg-color--light:   var(--ps-near-white);
+  --md-default-bg-color--lighter: var(--ps-pale-sky);
+
+  --md-typeset-color:             var(--ps-night);
+  --md-typeset-a-color:           var(--ps-navy);
+  --md-typeset-mark-color:        rgb(91 225 153 / 40%);  /* Green */
+  --md-typeset-table-color:       rgb(0 56 99 / 12%);
+
+  --md-code-bg-color:             var(--ps-near-white);
+  --md-code-fg-color:             var(--ps-night);
+
+  --md-footer-bg-color:           var(--ps-night);
+  --md-footer-bg-color--dark:     #080A1F;
+  --md-footer-fg-color:           var(--ps-white);
+  --md-footer-fg-color--light:    var(--ps-pale-sky);
 }
 
-[data-md-color-scheme="default"] h1 {
-    color: var(--md-accent-fg-color);
+/*  Dark scheme ("slate") */
+[data-md-color-scheme="slate"] {
+  --md-hue: 205;
+
+  --md-primary-fg-color:          var(--ps-navy-light);
+  --md-primary-fg-color--light:   var(--ps-sky-azure);
+  --md-primary-fg-color--dark:    var(--ps-navy-dark);
+  --md-primary-bg-color:          var(--ps-white);
+
+  --md-accent-fg-color:              var(--ps-white);
+  --md-accent-fg-color--transparent: var(--ps-sky-azure);
+
+  --md-default-fg-color:          var(--ps-pale-sky);
+  --md-default-fg-color--light:   rgb(211 227 238 / 70%);
+  --md-default-fg-color--lighter: rgb(211 227 238 / 32%);
+  --md-default-fg-color--lightest: rgb(211 227 238 / 12%);
+  --md-default-bg-color:          var(--ps-night);
+  --md-default-bg-color--light:   var(--ps-night-soft);
+  --md-default-bg-color--lighter: var(--ps-navy-dark);
+
+  --md-typeset-a-color:           var(--ps-sky-azure);
+  --md-code-bg-color:             var(--ps-night-soft);
+  --md-code-fg-color:             var(--ps-pale-sky);
+
+  --md-footer-bg-color:           var(--ps-night);
+  --md-footer-bg-color--dark:     #080A1F;
 }
 
+/*  Header: identical in light & dark */
 .md-header {
-  color: white;
-  background-color: var(--md-primary-fg-color);
-  border-bottom: solid;
-  border-color: var(--palmsens-classic-blue);
+  --md-primary-fg-color:          var(--ps-navy);
+  --md-primary-fg-color--light:   var(--ps-navy-light);
+  --md-primary-fg-color--dark:    var(--ps-navy-dark);
+  --md-primary-bg-color:          var(--ps-white);
+  --md-primary-bg-color--light:   rgb(255 255 255 / 70%);
+  --md-accent-fg-color:           var(--ps-sky-azure);
+  --md-default-fg-color:          var(--ps-white);
+  --md-default-fg-color--light:   rgb(255 255 255 / 70%);
+  --md-default-fg-color--lighter: rgb(255 255 255 / 32%);
+
+  color: var(--ps-white);
+  background-color: var(--ps-navy);
+  border-bottom: 3px solid var(--ps-sky-azure);
+  box-shadow: none;
 }
 
-.md-search__button {
-  color: white;
-  background-color: var(--md-primary-fg-color);
+/*  Search button  */
+.md-header .md-search__button {
+  color: var(--ps-white);
+  background-color: var(--ps-navy);
 }
 
-.md-search__button::before {
-  background-color: white;
+.md-header .md-search__button::before {
+  background-color: var(--ps-white);
 }
 
-.md-search__button::after {
-   background-color: var(--md-accent-fg-color);
+.md-header .md-search__button::after {
+  background-color: var(--ps-sky-azure);
 }
 
-.md-search__button:hover {
-    background-color: #FFFFFF40;
-    color: white;
+.md-header .md-search__button:hover,
+.md-header .md-search__button:focus-visible {
+  background-color: rgb(255 255 255 / 32%);
+  color: var(--ps-white);
 }
 
 /* Give the logo a bit more breathing room */
@@ -65,25 +129,82 @@
 }
 
 .md-typeset .md-button--primary {
-    background-color: var(--palmsens-secondary-cta);
+    background-color: var(--ps-dark-gold);
     color: white;
 }
 
+/*  Footer meta bar */
 .md-footer-meta {
   padding-top: 10px;
   padding-bottom: 10px;
-  border-top: solid;
-  border-color: var(--palmsens-classic-blue);
-  background-color: var(--palmsens-footer-background);
+  border-top: 3px solid var(--ps-sky-azure);
+  background-color: var(--ps-night);
 }
 
 .md-copyright__highlight,
 html .md-footer-meta.md-typeset a:not(:focus, :hover) {
-    color: white;
+  color: var(--ps-white);
 }
 
 .md-copyright {
-    color: #FFFFFF70;
+  color: rgb(255 255 255 / 44%);
+}
+
+/* Hover/focus targets that the :not() above hands off to */
+html .md-footer-meta.md-typeset a:hover,
+html .md-footer-meta.md-typeset a:focus {
+  color: var(--ps-pale-sky);
+  text-decoration: underline;
+}
+
+/* ─── H1 colour token ──────────────────────────────────────── */
+[data-md-color-scheme="default"],
+[data-md-color-scheme="slate"] {
+  --ps-h1-color: var(--ps-sky-azure);
+}
+
+.md-typeset h1 {
+  color: var(--ps-h1-color);
+}
+
+/* Keep inline code and the permalink inside h1 consistent */
+.md-typeset h1 code,
+.md-typeset h1 .headerlink {
+  color: inherit;
+}
+
+.md-typeset h1 .headerlink {
+  opacity: 0.4;
+  transition: opacity 125ms;
+}
+
+.md-typeset h1 .headerlink:hover,
+.md-typeset h1 .headerlink:focus {
+  opacity: 0.8;
+}
+
+/* Light: grey block, navy chip — no syntax recolouring */
+[data-md-color-scheme="default"] {
+  --md-code-bg-color:          var(--ps-near-white);
+  --md-code-bg-color--light:   rgb(244 244 244 / 70%);
+  --md-code-bg-color--lighter: rgb(244 244 244 / 30%);
+  --md-code-fg-color:          var(--ps-night);
+  --md-code-hl-color:          var(--ps-sky-azure);
+  --md-code-hl-color--light:   rgb(18 137 202 / 12%);
+  --md-code-hl-comment-color:  rgb(14 16 48 / 55%);
+}
+
+/* Dark: Navy block on Night, brand-only text colours */
+[data-md-color-scheme="slate"] {
+  --md-code-bg-color:          var(--ps-navy);
+  --md-code-bg-color--light:   rgb(0 56 99 / 70%);
+  --md-code-bg-color--lighter: rgb(0 56 99 / 30%);
+  --md-code-fg-color:          var(--ps-white);
+  --md-code-hl-color:          var(--ps-sky-azure);
+  --md-code-hl-color--light:   rgb(18 137 202 / 22%);
+  --md-code-hl-comment-color:  rgb(211 227 238 / 70%); /* 5.3:1 */
+  --md-code-hl-string-color:   var(--ps-green);        /* 7.3:1 */
+  --md-code-hl-keyword-color:  var(--ps-sky-azure-tint); /* 6.0:1 */
 }
 
 /* Don't copy >>> in python code blocks*/

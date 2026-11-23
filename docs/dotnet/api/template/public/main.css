@@ -1,68 +1,186 @@
-:root {
-    --palmsens-dark-blue: #00387B;
-    --palmsens-classic-blue: #2D9DD6;
-    --palmsens-secondary-background: #EBF3FA;
-    --palmsens-secondary-cta: #A28D5B;
-    --palmsens-footer-background: #0f243c;
+:root,
+[data-bs-theme="light"] {
+    /* --- Brand core --- */
+    --ps-white: #ffffff;
+    --ps-navy: #003863; /* primary, PMS 2945 U */
+    --ps-sky-azure: #1289ca; /* primary accent */
+    --ps-azure-text: #0d7099; /* darkened azure, AA on white */
+
+    /* --- Support / backgrounds --- */
+    --ps-night: #0e1030;
+    --ps-pale-sky: #d3e3ee;
+    --ps-near-white: #f4f4f4;
+
+    /* --- Text --- */
+    --ps-ink: #221f1f;
+
+    /* --- RGB-only accents --- */
+    --ps-green: #5be199;
+    --ps-dark-gold: #a28d5b;
+    --ps-pale-gold: #bba97e;
+
+    /* --- Semantic aliases --- */
+    --color-text: var(--ps-ink);
+    --color-heading: var(--ps-navy);
+    --color-text-muted: #5b5656;
+    --color-text-inverse: var(--ps-white);
+    --color-bg: var(--ps-white);
+    --color-surface: var(--ps-near-white);
+    --color-bg-inverse: var(--ps-night);
+    --color-bg-subtle: var(--ps-pale-sky);
+    --color-border: var(--ps-pale-sky);
+    --color-link: var(--ps-azure-text);
+    --color-cta: var(--ps-dark-gold);
+    --color-cta-hover: var(--ps-pale-gold);
+    --color-accent: var(--ps-sky-azure);
+    --color-bullet: var(--ps-green);
+    --color-check: var(--ps-green);
+
+    /* --- Bootstrap knobs, so DocFX components inherit the brand --- */
+    --bs-body-color: var(--color-text);
+    --bs-body-bg: var(--color-bg);
+    --bs-heading-color: var(--color-heading);
+    --bs-link-color: var(--color-link);
+    --bs-link-hover-color: var(--ps-navy);
+    --bs-border-color: var(--color-border);
+    --bs-secondary-color: var(--color-text-muted);
+    --bs-tertiary-bg: var(--color-surface);
+    --bs-focus-ring-color: rgba(18, 137, 202, 0.4);
 }
 
-a {
-    color: var(--palmsens-classic-blue);
+[data-bs-theme="dark"] {
+    --color-text: #eaf2f8; /* 10.6:1 on navy */
+    --color-heading: var(--ps-white);
+    --color-text-muted: #b9cfdd;
+    --color-link: #7fc6ec; /* 6.5:1 on navy */
+    --color-surface: #013054;
+    --color-bg: var(--ps-navy);
+    --color-border: #1d5b86;
+
+    --bs-body-bg: var(--ps-night);
+    --bs-body-color: var(--color-text);
+    --bs-heading-color: var(--color-heading);
+    --bs-link-color: var(--color-link);
+    --bs-link-hover-color: var(--ps-pale-sky);
+    --bs-border-color: var(--color-border);
+    --bs-secondary-color: var(--color-text-muted);
+    --bs-tertiary-bg: var(--color-surface);
+    --bs-emphasis-color: var(--ps-white);
 }
 
-[data-bs-theme=light] h1 {
-   color: var(--palmsens-classic-blue);
-}
-
-.navbar-nav .nav-link.active {
-    background-color: var(--palmsens-secondary-background);
-    color: var(--palmsens-dark-blue) !important;
-    border-radius: 5px;
-}
-
-.navbar-nav .nav-link {
-    color: white !important;
-}
-
-[data-bs-theme=dark] body {
-  --bs-body-bg: var(--palmsens-footer-background) !important;
-}
-
-/* Code block background */
-[data-bs-theme="dark"] .hljs {
-  background: #183a62;
-}
-
-.btn {
-  --bs-btn-color: white !important;
-}
-
-.btn:hover {
-  color: var(--palmsens-classic-blue) !important;
+/* --- Header --- */
+body > header .navbar-nav .nav-link {
+    color: var(--ps-white) !important;
 }
 
 body > header > nav,
 body[data-layout="landing"] > header > nav {
-    background-color: var(--palmsens-dark-blue) !important;
-    border-bottom: solid !important;
-    border-bottom-width: 3px !important;
-    border-color: var(--palmsens-classic-blue) !important;
+    background-color: var(--ps-navy);
+    border-bottom: 3px solid var(--ps-sky-azure);
+    --bs-navbar-color: rgba(255, 255, 255, 0.85);
+    --bs-navbar-hover-color: var(--ps-white);
+    --bs-navbar-active-color: var(--ps-navy);
+    --bs-navbar-brand-color: var(--ps-white);
+    --bs-secondary-color: var(--ps-pale-sky); /* .text-secondary icons */
 }
 
+/* Light/dark theme switcher (icon-only button in the navbar) */
+#theme-switcher,
+.theme-switcher,
+body > header > nav .btn:not(.btn-primary):not(.btn-outline-primary) {
+    --bs-btn-color: var(--ps-white);
+    --bs-btn-hover-color: var(--ps-pale-sky);
+    --bs-btn-active-color: var(--ps-white);
+    --bs-btn-bg: transparent;
+    --bs-btn-hover-bg: rgba(255, 255, 255, 0.12);
+    --bs-btn-active-bg: rgba(255, 255, 255, 0.18);
+    --bs-btn-border-color: transparent;
+    color: var(--ps-white);
+}
+
+/* Beat any hardcoded fill="…" attribute on the sun/moon icons */
+#theme-switcher svg,
+.theme-switcher svg,
+body > header > nav .btn svg,
+body > header > nav .btn svg * {
+    fill: currentColor;
+}
+
+.navbar-nav .nav-link {
+    color: var(--bs-navbar-color);
+    border-radius: 5px;
+}
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus-visible {
+    color: var(--bs-navbar-hover-color);
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.navbar-nav .nav-link.active {
+    background-color: var(--ps-near-white);
+    color: var(--ps-navy) !important;
+}
+
+/* --- Links / buttons --- */
+a {
+    color: var(--bs-link-color);
+}
+a:hover {
+    color: var(--bs-link-hover-color);
+}
+
+[data-bs-theme="dark"] .text-secondary {
+    color: var(--color-text-muted) !important;
+}
+
+[data-bs-theme="dark"] .link-secondary {
+  color: var(--color-text-muted) !important;
+}
+
+[data-bs-theme="dark"] .link-secondary:hover,
+[data-bs-theme="dark"] .link-secondary:focus-visible {
+  color: var(--color-text-muted) !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.btn-primary {
+    --bs-btn-color: var(--ps-white);
+    --bs-btn-bg: var(--ps-navy);
+    --bs-btn-border-color: var(--ps-navy);
+    --bs-btn-hover-color: var(--ps-white);
+    --bs-btn-hover-bg: var(--ps-sky-azure);
+    --bs-btn-hover-border-color: var(--ps-sky-azure);
+}
+
+/* --- Code blocks --- */
+[data-bs-theme="dark"] .hljs {
+    background: var(--ps-night);
+}
+[data-bs-theme="light"] .hljs {
+    background: var(--ps-near-white);
+}
+
+/* --- Footer --- */
 body > footer,
+body > footer.border-top,
 body[data-layout="landing"] > footer {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    background-color: var(--palmsens-footer-background);
+    --bs-secondary-color: var(--ps-pale-sky);
+    padding-block: 10px;
+    background-color: var(--ps-night);
+    border-top: 3px solid var(--ps-sky-azure) !important;
     height: initial;
 }
 
-body > footer.text-secondary {
-    color: white !important;
-}
-
-body > footer.border-top {
-    border-top: solid !important;
-    border-top-width: 3px !important;
-    border-color: var(--palmsens-classic-blue) !important;
+/* --- Print: keep it readable on paper --- */
+@media print {
+    :root {
+        --bs-body-bg: #fff;
+        --bs-body-color: #000;
+        --bs-heading-color: #000;
+    }
+    body > header > nav,
+    body > footer {
+        display: none;
+    }
 }

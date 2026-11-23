@@ -1,22 +1,52 @@
 :root {
-    --palmsens-dark-blue: #00387B;
-    --palmsens-classic-blue: #2D9DD6;
-    --palmsens-secondary-background: #EBF3FA;
-    --palmsens-secondary-cta: #A28D5B;
-    --palmsens-footer-background: #0f243c;
+  /* --- Brand core --- */
+  --ps-white:       #ffffff;
+  --ps-navy:        #003863;  /* primary, PMS 2945 U */
+  --ps-sky-azure:   #1289ca;  /* primary accent */
+
+  /* --- Support / backgrounds --- */
+  --ps-night:       #0e1030;
+  --ps-pale-sky:    #d3e3ee;
+  --ps-near-white:  #f4f4f4;
+
+  /* --- Text --- */
+  --ps-ink:         #221f1f;
+
+  /* --- RGB-only accents --- */
+  --ps-green:       #5be199;
+  --ps-dark-gold:   #a28d5b;
+  --ps-pale-gold:   #bba97e;
+
+  /* --- Semantic aliases --- */
+  --color-text:            var(--ps-ink);
+  --color-heading:         var(--ps-ink);
+  --color-text-muted:      color-mix(in srgb, var(--ps-ink) 65%, transparent);
+  --color-text-inverse:    var(--ps-white);
+  --color-bg:              var(--ps-white);
+  --color-surface:         var(--ps-near-white);
+  --color-bg-inverse:      var(--ps-night);
+  --color-bg-subtle:       var(--ps-pale-sky);
+  --color-border:          var(--ps-pale-sky);
+  --color-link:            var(--ps-sky-azure);
+  --color-cta:             var(--ps-dark-gold);
+  --color-cta-hover:       var(--ps-pale-gold);
+  --color-accent:          var(--ps-sky-azure);
+  --color-bullet:          var(--ps-green);
+  --color-check:           var(--ps-green);
 }
 
+
 a {
-    color: var(--palmsens-classic-blue);
+    color: var(--color-link);
 }
 
 [data-bs-theme=light] h1 {
-   color: var(--palmsens-classic-blue);
+   color: var(--ps-ink);
 }
 
 .navbar-nav .nav-link.active {
-    background-color: var(--palmsens-secondary-background);
-    color: var(--palmsens-dark-blue) !important;
+    background-color: var(--color-surface);
+    color: var(--ps-navy) !important;
     border-radius: 5px;
 }
 
@@ -25,12 +55,15 @@ a {
 }
 
 [data-bs-theme=dark] body {
-  --bs-body-bg: var(--palmsens-footer-background) !important;
+  --bs-body-bg: var(--ps-navy) !important;
 }
 
 /* Code block background */
 [data-bs-theme="dark"] .hljs {
-  background: #183a62;
+  background: var(--color-bg-inverse);
+}
+[data-bs-theme="light"] .hljs {
+  background: var(--color-surface);
 }
 
 .btn {
@@ -38,22 +71,22 @@ a {
 }
 
 .btn:hover {
-  color: var(--palmsens-classic-blue) !important;
+  color: var(--ps-sky-azure) !important;
 }
 
 body > header > nav,
 body[data-layout="landing"] > header > nav {
-    background-color: var(--palmsens-dark-blue) !important;
+    background-color: var(--palmsens-navy) !important;
     border-bottom: solid !important;
     border-bottom-width: 3px !important;
-    border-color: var(--palmsens-classic-blue) !important;
+    border-color: var(--ps-sky-azure) !important;
 }
 
 body > footer,
 body[data-layout="landing"] > footer {
     padding-top: 10px;
     padding-bottom: 10px;
-    background-color: var(--palmsens-footer-background);
+    background-color: var(--color-bg-inverse);
     height: initial;
 }
 
@@ -64,5 +97,5 @@ body > footer.text-secondary {
 body > footer.border-top {
     border-top: solid !important;
     border-top-width: 3px !important;
-    border-color: var(--palmsens-classic-blue) !important;
+    border-color: var(--ps-sky-azure) !important;
 }

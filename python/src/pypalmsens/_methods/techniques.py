@@ -926,8 +926,8 @@ class BaseChronoAmperometry(
     mixins.MeasurementTriggersMixin,
     mixins.DataProcessingMixin,
     mixins.MultiplexerMixin,
-    BaseTechnique,
     mixins.GeneralMixin,
+    BaseTechnique,
 ):
     equilibration_time: float = 0.0
     """Equilibration time in s.

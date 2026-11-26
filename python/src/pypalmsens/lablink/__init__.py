@@ -11,7 +11,15 @@ except (ImportError, ModuleNotFoundError):
 finally:
     SDK_AVAILABLE = _supported
 
-from ._discover import discover
+import importlib.util
+
+_REQUIRED = ('packaging', 'pandas', 'signalrcore', 'xarray', 'zeroconf')
+missing = [dep for dep in _REQUIRED if importlib.util.find_spec(dep) is None]
+if missing:
+    exc = ImportError(f'pypalmsens.lablink requires: {", ".join(missing)}')
+    exc.add_note('\nInstall the extra: pip install "pypalmsens[lablink]"')
+    raise exc
+
 from ._errors import (
     LablinkApiError,
     LablinkClientError,

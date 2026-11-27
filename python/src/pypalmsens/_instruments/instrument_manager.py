@@ -362,6 +362,82 @@ class InstrumentManager(CapabilitiesMixin, EventsMixin):
         with self._lock():
             self._comm.PotentialRange = pr_string_to_enum(potential_range)
 
+    def read_bipot_potential(self) -> float:
+        """Read the potential of the second working electrode (WE2).
+
+        Returns
+        -------
+        potential : float
+            Potential in V.
+        """
+
+        with self._lock():
+            potential = self._comm.BiPotPotential
+
+        return single_to_double(potential)
+
+    def set_bipot_potential(self, potential: float):
+        """Set the potential of the second working electrode (WE2).
+
+        Parameters
+        ----------
+        potential : float
+            Potential in V
+        """
+        with self._lock():
+            self._comm.BiPotPotential = potential
+
+    def get_bipot_current_range(self) -> AllowedCurrentRanges:
+        """Set the current range of the second working electrode (WE2).
+
+        Returns
+        -------
+        current_range: AllowedCurrentRanges
+            WE2 current range as a string (e.g. '1 mA').
+        """
+        with self._lock():
+            return cr_enum_to_string(self._comm.BiPotCurrentRange)
+
+    def set_bipot_current_range(self, current_range: AllowedCurrentRanges):
+        """Enables and sets the current range of the second working electrode (WE2).
+
+        Parameters
+        ----------
+        current_range : AllowedCurrentRanges
+            WE2 current range as a string (e.g. '1 mA').
+        """
+        with self._lock():
+            self._comm.SetBipotCurrentRange = cr_string_to_enum(current_range)
+
+    def set_bipot_on(self, current_range: AllowedCurrentRanges):
+        """Enables the second working electrode (WE2).
+
+        Parameters
+        ----------
+        current_range : AllowedCurrentRanges
+            WE2 current range as a string (e.g. '1 mA').
+        """
+        with self._lock():
+            self._comm.SetBipotOnAndCurrentRange = cr_string_to_enum(current_range)
+
+    def set_bipot_off(self):
+        """Disables the second working electrode (WE2).
+
+        Use [set_bipot_current_range][] to enable WE2.
+        """
+        with self._lock():
+            self._comm.SetBipotOff()
+
+    def is_bipot_on(self) -> bool:
+        """Get status of second working electrode (WE2).
+
+        Returns
+        -------
+        bipot_on : bool
+            Return true if WE2 is enabled
+        """
+        return self._comm.IsBipotOn
+
     def get_instrument_serial(self) -> str:
         """Return instrument serial number.
 

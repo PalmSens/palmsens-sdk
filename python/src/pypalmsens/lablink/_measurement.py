@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, ClassVar
 import xarray as xr
 
 from ._errors import NoActiveMeasurementError
+from .models._public import MeasurementInfo
 
 if TYPE_CHECKING:
     from ._instrument import InstrumentClaim
@@ -27,11 +28,12 @@ class Measurement:
     Holds the GUID of a stored measurement and an optional session link.
     """
 
-    __slots__: ClassVar[tuple[str, ...]] = ('_guid', '_session')
+    __slots__: ClassVar[tuple[str, ...]] = ('_guid', '_info', '_session')
 
     def __init__(self, guid: str, *, session: Session | None = None):
         self._guid: str = guid
         self._session: Session | None = session
+        self._info: MeasurementInfo | None = None
 
     def __repr__(self) -> str:
         return f'{type(self).__name__}(guid={self.guid!r})'
@@ -48,22 +50,34 @@ class Measurement:
         """
         return self._guid
 
-    async def get_info(self) -> None:
-        """
-        Get metadata for this measurement (not yet implemented).
+    @property
+    def info(self) -> MeasurementInfo | None:
+        """Last fetched metadata, or `None` if not yet fetched.
 
-        Raises
-        ------
-        ConnectionError
-            If no session is attached. Reattach via
-            `session.get_measurement(ref)` before calling.
+        May be stale or empty.
+
+        See [get_info][] to (re)populate this.
+        """
+        return self._info
+
+    async def get_info(self) -> MeasurementInfo:
+        """
+        Fetch measurement metadata from the session.
+
+        Returns
+        -------
+        MeasurementInfo
+            Measurement metadata including method name, instrument, and method used.
         """
         if self._session is None:
             raise ConnectionError(
                 f'This {type(self).__name__} is detached. Reattach it via '
                 'ref = session.get_measurement(ref) before fetching data.'
             )
-        raise NotImplementedError
+
+        info = await self._session.get_measurement_info(self.guid)
+        self._info = info
+        return info
 
     async def get_data(self) -> xr.Dataset | xr.DataTree:
         """
@@ -86,7 +100,7 @@ class Measurement:
                 f'This {type(self).__name__} is detached. Reattach it via '
                 'ref = session.get_measurement(ref) before fetching data.'
             )
-        return await self._session.get_measurement(self)
+        return await self._session.get_measurement_data(self)
 
     async def delete(self) -> None:
         """

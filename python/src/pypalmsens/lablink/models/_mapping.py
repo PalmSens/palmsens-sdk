@@ -1,3 +1,4 @@
+import datetime
 from typing import Any
 
 from . import _wire
@@ -46,5 +47,23 @@ def _to_instrument_info(data: dict[str, Any]) -> InstrumentInfo:
     )
 
 
-def _to_measurement_info(data: dict[str, Any]) -> MeasurementInfo:
-    return MeasurementInfo()
+def _to_measurement_info(dto: _wire.MeasurementResult) -> MeasurementInfo:
+    epoch = datetime.datetime(1970, 1, 1, tzinfo=datetime.UTC)
+    created = dto.CreatedOn or dto.LastModifiedOn or epoch
+    modified = dto.LastModifiedOn or created
+
+    assert dto.Id
+
+    return MeasurementInfo(
+        guid=str(dto.Id),
+        created=created,
+        modified=modified,
+        name=dto.Name or '',
+        user_name=dto.UserName or '',
+        # instrument = '',
+        # Method = '',
+        # Software = '',
+        # raw_data = '',
+        # curve_data = '',
+        # ir_compensation = dto.IrCompensationResistanceOhm or 0,
+    )

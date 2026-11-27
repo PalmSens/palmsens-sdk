@@ -2,7 +2,7 @@
 
 !!! warning "Work in progress"
 
-    Lablink support is currently being developed and not in a usable state. More details coming soon!
+    Lablink support is currently being developed and not in a usable state for production environments. More details coming soon!
 
 !!! note "Lablink API not final"
 

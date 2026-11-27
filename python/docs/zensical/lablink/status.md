@@ -1,5 +1,9 @@
 # Support status
 
+!!! warning "Work in progress"
+
+    Lablink support is currently being developed and not in a usable state for production environments. More details coming soon!
+
 The latest version of PyPalmSens supports Lablink version 1.2.
 
 This page documents what is currently supported.
@@ -102,9 +106,9 @@ Path: `/Instruments`
 | POST | `/Instruments/PauseMeasurement` | `Pause` |  | ✓ |
 | POST | `/Instruments/ResumeMeasurement` | `Resume` |  | ✓ |
 | POST | `/Instruments/AbortMeasurement` | `Abort` |  | ✓ |
-| POST | `/Instruments/SetCustomName` | `SetCustomName` | ✓ | remove |
+| POST | `/Instruments/SetCustomName` | `SetCustomName` | ✓ |  |
 | POST | `/Instruments/ConfigureInstrument` | `ConfigureInstrument` |  | ✓ |
-| POST | `/Instruments/SendWorkflow` | `SendWorkflow` |  | later (workflows) |
+| POST | `/Instruments/SendWorkflow` | `SendWorkflow` |  | later ([#549](https://github.com/PalmSens/palmsens-sdk/issues/549)) |
 | POST | `/Instruments/Configuration` | `GetConfiguration` |  | todo |
 | POST | `/Instruments/Instrument2Configuration` | `GetInstrument2Configuration` | ✓ | n/a |
 
@@ -132,8 +136,8 @@ Path: `/Instrument` (single instrument)
 | POST | `/Instrument/{serial}/AbortMeasurement` | `Abort` |  | ✓ |
 | POST | `/Instrument/{serial}/SetCustomName` | `SetCustomName` |  | ✓ |
 | POST | `/Instrument/{serial}/ConfigureInstrument` | `ConfigureInstrument` |  | ✓ |
-| POST | `/Instrument/{serial}/SendWorkflow` | `SendScript` |  | later (workflows) |
-| GET | `/Instrument/{serial}/CurrentWorkflow` | `CurrentWorkflow` |  | later (workflows) |
+| POST | `/Instrument/{serial}/SendWorkflow` | `SendScript` |  | later ([#549](https://github.com/PalmSens/palmsens-sdk/issues/549)) |
+| GET | `/Instrument/{serial}/CurrentWorkflow` | `CurrentWorkflow` |  | later ([#549](https://github.com/PalmSens/palmsens-sdk/issues/549)) |
 
 ### Instrument
 
@@ -200,5 +204,5 @@ Path: /Workflows
 
 | Method | Path | Action | Internal | Python |
 |---|---|---|---|---|
-| POST | `/Workflows/Start` | `StartWorkflows` |  | later (workflows) |
-| POST | `/Workflows/{serial}/Abort` | `AbortWorkflow` |  | later (workflows) |
+| POST | `/Workflows/Start` | `StartWorkflows` |  | later ([#549](https://github.com/PalmSens/palmsens-sdk/issues/549)) |
+| POST | `/Workflows/{serial}/Abort` | `AbortWorkflow` |  | later ([#549](https://github.com/PalmSens/palmsens-sdk/issues/549)) |

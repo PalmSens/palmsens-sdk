@@ -17,7 +17,7 @@ keywords = [
     "data-analysis",
     "voltammetry",
     "potentiometry",
-    "impedance-specroscopy",
+    "impedance-spectroscopy",
 ]
 license = "LicenseRef-Modified-BSD-3-Clause-PalmSens"
 license-files = ["LICENSE"]

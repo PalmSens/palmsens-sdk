@@ -20,6 +20,7 @@ if missing:
     exc.add_note('\nInstall the extra: pip install "pypalmsens[lablink]"')
     raise exc
 
+from ._discover import discover
 from ._errors import (
     LablinkApiError,
     LablinkClientError,

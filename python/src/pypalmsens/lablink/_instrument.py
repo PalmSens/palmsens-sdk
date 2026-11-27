@@ -307,7 +307,7 @@ class InstrumentClaim(InstrumentReadsMixin):
         """
         await self._session._http.post(f'/Instrument/{self._serial}/AbortMeasurement')
 
-    async def set_custom_name(self, name: str) -> None:
+    async def _set_custom_name(self, name: str) -> None:
         """Set a custom display name for the instrument.
 
         Parameters

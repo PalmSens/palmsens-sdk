@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import AwareDatetime, BaseModel, ConfigDict
 
 from . import _wire
 
@@ -90,6 +90,24 @@ class InstrumentInfo(BaseModel):
 
 class MeasurementInfo(BaseModel):
     """Measurement metadata."""
+
+    guid: str
+    created: AwareDatetime
+    modified: AwareDatetime
+    name: str
+    user_name: str
+    # instrument: str  = ''
+    # Method: str  = ''
+    # Software: str  = ''
+    # raw_data: str  = ''
+    # curve_data: str  = ''
+    # ir_compensation: float = 0.0
+
+    @staticmethod
+    def from_dto(dto: _wire.MeasurementResult) -> MeasurementInfo:
+        from ._mapping import _to_measurement_info
+
+        return _to_measurement_info(dto)
 
 
 class UserInfo(BaseModel):

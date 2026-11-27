@@ -20,7 +20,7 @@ from ._instrument import Instrument, InstrumentClaim, InstrumentClaimBatch
 from ._measurement import Measurement, MeasurementJob
 from .models import LablinkInfo
 from .models._method_mapper import to_payload
-from .models._public import UserInfo
+from .models._public import MeasurementInfo, UserInfo
 from .models._wire import (
     EmptyProperty,
     MeasurementListResult,
@@ -198,7 +198,32 @@ class Session:
         # TODO: Expose `MeasurementListResult` data via Measurement.info()
         return [Measurement(str(ref.Id), session=self) for ref in refs]
 
-    async def get_measurement(self, measurement: Measurement | str) -> xr.Dataset | xr.DataTree:
+    async def _get_measurement_info(self, ref: Measurement | str) -> MeasurementResult:
+        if isinstance(ref, Measurement):
+            guid = ref.guid
+        else:
+            guid = ref
+
+        response = await self._http.get(f'/Measurements/{guid}')
+        return MeasurementResult.model_validate(response.json())
+
+    async def get_measurement_info(self, ref: Measurement | str) -> MeasurementInfo:
+        """Fetch measurement metadata by its reference ID.
+
+        Parameters
+        ----------
+        ref : Measurement | str
+            The measurement to fetch by its string ID.
+
+        Returns
+        -------
+        MeasurementInfo
+            The measurement meatadata.
+        """
+        parsed = await self._get_measurement_info(ref)
+        return MeasurementInfo.from_dto(parsed)
+
+    async def get_measurement_data(self, ref: Measurement | str) -> xr.Dataset | xr.DataTree:
         """Fetch a specific measurement by its reference ID.
 
         Parameters
@@ -213,25 +238,17 @@ class Session:
         """
         import numpy as np
 
-        if isinstance(measurement, Measurement):
-            guid = measurement.guid
-        else:
-            guid = measurement
-
-        response = await self._http.get(f'/Measurements/{guid}')
-        parsed = MeasurementResult.model_validate(response.json())
-
-        # metadata = _to_measurement_metadata(parsed)
+        raw_info = await self._get_measurement_info(ref)
 
         datasets = []
 
-        assert parsed.RawDataSets
+        assert raw_info.RawDataSets
 
-        for dataset in parsed.RawDataSets:
+        for dataset in raw_info.RawDataSets:
             data_vars = {}
             attrs: dict[str, Any] = {}
 
-            dataset, *_ = parsed.RawDataSets
+            dataset, *_ = raw_info.RawDataSets
             dataset_id = dataset.DataSetId
 
             assert dataset.DataArrays

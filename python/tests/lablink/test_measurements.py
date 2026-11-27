@@ -20,6 +20,6 @@ async def test_list_measurements(session: lablink.Session):
     ref, *_ = measurements
 
     data1 = await ref.get_data()
-    data2 = await session.get_measurement(ref)
+    data2 = await session.get_measurement_data(ref)
 
     assert ref.guid == data1.guid == data2.guid

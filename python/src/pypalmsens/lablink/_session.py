@@ -11,6 +11,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any, Self
 
+import numpy as np
 import pandas as pd
 import xarray as xr
 
@@ -28,6 +29,45 @@ from .models._wire import (
     SendWorkflowCommand,
     SimpleInstrumentsCommand,
 )
+
+
+def _decode_range(pairs: np.ndarray) -> np.ndarray:
+    """(mantissa, exponent) int32 pairs -> physical value: (500, -3) -> 0.5."""
+    return pairs[:, 0].astype(np.float64) * np.power(10.0, pairs[:, 1].astype(np.int64))
+
+
+FLOAT64_SIGNALS = {
+    'AppliedPotential',
+    'MeasuredPotential',
+    'AppliedCurrent',
+    'MeasuredCurrent',
+    'AuxiliaryPotential',
+    'ReverseCurrent',
+    'ForwardCurrent',
+    'Charge',
+    'Frequency',
+    'ACPotential',
+    'ACCurrent',
+    'ImpedanceMagnitude',
+    'ImpedanceReal',
+    'ImpedanceImaginary',
+    'ImpedancePhase',
+    'AdmittanceMagnitude',
+    'AdmittanceReal',
+    'AdmittanceImaginary',
+    'CapacitanceReal',
+    'CapacitanceImaginary',
+    'CapacitanceSeries',
+}
+STATUS_SIGNALS = {
+    'TimingStatus',
+    'CurrentReadingStatus',
+    'PotentialReadingStatus',
+    'ForwardCurrentReadingStatus',
+    'ReverseCurrentReadingStatus',
+}
+INDEX_SIGNALS = {'Index', 'CycleIndex', 'LevelIndex'}
+RANGE_SIGNALS = {'CurrentRange': 'A', 'PotentialRange': 'V'}
 
 
 class Session:
@@ -220,8 +260,8 @@ class Session:
         MeasurementInfo
             The measurement meatadata.
         """
-        parsed = await self._get_measurement_info(ref)
-        return MeasurementInfo.from_dto(parsed)
+        raw_info = await self._get_measurement_info(ref)
+        return MeasurementInfo.from_dto(raw_info)
 
     async def get_measurement_data(self, ref: Measurement | str) -> xr.Dataset | xr.DataTree:
         """Fetch a specific measurement by its reference ID.
@@ -239,6 +279,7 @@ class Session:
         import numpy as np
 
         raw_info = await self._get_measurement_info(ref)
+        root_attrs = MeasurementInfo.from_dto(raw_info)
 
         datasets = []
 
@@ -248,7 +289,6 @@ class Session:
             data_vars = {}
             attrs: dict[str, Any] = {}
 
-            dataset, *_ = raw_info.RawDataSets
             dataset_id = dataset.DataSetId
 
             assert dataset.DataArrays
@@ -256,43 +296,27 @@ class Session:
             for array in dataset.DataArrays:
                 assert array.DataValueType
                 array_type = array.DataValueType.name
-                # TODO, what is array ID used for?
-                # array_id = array.DataArrayId
+                # array_id = array.DataArrayId  # What is this used for?
                 values_id = array.DataValuesId
 
                 response = await self._http.get(f'DataSets/{dataset_id}/{values_id}')
                 raw = response.content
 
-                if array_type == 'CurrentRange':
-                    pairs = np.frombuffer(raw, dtype=np.int32).reshape(-1, 2)
-                    data = pairs[:, 0]
-                    # TODO: what is other? factor? exponent? How to store.
-                    # other = pairs[:, 0]
+                if array_type in RANGE_SIGNALS:
+                    pairs = np.frombuffer(raw, dtype='<i4').reshape(-1, 2)
+                    data = _decode_range(pairs)  # A for CurrentRange, V for PotentialRange
 
-                elif array_type in (
-                    'AppliedPotential',
-                    'Charge',
-                    'MeasuredCurrent',
-                    'AuxiliaryPotential',
-                    'ReverseCurrent',
-                    'ForwardCurrent',
-                ):
-                    data = np.frombuffer(raw, dtype=np.float64)  # little-endian float64
+                elif array_type in FLOAT64_SIGNALS:
+                    data = np.frombuffer(raw, dtype='<f8')  # explicit LE, not native '=f8'
 
-                elif array_type in (
-                    'TimingStatus',
-                    'CurrentReadingStatus',
-                    'ForwardCurrentReadingStatus',
-                    'ReverseCurrentReadingStatus',
-                ):
-                    data = np.frombuffer(raw, dtype=np.int8)  # int enum (8-bit signed integer)
+                elif array_type in STATUS_SIGNALS:
+                    data = np.frombuffer(raw, dtype='i1')
 
-                elif array_type in ('Index', 'CycleIndex', 'LevelIndex'):
-                    data = np.frombuffer(raw, dtype=np.int32)  # int enum (32 bit signed)
+                elif array_type in INDEX_SIGNALS:
+                    data = np.frombuffer(raw, dtype='<i4')
 
                 elif array_type == 'Timestamp':
-                    ticks = np.frombuffer(raw, dtype=np.int64)  # 100-ns ticks
-                    data = ticks * 1e-7  # seconds
+                    data = np.frombuffer(raw, dtype='<i8') * 1e-7
 
                 else:
                     print(f'Unknown data type: {array_type=}')
@@ -311,6 +335,7 @@ class Session:
             data = xr.concat(datasets, pd.Index(len(datasets), name='new_dim'))
         else:
             data = datasets[0]
+            data.attrs = root_attrs.model_dump()
 
         return data
 

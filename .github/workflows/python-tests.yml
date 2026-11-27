@@ -21,13 +21,11 @@ on:
 jobs:
   test:
     if: github.event.pull_request.draft == false
-    name: Run Coverage and Tests
+    name: Run tests
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [
-          # 'windows-latest',
-          # 'macos-latest',
           'ubuntu-latest',
         ]
         python-version: ['3.11', '3.14']
@@ -61,27 +59,4 @@ jobs:
 
       - name: Test with pytest
         run: |
-          coverage run -m pytest --offline
-
-      - name: Report coverage
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: |
-          coverage json
-          $TOTAL = python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])"
-          Add-Content -Path $env:GITHUB_ENV -Value "total=$TOTAL"
-          $REPORT = coverage report
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "### Total coverage: $TOTAL%"
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "`n``````"
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value $REPORT
-          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "`n``````"
-
-      - name: Report coverage
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: |
-          coverage json
-          export TOTAL=$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")
-          echo "total=$TOTAL" >> $GITHUB_ENV
-          echo "### Total coverage: ${TOTAL}%" >> $GITHUB_STEP_SUMMARY
-          echo $'\n```' >> $GITHUB_STEP_SUMMARY
-          coverage report >> $GITHUB_STEP_SUMMARY
-          echo $'\n```' >> $GITHUB_STEP_SUMMARY
+          pytest --offline
